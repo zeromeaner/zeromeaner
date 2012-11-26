@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -194,8 +195,11 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 	 */
 	public static void main(String[] args) {
 		programArgs = args;
-
-		PropertyConfigurator.configure("config/etc/log_swing.cfg");
+		try {
+			PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_swing.cfg"));
+		} catch(IOException ioe) {
+			ioe.printStackTrace();
+		}
 		log.debug("NullpoMinoSwing Start");
 
 		// 設定ファイル読み込み
@@ -212,7 +216,7 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 		// Mode読み込み
 		modeManager = new ModeManager();
 		try {
-			BufferedReader txtMode = new BufferedReader(new FileReader("config/list/mode.lst"));
+			BufferedReader txtMode = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/list/mode.lst")));
 			modeManager.loadGameModes(txtMode);
 			txtMode.close();
 			modeList = modeManager.getModeNames(false);
@@ -683,7 +687,7 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 		mapRuleEntries = new HashMap<String, RuleEntry>();
 
 		try {
-			BufferedReader in = new BufferedReader(new FileReader("config/list/recommended_rules.lst"));
+			BufferedReader in = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/list/recommended_rules.lst")));
 			String strMode = "";
 
 			String str;

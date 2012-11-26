@@ -31,6 +31,7 @@ package org.zeromeaner.gui.swing;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
@@ -95,12 +96,16 @@ public class ResourceHolderSwing {
 		int numBlocks = 0;
 		File file = null;
 		while(true) {
-			file = new File(skindir + "/graphics/blockskin/normal/n" + numBlocks + ".png");
-			if(file.canRead()) {
+//			file = new File(skindir + "/graphics/blockskin/normal/n" + numBlocks + ".png");
+//			if(file.canRead()) {
+//				numBlocks++;
+//			} else {
+//				break;
+//			}
+			if(getURL(skindir + "/graphics/blockskin/normal/n" + numBlocks + ".png") != null)
 				numBlocks++;
-			} else {
+			else
 				break;
-			}
 		}
 		log.debug(numBlocks + " block skins found");
 
@@ -275,27 +280,33 @@ public class ResourceHolderSwing {
 	 * @return リソースファイルのURL
 	 */
 	public static URL getURL(String str) {
-		URL url = null;
-
-		try {
-			char sep = File.separator.charAt(0);
-			String file = str.replace(sep, '/');
-
-			// 参考(消滅)：http://www.asahi-net.or.jp/~DP8T-ASM/java/tips/HowToMakeURL.html
-			if(file.charAt(0) != '/') {
-				String dir = System.getProperty("user.dir");
-				dir = dir.replace(sep, '/') + '/';
-				if(dir.charAt(0) != '/') {
-					dir = "/" + dir;
-				}
-				file = dir + file;
-			}
-			url = new URL("file", "", file);
-		} catch(MalformedURLException e) {
-			log.warn("Invalid URL:" + str, e);
-			return null;
-		}
-
+		
+		URL url = ClassLoader.getSystemResource("org/zeromeaner/" + str);
+		if(url == null)
+			new Throwable("No such resource: " + str).printStackTrace();
 		return url;
+		
+//		URL url = null;
+//
+//		try {
+//			char sep = File.separator.charAt(0);
+//			String file = str.replace(sep, '/');
+//
+//			// 参考(消滅)：http://www.asahi-net.or.jp/~DP8T-ASM/java/tips/HowToMakeURL.html
+//			if(file.charAt(0) != '/') {
+//				String dir = System.getProperty("user.dir");
+//				dir = dir.replace(sep, '/') + '/';
+//				if(dir.charAt(0) != '/') {
+//					dir = "/" + dir;
+//				}
+//				file = dir + file;
+//			}
+//			url = new URL("file", "", file);
+//		} catch(MalformedURLException e) {
+//			log.warn("Invalid URL:" + str, e);
+//			return null;
+//		}
+//
+//		return url;
 	}
 }

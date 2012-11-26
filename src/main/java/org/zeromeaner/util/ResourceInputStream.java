@@ -4,13 +4,19 @@ import java.io.FileInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 public class ResourceInputStream extends FilterInputStream {
 	public static InputStream getStream(String resource) throws IOException {
-		InputStream in = ResourceInputStream.class.getResourceAsStream(resource);
+		InputStream in = ClassLoader.getSystemResourceAsStream("org/zeromeaner/" + resource);
 		if(in != null)
 			return in;
-		return new FileInputStream(resource);
+		throw new IOException("Resource not found:" + resource);
+	}
+	
+	public Reader newFileReader(String resource) throws IOException {
+		return new InputStreamReader(new ResourceInputStream(resource));
 	}
 	
 	public ResourceInputStream(String resource) throws IOException {
