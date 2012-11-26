@@ -63,7 +63,7 @@ public class StateTitleSDL extends DummyMenuChooseStateSDL {
 	@Override
 	public void enter() throws SDLException {
 		// Update title bar
-		SDLVideo.wmSetCaption("NullpoMino version" + GameManager.getVersionString(), null);
+		SDLVideo.wmSetCaption("zeromeaner version" + GameManager.getVersionString(), null);
 		// Observer start
 		NullpoMinoSDL.startObserverClient();
 		// Call GC
@@ -98,7 +98,7 @@ public class StateTitleSDL extends DummyMenuChooseStateSDL {
 	public void render(SDLSurface screen) throws SDLException {
 		ResourceHolderSDL.imgTitle.blitSurface(screen);
 
-		NormalFontSDL.printFontGrid(1, 1, "NULLPOMINO", NormalFontSDL.COLOR_ORANGE);
+		NormalFontSDL.printFontGrid(1, 1, "zeromeaner", NormalFontSDL.COLOR_ORANGE);
 		NormalFontSDL.printFontGrid(1, 2, "VERSION " + GameManager.getVersionString(), NormalFontSDL.COLOR_ORANGE);
 
 		NormalFontSDL.printFontGrid(1, 4 + cursor, "b", NormalFontSDL.COLOR_RED);

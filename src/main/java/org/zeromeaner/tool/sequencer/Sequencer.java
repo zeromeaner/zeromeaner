@@ -72,7 +72,7 @@ import org.zeromeaner.util.ResourceInputStream;
 
 
 /**
- * NullpoMino Sequence Viewer (Original from NullpoUE build 010210 by Zircean)
+ * zeromeaner Sequence Viewer (Original from NullpoUE build 010210 by Zircean)
  */
 public class Sequencer extends JFrame implements ActionListener {
 	/** Serial Version UID */
@@ -370,7 +370,7 @@ public class Sequencer extends JFrame implements ActionListener {
 	public void save(String filename) throws IOException {
 		log.info("Saving piece sequence file to " + filename);
 		BufferedWriter out = new BufferedWriter(new FileWriter(filename));
-		out.write("# NullpoMino Piece Sequence"); out.newLine();
+		out.write("# zeromeaner Piece Sequence"); out.newLine();
 		out.write(txtareaSequence.getText());
 		out.close();
 	}

@@ -1685,7 +1685,7 @@ public class RuleEditor extends JFrame implements ActionListener {
 		ruleopt.writeProperty(prop, 0);
 
 		ResourceOutputStream out = new ResourceOutputStream(filename);
-		prop.store(out, "NullpoMino RuleData");
+		prop.store(out, "zeromeaner RuleData");
 		out.close();
 
 		log.debug("Saved rule file to " + filename);

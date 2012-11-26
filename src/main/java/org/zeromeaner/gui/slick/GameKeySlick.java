@@ -57,7 +57,7 @@ public class GameKeySlick extends GameKeyDummy {
 				Input.KEY_Z,Input.KEY_UP,Input.KEY_C,Input.KEY_LSHIFT,Input.KEY_X,Input.KEY_V,Input.KEY_F12,
 				Input.KEY_ESCAPE,Input.KEY_F11,Input.KEY_F10,Input.KEY_N,Input.KEY_F5
 			},
-			// NullpoMino classic type
+			// zeromeaner classic type
 			{
 				Input.KEY_UP,Input.KEY_DOWN,Input.KEY_LEFT,Input.KEY_RIGHT,
 				Input.KEY_A,Input.KEY_S,Input.KEY_D,Input.KEY_Z,Input.KEY_X,Input.KEY_C,
@@ -78,7 +78,7 @@ public class GameKeySlick extends GameKeyDummy {
 				Input.KEY_ENTER,Input.KEY_ESCAPE,Input.KEY_C,Input.KEY_LSHIFT,Input.KEY_X,Input.KEY_V,
 				Input.KEY_F12,Input.KEY_F1,Input.KEY_F11,Input.KEY_F10,Input.KEY_N,Input.KEY_F5
 			},
-			// NullpoMino classic type
+			// zeromeaner classic type
 			{
 				Input.KEY_UP,Input.KEY_DOWN,Input.KEY_LEFT,Input.KEY_RIGHT,
 				Input.KEY_A,Input.KEY_S,Input.KEY_D,Input.KEY_Z,Input.KEY_X,Input.KEY_C,
@@ -193,7 +193,7 @@ public class GameKeySlick extends GameKeyDummy {
 
 	/**
 	 * Reset keyboard settings to default
-	 * @param type Settings type (0=Blockbox 1=Guideline 2=NullpoMino-Classic)
+	 * @param type Settings type (0=Blockbox 1=Guideline 2=zeromeaner-Classic)
 	 */
 	public void loadDefaultKeymap(int type) {
 		loadDefaultGameKeymap(type);
@@ -202,7 +202,7 @@ public class GameKeySlick extends GameKeyDummy {
 
 	/**
 	 * Reset in-game keyboard settings to default. Menu keys are unchanged.
-	 * @param type Settings type (0=Blockbox 1=Guideline 2=NullpoMino-Classic)
+	 * @param type Settings type (0=Blockbox 1=Guideline 2=zeromeaner-Classic)
 	 */
 	public void loadDefaultGameKeymap(int type) {
 		for(int i = 0; i < keymap.length; i++) {
@@ -212,7 +212,7 @@ public class GameKeySlick extends GameKeyDummy {
 
 	/**
 	 * Reset menu keyboard settings to default. In-game keys are unchanged.
-	 * @param type Settings type (0=Blockbox 1=Guideline 2=NullpoMino-Classic)
+	 * @param type Settings type (0=Blockbox 1=Guideline 2=zeromeaner-Classic)
 	 */
 	public void loadDefaultMenuKeymap(int type) {
 		for(int i = 0; i < keymapNav.length; i++) {

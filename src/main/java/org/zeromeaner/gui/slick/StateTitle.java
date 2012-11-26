@@ -91,7 +91,7 @@ public class StateTitle extends DummyMenuChooseState {
 
 		// Update title bar
 		if(container instanceof AppGameContainer) {
-			((AppGameContainer) container).setTitle("NullpoMino version" + GameManager.getVersionString());
+			((AppGameContainer) container).setTitle("zeromeaner version" + GameManager.getVersionString());
 			((AppGameContainer) container).setUpdateOnlyWhenVisible(true);
 		}
 
@@ -126,7 +126,7 @@ public class StateTitle extends DummyMenuChooseState {
 		g.drawImage(ResourceHolderSlick.imgTitle, 0, 0);
 
 		// Menu
-		NormalFontSlick.printFontGrid(1, 1, "NULLPOMINO", NormalFontSlick.COLOR_ORANGE);
+		NormalFontSlick.printFontGrid(1, 1, "zeromeaner", NormalFontSlick.COLOR_ORANGE);
 		NormalFontSlick.printFontGrid(1, 2, "VERSION " + GameManager.getVersionString(), NormalFontSlick.COLOR_ORANGE);
 
 		renderChoices(2, 4, CHOICES);

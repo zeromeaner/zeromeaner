@@ -891,7 +891,7 @@ public class EventReceiver {
 	public void saveModeConfig(CustomProperties modeConfig) {
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/mode.cfg");
-			modeConfig.store(out, "NullpoMino Mode Config");
+			modeConfig.store(out, "zeromeaner Mode Config");
 			out.close();
 		} catch(IOException e) {
 			log.error("Failed to save mode config", e);
@@ -927,7 +927,7 @@ public class EventReceiver {
 	public boolean saveProperties(String filename, CustomProperties prop) {
 		try {
 			ResourceOutputStream out = new ResourceOutputStream(filename);
-			prop.store(out, "NullpoMino Custom Property File");
+			prop.store(out, "zeromeaner Custom Property File");
 			out.close();
 		} catch(IOException e) {
 			log.debug("Failed to save custom property file to " + filename, e);
@@ -1245,7 +1245,7 @@ public class EventReceiver {
 			}
 
 			ResourceOutputStream out = new ResourceOutputStream(filename);
-			prop.store(new ResourceOutputStream(filename), "NullpoMino Replay");
+			prop.store(new ResourceOutputStream(filename), "zeromeaner Replay");
 			out.close();
 			log.info("Saved replay file: " + filename);
 		} catch(IOException e) {

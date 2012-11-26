@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/Nullpomino" xmlns:tns="http://www.example.org/Nullpomino" elementFormDefault="qualified">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/zeromeaner" xmlns:tns="http://www.example.org/Nullpomino" elementFormDefault="qualified">
 
-    <element name="NullpominoMenu" type="tns:MenuType"></element>
+    <element name="zeromeanerMenu" type="tns:MenuType"></element>
     
 
 

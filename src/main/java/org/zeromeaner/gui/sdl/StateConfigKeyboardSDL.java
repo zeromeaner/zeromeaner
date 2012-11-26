@@ -260,7 +260,7 @@ public class StateConfigKeyboardSDL extends BaseStateSDL {
 	public void enter() throws SDLException {
 		reset();
 		NullpoMinoSDL.enableSpecialKeys = false;
-		SDLVideo.wmSetCaption("NullpoMino version" + GameManager.getVersionString(), null);
+		SDLVideo.wmSetCaption("zeromeaner version" + GameManager.getVersionString(), null);
 	}
 
 	/*

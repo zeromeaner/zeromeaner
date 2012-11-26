@@ -1520,7 +1520,7 @@ public class Field implements Serializable {
 
 	/**
 	 * 裏段位を取得
-	 * (from NullpoMino Unofficial Expansion build 091309)
+	 * (from zeromeaner Unofficial Expansion build 091309)
 	 * @author Zircean
 	 * @return 裏段位
 	 */

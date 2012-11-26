@@ -195,7 +195,7 @@ public class JInputManager {
 
 			// Linux
 			if(System.getProperty("os.name").startsWith("Linux")) {
-				log.error("If you can use sudo, try the following command and start NullpoMino again:");
+				log.error("If you can use sudo, try the following command and start zeromeaner again:");
 				log.error("sudo chmod go+r /dev/input/*");
 			}
 		}

@@ -145,7 +145,7 @@ public class StateLoading extends BasicGameState {
 		if(preloadSet > 2) {
 			// Change title bar caption
 			if(container instanceof AppGameContainer) {
-				((AppGameContainer) container).setTitle("NullpoMino version" + GameManager.getVersionString());
+				((AppGameContainer) container).setTitle("zeromeaner version" + GameManager.getVersionString());
 				((AppGameContainer) container).setUpdateOnlyWhenVisible(true);
 			}
 

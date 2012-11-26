@@ -65,7 +65,7 @@ import sdljava.video.SDLSurface;
 import sdljava.video.SDLVideo;
 
 /**
- * NullpoMino SDLVersion
+ * zeromeaner SDLVersion
  */
 public class NullpoMinoSDL {
 	/** Log */
@@ -434,7 +434,7 @@ public class NullpoMinoSDL {
 		SDLVersion ver = SDLMain.getSDLVersion();
 		log.info("SDL Version:" + ver.getMajor() + "." + ver.getMinor() + "." + ver.getPatch());
 
-		SDLVideo.wmSetCaption("NullpoMino (Now Loading...)", null);
+		SDLVideo.wmSetCaption("zeromeaner (Now Loading...)", null);
 
 		long flags = SDLVideo.SDL_ANYFORMAT | SDLVideo.SDL_DOUBLEBUF | SDLVideo.SDL_HWSURFACE;
 		if(propConfig.getProperty("option.fullscreen", false) == true) flags |= SDLVideo.SDL_FULLSCREEN;
@@ -697,7 +697,7 @@ public class NullpoMinoSDL {
 	public static void saveConfig() {
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/sdl.cfg");
-			propConfig.store(out, "NullpoMino SDL-frontend Config");
+			propConfig.store(out, "zeromeaner SDL-frontend Config");
 			out.close();
 			log.debug("Saved SDL-frontend config");
 		} catch(IOException e) {
@@ -706,7 +706,7 @@ public class NullpoMinoSDL {
 
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/global.cfg");
-			propGlobal.store(out, "NullpoMino Global Config");
+			propGlobal.store(out, "zeromeaner Global Config");
 			out.close();
 			log.debug("Saved global config");
 		} catch(IOException e) {

@@ -33,7 +33,7 @@ public class StateConfigKeyboardResetSDL extends DummyMenuChooseStateSDL {
 
 		NormalFontSDL.printFontGrid(2, 4, "BLOCKBOX STYLE (DEFAULT)", (cursor == 0));
 		NormalFontSDL.printFontGrid(2, 5, "GUIDELINE STYLE", (cursor == 1));
-		NormalFontSDL.printFontGrid(2, 6, "NULLPOMINO CLASSIC STYLE", (cursor == 2));
+		NormalFontSDL.printFontGrid(2, 6, "zeromeaner CLASSIC STYLE", (cursor == 2));
 
 		super.render(screen);
 	}

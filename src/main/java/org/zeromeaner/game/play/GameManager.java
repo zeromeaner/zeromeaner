@@ -35,6 +35,7 @@ import org.zeromeaner.game.component.BackgroundStatus;
 import org.zeromeaner.game.event.EventReceiver;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.Version;
 
 /**
  * GameManager: The container of the game
@@ -44,14 +45,21 @@ public class GameManager {
 	static Logger log = Logger.getLogger(GameManager.class);
 
 	/** Major version */
-	public static final float VERSION_MAJOR = 7.6f;
+	public static final float VERSION_MAJOR;
 
 	/** Minor version */
-	public static final int VERSION_MINOR = 0;
+	public static final int VERSION_MINOR;
 
 	/** Development-build flag (false:Release-build true:Dev-build) */
-	public static final boolean DEV_BUILD = true;
+	public static final boolean DEV_BUILD;
 
+	static {
+		Version v = Version.getBuildVersion();
+		VERSION_MAJOR = v.getMajor() + v.getMinor() / 100f;
+		VERSION_MINOR = v.getMicro();
+		DEV_BUILD = v.isSnapshot();
+	}
+	
 	/** Game Mode */
 	public GameMode mode;
 
@@ -117,7 +125,8 @@ public class GameManager {
 	 * @return Version information
 	 */
 	public static String getVersionString() {
-		return VERSION_MAJOR + "." + VERSION_MINOR + (DEV_BUILD ? "D" : "");
+//		return VERSION_MAJOR + "." + VERSION_MINOR + (DEV_BUILD ? "D" : "");
+		return Version.getBuildVersion().toString();
 	}
 
 	/**

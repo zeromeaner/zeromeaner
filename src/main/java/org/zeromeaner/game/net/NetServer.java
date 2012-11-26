@@ -70,7 +70,7 @@ import org.zeromeaner.util.GeneralUtil;
 
 
 /**
- * NullpoMino NetServer<br>
+ * zeromeaner NetServer<br>
  * The code is based on <a href="http://rox-xmlrpc.sourceforge.net/niotut/">James Greenfield's The Rox Java NIO Tutorial</a>
  */
 public class NetServer {
@@ -518,7 +518,7 @@ public class NetServer {
 
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/netserver_mpranking.cfg");
-			propMPRanking.store(out, "NullpoMino NetServer Multiplayer Leaderboard");
+			propMPRanking.store(out, "zeromeaner NetServer Multiplayer Leaderboard");
 			out.close();
 		} catch (IOException e) {
 			log.error("Failed to write multiplayer ranking data", e);
@@ -715,7 +715,7 @@ public class NetServer {
 		}
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/netserver_spranking.cfg");
-			propSPRankingAlltime.store(out, "NullpoMino NetServer Single Player All-time Leaderboard");
+			propSPRankingAlltime.store(out, "zeromeaner NetServer Single Player All-time Leaderboard");
 			out.close();
 		} catch (IOException e) {
 			log.error("Failed to write single player all-time ranking data", e);
@@ -727,7 +727,7 @@ public class NetServer {
 		}
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/netserver_spranking_daily.cfg");
-			propSPRankingDaily.store(out, "NullpoMino NetServer Single Player Daily Leaderboard");
+			propSPRankingDaily.store(out, "zeromeaner NetServer Single Player Daily Leaderboard");
 			out.close();
 		} catch (IOException e) {
 			log.error("Failed to write single player daily ranking data", e);
@@ -779,7 +779,7 @@ public class NetServer {
 	private static void writePlayerDataToFile() {
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/netserver_playerdata.cfg");
-			propPlayerData.store(out, "NullpoMino NetServer PlayerData");
+			propPlayerData.store(out, "zeromeaner NetServer PlayerData");
 			out.close();
 		} catch (IOException e) {
 			log.error("Failed to write player data", e);

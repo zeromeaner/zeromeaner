@@ -98,7 +98,7 @@ import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.ModeManager;
 
 /**
- * NullpoMino SwingVersion
+ * zeromeaner SwingVersion
  */
 public class NullpoMinoInternalFrame extends JInternalFrame implements ActionListener, NetLobbyListener, UpdateCheckerListener {
 	/** Serial version ID */
@@ -364,7 +364,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	public static void saveConfig() {
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/swing.cfg");
-			propConfig.store(out, "NullpoMino Swing-frontend Config");
+			propConfig.store(out, "zeromeaner Swing-frontend Config");
 			out.close();
 		} catch(IOException e) {
 			log.error("Failed to save Swing-specific config", e);
@@ -372,7 +372,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/global.cfg");
-			propGlobal.store(out, "NullpoMino Global Config");
+			propGlobal.store(out, "zeromeaner Global Config");
 			out.close();
 		} catch(IOException e) {
 			log.error("Failed to save global config", e);

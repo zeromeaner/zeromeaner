@@ -241,7 +241,7 @@ public class NetSPRecord implements Serializable {
 	 * @param p CustomProperties that contains replay data
 	 */
 	public void setReplayProp(CustomProperties p) {
-		String strEncode = p.encode("NullpoMino Net Single Player Replay (" + strPlayerName + ")");
+		String strEncode = p.encode("zeromeaner Net Single Player Replay (" + strPlayerName + ")");
 		strReplayProp = NetUtil.compressString(strEncode);
 	}
 

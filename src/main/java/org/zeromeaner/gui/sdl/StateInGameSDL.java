@@ -259,19 +259,19 @@ public class StateInGameSDL extends BaseStateSDL {
 	 * Update title bar text
 	 */
 	public void updateTitleBarCaption() {
-		String strTitle = "NullpoMino - " + modeName;
+		String strTitle = "zeromeaner - " + modeName;
 
 		if((gameManager != null) && (gameManager.engine != null) && (gameManager.engine.length > 0) && (gameManager.engine[0] != null)) {
 			if(pause && !enableframestep)
-				strTitle = "[PAUSE] NullpoMino - " + modeName;
+				strTitle = "[PAUSE] zeromeaner - " + modeName;
 			else if(gameManager.engine[0].isInGame && !gameManager.replayMode && !gameManager.replayRerecord)
-				strTitle = "[PLAY] NullpoMino - " + modeName;
+				strTitle = "[PLAY] zeromeaner - " + modeName;
 			else if(gameManager.replayMode && gameManager.replayRerecord)
-				strTitle = "[RERECORD] NullpoMino - " + modeName;
+				strTitle = "[RERECORD] zeromeaner - " + modeName;
 			else if(gameManager.replayMode && !gameManager.replayRerecord)
-				strTitle = "[REPLAY] NullpoMino - " + modeName;
+				strTitle = "[REPLAY] zeromeaner - " + modeName;
 			else
-				strTitle = "[MENU] NullpoMino - " + modeName;
+				strTitle = "[MENU] zeromeaner - " + modeName;
 		}
 
 		SDLVideo.wmSetCaption(strTitle, null);

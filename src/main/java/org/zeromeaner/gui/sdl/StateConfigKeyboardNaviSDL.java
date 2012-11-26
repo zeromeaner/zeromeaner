@@ -107,7 +107,7 @@ public class StateConfigKeyboardNaviSDL extends DummyMenuChooseStateSDL {
 	 */
 	@Override
 	public void enter() throws SDLException {
-		SDLVideo.wmSetCaption("NullpoMino version" + GameManager.getVersionString(), null);
+		SDLVideo.wmSetCaption("zeromeaner version" + GameManager.getVersionString(), null);
 	}
 
 	/*

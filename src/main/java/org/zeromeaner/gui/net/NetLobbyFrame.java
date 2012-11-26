@@ -122,7 +122,7 @@ import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
 
 /**
- * NullpoMino NetLobby
+ * zeromeaner NetLobby
  */
 public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageListener {
 	/** Serial Version ID */
@@ -3348,7 +3348,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/netlobby.cfg");
-			propConfig.store(out, "NullpoMino NetLobby Config");
+			propConfig.store(out, "zeromeaner NetLobby Config");
 			out.close();
 		} catch (IOException e) {
 			log.warn("Failed to save netlobby config file", e);
@@ -3361,7 +3361,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	public void saveGlobalConfig() {
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/global.cfg");
-			propGlobal.store(out, "NullpoMino Global Config");
+			propGlobal.store(out, "zeromeaner Global Config");
 			out.close();
 		} catch (IOException e) {
 			log.warn("Failed to save global config file", e);
@@ -3497,7 +3497,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 
 				try {
 					ResourceOutputStream out = new ResourceOutputStream("config/setting/netobserver.cfg");
-					propObserver.store(out, "NullpoMino NetObserver Config");
+					propObserver.store(out, "zeromeaner NetObserver Config");
 					out.close();
 				} catch (IOException e) {
 					log.warn("Failed to save NetObserver config file", e);
@@ -3827,7 +3827,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 					propObserver.setProperty("observer.enable", false);
 					try {
 						ResourceOutputStream out = new ResourceOutputStream("config/setting/netobserver.cfg");
-						propObserver.store(out, "NullpoMino NetObserver Config");
+						propObserver.store(out, "zeromeaner NetObserver Config");
 						out.close();
 					} catch (IOException e2) {
 						log.warn("Failed to save NetObserver config file", e2);
@@ -4907,7 +4907,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 
 				try {
 					ResourceOutputStream out = new ResourceOutputStream("replay/netreplay.rep");
-					prop.store(out, "NullpoMino NetReplay from " + netPlayerClient.getHost());
+					prop.store(out, "zeromeaner NetReplay from " + netPlayerClient.getHost());
 					addSystemChatLog(getCurrentChatLogTextPane(), getUIText("SysMsg_ReplaySaved"), Color.magenta);
 				} catch (IOException e) {
 					log.error("Failed to write replay to replay/netreplay.rep", e);

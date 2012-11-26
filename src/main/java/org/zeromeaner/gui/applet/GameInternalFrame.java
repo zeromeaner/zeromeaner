@@ -882,13 +882,13 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 			strModeName = gameManager.mode.getName();
 		}
 
-		String strBaseTitle = "NullpoMino - " + strModeName;
-		if(isNetPlay) strBaseTitle = "NullpoMino NetPlay - " + strModeName;
+		String strBaseTitle = "zeromeaner - " + strModeName;
+		if(isNetPlay) strBaseTitle = "zeromeaner NetPlay - " + strModeName;
 
 		String strTitle = strBaseTitle;
 
 		if(isNetPlay && strModeName.equals("NET-DUMMY")) {
-			strTitle = "NullpoMino NetPlay";
+			strTitle = "zeromeaner NetPlay";
 		} else if((gameManager != null) && (gameManager.engine != null) && (gameManager.engine.length > 0) && (gameManager.engine[0] != null)) {
 			if(pause && !enableframestep)
 				strTitle = "[PAUSE] " + strBaseTitle;

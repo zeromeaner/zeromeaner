@@ -348,15 +348,15 @@ public class StateNetGameSDL extends BaseStateSDL implements NetLobbyListener {
 	 * Update title bar text
 	 */
 	public void updateTitleBarCaption() {
-		String strTitle = "NullpoMino Netplay - " + modeName;
+		String strTitle = "zeromeaner Netplay - " + modeName;
 
 		if(modeName.equals("NET-DUMMY")) {
-			strTitle = "NullpoMino Netplay";
+			strTitle = "zeromeaner Netplay";
 		} else if((gameManager != null) && (gameManager.engine != null) && (gameManager.engine.length > 0) && (gameManager.engine[0] != null)) {
 			if(gameManager.engine[0].isInGame && !gameManager.replayMode && !gameManager.replayRerecord)
-				strTitle = "[PLAY] NullpoMino Netplay - " + modeName;
+				strTitle = "[PLAY] zeromeaner Netplay - " + modeName;
 			else
-				strTitle = "[MENU] NullpoMino Netplay - " + modeName;
+				strTitle = "[MENU] zeromeaner Netplay - " + modeName;
 		}
 
 		SDLVideo.wmSetCaption(strTitle, null);

@@ -58,7 +58,7 @@ public class GameKeySDL extends GameKeyDummy {
 				SDLKey.SDLK_z,SDLKey.SDLK_UP,SDLKey.SDLK_c,SDLKey.SDLK_LSHIFT,SDLKey.SDLK_x,SDLKey.SDLK_v,SDLKey.SDLK_F12,
 				SDLKey.SDLK_ESCAPE,SDLKey.SDLK_F11,SDLKey.SDLK_F10,SDLKey.SDLK_n,SDLKey.SDLK_F5
 			},
-			// NullpoMino classic type
+			// zeromeaner classic type
 			{
 				SDLKey.SDLK_UP,SDLKey.SDLK_DOWN,SDLKey.SDLK_LEFT,SDLKey.SDLK_RIGHT,
 				SDLKey.SDLK_a,SDLKey.SDLK_s,SDLKey.SDLK_d,SDLKey.SDLK_z,SDLKey.SDLK_x,SDLKey.SDLK_c,
@@ -79,7 +79,7 @@ public class GameKeySDL extends GameKeyDummy {
 				SDLKey.SDLK_RETURN,SDLKey.SDLK_ESCAPE,SDLKey.SDLK_c,SDLKey.SDLK_LSHIFT,SDLKey.SDLK_x,SDLKey.SDLK_v,
 				SDLKey.SDLK_F12,SDLKey.SDLK_F1,SDLKey.SDLK_F11,SDLKey.SDLK_F10,SDLKey.SDLK_n,SDLKey.SDLK_F5
 			},
-			// NullpoMino classic type
+			// zeromeaner classic type
 			{
 				SDLKey.SDLK_UP,SDLKey.SDLK_DOWN,SDLKey.SDLK_LEFT,SDLKey.SDLK_RIGHT,
 				SDLKey.SDLK_a,SDLKey.SDLK_s,SDLKey.SDLK_d,SDLKey.SDLK_z,SDLKey.SDLK_x,SDLKey.SDLK_c,
@@ -220,7 +220,7 @@ public class GameKeySDL extends GameKeyDummy {
 
 	/**
 	 * Reset keyboard settings to default
-	 * @param type Settings type (0=Blockbox 1=Guideline 2=NullpoMino-Classic)
+	 * @param type Settings type (0=Blockbox 1=Guideline 2=zeromeaner-Classic)
 	 */
 	public void loadDefaultKeymap(int type) {
 		loadDefaultGameKeymap(type);
@@ -229,7 +229,7 @@ public class GameKeySDL extends GameKeyDummy {
 
 	/**
 	 * Reset in-game keyboard settings to default. Menu keys are unchanged.
-	 * @param type Settings type (0=Blockbox 1=Guideline 2=NullpoMino-Classic)
+	 * @param type Settings type (0=Blockbox 1=Guideline 2=zeromeaner-Classic)
 	 */
 	public void loadDefaultGameKeymap(int type) {
 		for(int i = 0; i < keymap.length; i++) {
@@ -239,7 +239,7 @@ public class GameKeySDL extends GameKeyDummy {
 
 	/**
 	 * Reset menu keyboard settings to default. In-game keys are unchanged.
-	 * @param type Settings type (0=Blockbox 1=Guideline 2=NullpoMino-Classic)
+	 * @param type Settings type (0=Blockbox 1=Guideline 2=zeromeaner-Classic)
 	 */
 	public void loadDefaultMenuKeymap(int type) {
 		for(int i = 0; i < keymapNav.length; i++) {

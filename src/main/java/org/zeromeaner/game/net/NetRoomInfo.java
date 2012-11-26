@@ -162,7 +162,7 @@ public class NetRoomInfo implements Serializable {
 	/** Hurryup後に何回Blockを置くたびに床をせり上げるか */
 	public int hurryupInterval = 5;
 
-	/** Automatically start timer type(false=NullpoMino true=TNET2) */
+	/** Automatically start timer type(false=zeromeaner true=TNET2) */
 	public boolean autoStartTNET2 = false;
 
 	/** 誰かOK表示を出したあとCancelしたらTimer無効化 */

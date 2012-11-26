@@ -62,7 +62,7 @@ import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ModeManager;
 
 /**
- * NullpoMino SlickVersion
+ * zeromeaner SlickVersion
  */
 public class NullpoMinoSlick extends StateBasedGame {
 	/** Log */
@@ -440,7 +440,7 @@ public class NullpoMinoSlick extends StateBasedGame {
 	public static void saveConfig() {
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/slick.cfg");
-			propConfig.store(out, "NullpoMino Slick-frontend Config");
+			propConfig.store(out, "zeromeaner Slick-frontend Config");
 			out.close();
 		} catch(IOException e) {
 			log.error("Failed to save Slick-specific config", e);
@@ -448,7 +448,7 @@ public class NullpoMinoSlick extends StateBasedGame {
 
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/global.cfg");
-			propGlobal.store(out, "NullpoMino Global Config");
+			propGlobal.store(out, "zeromeaner Global Config");
 			out.close();
 		} catch(IOException e) {
 			log.error("Failed to save global config", e);
@@ -696,7 +696,7 @@ public class NullpoMinoSlick extends StateBasedGame {
 	 * Constructor
 	 */
 	public NullpoMinoSlick() {
-		super("NullpoMino (Now Loading...)");
+		super("zeromeaner (Now Loading...)");
 	}
 
 	/*

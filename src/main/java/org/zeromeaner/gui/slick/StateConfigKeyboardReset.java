@@ -56,7 +56,7 @@ public class StateConfigKeyboardReset extends DummyMenuChooseState {
 
 		NormalFontSlick.printFontGrid(2, 4, "BLOCKBOX STYLE (DEFAULT)", (cursor == 0));
 		NormalFontSlick.printFontGrid(2, 5, "GUIDELINE STYLE", (cursor == 1));
-		NormalFontSlick.printFontGrid(2, 6, "NULLPOMINO CLASSIC STYLE", (cursor == 2));
+		NormalFontSlick.printFontGrid(2, 6, "zeromeaner CLASSIC STYLE", (cursor == 2));
 	}
 
 	/*

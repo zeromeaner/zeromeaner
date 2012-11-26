@@ -57,7 +57,7 @@ public class GameKeyApplet extends GameKeyDummy {
 				KeyEvent.VK_Z,KeyEvent.VK_UP,KeyEvent.VK_C,KeyEvent.VK_SHIFT,KeyEvent.VK_X,KeyEvent.VK_V,KeyEvent.VK_F12,
 				KeyEvent.VK_ESCAPE,KeyEvent.VK_F11,KeyEvent.VK_F10,KeyEvent.VK_N,KeyEvent.VK_F5
 			},
-			// NullpoMino classic type
+			// zeromeaner classic type
 			{
 				KeyEvent.VK_UP,KeyEvent.VK_DOWN,KeyEvent.VK_LEFT,KeyEvent.VK_RIGHT,
 				KeyEvent.VK_A,KeyEvent.VK_S,KeyEvent.VK_D,KeyEvent.VK_Z,KeyEvent.VK_X,KeyEvent.VK_C,
@@ -78,7 +78,7 @@ public class GameKeyApplet extends GameKeyDummy {
 				KeyEvent.VK_ENTER,KeyEvent.VK_ESCAPE,KeyEvent.VK_C,KeyEvent.VK_SHIFT,KeyEvent.VK_X,KeyEvent.VK_V,
 				KeyEvent.VK_F12,KeyEvent.VK_F1,KeyEvent.VK_F11,KeyEvent.VK_F10,KeyEvent.VK_N,KeyEvent.VK_F5
 			},
-			// NullpoMino classic type
+			// zeromeaner classic type
 			{
 				KeyEvent.VK_UP,KeyEvent.VK_DOWN,KeyEvent.VK_LEFT,KeyEvent.VK_RIGHT,
 				KeyEvent.VK_A,KeyEvent.VK_S,KeyEvent.VK_D,KeyEvent.VK_Z,KeyEvent.VK_X,KeyEvent.VK_C,
@@ -153,7 +153,7 @@ public class GameKeyApplet extends GameKeyDummy {
 
 	/**
 	 * Reset keyboard settings to default
-	 * @param type Settings type (0=Blockbox 1=Guideline 2=NullpoMino-Classic)
+	 * @param type Settings type (0=Blockbox 1=Guideline 2=zeromeaner-Classic)
 	 */
 	public void loadDefaultKeymap(int type) {
 		loadDefaultGameKeymap(type);
@@ -162,7 +162,7 @@ public class GameKeyApplet extends GameKeyDummy {
 
 	/**
 	 * Reset in-game keyboard settings to default. Menu keys are unchanged.
-	 * @param type Settings type (0=Blockbox 1=Guideline 2=NullpoMino-Classic)
+	 * @param type Settings type (0=Blockbox 1=Guideline 2=zeromeaner-Classic)
 	 */
 	public void loadDefaultGameKeymap(int type) {
 		for(int i = 0; i < keymap.length; i++) {
@@ -172,7 +172,7 @@ public class GameKeyApplet extends GameKeyDummy {
 
 	/**
 	 * Reset menu keyboard settings to default. In-game keys are unchanged.
-	 * @param type Settings type (0=Blockbox 1=Guideline 2=NullpoMino-Classic)
+	 * @param type Settings type (0=Blockbox 1=Guideline 2=zeromeaner-Classic)
 	 */
 	public void loadDefaultMenuKeymap(int type) {
 		for(int i = 0; i < keymapNav.length; i++) {

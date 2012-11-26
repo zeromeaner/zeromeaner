@@ -562,7 +562,7 @@ public class NetAdmin extends JFrame implements ActionListener, NetMessageListen
 
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/netadmin.cfg");
-			propConfig.store(out, "NullpoMino NetAdmin Config");
+			propConfig.store(out, "zeromeaner NetAdmin Config");
 			out.close();
 		} catch (IOException e) {
 			log.warn("Failed to save netlobby config file", e);
