@@ -16,4 +16,58 @@
 			</plugin>
 		</plugins>
 	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.swinglabs</groupId>
+			<artifactId>swing-worker</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>slick</groupId>
+			<artifactId>slick</artifactId>
+			<version>274</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+		<dependency>
+			<groupId>net.java.dev.appframework</groupId>
+			<artifactId>appframework</artifactId>
+			<version>1.03</version>
+		</dependency>
+		<dependency>
+			<groupId>org.swinglabs</groupId>
+			<artifactId>swing-layout</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>sdljava</groupId>
+			<artifactId>sdljava</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+	</dependencies>
+	
+	<repositories>
+		<repository>
+			<id>slick</id>
+			<url>http://slick.cokeandcode.com/mavenrepo</url>
+		</repository>
+
+        <repository>
+            <id>b2s-repo</id>
+            <url>http://b2s-repo.googlecode.com/svn/trunk/mvn-repo</url>
+        </repository>
+
+        <repository>
+            <id>freehep</id>
+            <url>http://java.freehep.org/maven2</url>
+        </repository>
+        
+        <repository>
+        	<id>local-artifacts</id>
+        	<url>file://${project.basedir}/local-artifacts</url>
+        </repository>
+	</repositories>
 </project>
