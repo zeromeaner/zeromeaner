@@ -31,6 +31,7 @@ package org.zeromeaner.gui.applet;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -798,6 +799,17 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		gameFrame.displayWindow();
 	}
 
+	@Override
+	public void setVisible(boolean aFlag) {
+		super.setVisible(aFlag);
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				AppletMain.instance.repaint();
+			}
+		});
+	}
+	
 	/**
 	 * Shutdown this application
 	 */
