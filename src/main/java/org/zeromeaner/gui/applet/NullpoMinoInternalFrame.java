@@ -590,14 +590,14 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		this.setJMenuBar(menubar);
 
 		JMenu menuLogin = new JMenu("Config");
-		menubar.add(menuLogin);
-		
-		menuLogin.add(new AbstractAction("Save Config") {
+		JMenuItem saveConfig = new JMenuItem(new AbstractAction("Save Config") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				saveConfig();
 			}
 		});
+		menuLogin.add(saveConfig);
+		menubar.add(menuLogin);
 		
 		// ファイルMenu
 		JMenu menuFile = new JMenu(getUIText("Menu_File"));

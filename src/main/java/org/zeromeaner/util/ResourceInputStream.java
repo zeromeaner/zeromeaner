@@ -25,7 +25,7 @@ public class ResourceInputStream extends FilterInputStream {
 	
 	public static InputStream getStream(String resource) throws IOException {
 		InputStream in = null;
-		if(AppletMain.isApplet())
+		if(AppletMain.isApplet() && resource.startsWith("config/"))
 			try {
 				in = new ResourceDownloadStream(resource);
 			} catch(IOException ioe) {
