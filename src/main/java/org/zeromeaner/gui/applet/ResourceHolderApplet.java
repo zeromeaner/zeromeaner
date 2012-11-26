@@ -281,7 +281,7 @@ public class ResourceHolderApplet {
 	 */
 	public static URL getURL(String str) {
 		
-		URL url = ClassLoader.getSystemResource("org/zeromeaner/" + str);
+		URL url = ResourceHolderApplet.class.getClassLoader().getResource("org/zeromeaner/" + str);
 		return url;
 		
 //		URL url = null;

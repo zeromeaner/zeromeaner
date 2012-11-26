@@ -8,9 +8,17 @@ import java.io.OutputStream;
 
 public class ResourceOutputStream extends FilterOutputStream {
 	public static OutputStream getStream(String resource) throws IOException {
-		File localResource = new File("local-resources/" + resource);
-		localResource.getParentFile().mkdirs();
-		return new FileOutputStream(localResource);
+		try {
+			File localResource = new File("local-resources/" + resource);
+			localResource.getParentFile().mkdirs();
+			return new FileOutputStream(localResource);
+		} catch(Throwable t) {
+			return new OutputStream() {
+				@Override
+				public void write(int b) throws IOException {
+				}
+			};
+		}
 	}
 	
 	public ResourceOutputStream(String resource) throws IOException {

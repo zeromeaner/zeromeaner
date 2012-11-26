@@ -10,10 +10,13 @@ import java.io.Reader;
 
 public class ResourceInputStream extends FilterInputStream {
 	public static InputStream getStream(String resource) throws IOException {
-		File localResource = new File("local-resources/" + resource);
-		if(localResource.exists() && !localResource.isDirectory())
-			return new FileInputStream(localResource);
-		InputStream in = ClassLoader.getSystemResourceAsStream("org/zeromeaner/" + resource);
+		try {
+			File localResource = new File("local-resources/" + resource);
+			if(localResource.exists() && !localResource.isDirectory())
+				return new FileInputStream(localResource);
+		} catch(Throwable t) {
+		}
+		InputStream in = ResourceInputStream.class.getClassLoader().getResourceAsStream("org/zeromeaner/" + resource);
 		if(in != null)
 			return in;
 		throw new IOException("Resource not found:" + resource);

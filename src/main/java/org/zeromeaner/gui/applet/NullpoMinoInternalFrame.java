@@ -43,6 +43,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -58,6 +60,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -224,6 +227,9 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			modeList = modeManager.getModeNames(false);
 		} catch (IOException e) {
 			log.error("Mode list load failed", e);
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw, true));
+			JOptionPane.showMessageDialog(null, sw);
 		}
 
 		// 言語ファイル読み込み

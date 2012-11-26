@@ -1,42 +1,36 @@
-<?xml version="1.0" encoding="utf-8"?>
-<jnlp
-  spec="6.0+"
-  codebase="http://www.zeromeaner.org/"
-  href="zeromeaner.jnlp">
-  <information>
-    <title>zeromeaner</title>
-    <vendor>Robin Kirkman</vendor>
-    <homepage href="/"/>
-    <description>zeromeaner</description>
-    <description kind="short">zeromeaner</description>
- <!--
-    <icon href="images/swingset2.jpg"/>
-    <icon kind="splash" href="images/splash.gif"/>
--->
-    <offline-allowed/> 
-  </information>
-<!--
-  <security>
-      <all-permissions/>
-  </security>
--->
-  <resources>
-    <j2se version="1.6+"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://www.zeromeaner.org/" href="">
+    <information>
+        <title>zeromeaner</title>
+        <vendor>zeromeaner</vendor>
+    </information>
+    <security>
+        <all-permissions/>
+   </security>
+    <resources>
+        <!-- Application Resources -->
+        <j2se version="1.6+"
+            href="http://java.sun.com/products/autodl/j2se" />
     <jar href="zeromeaner.jar"/>
     <jar href="appframework.jar"/>
     <jar href="ibxm.jar"/>
     <jar href="jnlp.jar"/>
-    <jar href="jogg.jar"/>
     <jar href="jorbis.jar"/>
     <jar href="log4j.jar"/>
     <jar href="lwjgl-jinput.jar"/>
     <jar href="lwjgl-native-win32.jar"/>
-    <jar href="lwgl.jar"/>
+    <jar href="lwjgl.jar"/>
     <jar href="phys2d.jar"/>
     <jar href="sdljava.jar"/>
     <jar href="slick.jar"/>
     <jar href="swing-layout.jar"/>
     <jar href="swing-worker.jar"/>
-  </resources>
-  <application-desc main-class="org.zeromeaner.gui.applet.AppletMain"/>
-</jnlp> 
+    </resources>
+    <applet-desc 
+         name="zeromeaner"
+         main-class="org.zeromeaner.gui.applet.AppletMain"
+         width="800"
+         height="600">
+     </applet-desc>
+     <update check="always"/>
+</jnlp>  
