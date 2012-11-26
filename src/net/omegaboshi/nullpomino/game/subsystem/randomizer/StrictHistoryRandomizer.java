@@ -1,6 +1,6 @@
 package net.omegaboshi.nullpomino.game.subsystem.randomizer;
 
-import mu.nu.nullpo.game.component.Piece;
+import org.zeromeaner.game.component.Piece;
 
 public class StrictHistoryRandomizer extends Randomizer {
 

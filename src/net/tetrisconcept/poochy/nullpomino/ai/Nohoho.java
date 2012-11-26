@@ -1,13 +1,13 @@
 package net.tetrisconcept.poochy.nullpomino.ai;
 
-import mu.nu.nullpo.game.component.Controller;
-import mu.nu.nullpo.game.component.Field;
-import mu.nu.nullpo.game.component.Piece;
-import mu.nu.nullpo.game.play.GameEngine;
-import mu.nu.nullpo.game.play.GameManager;
-import mu.nu.nullpo.game.subsystem.ai.DummyAI;
 
 import org.apache.log4j.Logger;
+import org.zeromeaner.game.component.Controller;
+import org.zeromeaner.game.component.Field;
+import org.zeromeaner.game.component.Piece;
+import org.zeromeaner.game.play.GameEngine;
+import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.game.subsystem.ai.DummyAI;
 
 /**
  * Nohoho AI

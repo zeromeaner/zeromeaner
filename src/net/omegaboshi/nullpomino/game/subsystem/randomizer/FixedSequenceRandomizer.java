@@ -6,7 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 
-import mu.nu.nullpo.game.component.Piece;
+import org.zeromeaner.game.component.Piece;
+
 public class FixedSequenceRandomizer extends Randomizer {
 
 	private int[] sequenceTranslated;
