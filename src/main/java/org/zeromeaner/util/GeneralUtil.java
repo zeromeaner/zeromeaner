@@ -28,7 +28,6 @@
 */
 package org.zeromeaner.util;
 
-import java.io.FileInputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -266,7 +265,7 @@ public class GeneralUtil {
 		CustomProperties prop = new CustomProperties();
 
 		try {
-			FileInputStream in = new FileInputStream(filename);
+			ResourceInputStream in = new ResourceInputStream(filename);
 			prop.load(in);
 			in.close();
 		} catch (Exception e) {

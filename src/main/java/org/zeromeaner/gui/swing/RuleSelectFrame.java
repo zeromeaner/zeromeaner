@@ -34,7 +34,6 @@ import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -51,6 +50,7 @@ import javax.swing.JTabbedPane;
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 
 /**
  * ルール選択画面の frame
@@ -240,7 +240,7 @@ public class RuleSelectFrame extends JFrame implements ActionListener {
 
 			CustomProperties prop = new CustomProperties();
 			try {
-				FileInputStream in = new FileInputStream("config/rule/" + filelist[i]);
+				ResourceInputStream in = new ResourceInputStream("config/rule/" + filelist[i]);
 				prop.load(in);
 				in.close();
 				entry.rulename = prop.getProperty("0.ruleopt.strRuleName", "");

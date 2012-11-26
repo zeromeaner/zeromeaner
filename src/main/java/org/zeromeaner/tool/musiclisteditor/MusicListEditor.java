@@ -34,7 +34,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -60,6 +59,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 
 /**
  * MusicListEditor (音楽リスト編集ツール)
@@ -111,7 +111,7 @@ public class MusicListEditor extends JFrame implements ActionListener {
 		// 設定ファイル読み込み
 		propConfig = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/swing.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/swing.cfg");
 			propConfig.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -119,7 +119,7 @@ public class MusicListEditor extends JFrame implements ActionListener {
 		// 言語ファイル読み込み
 		propLangDefault = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/musiclisteditor_default.properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/musiclisteditor_default.properties");
 			propLangDefault.load(in);
 			in.close();
 		} catch (IOException e) {
@@ -128,7 +128,7 @@ public class MusicListEditor extends JFrame implements ActionListener {
 
 		propLang = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/musiclisteditor_" + Locale.getDefault().getCountry() + ".properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/musiclisteditor_" + Locale.getDefault().getCountry() + ".properties");
 			propLang.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -263,7 +263,7 @@ public class MusicListEditor extends JFrame implements ActionListener {
 	private void loadMusicList() {
 		propMusic = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/music.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/music.cfg");
 			propMusic.load(in);
 			in.close();
 		} catch (IOException e) {}

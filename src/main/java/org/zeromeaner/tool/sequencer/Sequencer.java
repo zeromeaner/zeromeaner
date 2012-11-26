@@ -38,7 +38,6 @@ import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -69,6 +68,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 
 
 /**
@@ -135,7 +135,7 @@ public class Sequencer extends JFrame implements ActionListener {
 		// Load config file
 		propConfig = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/swing.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/swing.cfg");
 			propConfig.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -143,7 +143,7 @@ public class Sequencer extends JFrame implements ActionListener {
 		// Load UI Language file
 		propLangDefault = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/sequencer_default.properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/sequencer_default.properties");
 			propLangDefault.load(in);
 			in.close();
 		} catch (IOException e) {
@@ -152,7 +152,7 @@ public class Sequencer extends JFrame implements ActionListener {
 
 		propLang = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/sequencer_" + Locale.getDefault().getCountry() + ".properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/sequencer_" + Locale.getDefault().getCountry() + ".properties");
 			propLang.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -360,7 +360,7 @@ public class Sequencer extends JFrame implements ActionListener {
 		log.info("Loading replay file from " + filename);
 		CustomProperties prop = new CustomProperties();
 
-		FileInputStream in = new FileInputStream(filename);
+		ResourceInputStream in = new ResourceInputStream(filename);
 		prop.load(in);
 		in.close();
 

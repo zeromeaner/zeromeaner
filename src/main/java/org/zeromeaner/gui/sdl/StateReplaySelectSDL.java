@@ -29,7 +29,6 @@
 package org.zeromeaner.gui.sdl;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -38,6 +37,7 @@ import java.util.Arrays;
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
 
 import sdljava.SDLException;
@@ -117,7 +117,7 @@ public class StateReplaySelectSDL extends DummyMenuScrollStateSDL {
 			CustomProperties prop = new CustomProperties();
 
 			try {
-				FileInputStream in = new FileInputStream(NullpoMinoSDL.propGlobal.getProperty("custom.replay.directory", "replay") + "/" + list[i]);
+				ResourceInputStream in = new ResourceInputStream(NullpoMinoSDL.propGlobal.getProperty("custom.replay.directory", "replay") + "/" + list[i]);
 				prop.load(in);
 				in.close();
 			} catch (IOException e) {
@@ -162,7 +162,7 @@ public class StateReplaySelectSDL extends DummyMenuScrollStateSDL {
 		CustomProperties prop = new CustomProperties();
 
 		try {
-			FileInputStream in = new FileInputStream(NullpoMinoSDL.propGlobal.getProperty("custom.replay.directory", "replay") + "/" + list[cursor]);
+			ResourceInputStream in = new ResourceInputStream(NullpoMinoSDL.propGlobal.getProperty("custom.replay.directory", "replay") + "/" + list[cursor]);
 			prop.load(in);
 			in.close();
 		} catch (IOException e) {

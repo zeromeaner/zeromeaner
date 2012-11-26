@@ -29,7 +29,6 @@
 package org.zeromeaner.gui.slick;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -42,6 +41,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
 
 /**
@@ -137,7 +137,7 @@ public class StateReplaySelect extends DummyMenuScrollState {
 			CustomProperties prop = new CustomProperties();
 
 			try {
-				FileInputStream in = new FileInputStream(NullpoMinoSlick.propGlobal.getProperty("custom.replay.directory", "replay") + "/" + list[i]);
+				ResourceInputStream in = new ResourceInputStream(NullpoMinoSlick.propGlobal.getProperty("custom.replay.directory", "replay") + "/" + list[i]);
 				prop.load(in);
 				in.close();
 			} catch (IOException e) {
@@ -178,7 +178,7 @@ public class StateReplaySelect extends DummyMenuScrollState {
 		CustomProperties prop = new CustomProperties();
 
 		try {
-			FileInputStream in = new FileInputStream(NullpoMinoSlick.propGlobal.getProperty("custom.replay.directory", "replay") + "/" + list[cursor]);
+			ResourceInputStream in = new ResourceInputStream(NullpoMinoSlick.propGlobal.getProperty("custom.replay.directory", "replay") + "/" + list[cursor]);
 			prop.load(in);
 			in.close();
 		} catch (IOException e) {

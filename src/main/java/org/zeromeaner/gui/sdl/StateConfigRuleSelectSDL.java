@@ -29,12 +29,12 @@
 package org.zeromeaner.gui.sdl;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.LinkedList;
 
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 
 import sdljava.SDLException;
 //import sdljava.event.MouseState;
@@ -118,7 +118,7 @@ public class StateConfigRuleSelectSDL extends DummyMenuScrollStateSDL {
 
 			CustomProperties prop = new CustomProperties();
 			try {
-				FileInputStream in = new FileInputStream("config/rule/" + filelist[i]);
+				ResourceInputStream in = new ResourceInputStream("config/rule/" + filelist[i]);
 				prop.load(in);
 				in.close();
 				entry.rulename = prop.getProperty("0.ruleopt.strRuleName", "");

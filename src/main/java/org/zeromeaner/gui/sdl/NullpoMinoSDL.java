@@ -30,7 +30,6 @@ package org.zeromeaner.gui.sdl;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -48,6 +47,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.game.net.NetObserverClient;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ModeManager;
 
 import sdljava.SDLException;
@@ -261,17 +261,17 @@ public class NullpoMinoSDL {
 
 		// 設定ファイル読み込み
 		try {
-			FileInputStream in = new FileInputStream("config/setting/sdl.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/sdl.cfg");
 			propConfig.load(in);
 			in.close();
 		} catch(IOException e) {}
 		try {
-			FileInputStream in = new FileInputStream("config/setting/global.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/global.cfg");
 			propGlobal.load(in);
 			in.close();
 		} catch(IOException e) {}
 		try {
-			FileInputStream in = new FileInputStream("config/setting/music.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/music.cfg");
 			propMusic.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -279,7 +279,7 @@ public class NullpoMinoSDL {
 		// 言語ファイル読み込み
 		propLangDefault = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/sdl_default.properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/sdl_default.properties");
 			propLangDefault.load(in);
 			in.close();
 		} catch (IOException e) {
@@ -288,7 +288,7 @@ public class NullpoMinoSDL {
 
 		propLang = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/sdl_" + Locale.getDefault().getCountry() + ".properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/sdl_" + Locale.getDefault().getCountry() + ".properties");
 			propLang.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -296,7 +296,7 @@ public class NullpoMinoSDL {
 		// Game mode description
 		propDefaultModeDesc = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/modedesc_default.properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/modedesc_default.properties");
 			propDefaultModeDesc.load(in);
 			in.close();
 		} catch(IOException e) {
@@ -305,7 +305,7 @@ public class NullpoMinoSDL {
 
 		propModeDesc = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/modedesc_" + Locale.getDefault().getCountry() + ".properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/modedesc_" + Locale.getDefault().getCountry() + ".properties");
 			propModeDesc.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -323,7 +323,7 @@ public class NullpoMinoSDL {
 		// Set default rule selections
 		try {
 			CustomProperties propDefaultRule = new CustomProperties();
-			FileInputStream in = new FileInputStream("config/list/global_defaultrule.properties");
+			ResourceInputStream in = new ResourceInputStream("config/list/global_defaultrule.properties");
 			propDefaultRule.load(in);
 			in.close();
 
@@ -719,7 +719,7 @@ public class NullpoMinoSDL {
 	 */
 	public static void loadGlobalConfig() {
 		try {
-			FileInputStream in = new FileInputStream("config/setting/global.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/global.cfg");
 			propGlobal.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -880,7 +880,7 @@ public class NullpoMinoSDL {
 
 		propObserver = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/netobserver.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/netobserver.cfg");
 			propObserver.load(in);
 			in.close();
 		} catch (IOException e) {}

@@ -31,7 +31,6 @@ package org.zeromeaner.gui.slick;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -59,6 +58,7 @@ import org.newdawn.slick.util.Log;
 import org.zeromeaner.game.net.NetObserverClient;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ModeManager;
 
 /**
@@ -238,13 +238,13 @@ public class NullpoMinoSlick extends StateBasedGame {
 
 		// 設定ファイル読み込み
 		try {
-			FileInputStream in = new FileInputStream("config/setting/slick.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/slick.cfg");
 			propConfig.load(in);
 			in.close();
 		} catch(IOException e) {}
 		loadGlobalConfig();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/music.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/music.cfg");
 			propMusic.load(in);
 			in.close();
 		} catch (IOException e) {}
@@ -252,7 +252,7 @@ public class NullpoMinoSlick extends StateBasedGame {
 		// 言語ファイル読み込み
 		propLangDefault = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/slick_default.properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/slick_default.properties");
 			propLangDefault.load(in);
 			in.close();
 		} catch(IOException e) {
@@ -261,7 +261,7 @@ public class NullpoMinoSlick extends StateBasedGame {
 
 		propLang = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/slick_" + Locale.getDefault().getCountry() + ".properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/slick_" + Locale.getDefault().getCountry() + ".properties");
 			propLang.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -269,7 +269,7 @@ public class NullpoMinoSlick extends StateBasedGame {
 		// Game mode description
 		propDefaultModeDesc = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/modedesc_default.properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/modedesc_default.properties");
 			propDefaultModeDesc.load(in);
 			in.close();
 		} catch(IOException e) {
@@ -278,7 +278,7 @@ public class NullpoMinoSlick extends StateBasedGame {
 
 		propModeDesc = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/modedesc_" + Locale.getDefault().getCountry() + ".properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/modedesc_" + Locale.getDefault().getCountry() + ".properties");
 			propModeDesc.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -296,7 +296,7 @@ public class NullpoMinoSlick extends StateBasedGame {
 		// Set default rule selections
 		try {
 			CustomProperties propDefaultRule = new CustomProperties();
-			FileInputStream in = new FileInputStream("config/list/global_defaultrule.properties");
+			ResourceInputStream in = new ResourceInputStream("config/list/global_defaultrule.properties");
 			propDefaultRule.load(in);
 			in.close();
 
@@ -460,7 +460,7 @@ public class NullpoMinoSlick extends StateBasedGame {
 	 */
 	public static void loadGlobalConfig() {
 		try {
-			FileInputStream in = new FileInputStream("config/setting/global.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/global.cfg");
 			propGlobal.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -776,7 +776,7 @@ public class NullpoMinoSlick extends StateBasedGame {
 
 		propObserver = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/netobserver.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/netobserver.cfg");
 			propObserver.load(in);
 			in.close();
 		} catch (IOException e) {}

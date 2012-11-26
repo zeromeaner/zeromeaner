@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.GroupLayout.ParallelGroup;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 
 
 public class AIRanksTool extends JFrame implements ActionListener {
@@ -128,7 +128,7 @@ public class AIRanksTool extends JFrame implements ActionListener {
 		// Loads Ranks AI property file, to populate the fields
 		CustomProperties propRanksAI = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream(AIRanksConstants.RANKSAI_CONFIG_FILE);
+			ResourceInputStream in = new ResourceInputStream(AIRanksConstants.RANKSAI_CONFIG_FILE);
 			propRanksAI.load(in);
 			in.close();
 		} catch (IOException e) {}
@@ -441,14 +441,14 @@ public class AIRanksTool extends JFrame implements ActionListener {
 				setEnabledBWButtons(false);
 				Ranks ranks = null;
 
-				FileInputStream fis = null;
+				ResourceInputStream fis = null;
 				ObjectInputStream in = null;
 
 				if (inputFile.trim().length() == 0)
 					ranks = new Ranks(4, 9);
 				else {
 					try {
-						fis = new FileInputStream(AIRanksConstants.RANKSAI_DIR+inputFile);
+						fis = new ResourceInputStream(AIRanksConstants.RANKSAI_DIR+inputFile);
 						in = new ObjectInputStream(fis);
 						ranks = (Ranks) in.readObject();
 						in.close();
@@ -529,7 +529,7 @@ public class AIRanksTool extends JFrame implements ActionListener {
 		// Load language files
 		propLangDefault = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/airankstool_default.properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/airankstool_default.properties");
 			propLangDefault.load(in);
 			in.close();
 		} catch (IOException e) {
@@ -539,7 +539,7 @@ public class AIRanksTool extends JFrame implements ActionListener {
 
 		propLang = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/airankstool_" + Locale.getDefault().getCountry() + ".properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/airankstool_" + Locale.getDefault().getCountry() + ".properties");
 			propLang.load(in);
 			in.close();
 		} catch(IOException e) {}

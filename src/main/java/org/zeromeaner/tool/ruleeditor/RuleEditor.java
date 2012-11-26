@@ -39,7 +39,6 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -82,6 +81,7 @@ import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 
 /**
  * ルールエディター
@@ -496,7 +496,7 @@ public class RuleEditor extends JFrame implements ActionListener {
 		// 設定ファイル読み込み
 		propConfig = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/swing.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/swing.cfg");
 			propConfig.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -504,7 +504,7 @@ public class RuleEditor extends JFrame implements ActionListener {
 		// 言語ファイル読み込み
 		propLangDefault = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/ruleeditor_default.properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/ruleeditor_default.properties");
 			propLangDefault.load(in);
 			in.close();
 		} catch (IOException e) {
@@ -513,7 +513,7 @@ public class RuleEditor extends JFrame implements ActionListener {
 
 		propLang = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/ruleeditor_" + Locale.getDefault().getCountry() + ".properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/ruleeditor_" + Locale.getDefault().getCountry() + ".properties");
 			propLang.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -1700,7 +1700,7 @@ public class RuleEditor extends JFrame implements ActionListener {
 	public RuleOptions load(String filename) throws IOException {
 		CustomProperties prop = new CustomProperties();
 
-		FileInputStream in = new FileInputStream(filename);
+		ResourceInputStream in = new ResourceInputStream(filename);
 		prop.load(in);
 		in.close();
 

@@ -29,7 +29,6 @@
 package org.zeromeaner.game.net;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -66,6 +65,7 @@ import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
 
 
@@ -267,7 +267,7 @@ public class NetServer {
 	private static void loadPresetList() {
 		propPresets = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/etc/netserver_presets.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/etc/netserver_presets.cfg");
 			propPresets.load(in);
 			in.close();
 		} catch (IOException e) {
@@ -336,7 +336,7 @@ public class NetServer {
 
 						log.debug("{RuleLoad} StyleID:" + style + " RuleFile:" + strTempArray[0] + " SettingID:" + settingID);
 
-						FileInputStream in = new FileInputStream(strTempArray[0]);
+						ResourceInputStream in = new ResourceInputStream(strTempArray[0]);
 						CustomProperties prop = new CustomProperties();
 						prop.load(in);
 						in.close();
@@ -936,7 +936,7 @@ public class NetServer {
 		// Load server config file
 		propServer = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream(servcfg);
+			ResourceInputStream in = new ResourceInputStream(servcfg);
 			propServer.load(in);
 			in.close();
 		} catch (IOException e) {
@@ -982,7 +982,7 @@ public class NetServer {
 		// Load player data file
 		propPlayerData = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/netserver_playerdata.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/netserver_playerdata.cfg");
 			propPlayerData.load(in);
 			in.close();
 		} catch (IOException e) {}
@@ -990,7 +990,7 @@ public class NetServer {
 		// Load multiplayer leaderboard file
 		propMPRanking = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/netserver_mpranking.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/netserver_mpranking.cfg");
 			propMPRanking.load(in);
 			in.close();
 		} catch (IOException e) {}
@@ -998,14 +998,14 @@ public class NetServer {
 		// Load single player leaderboard file
 		propSPRankingAlltime = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/netserver_spranking.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/netserver_spranking.cfg");
 			propSPRankingAlltime.load(in);
 			in.close();
 		} catch (IOException e) {}
 
 		propSPRankingDaily = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/netserver_spranking_daily.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/netserver_spranking_daily.cfg");
 			propSPRankingDaily.load(in);
 			in.close();
 		} catch (IOException e) {}
@@ -1013,7 +1013,7 @@ public class NetServer {
 		// Load single player personal best
 		propSPPersonalBest = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/netserver_sppersonalbest.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/netserver_sppersonalbest.cfg");
 			propSPPersonalBest.load(in);
 			in.close();
 		} catch (IOException e) {}

@@ -17,7 +17,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -65,6 +64,7 @@ import org.zeromeaner.game.net.NetUtil;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
 
 
@@ -216,7 +216,7 @@ public class NetAdmin extends JFrame implements ActionListener, NetMessageListen
 		// Load config file
 		propConfig = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/netadmin.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/netadmin.cfg");
 			propConfig.load(in);
 			in.close();
 		} catch (IOException e) {}
@@ -224,7 +224,7 @@ public class NetAdmin extends JFrame implements ActionListener, NetMessageListen
 		// Load language files
 		propLangDefault = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/netadmin_default.properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/netadmin_default.properties");
 			propLangDefault.load(in);
 			in.close();
 		} catch (IOException e) {
@@ -232,7 +232,7 @@ public class NetAdmin extends JFrame implements ActionListener, NetMessageListen
 		}
 		propLang = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/netadmin_" + Locale.getDefault().getCountry() + ".properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/netadmin_" + Locale.getDefault().getCountry() + ".properties");
 			propLang.load(in);
 			in.close();
 		} catch (IOException e) {}
@@ -240,7 +240,7 @@ public class NetAdmin extends JFrame implements ActionListener, NetMessageListen
 		// Set look&feel
 		try {
 			CustomProperties propSwingConfig = new CustomProperties();
-			FileInputStream in = new FileInputStream("config/setting/swing.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/swing.cfg");
 			propSwingConfig.load(in);
 			in.close();
 
@@ -690,10 +690,10 @@ public class NetAdmin extends JFrame implements ActionListener, NetMessageListen
 				InputStreamReader reader = null;
 				try {
 					reader = new InputStreamReader(
-						new FileInputStream("config/lang/netadmin_help_" + Locale.getDefault().getCountry() + ".txt"), "UTF-8"
+						new ResourceInputStream("config/lang/netadmin_help_" + Locale.getDefault().getCountry() + ".txt"), "UTF-8"
 					);
 				} catch (IOException e2) {
-					reader = new InputStreamReader(new FileInputStream("config/lang/netadmin_help_default.txt"), "UTF-8");
+					reader = new InputStreamReader(new ResourceInputStream("config/lang/netadmin_help_default.txt"), "UTF-8");
 				}
 
 				BufferedReader txtHelp = new BufferedReader(reader);

@@ -1,9 +1,10 @@
 package org.zeromeaner.tool.airankstool;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+
+import org.zeromeaner.util.ResourceInputStream;
 
 public class AIRanksValue {
 
@@ -11,7 +12,7 @@ public class AIRanksValue {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		FileInputStream fis = null;
+		ResourceInputStream fis = null;
 		ObjectInputStream in = null;
 		Ranks ranks;
 		String inputFile=AIRanksConstants.RANKSAI_DIR+"ranks20";
@@ -20,7 +21,7 @@ public class AIRanksValue {
 			ranks=new Ranks(4,9);
 		else {
 			try {
-				fis = new FileInputStream(inputFile);
+				fis = new ResourceInputStream(inputFile);
 				in = new ObjectInputStream(fis);
 				ranks = (Ranks)in.readObject();
 				in.close();

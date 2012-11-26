@@ -2,7 +2,6 @@ package org.zeromeaner.gui.sdl;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -11,6 +10,7 @@ import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 
 import sdljava.SDLException;
 import sdljava.video.SDLSurface;
@@ -61,10 +61,8 @@ public class StateSelectRuleFromListSDL extends DummyMenuScrollStateSDL {
 					strMode = str.substring(1);
 				} else {
 					// File Path
-					File file = new File(str);
-					if(file.exists() && file.isFile()) {
 						try {
-							FileInputStream ruleIn = new FileInputStream(file);
+							ResourceInputStream ruleIn = new ResourceInputStream(str);
 							CustomProperties propRule = new CustomProperties();
 							propRule.load(ruleIn);
 							ruleIn.close();
@@ -82,7 +80,6 @@ public class StateSelectRuleFromListSDL extends DummyMenuScrollStateSDL {
 						} catch (IOException e2) {
 							log.error("File " + str + " doesn't exist", e2);
 						}
-					}
 				}
 			}
 

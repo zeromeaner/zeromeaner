@@ -48,7 +48,6 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FilenameFilter;
@@ -119,6 +118,7 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.NetDummyMode;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
 
 /**
@@ -645,7 +645,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		// 設定ファイル読み込み
 		propConfig = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/netlobby.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/netlobby.cfg");
 			propConfig.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -653,7 +653,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		// Load global settings
 		propGlobal = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/global.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/global.cfg");
 			propGlobal.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -661,7 +661,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		// Swing版の設定ファイル読み込み
 		propSwingConfig = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/swing.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/swing.cfg");
 			propSwingConfig.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -669,7 +669,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		// Observer機能の設定ファイル読み込み
 		propObserver = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/netobserver.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/netobserver.cfg");
 			propObserver.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -677,7 +677,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		// Game mode description
 		propDefaultModeDesc = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/modedesc_default.properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/modedesc_default.properties");
 			propDefaultModeDesc.load(in);
 			in.close();
 		} catch(IOException e) {
@@ -685,7 +685,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		}
 		propModeDesc = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/modedesc_" + Locale.getDefault().getCountry() + ".properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/modedesc_" + Locale.getDefault().getCountry() + ".properties");
 			propModeDesc.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -693,7 +693,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		// 言語ファイル読み込み
 		propLangDefault = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/netlobby_default.properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/netlobby_default.properties");
 			propLangDefault.load(in);
 			in.close();
 		} catch (Exception e) {
@@ -702,7 +702,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 
 		propLang = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/netlobby_" + Locale.getDefault().getCountry() + ".properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/netlobby_" + Locale.getDefault().getCountry() + ".properties");
 			propLang.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -3702,7 +3702,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 
 			CustomProperties prop = new CustomProperties();
 			try {
-				FileInputStream in = new FileInputStream("config/rule/" + filelist[i]);
+				ResourceInputStream in = new ResourceInputStream("config/rule/" + filelist[i]);
 				prop.load(in);
 				in.close();
 				entry.rulename = prop.getProperty("0.ruleopt.strRuleName", "");
@@ -4057,7 +4057,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 					mapList.clear();
 					CustomProperties propMap = new CustomProperties();
 					try {
-						FileInputStream in = new FileInputStream("config/map/vsbattle/" + setID + ".map");
+						ResourceInputStream in = new ResourceInputStream("config/map/vsbattle/" + setID + ".map");
 						propMap.load(in);
 						in.close();
 					} catch (IOException e2) {
@@ -4253,7 +4253,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 			if(!strPrevTetrominoRuleFilename.equals(strFileName)) {
 				CustomProperties propRule = new CustomProperties();
 				try {
-					FileInputStream in = new FileInputStream(strFileName);
+					ResourceInputStream in = new ResourceInputStream(strFileName);
 					propRule.load(in);
 					in.close();
 				} catch (Exception e2) {}

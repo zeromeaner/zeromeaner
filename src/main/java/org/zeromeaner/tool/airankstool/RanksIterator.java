@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import org.jdesktop.swingworker.SwingWorker;
+import org.zeromeaner.util.ResourceInputStream;
 
 public class RanksIterator extends JDialog implements PropertyChangeListener,ActionListener {
 	/**
@@ -120,13 +120,13 @@ public class RanksIterator extends JDialog implements PropertyChangeListener,Act
         public Void doInBackground() {
         	progressLabel.setText(AIRanksTool.getUIText("Progress_Note_Load_File"));
 
-        	FileInputStream fis = null;
+        	ResourceInputStream fis = null;
         	ObjectInputStream in = null;
         	if (inputFile.trim().length() == 0)
         		ranksFrom=new Ranks(4,9);
         	else {
         		  try {
-        			fis = new FileInputStream(AIRanksConstants.RANKSAI_DIR+inputFile);
+        			fis = new ResourceInputStream(AIRanksConstants.RANKSAI_DIR+inputFile);
         			   in = new ObjectInputStream(fis);
         			   ranksFrom = (Ranks)in.readObject();
         			   in.close();

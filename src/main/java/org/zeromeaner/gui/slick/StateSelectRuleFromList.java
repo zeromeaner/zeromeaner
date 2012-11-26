@@ -2,7 +2,6 @@ package org.zeromeaner.gui.slick;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,6 +14,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 
 /**
  * Rule select (after mode selection)
@@ -79,10 +79,8 @@ public class StateSelectRuleFromList extends DummyMenuScrollState {
 					strMode = str.substring(1);
 				} else {
 					// File Path
-					File file = new File(str);
-					if(file.exists() && file.isFile()) {
 						try {
-							FileInputStream ruleIn = new FileInputStream(file);
+							ResourceInputStream ruleIn = new ResourceInputStream(str);
 							CustomProperties propRule = new CustomProperties();
 							propRule.load(ruleIn);
 							ruleIn.close();
@@ -100,7 +98,6 @@ public class StateSelectRuleFromList extends DummyMenuScrollState {
 						} catch (IOException e2) {
 							log.error("File " + str + " doesn't exist", e2);
 						}
-					}
 				}
 			}
 

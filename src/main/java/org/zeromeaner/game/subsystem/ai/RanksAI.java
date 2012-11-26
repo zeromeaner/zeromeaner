@@ -28,7 +28,6 @@
  */
 package org.zeromeaner.game.subsystem.ai;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -44,6 +43,7 @@ import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.tool.airankstool.AIRanksConstants;
 import org.zeromeaner.tool.airankstool.Ranks;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 
 public class RanksAI extends DummyAI implements Runnable {
 
@@ -195,7 +195,7 @@ public class RanksAI extends DummyAI implements Runnable {
 		threadRunning = false;
 		CustomProperties propRanksAI = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream(AIRanksConstants.RANKSAI_CONFIG_FILE);
+			ResourceInputStream in = new ResourceInputStream(AIRanksConstants.RANKSAI_CONFIG_FILE);
 			propRanksAI.load(in);
 			in.close();
 		} catch (IOException e) {}
@@ -211,14 +211,14 @@ public class RanksAI extends DummyAI implements Runnable {
 			if (file!=null && file.trim().length()>0){
 			 inputFile=AIRanksConstants.RANKSAI_DIR+currentRanksFile;
 			}
-			FileInputStream fis = null;
+			ResourceInputStream fis = null;
 			ObjectInputStream in = null;
 
 			if (inputFile.trim().length() == 0)
 				ranks=new Ranks(4,9);
 			else {
 				try {
-					fis = new FileInputStream(inputFile);
+					fis = new ResourceInputStream(inputFile);
 					in = new ObjectInputStream(fis);
 					ranks = (Ranks)in.readObject();
 					in.close();

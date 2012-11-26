@@ -29,7 +29,6 @@
 package org.zeromeaner.gui.slick;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -40,6 +39,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 
 /**
  * Rule selector state
@@ -132,7 +132,7 @@ public class StateConfigRuleSelect extends DummyMenuScrollState {
 
 			CustomProperties prop = new CustomProperties();
 			try {
-				FileInputStream in = new FileInputStream("config/rule/" + filelist[i]);
+				ResourceInputStream in = new ResourceInputStream("config/rule/" + filelist[i]);
 				prop.load(in);
 				in.close();
 				entry.rulename = prop.getProperty("0.ruleopt.strRuleName", "");

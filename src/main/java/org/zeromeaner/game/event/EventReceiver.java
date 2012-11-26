@@ -29,7 +29,6 @@
 package org.zeromeaner.game.event;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -38,6 +37,7 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
 
 
@@ -874,7 +874,7 @@ public class EventReceiver {
 		CustomProperties propModeConfig = new CustomProperties();
 
 		try {
-			FileInputStream in = new FileInputStream("config/setting/mode.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/mode.cfg");
 			propModeConfig.load(in);
 			in.close();
 		} catch(IOException e) {
@@ -907,7 +907,7 @@ public class EventReceiver {
 		CustomProperties prop = new CustomProperties();
 
 		try {
-			FileInputStream in = new FileInputStream(filename);
+			ResourceInputStream in = new ResourceInputStream(filename);
 			prop.load(in);
 			in.close();
 		} catch(IOException e) {

@@ -40,7 +40,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -88,6 +87,7 @@ import org.zeromeaner.gui.net.NetLobbyListener;
 import org.zeromeaner.gui.net.UpdateChecker;
 import org.zeromeaner.gui.net.UpdateCheckerListener;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.ModeManager;
 
@@ -201,7 +201,7 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 		// 設定ファイル読み込み
 		propConfig = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/swing.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/swing.cfg");
 			propConfig.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -223,7 +223,7 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 		// 言語ファイル読み込み
 		propLangDefault = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/swing_default.properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/swing_default.properties");
 			propLangDefault.load(in);
 			in.close();
 		} catch (IOException e) {
@@ -232,7 +232,7 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 
 		propLang = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/swing_" + Locale.getDefault().getCountry() + ".properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/swing_" + Locale.getDefault().getCountry() + ".properties");
 			propLang.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -240,7 +240,7 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 		// Game mode description
 		propDefaultModeDesc = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/modedesc_default.properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/modedesc_default.properties");
 			propDefaultModeDesc.load(in);
 			in.close();
 		} catch(IOException e) {
@@ -249,7 +249,7 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 
 		propModeDesc = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/lang/modedesc_" + Locale.getDefault().getCountry() + ".properties");
+			ResourceInputStream in = new ResourceInputStream("config/lang/modedesc_" + Locale.getDefault().getCountry() + ".properties");
 			propModeDesc.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -257,7 +257,7 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 		// Set default rule selections
 		try {
 			CustomProperties propDefaultRule = new CustomProperties();
-			FileInputStream in = new FileInputStream("config/list/global_defaultrule.properties");
+			ResourceInputStream in = new ResourceInputStream("config/list/global_defaultrule.properties");
 			propDefaultRule.load(in);
 			in.close();
 
@@ -372,7 +372,7 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 	 */
 	public static void loadGlobalConfig() {
 		try {
-			FileInputStream in = new FileInputStream("config/setting/global.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/global.cfg");
 			propGlobal.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -697,10 +697,8 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 					strMode = str.substring(1);
 				} else {
 					// File Path
-					File file = new File(str);
-					if(file.exists() && file.isFile()) {
 						try {
-							FileInputStream ruleIn = new FileInputStream(file);
+							ResourceInputStream ruleIn = new ResourceInputStream(str);
 							CustomProperties propRule = new CustomProperties();
 							propRule.load(ruleIn);
 							ruleIn.close();
@@ -718,7 +716,6 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 						} catch (IOException e2) {
 							log.error("File " + str + " doesn't exist", e2);
 						}
-					}
 				}
 			}
 
@@ -1042,7 +1039,7 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 		CustomProperties prop = new CustomProperties();
 
 		try {
-			FileInputStream stream = new FileInputStream(filename);
+			ResourceInputStream stream = new ResourceInputStream(filename);
 			prop.load(stream);
 			stream.close();
 		} catch (IOException e) {
@@ -1224,7 +1221,7 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 
 		propObserver = new CustomProperties();
 		try {
-			FileInputStream in = new FileInputStream("config/setting/netobserver.cfg");
+			ResourceInputStream in = new ResourceInputStream("config/setting/netobserver.cfg");
 			propObserver.load(in);
 			in.close();
 		} catch (IOException e) {}
