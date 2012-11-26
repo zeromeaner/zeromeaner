@@ -60,10 +60,21 @@ public class AppletMain extends Applet {
 			if(userId == null)
 				userId = "default";
 			
+			final JInternalFrame launching = new JInternalFrame("Launching zeromeaner");
+			launching.setLayout(new BorderLayout());
+			JProgressBar pb = new JProgressBar();
+			pb.setIndeterminate(true);
+			launching.add(pb, BorderLayout.CENTER);
+			launching.pack();
+			launching.setSize(400, 150);
+			desktop.add(launching);
+			launching.setVisible(true);
+			
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					NullpoMinoInternalFrame.main(new String[0]);
+					launching.setVisible(false);
 				}
 			}).start();
 		} catch(Throwable t) {
