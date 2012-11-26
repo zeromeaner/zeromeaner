@@ -184,7 +184,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	public static JFileChooser replayFileChooser;
 
 	/** ロビー画面 */
-	public static NetLobbyFrame netLobby;
+	public static NetLobbyInternalFrame netLobby;
 
 	/** Observerクライアント */
 	public static NetObserverClient netObserverClient;
@@ -1135,7 +1135,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		gameManager = new GameManager(rendererSwing);
 
 		// Lobby Initialization
-		netLobby = new NetLobbyFrame();
+		netLobby = new NetLobbyInternalFrame();
 		netLobby.addListener(this);
 
 		// Mode initialization

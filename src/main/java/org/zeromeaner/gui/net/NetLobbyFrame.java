@@ -51,15 +51,18 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.zip.Adler32;
 
@@ -2797,7 +2800,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	 */
 	public boolean loadModeList(DefaultListModel listModel, String filename) {
 		try {
-			BufferedReader in = new BufferedReader(new FileReader(filename));
+			BufferedReader in = new BufferedReader(new InputStreamReader(new ResourceInputStream(filename)));
 			listModel.clear();
 
 			String str = null;
@@ -2829,7 +2832,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	 */
 	public boolean loadModeList(DefaultComboBoxModel listModel, String filename) {
 		try {
-			BufferedReader in = new BufferedReader(new FileReader(filename));
+			BufferedReader in = new BufferedReader(new InputStreamReader(new ResourceInputStream(filename)));
 
 			listModel.removeAllElements();
 
@@ -2862,7 +2865,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	 */
 	public boolean saveListFromDefaultListModel(DefaultListModel listModel, String filename) {
 		try {
-			PrintWriter out = new PrintWriter(filename);
+			PrintWriter out = new PrintWriter(new ResourceOutputStream(filename));
 			for(int i = 0; i < listModel.size(); i++) {
 				out.println(listModel.get(i));
 			}
@@ -3668,22 +3671,36 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	 * @return Rule file list. null if directory doesn't exist.
 	 */
 	public String[] getRuleFileList() {
-		File dir = new File("config/rule");
+//		File dir = new File("config/rule");
+//
+//		FilenameFilter filter = new FilenameFilter() {
+//			public boolean accept(File dir1, String name) {
+//				return name.endsWith(".rul");
+//			}
+//		};
+//
+//		String[] list = dir.list(filter);
+//
+//		if(!System.getProperty("os.name").startsWith("Windows")) {
+//			// Sort if not windows
+//			Arrays.sort(list);
+//		}
+//
+//		return list;
 
-		FilenameFilter filter = new FilenameFilter() {
-			public boolean accept(File dir1, String name) {
-				return name.endsWith(".rul");
+		List<String> list = new ArrayList<String>();
+		
+		try {
+			BufferedReader r = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/rule/list.txt")));
+			String rule;
+			while((rule = r.readLine()) != null) {
+				list.add(rule);
 			}
-		};
-
-		String[] list = dir.list(filter);
-
-		if(!System.getProperty("os.name").startsWith("Windows")) {
-			// Sort if not windows
-			Arrays.sort(list);
+		} catch(IOException ioe) {
+			throw new RuntimeException(ioe);
 		}
-
-		return list;
+	
+		return list.toArray(new String[0]);
 	}
 
 	/**
