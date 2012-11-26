@@ -32,6 +32,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -300,7 +301,7 @@ public class NetServer {
 		}
 
 		try {
-			BufferedReader txtRuleList = new BufferedReader(new FileReader("config/etc/netserver_rulelist.lst"));
+			BufferedReader txtRuleList = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/etc/netserver_rulelist.lst")));
 			int style = 0;
 
 			String str = null;
@@ -371,7 +372,7 @@ public class NetServer {
 		}
 
 		try {
-			BufferedReader in = new BufferedReader(new FileReader("config/list/netlobby_multimode.lst"));
+			BufferedReader in = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/list/netlobby_multimode.lst")));
 
 			String str = null;
 			int style = 0;
@@ -546,7 +547,7 @@ public class NetServer {
 		if(spDailyLastUpdate != null) spDailyLastUpdate.setTimeZone(z);
 
 		try {
-			BufferedReader in = new BufferedReader(new FileReader("config/list/netlobby_singlemode.lst"));
+			BufferedReader in = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/list/netlobby_singlemode.lst")));
 
 			String str = null;
 			int style = 0;
@@ -793,7 +794,7 @@ public class NetServer {
 		banList = new LinkedList<NetServerBan>();
 
 		try {
-			BufferedReader txtBanList = new BufferedReader(new FileReader("config/setting/netserver_banlist.cfg"));
+			BufferedReader txtBanList = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/setting/netserver_banlist.cfg")));
 
 			String str;
 			while((str = txtBanList.readLine()) != null) {
@@ -839,7 +840,7 @@ public class NetServer {
 		else lobbyChatList.clear();
 
 		try {
-			BufferedReader txtLobbyChat = new BufferedReader(new FileReader("config/setting/netserver_lobbychat.cfg"));
+			BufferedReader txtLobbyChat = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/setting/netserver_lobbychat.cfg")));
 
 			String str;
 			while((str = txtLobbyChat.readLine()) != null) {

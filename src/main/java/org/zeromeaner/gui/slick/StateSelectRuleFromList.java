@@ -15,6 +15,8 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceInputStream;
+import org.zeromeaner.util.ResourceInputStream;
+import java.io.InputStreamReader;
 
 /**
  * Rule select (after mode selection)
@@ -65,7 +67,7 @@ public class StateSelectRuleFromList extends DummyMenuScrollState {
 		mapRuleEntries = new HashMap<String, RuleEntry>();
 
 		try {
-			BufferedReader in = new BufferedReader(new FileReader("config/list/recommended_rules.lst"));
+			BufferedReader in = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/list/recommended_rules.lst")));
 			String strMode = "";
 
 			String str;

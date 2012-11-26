@@ -82,6 +82,8 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
+import org.zeromeaner.util.ResourceInputStream;
+import java.io.InputStreamReader;
 
 /**
  * ルールエディター
@@ -1400,7 +1402,7 @@ public class RuleEditor extends JFrame implements ActionListener {
 		Vector<String> vec = new Vector<String>();
 
 		try {
-			BufferedReader in = new BufferedReader(new FileReader(filename));
+			BufferedReader in = new BufferedReader(new InputStreamReader(new ResourceInputStream(filename)));
 
 			while(true) {
 				String str = in.readLine();

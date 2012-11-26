@@ -2777,7 +2777,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	 */
 	public boolean loadListToDefaultListModel(DefaultListModel listModel, String filename) {
 		try {
-			BufferedReader in = new BufferedReader(new FileReader(filename));
+			BufferedReader in = new BufferedReader(new InputStreamReader(new ResourceInputStream(filename)));
 			listModel.clear();
 
 			String str = null;

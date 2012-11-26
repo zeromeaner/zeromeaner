@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import org.zeromeaner.util.ResourceInputStream;
+import java.io.InputStreamReader;
 
 
 import org.apache.log4j.Logger;
@@ -47,7 +49,7 @@ public class StateSelectRuleFromListSDL extends DummyMenuScrollStateSDL {
 		mapRuleEntries = new HashMap<String, RuleEntry>();
 
 		try {
-			BufferedReader in = new BufferedReader(new FileReader("config/list/recommended_rules.lst"));
+			BufferedReader in = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/list/recommended_rules.lst")));
 			String strMode = "";
 
 			String str;

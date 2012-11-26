@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 
 import org.zeromeaner.game.component.Piece;
+import org.zeromeaner.util.ResourceInputStream;
 
 public class FixedSequenceRandomizer extends Randomizer {
 
@@ -30,7 +32,7 @@ public class FixedSequenceRandomizer extends Randomizer {
 
 		        try
 		        {
-		            reader = new BufferedReader(new FileReader(file));
+		            reader = new BufferedReader(new InputStreamReader(new ResourceInputStream(file.getName())));
 		            String text = null;
 
 		            // repeat until all lines is read

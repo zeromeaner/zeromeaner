@@ -32,6 +32,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -313,7 +314,7 @@ public class NullpoMinoSDL {
 		// Mode読み込み
 		modeManager = new ModeManager();
 		try {
-			BufferedReader txtMode = new BufferedReader(new FileReader("config/list/mode.lst"));
+			BufferedReader txtMode = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/list/mode.lst")));
 			modeManager.loadGameModes(txtMode);
 			txtMode.close();
 		} catch (IOException e) {

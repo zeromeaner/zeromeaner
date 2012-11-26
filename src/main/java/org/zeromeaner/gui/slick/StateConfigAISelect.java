@@ -41,6 +41,8 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 import org.zeromeaner.game.subsystem.ai.AIPlayer;
 import org.zeromeaner.util.GeneralUtil;
+import org.zeromeaner.util.ResourceInputStream;
+import java.io.InputStreamReader;
 
 /**
  * AI config screen state
@@ -102,7 +104,7 @@ public class StateConfigAISelect extends BaseGameState {
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		try {
-			BufferedReader in = new BufferedReader(new FileReader("config/list/ai.lst"));
+			BufferedReader in = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/list/ai.lst")));
 			aiPathList = loadAIList(in);
 			aiNameList = loadAINames(aiPathList);
 			in.close();

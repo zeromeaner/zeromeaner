@@ -69,6 +69,8 @@ import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomize
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceInputStream;
+import org.zeromeaner.util.ResourceInputStream;
+import java.io.InputStreamReader;
 
 
 /**
@@ -315,7 +317,7 @@ public class Sequencer extends JFrame implements ActionListener {
 		Vector<String> vec = new Vector<String>();
 
 		try {
-			BufferedReader in = new BufferedReader(new FileReader(filename));
+			BufferedReader in = new BufferedReader(new InputStreamReader(new ResourceInputStream(filename)));
 
 			while(true) {
 				String str = in.readLine();

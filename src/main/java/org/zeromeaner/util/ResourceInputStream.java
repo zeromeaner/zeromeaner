@@ -22,7 +22,7 @@ public class ResourceInputStream extends FilterInputStream {
 		throw new IOException("Resource not found:" + resource);
 	}
 	
-	public Reader newFileReader(String resource) throws IOException {
+	public static Reader newReader(String resource) throws IOException {
 		return new InputStreamReader(new ResourceInputStream(resource));
 	}
 	

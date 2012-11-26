@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.subsystem.ai.AIPlayer;
 import org.zeromeaner.util.GeneralUtil;
+import org.zeromeaner.util.ResourceInputStream;
+import java.io.InputStreamReader;
 
 import sdljava.SDLException;
 import sdljava.video.SDLSurface;
@@ -89,7 +91,7 @@ public class StateConfigAISelectSDL extends BaseStateSDL {
 	 */
 	public StateConfigAISelectSDL() {
 		try {
-			BufferedReader in = new BufferedReader(new FileReader("config/list/ai.lst"));
+			BufferedReader in = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/list/ai.lst")));
 			aiPathList = loadAIList(in);
 			aiNameList = loadAINames(aiPathList);
 			in.close();

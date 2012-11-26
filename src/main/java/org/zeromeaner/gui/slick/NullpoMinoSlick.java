@@ -60,6 +60,8 @@ import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ModeManager;
+import org.zeromeaner.util.ResourceInputStream;
+import java.io.InputStreamReader;
 
 /**
  * zeromeaner SlickVersion
@@ -286,7 +288,7 @@ public class NullpoMinoSlick extends StateBasedGame {
 		// Mode読み込み
 		modeManager = new ModeManager();
 		try {
-			BufferedReader txtMode = new BufferedReader(new FileReader("config/list/mode.lst"));
+			BufferedReader txtMode = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/list/mode.lst")));
 			modeManager.loadGameModes(txtMode);
 			txtMode.close();
 		} catch (IOException e) {
