@@ -25,6 +25,11 @@
     <jar href="slick.jar"/>
     <jar href="swing-layout.jar"/>
     <jar href="swing-worker.jar"/>
+    <jar href="commons-codec.jar"/>
+    <jar href="commons-logging.jar"/>
+    <jar href="httpclient.jar"/>
+    <jar href="httpcore.jar"/>
+    <jar href="sardine.jar"/>
     </resources>
     <applet-desc 
          name="zeromeaner"

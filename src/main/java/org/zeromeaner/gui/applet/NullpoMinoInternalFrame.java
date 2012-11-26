@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 
+import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -588,6 +589,16 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		JMenuBar menubar = new JMenuBar();
 		this.setJMenuBar(menubar);
 
+		JMenu menuLogin = new JMenu("Config");
+		menubar.add(menuLogin);
+		
+		menuLogin.add(new AbstractAction("Save Config") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveConfig();
+			}
+		});
+		
 		// ファイルMenu
 		JMenu menuFile = new JMenu(getUIText("Menu_File"));
 		menuFile.setMnemonic('F');

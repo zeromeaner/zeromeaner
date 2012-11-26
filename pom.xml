@@ -72,6 +72,11 @@
 			<artifactId>sdljava</artifactId>
 			<version>0.9.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.googlecode.sardine</groupId>
+			<artifactId>sardine</artifactId>
+			<version>146</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
