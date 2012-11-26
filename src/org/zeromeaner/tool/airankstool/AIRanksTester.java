@@ -2,10 +2,10 @@ package org.zeromeaner.tool.airankstool;
 
 import java.util.Random;
 
+import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.*;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.subsystem.ai.RanksAI;
 
-import net.omegaboshi.nullpomino.game.subsystem.randomizer.*;
 
 
 public class AIRanksTester {

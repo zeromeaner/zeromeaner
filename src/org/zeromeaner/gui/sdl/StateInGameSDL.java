@@ -29,6 +29,7 @@
 package org.zeromeaner.gui.sdl;
 
 import org.apache.log4j.Logger;
+import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.ai.DummyAI;
@@ -37,7 +38,6 @@ import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
-import net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 
 import sdljava.SDLException;
 import sdljava.mixer.SDLMixer;

@@ -30,13 +30,13 @@ package org.zeromeaner.gui.slick;
 
 import org.apache.log4j.Logger;
 
-import net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.ai.DummyAI;

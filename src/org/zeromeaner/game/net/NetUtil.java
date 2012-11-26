@@ -36,9 +36,9 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
-import org.cacas.java.gnu.tools.Crypt;
+import org.zeromeaner.contrib.biz.source_code.base64Coder.Base64Coder;
+import org.zeromeaner.contrib.org.cacas.java.gnu.tools.Crypt;
 
-import biz.source_code.base64Coder.Base64Coder;
 
 /**
  * Network utils

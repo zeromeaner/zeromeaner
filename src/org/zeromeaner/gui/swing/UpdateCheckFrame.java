@@ -47,11 +47,11 @@ import javax.swing.SwingUtilities;
 
 
 import org.apache.log4j.Logger;
+import org.zeromeaner.contrib.com.centerkey.utils.BareBonesBrowserLaunch;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.gui.net.UpdateChecker;
 import org.zeromeaner.gui.net.UpdateCheckerListener;
 
-import com.centerkey.utils.BareBonesBrowserLaunch;
 
 /**
  * 更新 check 設定画面

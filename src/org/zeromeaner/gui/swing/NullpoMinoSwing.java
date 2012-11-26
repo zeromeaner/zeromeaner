@@ -69,10 +69,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 
-import net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.net.NetObserverClient;
 import org.zeromeaner.game.net.NetPlayerClient;

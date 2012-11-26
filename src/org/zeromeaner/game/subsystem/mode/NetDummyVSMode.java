@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Random;
 
+import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
@@ -17,7 +18,6 @@ import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.gui.net.NetLobbyFrame;
 import org.zeromeaner.util.GeneralUtil;
 
-import net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 
 /**
  * Special base class for netplay VS modes. Up to 6 players supported.

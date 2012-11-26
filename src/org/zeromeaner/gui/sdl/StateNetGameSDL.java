@@ -31,6 +31,7 @@ package org.zeromeaner.gui.sdl;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.net.NetPlayerClient;
 import org.zeromeaner.game.net.NetRoomInfo;
@@ -43,7 +44,6 @@ import org.zeromeaner.gui.net.NetLobbyFrame;
 import org.zeromeaner.gui.net.NetLobbyListener;
 import org.zeromeaner.util.GeneralUtil;
 
-import net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 
 import sdljava.SDLException;
 import sdljava.mixer.SDLMixer;

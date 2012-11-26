@@ -33,9 +33,9 @@ import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Random;
 
-import net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 
 import org.apache.log4j.Logger;
+import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;

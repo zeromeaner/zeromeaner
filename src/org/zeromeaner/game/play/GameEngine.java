@@ -31,6 +31,8 @@ package org.zeromeaner.game.play;
 import java.util.Calendar;
 import java.util.Random;
 import org.apache.log4j.Logger;
+import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.MemorylessRandomizer;
+import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
@@ -45,8 +47,6 @@ import org.zeromeaner.game.subsystem.ai.DummyAI;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.util.GeneralUtil;
 
-import net.omegaboshi.nullpomino.game.subsystem.randomizer.MemorylessRandomizer;
-import net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 
 /**
  * Each player's ゲームの処理

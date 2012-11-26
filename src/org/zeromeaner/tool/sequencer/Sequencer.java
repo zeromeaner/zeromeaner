@@ -66,10 +66,10 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.util.CustomProperties;
 
-import net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 
 /**
  * NullpoMino Sequence Viewer (Original from NullpoUE build 010210 by Zircean)
