@@ -2,6 +2,7 @@ package org.zeromeaner.gui.applet;
 
 import java.applet.Applet;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -35,6 +36,7 @@ public class AppletMain extends Applet {
 		try {
 			setLayout(new BorderLayout());
 			desktop = new JDesktopPane();
+			desktop.setBackground(Color.RED.darker().darker());
 			add(desktop, BorderLayout.CENTER);
 			NullpoMinoInternalFrame.main(new String[0]);
 		} catch(Throwable t) {
