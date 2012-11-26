@@ -30,7 +30,7 @@
          name="zeromeaner"
          main-class="org.zeromeaner.gui.applet.AppletMain"
          width="800"
-         height="600">
+         height="800">
      </applet-desc>
      <update check="always"/>
 </jnlp>  
