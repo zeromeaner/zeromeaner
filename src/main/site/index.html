@@ -2,11 +2,11 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="index.css">
 <title>zeromeaner</title>
 </head>
 <body bgcolor="#cccccc" marginwidth="0" marginheight="0" >
 		
-		<div style="position:fixed;left:0;z-index:-1">Loading java applet...</div>
 
 		<script src="http://www.java.com/js/deployJava.js" type="text/javascript"></script>
 		<script type="text/javascript">
@@ -15,5 +15,31 @@
 	    
 	    deployJava.runApplet(attributes, parameters, '1.6');
 		</script>
+		<div style="position:fixed;left:10px; top:10px; z-index:-1">Loading java applet...</div>
+
+		<div style="position:fixed;left:810px; right:0 top:0;">		
+
+		<h1>ZEROMEANER</h1>
+		
+		<h2>WHAT</h2>
+		Zeromeaner is a fork of the popular Tetris clone Nullpomino.  However, Zeromeaner will
+		run in a web browser.  It is also now a maven project hosted on a git repository.
+		
+		<h2>WHY</h2>
+		Nullpomino hasn't seen a release for almost two years now, and I got impatient.
+		Zeromeaner will follow the open-source mantra of "release early, release often".
+		When new features are developed, you will actually get them!
+		
+		<h2>HOW</h2>
+		I used git to make a clone of the Nullpomino subversion repository.  I then converted
+		the project to use maven.  (That conversion is mostly complete; I'm not sure about the
+		native library support yet.)  Then I added Java applet support.
+		
+		<h2>WHEN</h2>
+		The fork began on Nov 25, 2012.
+		
+		<h2>WHERE</h2>
+		You can download the source code from <a href="https://github.com/esialb/zeromeaner">github</a>.
+		</div>
 </body>
 </html>
