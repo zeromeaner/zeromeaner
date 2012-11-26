@@ -77,6 +77,13 @@
 			<artifactId>sardine</artifactId>
 			<version>146</version>
 		</dependency>
+		<dependency>
+			<groupId>sun.plugin</groupId>
+			<artifactId>plugin</artifactId>
+			<version>1.6</version>
+			<scope>system</scope>
+			<systemPath>${java.home}/lib/plugin.jar</systemPath>
+		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -112,6 +119,7 @@
 						<version>2.6</version>
 						<configuration>
 							<stripVersion>true</stripVersion>
+							<excludeGroupIds>sun.plugin</excludeGroupIds>
 						</configuration>
 					</plugin>
 			<plugin>

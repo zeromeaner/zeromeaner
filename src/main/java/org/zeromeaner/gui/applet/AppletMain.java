@@ -55,46 +55,17 @@ public class AppletMain extends Applet {
 			desktop = new JDesktopPane();
 			desktop.setBackground(Color.decode("0x444488"));
 			add(desktop, BorderLayout.CENTER);
-			final JInternalFrame login = new JInternalFrame("User ID");
-			login.setLayout(new BorderLayout());
-			final JLabel lab = new JLabel("Enter Config User ID");
-			login.add(lab, BorderLayout.NORTH);
-			final JTextField uid = new JTextField("default");
-			login.add(uid, BorderLayout.CENTER);
-			final JButton ok = new JButton(new AbstractAction("OK") {
+			
+			userId = CookieAccess.get().get("userId");
+			if(userId == null)
+				userId = "default";
+			
+			new Thread(new Runnable() {
 				@Override
-				public void actionPerformed(ActionEvent e) {
-					userId = uid.getText();
-					login.remove(lab);
-					login.remove(uid);
-					login.remove((Component) e.getSource());
-					JProgressBar pb = new JProgressBar();
-					pb.setIndeterminate(true);
-					login.add(pb, BorderLayout.CENTER);
-					login.revalidate();
-					login.repaint();
-//					EventQueue.invokeLater(new Runnable() {
-					new Thread(new Runnable() {
-						@Override
-						public void run() {
-							NullpoMinoInternalFrame.main(new String[0]);
-							login.setVisible(false);
-						}
-					}).start();
+				public void run() {
+					NullpoMinoInternalFrame.main(new String[0]);
 				}
-			});
-			uid.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyPressed(KeyEvent e) {
-					if(e.getKeyCode() == KeyEvent.VK_ENTER)
-						ok.doClick();
-				}
-			});
-			login.add(ok, BorderLayout.SOUTH);
-			login.pack();
-			login.setSize(200, 200);
-			desktop.add(login);
-			login.setVisible(true);
+			}).start();
 		} catch(Throwable t) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
