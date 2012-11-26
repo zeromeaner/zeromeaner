@@ -36,7 +36,7 @@ public class AppletMain extends Applet {
 		try {
 			setLayout(new BorderLayout());
 			desktop = new JDesktopPane();
-			desktop.setBackground(Color.RED.darker().darker());
+			desktop.setBackground(Color.decode("0x444488"));
 			add(desktop, BorderLayout.CENTER);
 			NullpoMinoInternalFrame.main(new String[0]);
 		} catch(Throwable t) {
