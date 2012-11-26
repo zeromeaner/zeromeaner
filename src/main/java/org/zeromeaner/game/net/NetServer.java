@@ -926,7 +926,11 @@ public class NetServer {
 	 */
 	public static void main(String[] args) {
 		// Init log system (should be first!)
-		PropertyConfigurator.configure("config/etc/log_server.cfg");
+		try {
+			PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_server.cfg"));
+		} catch(IOException ioe) {
+			throw new RuntimeException(ioe);
+		}
 
 		// get netserver.cfg file path from 2nd command-line argument, if specified
 		String servcfg = "config/etc/netserver.cfg";  // default location
