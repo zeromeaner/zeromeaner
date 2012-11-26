@@ -39,7 +39,6 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -81,6 +80,7 @@ import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 
 /**
@@ -1684,7 +1684,7 @@ public class RuleEditor extends JFrame implements ActionListener {
 		CustomProperties prop = new CustomProperties();
 		ruleopt.writeProperty(prop, 0);
 
-		FileOutputStream out = new FileOutputStream(filename);
+		ResourceOutputStream out = new ResourceOutputStream(filename);
 		prop.store(out, "NullpoMino RuleData");
 		out.close();
 

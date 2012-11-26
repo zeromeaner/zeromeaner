@@ -34,7 +34,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -59,6 +58,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 
 /**
@@ -275,7 +275,7 @@ public class MusicListEditor extends JFrame implements ActionListener {
 	 */
 	private void saveMusicList() throws IOException {
 		try {
-			FileOutputStream out = new FileOutputStream("config/setting/music.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/music.cfg");
 			propMusic.store(out, "NullpoMino Music List");
 			out.close();
 		} catch (IOException e) {

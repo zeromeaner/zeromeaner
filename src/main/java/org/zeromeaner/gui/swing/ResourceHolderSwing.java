@@ -282,8 +282,6 @@ public class ResourceHolderSwing {
 	public static URL getURL(String str) {
 		
 		URL url = ClassLoader.getSystemResource("org/zeromeaner/" + str);
-		if(url == null)
-			new Throwable("No such resource: " + str).printStackTrace();
 		return url;
 		
 //		URL url = null;

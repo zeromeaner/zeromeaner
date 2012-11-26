@@ -29,7 +29,6 @@
 package org.zeromeaner.game.net;
 
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -65,6 +64,7 @@ import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
 
@@ -517,7 +517,7 @@ public class NetServer {
 		}
 
 		try {
-			FileOutputStream out = new FileOutputStream("config/setting/netserver_mpranking.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/netserver_mpranking.cfg");
 			propMPRanking.store(out, "NullpoMino NetServer Multiplayer Leaderboard");
 			out.close();
 		} catch (IOException e) {
@@ -714,7 +714,7 @@ public class NetServer {
 			r.writeProperty(propSPRankingAlltime);
 		}
 		try {
-			FileOutputStream out = new FileOutputStream("config/setting/netserver_spranking.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/netserver_spranking.cfg");
 			propSPRankingAlltime.store(out, "NullpoMino NetServer Single Player All-time Leaderboard");
 			out.close();
 		} catch (IOException e) {
@@ -726,7 +726,7 @@ public class NetServer {
 			r.writeProperty(propSPRankingDaily);
 		}
 		try {
-			FileOutputStream out = new FileOutputStream("config/setting/netserver_spranking_daily.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/netserver_spranking_daily.cfg");
 			propSPRankingDaily.store(out, "NullpoMino NetServer Single Player Daily Leaderboard");
 			out.close();
 		} catch (IOException e) {
@@ -778,7 +778,7 @@ public class NetServer {
 	 */
 	private static void writePlayerDataToFile() {
 		try {
-			FileOutputStream out = new FileOutputStream("config/setting/netserver_playerdata.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/netserver_playerdata.cfg");
 			propPlayerData.store(out, "NullpoMino NetServer PlayerData");
 			out.close();
 		} catch (IOException e) {

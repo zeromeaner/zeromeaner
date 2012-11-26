@@ -1,5 +1,6 @@
 package org.zeromeaner.util;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
@@ -9,6 +10,9 @@ import java.io.Reader;
 
 public class ResourceInputStream extends FilterInputStream {
 	public static InputStream getStream(String resource) throws IOException {
+		File localResource = new File("local-resources/" + resource);
+		if(localResource.exists() && !localResource.isDirectory())
+			return new FileInputStream(localResource);
 		InputStream in = ClassLoader.getSystemResourceAsStream("org/zeromeaner/" + resource);
 		if(in != null)
 			return in;

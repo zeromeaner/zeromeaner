@@ -17,7 +17,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Calendar;
@@ -64,6 +63,7 @@ import org.zeromeaner.game.net.NetUtil;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
 
@@ -561,7 +561,7 @@ public class NetAdmin extends JFrame implements ActionListener, NetMessageListen
 		}
 
 		try {
-			FileOutputStream out = new FileOutputStream("config/setting/netadmin.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/netadmin.cfg");
 			propConfig.store(out, "NullpoMino NetAdmin Config");
 			out.close();
 		} catch (IOException e) {

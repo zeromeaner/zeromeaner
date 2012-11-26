@@ -48,7 +48,6 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -118,6 +117,7 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.NetDummyMode;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
 
@@ -3347,7 +3347,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		propConfig.setProperty("createroom.defaultPresetID", (Integer)spinnerCreateRoomPresetID.getValue());
 
 		try {
-			FileOutputStream out = new FileOutputStream("config/setting/netlobby.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/netlobby.cfg");
 			propConfig.store(out, "NullpoMino NetLobby Config");
 			out.close();
 		} catch (IOException e) {
@@ -3360,7 +3360,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	 */
 	public void saveGlobalConfig() {
 		try {
-			FileOutputStream out = new FileOutputStream("config/setting/global.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/global.cfg");
 			propGlobal.store(out, "NullpoMino Global Config");
 			out.close();
 		} catch (IOException e) {
@@ -3496,7 +3496,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 				propObserver.setProperty("observer.port", port);
 
 				try {
-					FileOutputStream out = new FileOutputStream("config/setting/netobserver.cfg");
+					ResourceOutputStream out = new ResourceOutputStream("config/setting/netobserver.cfg");
 					propObserver.store(out, "NullpoMino NetObserver Config");
 					out.close();
 				} catch (IOException e) {
@@ -3826,7 +3826,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 				if(answer == JOptionPane.YES_OPTION) {
 					propObserver.setProperty("observer.enable", false);
 					try {
-						FileOutputStream out = new FileOutputStream("config/setting/netobserver.cfg");
+						ResourceOutputStream out = new ResourceOutputStream("config/setting/netobserver.cfg");
 						propObserver.store(out, "NullpoMino NetObserver Config");
 						out.close();
 					} catch (IOException e2) {
@@ -4906,7 +4906,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 				prop.decode(strReplay);
 
 				try {
-					FileOutputStream out = new FileOutputStream("replay/netreplay.rep");
+					ResourceOutputStream out = new ResourceOutputStream("replay/netreplay.rep");
 					prop.store(out, "NullpoMino NetReplay from " + netPlayerClient.getHost());
 					addSystemChatLog(getCurrentChatLogTextPane(), getUIText("SysMsg_ReplaySaved"), Color.magenta);
 				} catch (IOException e) {

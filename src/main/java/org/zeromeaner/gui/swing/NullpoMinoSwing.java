@@ -40,7 +40,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -88,6 +87,7 @@ import org.zeromeaner.gui.net.NetLobbyListener;
 import org.zeromeaner.gui.net.UpdateChecker;
 import org.zeromeaner.gui.net.UpdateCheckerListener;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.ModeManager;
@@ -355,7 +355,7 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 	 */
 	public static void saveConfig() {
 		try {
-			FileOutputStream out = new FileOutputStream("config/setting/swing.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/swing.cfg");
 			propConfig.store(out, "NullpoMino Swing-frontend Config");
 			out.close();
 		} catch(IOException e) {
@@ -363,7 +363,7 @@ public class NullpoMinoSwing extends JFrame implements ActionListener, NetLobbyL
 		}
 
 		try {
-			FileOutputStream out = new FileOutputStream("config/setting/global.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/global.cfg");
 			propGlobal.store(out, "NullpoMino Global Config");
 			out.close();
 		} catch(IOException e) {

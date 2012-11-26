@@ -158,7 +158,7 @@ public class WaveEngine implements LineListener {
 			// ストリームを閉じる
 			stream.close();
 		} catch (LineUnavailableException e) {
-			log.warn(name + " : Failed to open line", e);
+//			log.warn(name + " : Failed to open line", e);
 		} catch (UnsupportedAudioFileException e) {
 			log.warn(name + " : This is not a wave file", e);
 		} catch (IOException e) {

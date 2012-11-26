@@ -31,7 +31,6 @@ package org.zeromeaner.gui.slick;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -58,6 +57,7 @@ import org.newdawn.slick.util.Log;
 import org.zeromeaner.game.net.NetObserverClient;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ModeManager;
 
@@ -439,7 +439,7 @@ public class NullpoMinoSlick extends StateBasedGame {
 	 */
 	public static void saveConfig() {
 		try {
-			FileOutputStream out = new FileOutputStream("config/setting/slick.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/slick.cfg");
 			propConfig.store(out, "NullpoMino Slick-frontend Config");
 			out.close();
 		} catch(IOException e) {
@@ -447,7 +447,7 @@ public class NullpoMinoSlick extends StateBasedGame {
 		}
 
 		try {
-			FileOutputStream out = new FileOutputStream("config/setting/global.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/global.cfg");
 			propGlobal.store(out, "NullpoMino Global Config");
 			out.close();
 		} catch(IOException e) {

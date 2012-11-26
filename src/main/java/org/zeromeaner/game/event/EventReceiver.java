@@ -29,7 +29,6 @@
 package org.zeromeaner.game.event;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
@@ -37,6 +36,7 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
 
@@ -890,7 +890,7 @@ public class EventReceiver {
 	 */
 	public void saveModeConfig(CustomProperties modeConfig) {
 		try {
-			FileOutputStream out = new FileOutputStream("config/setting/mode.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/mode.cfg");
 			modeConfig.store(out, "NullpoMino Mode Config");
 			out.close();
 		} catch(IOException e) {
@@ -926,7 +926,7 @@ public class EventReceiver {
 	 */
 	public boolean saveProperties(String filename, CustomProperties prop) {
 		try {
-			FileOutputStream out = new FileOutputStream(filename);
+			ResourceOutputStream out = new ResourceOutputStream(filename);
 			prop.store(out, "NullpoMino Custom Property File");
 			out.close();
 		} catch(IOException e) {
@@ -1244,8 +1244,8 @@ public class EventReceiver {
 				}
 			}
 
-			FileOutputStream out = new FileOutputStream(filename);
-			prop.store(new FileOutputStream(filename), "NullpoMino Replay");
+			ResourceOutputStream out = new ResourceOutputStream(filename);
+			prop.store(new ResourceOutputStream(filename), "NullpoMino Replay");
 			out.close();
 			log.info("Saved replay file: " + filename);
 		} catch(IOException e) {

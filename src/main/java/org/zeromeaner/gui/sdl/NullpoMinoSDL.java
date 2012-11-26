@@ -30,7 +30,6 @@ package org.zeromeaner.gui.sdl;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -47,6 +46,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.game.net.NetObserverClient;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ModeManager;
 
@@ -696,7 +696,7 @@ public class NullpoMinoSDL {
 	 */
 	public static void saveConfig() {
 		try {
-			FileOutputStream out = new FileOutputStream("config/setting/sdl.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/sdl.cfg");
 			propConfig.store(out, "NullpoMino SDL-frontend Config");
 			out.close();
 			log.debug("Saved SDL-frontend config");
@@ -705,7 +705,7 @@ public class NullpoMinoSDL {
 		}
 
 		try {
-			FileOutputStream out = new FileOutputStream("config/setting/global.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/global.cfg");
 			propGlobal.store(out, "NullpoMino Global Config");
 			out.close();
 			log.debug("Saved global config");

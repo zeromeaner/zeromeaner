@@ -8,7 +8,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -23,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import org.jdesktop.swingworker.SwingWorker;
+import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 
 public class RanksIterator extends JDialog implements PropertyChangeListener,ActionListener {
@@ -187,9 +187,9 @@ public class RanksIterator extends JDialog implements PropertyChangeListener,Act
            	if (!ranksAIDir.exists()){
            		ranksAIDir.mkdirs();
            	}
-               FileOutputStream fos=null;
+               ResourceOutputStream fos=null;
                ObjectOutputStream out=null;
-               fos=new FileOutputStream(AIRanksConstants.RANKSAI_DIR+ outputFile);
+               fos=new ResourceOutputStream(AIRanksConstants.RANKSAI_DIR+ outputFile);
                out = new ObjectOutputStream(fos);
                ranks.freeRanksFrom();
                out.writeObject(ranks);
