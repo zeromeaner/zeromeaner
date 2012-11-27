@@ -664,7 +664,8 @@ public class NetDummyVSMode extends NetDummyMode {
 			}
 		}
 		owner.receiver.drawDirectFont(engine, 0, x, y + 72, "ALL ROOMS", EventReceiver.COLOR_GREEN, 0.5f);
-		owner.receiver.drawDirectFont(engine, 0, x, y + 80, "" + netLobby.netPlayerClient.getRoomInfoList().size(), EventReceiver.COLOR_WHITE, 0.5f);
+		if(netLobby != null && netLobby.netPlayerClient != null)
+			owner.receiver.drawDirectFont(engine, 0, x, y + 80, "" + netLobby.netPlayerClient.getRoomInfoList().size(), EventReceiver.COLOR_WHITE, 0.5f);
 	}
 
 	/**
@@ -907,7 +908,7 @@ public class NetDummyVSMode extends NetDummyMode {
 			int x2 = (owner.receiver.getNextDisplayType() == 2) ? 544 : 503;
 			if((owner.receiver.getNextDisplayType() == 2) && (netCurrentRoomInfo.maxPlayers == 2))
 				x2 = 321;
-			if((owner.receiver.getNextDisplayType() != 2) && (netCurrentRoomInfo.maxPlayers == 2))
+			if((owner.receiver.getNextDisplayType() != 2) && netCurrentRoomInfo != null && (netCurrentRoomInfo.maxPlayers == 2))
 				x2 = 351;
 
 			netvsDrawRoomInfoBox(engine, x2, 286);

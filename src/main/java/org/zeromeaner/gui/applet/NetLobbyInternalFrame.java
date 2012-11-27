@@ -8,7 +8,7 @@ import org.zeromeaner.gui.net.NetLobbyFrame;
 import org.zeromeaner.gui.net.NetLobbyListener;
 
 public class NetLobbyInternalFrame extends JInternalFrame {
-	private NetLobbyFrame frame;
+	public NetLobbyFrame frame;
 	
 	public NetLobbyInternalFrame() {
 		this.frame = new NetLobbyFrame();

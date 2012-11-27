@@ -1187,7 +1187,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 				if(gameManager.engine[0].ai != null) {
 					gameManager.engine[0].ai.shutdown(gameManager.engine[0], 0);
 				}
-				previousMode.netplayUnload(netLobby);
+				previousMode.netplayUnload(netLobby.frame);
 			}
 			gameManager.mode = newMode;
 			gameManager.init();
@@ -1250,7 +1250,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 				gameManager.engine[i].init();
 			}
 
-			newMode.netplayInit(netLobby);
+			newMode.netplayInit(netLobby.frame);
 		} else {
 			log.error("This mode does not support netplay:" + modeName);
 		}

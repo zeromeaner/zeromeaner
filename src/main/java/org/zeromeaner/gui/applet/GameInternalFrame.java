@@ -28,6 +28,7 @@
 */
 package org.zeromeaner.gui.applet;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -47,6 +48,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import javax.swing.JInternalFrame;
+import javax.swing.JPanel;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -182,6 +184,12 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		addInternalFrameListener(new GameFrameWindowEvent());
 		addKeyListener(new GameFrameKeyEvent());
 
+		setLayout(new BorderLayout());
+		JPanel panel = new JPanel();
+		add(panel, BorderLayout.CENTER);
+		panel.setFocusable(true);
+		panel.addKeyListener(new GameFrameKeyEvent());
+		
 		setFocusable(true);
 				
 		maxfps = NullpoMinoInternalFrame.propConfig.getProperty("option.maxfps", 60);
