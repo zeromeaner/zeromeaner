@@ -589,7 +589,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		JMenuBar menubar = new JMenuBar();
 		this.setJMenuBar(menubar);
 
-		JMenu configMenu = new JMenu("Config");
+		JMenu configMenu = new JMenu("User");
 		JMenuItem setConfigId = new JMenuItem(new AbstractAction("Set Config ID") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
