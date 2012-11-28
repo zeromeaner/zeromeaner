@@ -33,10 +33,15 @@ import java.awt.EventQueue;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -207,22 +212,34 @@ public class RuleSelectInternalFrame extends JInternalFrame implements ActionLis
 	 * @return Rule file list. null if directory doesn't exist.
 	 */
 	private String[] getRuleFileList() {
-		File dir = new File("config/rule");
+//		File dir = new File("config/rule");
+//
+//		FilenameFilter filter = new FilenameFilter() {
+//			public boolean accept(File dir1, String name) {
+//				return name.endsWith(".rul");
+//			}
+//		};
+//
+//		String[] list = dir.list(filter);
+//
+//		if(!System.getProperty("os.name").startsWith("Windows")) {
+//			// Sort if not windows
+//			Arrays.sort(list);
+//		}
+//
+//		return list;
 
-		FilenameFilter filter = new FilenameFilter() {
-			public boolean accept(File dir1, String name) {
-				return name.endsWith(".rul");
-			}
-		};
 
-		String[] list = dir.list(filter);
-
-		if(!System.getProperty("os.name").startsWith("Windows")) {
-			// Sort if not windows
-			Arrays.sort(list);
+		try {
+			BufferedReader r = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/rule/list.txt")));
+			List<String> files = new ArrayList<String>();
+			for(String line = r.readLine(); line != null; line = r.readLine())
+				files.add(line);
+			return files.toArray(new String[0]);
+		} catch(IOException ioe) {
+			return null;
 		}
-
-		return list;
+	
 	}
 
 	/**
