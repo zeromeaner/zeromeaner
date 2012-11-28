@@ -84,6 +84,11 @@
 			<scope>system</scope>
 			<systemPath>${java.home}/lib/plugin.jar</systemPath>
 		</dependency>
+		<dependency>
+			<groupId>org.eviline</groupId>
+			<artifactId>eviline</artifactId>
+			<version>1.0.14-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
