@@ -30,6 +30,7 @@
     <jar href="httpclient.jar"/>
     <jar href="httpcore.jar"/>
     <jar href="sardine.jar"/>
+    <jar href="eviline-core.jar"/>
     </resources>
     <applet-desc 
          name="zeromeaner"
