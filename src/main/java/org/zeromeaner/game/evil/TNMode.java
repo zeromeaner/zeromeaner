@@ -33,6 +33,8 @@ public class TNMode extends MarathonMode {
 		receiver = engine.owner.receiver;
 		engine.ruleopt = new TNRuleOptions(engine.ruleopt);
 		engine.randomizer = GeneralUtil.loadRandomizer(engine.ruleopt.strRandomizer);
+		if(!(engine.randomizer instanceof TNRandomizer))
+			engine.randomizer = new TNConcurrentBipolarRandomizer();
 		engine.wallkick = GeneralUtil.loadWallkick(engine.ruleopt.strWallkick);
 		lastScoreX = null;
 		lastScore = null;
