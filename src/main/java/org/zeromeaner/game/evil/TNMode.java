@@ -65,6 +65,8 @@ public class TNMode extends MarathonMode {
 	@Override
 	public boolean onMove(GameEngine engine, int playerID) {
 		
+		retaunt(engine);
+		
 		if(lastScoreX == null || lastScoreX != engine.nowPieceX) {
 			lastScoreX = engine.nowPieceX;
 			lastScore = null;
@@ -83,12 +85,46 @@ public class TNMode extends MarathonMode {
 		
 		return true;
 	}
-
-	public void regenerate(GameEngine engine) {
-		int next = engine.randomizer.next();
+	
+	public void retaunt(GameEngine engine) {
+		String taunt = ((TNRandomizer) engine.randomizer).field.getProvider().getTaunt();
+		if(taunt == null || taunt.isEmpty())
+			taunt = " ";
 		
-		engine.nextPieceArrayID[0] = next;
+		engine.nextPieceArraySize = taunt.length();
+		if(engine.nextPieceArrayID != null)
+			engine.nextPieceArrayID = Arrays.copyOf(engine.nextPieceArrayID, taunt.length());
+		if(engine.nextPieceArrayObject != null)
+			engine.nextPieceArrayObject = Arrays.copyOf(engine.nextPieceArrayObject, taunt.length());
 		
+		for(int i = 1; i < taunt.length(); i++) {
+			switch(taunt.charAt(i)) {
+			case 'T': 
+				engine.nextPieceArrayID[i] = Piece.PIECE_T;
+				break;
+			case 'S':
+				engine.nextPieceArrayID[i] = Piece.PIECE_S;
+				break;
+			case 'Z':
+				engine.nextPieceArrayID[i] = Piece.PIECE_Z;
+				break;
+			case 'L':
+				engine.nextPieceArrayID[i] = Piece.PIECE_L;
+				break;
+			case 'J':
+				engine.nextPieceArrayID[i] = Piece.PIECE_J;
+				break;
+			case 'O':
+				engine.nextPieceArrayID[i] = Piece.PIECE_O;
+				break;
+			case 'I':
+				engine.nextPieceArrayID[i] = Piece.PIECE_I;
+				break;
+			}
+		}
+		
+		engine.ruleopt.nextDisplay = taunt.length() - 1;
+	
 		try {
 			for(int i = 0; i < engine.nextPieceArrayObject.length; i++) {
 				engine.nextPieceArrayObject[i] = newPiece(engine.nextPieceArrayID[i]);
@@ -118,6 +154,18 @@ public class TNMode extends MarathonMode {
 			}
 		} catch(RuntimeException re) {
 		}
+
+	}
+
+	public void regenerate(GameEngine engine) {
+		int next = engine.randomizer.next();
+
+		engine.nextPieceArrayID[0] = next;
+		engine.nextPieceCount = 0;
+
+		retaunt(engine);
+		
+		
 	}
 	
 	@Override

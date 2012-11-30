@@ -17,5 +17,7 @@ public class TNRuleOptions extends RuleOptions {
 		minARELine = 0;
 		maxARELine = 0;
 		rotateWallkick = true;
+		softdropEnable = true;
+		softdropSpeed = 50f;
 	}
 }
