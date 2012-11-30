@@ -48,7 +48,7 @@ import org.zeromeaner.util.GeneralUtil;
  */
 public class NetVSBattleMode extends NetDummyVSMode {
 	/** Most recent scoring event type constants */
-	private static final int EVENT_NONE = 0,
+	protected static final int EVENT_NONE = 0,
 							 EVENT_SINGLE = 1,
 							 EVENT_DOUBLE = 2,
 							 EVENT_TRIPLE = 3,
@@ -61,7 +61,7 @@ public class NetVSBattleMode extends NetDummyVSMode {
 							 EVENT_TSPIN_EZ = 10;
 
 	/** Type of attack performed */
-	private static final int ATTACK_CATEGORY_NORMAL = 0,
+	protected static final int ATTACK_CATEGORY_NORMAL = 0,
 							 ATTACK_CATEGORY_B2B = 1,
 							 ATTACK_CATEGORY_SPIN = 2,
 							 ATTACK_CATEGORY_COMBO = 3,
@@ -70,7 +70,7 @@ public class NetVSBattleMode extends NetDummyVSMode {
 							 ATTACK_CATEGORIES = 6;
 
 	/** Attack table (for T-Spin only) */
-	private static final int[][] LINE_ATTACK_TABLE =
+	protected int[][] LINE_ATTACK_TABLE =
 	{
 		// 1-2P, 3P, 4P, 5P, 6P
 		{0, 0, 0, 0, 0},	// Single
@@ -86,7 +86,7 @@ public class NetVSBattleMode extends NetDummyVSMode {
 	};
 
 	/** Attack table(for All Spin) */
-	private static final int[][] LINE_ATTACK_TABLE_ALLSPIN =
+	protected int[][] LINE_ATTACK_TABLE_ALLSPIN =
 	{
 		// 1-2P, 3P, 4P, 5P, 6P
 		{0, 0, 0, 0, 0},	// Single
@@ -102,7 +102,7 @@ public class NetVSBattleMode extends NetDummyVSMode {
 	};
 
 	/** Indexes of attack types in attack table */
-	private static final int LINE_ATTACK_INDEX_SINGLE = 0,
+	protected static final int LINE_ATTACK_INDEX_SINGLE = 0,
 							 LINE_ATTACK_INDEX_DOUBLE = 1,
 							 LINE_ATTACK_INDEX_TRIPLE = 2,
 							 LINE_ATTACK_INDEX_FOUR = 3,
@@ -114,7 +114,7 @@ public class NetVSBattleMode extends NetDummyVSMode {
 							 LINE_ATTACK_INDEX_EZ_T = 9;
 
 	/** Combo attack table */
-	private static final int[][] COMBO_ATTACK_TABLE = {
+	protected int[][] COMBO_ATTACK_TABLE = {
 		{0,0,1,1,2,2,3,3,4,4,4,5}, // 1-2 Player(s)
 		{0,0,1,1,1,2,2,3,3,4,4,4}, // 3 Player
 		{0,0,0,1,1,1,2,2,3,3,4,4}, // 4 Player

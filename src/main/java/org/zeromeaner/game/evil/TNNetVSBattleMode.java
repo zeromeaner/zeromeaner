@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eviline.randomizer.MaliciousRandomizer.MaliciousRandomizerProperties;
+import org.eviline.randomizer.Randomizer;
+import org.eviline.randomizer.RandomizerFactory;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.event.EventReceiver;
@@ -19,6 +22,37 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 	
 	protected Map<GameEngine, TNRandomizer> randomizers = new HashMap<GameEngine, TNRandomizer>();
 	
+	public TNNetVSBattleMode() {
+		LINE_ATTACK_TABLE =
+			new int[][] {
+				// 1-2P, 3P, 4P, 5P, 6P
+				{1, 1, 1, 1, 1},	// Single
+				{2, 2, 2, 2, 2},	// Double
+				{3, 3, 3, 3, 3},	// Triple
+				{4, 4, 4, 4, 4},	// Four
+				{2, 2, 2, 2, 2},	// T-Mini-S
+				{1, 1, 1, 1, 1},	// T-Single
+				{3, 3, 3, 3, 3},	// T-Double
+				{5, 5, 5, 5, 5},	// T-Triple
+				{3, 3, 3, 3, 3},	// T-Mini-D
+				{1, 1, 0, 0, 0},	// EZ-T
+			};
+		LINE_ATTACK_TABLE_ALLSPIN =
+			new int[][] {
+				// 1-2P, 3P, 4P, 5P, 6P
+				{1, 1, 1, 1, 1},	// Single
+				{2, 2, 2, 2, 2},	// Double
+				{3, 3, 3, 3, 3},	// Triple
+				{4, 4, 4, 4, 4},	// Four
+				{2, 2, 2, 2, 2},	// T-Mini-S
+				{1, 1, 1, 1, 1},	// T-Single
+				{3, 3, 3, 3, 3},	// T-Double
+				{5, 5, 5, 5, 5},	// T-Triple
+				{3, 3, 3, 3, 3},	// T-Mini-D
+				{1, 1, 0, 0, 0},	// EZ-T
+			};
+	}
+	
 	@Override
 	public String getName() {
 		return "NET-EVILINE-VS-BATTLE";
@@ -29,7 +63,21 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 		super.playerInit(engine, playerID);
 		receiver = engine.owner.receiver;
 		engine.ruleopt = new TNRuleOptions(engine.ruleopt);
-		engine.randomizer = new TNConcurrentAggressiveRandomizer();
+		engine.randomizer = new TNConcurrentRandomizer() {
+			@Override
+			public void setEngine(GameEngine engine) {
+				super.setEngine(engine);
+				MaliciousRandomizerProperties mp = new MaliciousRandomizerProperties(3, .03, false, 30);
+				mp.put(RandomizerFactory.CONCURRENT, "true");
+				Randomizer r = new RandomizerFactory().newRandomizer(mp);
+				field.setProvider(r);
+			}
+			
+			@Override
+			public String getName() {
+				return "NET EVIL";
+			}
+		};
 		randomizers.put(engine, (TNRandomizer) engine.randomizer);
 		((TNRandomizer) engine.randomizer).setEngine(engine);
 		engine.wallkick = new StandardWallkick();
@@ -134,8 +182,8 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 		if(engine.randomizer == null)
 			return;
 		double[] evil = ((TNRandomizer) engine.randomizer).score();
-		receiver.drawScoreFont(engine, playerID, 0, 17, ((TNRandomizer) engine.randomizer).getName(), EventReceiver.COLOR_BLUE);
-		receiver.drawScoreFont(engine, playerID, 0, 18, "" + ((int) evil[0]) + "(" + ((int) evil[1]) + ")", EventReceiver.COLOR_WHITE);
+//		receiver.drawScoreFont(engine, playerID, 0, 17, ((TNRandomizer) engine.randomizer).getName(), EventReceiver.COLOR_BLUE);
+//		receiver.drawScoreFont(engine, playerID, 0, 18, "" + ((int) evil[0]) + "(" + ((int) evil[1]) + ")", EventReceiver.COLOR_WHITE);
 	}
 
 }

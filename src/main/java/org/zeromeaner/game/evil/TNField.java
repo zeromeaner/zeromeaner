@@ -6,6 +6,9 @@ import org.zeromeaner.game.play.GameEngine;
 
 import org.eviline.Field;
 import org.eviline.randomizer.MaliciousRandomizer.MaliciousRandomizerProperties;
+import org.eviline.randomizer.Randomizer;
+import org.eviline.randomizer.RandomizerFactory;
+import org.eviline.randomizer.RandomizerPresets;
 import org.eviline.randomizer.ThreadedMaliciousRandomizer;
 
 public class TNField extends Field {
@@ -15,9 +18,11 @@ public class TNField extends Field {
 	public TNField(GameEngine engine) {
 		super();
 		this.engine = engine;
-		MaliciousRandomizerProperties mp = new MaliciousRandomizerProperties(3, 0, false, 30);
-		ThreadedMaliciousRandomizer r = new ThreadedMaliciousRandomizer(mp);
-		r.setRandom(engine.random);
+//		MaliciousRandomizerProperties mp = new MaliciousRandomizerProperties(3, 0, false, 30);
+//		ThreadedMaliciousRandomizer r = new ThreadedMaliciousRandomizer(mp);
+		Randomizer r = new RandomizerFactory().newRandomizer(RandomizerPresets.EVIL);
+		// FIXME be able to set the random
+//		r.setRandom(engine.random);
 		provider = r;
 	}
 	
