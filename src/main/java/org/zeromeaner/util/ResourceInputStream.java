@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.zeromeaner.gui.applet.AppletMain;
 
@@ -23,9 +25,17 @@ public class ResourceInputStream extends FilterInputStream {
 		}
 	}
 	
+	private static Collection<String> dontDownload = Arrays.asList(
+			"config/setting/netlobby_serverlist_dev.cfg",
+			"config/setting/netlobby_serverlist.cfg"
+			);
+	
 	public static InputStream getStream(String resource) throws IOException {
 		InputStream in = null;
-		if(AppletMain.isApplet() && resource.startsWith("config/"))
+		if(
+				AppletMain.isApplet() 
+				&& resource.startsWith("config/setting/")
+				&& !dontDownload.contains(resource))
 			try {
 				in = new ResourceDownloadStream(resource);
 			} catch(IOException ioe) {
