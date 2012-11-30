@@ -57,8 +57,17 @@ public class AppletMain extends Applet {
 			add(desktop, BorderLayout.CENTER);
 			
 			userId = CookieAccess.get().get("userId");
-			if(userId == null)
-				userId = "default";
+			while(userId == null || "default".equals(userId)) {
+				userId = "none";
+				int create = JOptionPane.showInternalConfirmDialog(desktop, "To save user configuration, such as custom keys, you must create a user id.\nThere is no need to remember a password.\nIf you choose not to create a user ID the default settings will be used.\n\nCreate a user ID now?", "Create User ID?", JOptionPane.YES_NO_OPTION);
+				if(create == JOptionPane.YES_OPTION) {
+					userId = (String) JOptionPane.showInternalInputDialog(desktop, "Enter Config ID", "Enter Config ID", JOptionPane.QUESTION_MESSAGE, null, null, "");
+					if(userId != null)
+						CookieAccess.set("userId", userId);
+					else
+						userId = "default";
+				}
+			}
 			
 			final JInternalFrame launching = new JInternalFrame("Launching zeromeaner");
 			launching.setLayout(new BorderLayout());
