@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://www.zeromeaner.org/dev/" href="">
+    <information>
+        <title>zeromeaner</title>
+        <vendor>zeromeaner</vendor>
+    </information>
+    <security>
+        <all-permissions/>
+   </security>
+    <resources>
+        <!-- Application Resources -->
+        <j2se version="1.6+"
+            href="http://java.sun.com/products/autodl/j2se" />
+    <jar href="zeromeaner.jar"/>
+    <jar href="appframework.jar"/>
+    <jar href="ibxm.jar"/>
+    <jar href="jnlp.jar"/>
+    <jar href="jorbis.jar"/>
+    <jar href="log4j.jar"/>
+    <jar href="lwjgl-jinput.jar"/>
+    <jar href="lwjgl-native-win32.jar"/>
+    <jar href="lwjgl.jar"/>
+    <jar href="phys2d.jar"/>
+    <jar href="sdljava.jar"/>
+    <jar href="slick.jar"/>
+    <jar href="swing-layout.jar"/>
+    <jar href="swing-worker.jar"/>
+    <jar href="commons-codec.jar"/>
+    <jar href="commons-logging.jar"/>
+    <jar href="httpclient.jar"/>
+    <jar href="httpcore.jar"/>
+    <jar href="sardine.jar"/>
+    <jar href="eviline-core.jar"/>
+    </resources>
+    <applet-desc 
+         name="zeromeaner"
+         main-class="org.zeromeaner.gui.applet.AppletMain"
+         width="800"
+         height="800">
+     </applet-desc>
+     <update check="always"/>
+</jnlp>  

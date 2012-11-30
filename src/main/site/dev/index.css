@@ -1,0 +1,20 @@
+@CHARSET "UTF-8";
+
+applet {
+	top: 0;
+	left: 0;
+	float: left;
+	border-style: inset;
+}
+
+div#top {
+	left: 0; top: 0; right: 0;
+	border-bottom-style: solid;
+	border-width: 2px;
+	border-color: #888;
+	padding: 5px;
+	background-color: #ddd;
+	font-size: 75%;
+	letter-spacing: 3pt;
+	text-align: center;
+}
