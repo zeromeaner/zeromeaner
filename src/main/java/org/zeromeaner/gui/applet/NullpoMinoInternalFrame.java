@@ -601,6 +601,13 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		JMenuItem saveConfig = new JMenuItem(new AbstractAction("Save Config") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				while("default".equals(AppletMain.userId)) {
+					String userId = (String) JOptionPane.showInternalInputDialog(NullpoMinoInternalFrame.this, "Enter Config ID", "Enter Config ID", JOptionPane.QUESTION_MESSAGE, null, null, AppletMain.userId);
+					if(userId != null)
+						CookieAccess.set("userId", AppletMain.userId = userId);
+					else
+						return;
+				}
 				saveConfig();
 			}
 		});

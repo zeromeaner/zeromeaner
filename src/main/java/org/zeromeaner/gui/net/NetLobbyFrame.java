@@ -1105,6 +1105,13 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		txtfldLobbyChatInput = new JTextField();
 		txtfldLobbyChatInput.setComponentPopupMenu(new TextComponentPopupMenu(txtfldLobbyChatInput));
 		subpanelLobbyChatInputArea.add(txtfldLobbyChatInput, BorderLayout.CENTER);
+		txtfldLobbyChatInput.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+					btnLobbyChatSend.doClick();
+			}
+		});
 
 		// **** チャット送信 button(Lobby screen)
 		btnLobbyChatSend = new JButton(getUIText("Lobby_ChatSend"));
@@ -1309,6 +1316,13 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		txtfldRoomChatInput = new JTextField();
 		txtfldRoomChatInput.setComponentPopupMenu(new TextComponentPopupMenu(txtfldRoomChatInput));
 		subpanelRoomChatInputArea.add(txtfldRoomChatInput, BorderLayout.CENTER);
+		txtfldRoomChatInput.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+					btnRoomChatSend.doClick();
+			}
+		});
 
 		// **** チャット送信 button(Room screen)
 		btnRoomChatSend = new JButton(getUIText("Room_ChatSend"));

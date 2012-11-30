@@ -1,5 +1,7 @@
 org.zeromeaner.game.subsystem.mode.MarathonMode
 org.zeromeaner.game.subsystem.mode.MarathonPlusMode
+org.zeromeaner.game.evil.TNMode
+org.zeromeaner.game.evil.TNNetVSBattleMode
 org.zeromeaner.game.subsystem.mode.ExtremeMode
 org.zeromeaner.game.subsystem.mode.LineRaceMode
 org.zeromeaner.game.subsystem.mode.ScoreRaceMode
