@@ -67,8 +67,9 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 			@Override
 			public void setEngine(GameEngine engine) {
 				super.setEngine(engine);
-				MaliciousRandomizerProperties mp = new MaliciousRandomizerProperties(3, .03, false, 30);
+				MaliciousRandomizerProperties mp = new MaliciousRandomizerProperties(2, .01, true, 30);
 				mp.put(RandomizerFactory.CONCURRENT, "true");
+				mp.put(RandomizerFactory.NEXT, "1");
 				Randomizer r = new RandomizerFactory().newRandomizer(mp);
 				field.setProvider(r);
 			}
@@ -110,6 +111,7 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 	@Override
 	public boolean onMove(GameEngine engine, int playerID) {
 		engine.randomizer = randomizers.get(engine);
+		retaunt(engine);
 		if(!waiting)
 			return super.onMove(engine, playerID);
 		
@@ -123,15 +125,46 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 		
 		return true;
 	}
+	
+	public void retaunt(GameEngine engine) {
+		String taunt = ((TNRandomizer) engine.randomizer).field.getProvider().getTaunt();
+		if(taunt == null || taunt.isEmpty())
+			taunt = " ";
+		
+		engine.nextPieceArraySize = taunt.length();
+		if(engine.nextPieceArrayID != null)
+			engine.nextPieceArrayID = Arrays.copyOf(engine.nextPieceArrayID, taunt.length());
+		if(engine.nextPieceArrayObject != null)
+			engine.nextPieceArrayObject = Arrays.copyOf(engine.nextPieceArrayObject, taunt.length());
+		
+		for(int i = 1; i < taunt.length(); i++) {
+			switch(taunt.charAt(i)) {
+			case 'T': 
+				engine.nextPieceArrayID[i] = Piece.PIECE_T;
+				break;
+			case 'S':
+				engine.nextPieceArrayID[i] = Piece.PIECE_S;
+				break;
+			case 'Z':
+				engine.nextPieceArrayID[i] = Piece.PIECE_Z;
+				break;
+			case 'L':
+				engine.nextPieceArrayID[i] = Piece.PIECE_L;
+				break;
+			case 'J':
+				engine.nextPieceArrayID[i] = Piece.PIECE_J;
+				break;
+			case 'O':
+				engine.nextPieceArrayID[i] = Piece.PIECE_O;
+				break;
+			case 'I':
+				engine.nextPieceArrayID[i] = Piece.PIECE_I;
+				break;
+			}
+		}
+		
+		engine.ruleopt.nextDisplay = taunt.length() - 1;
 
-	public void regenerate(GameEngine engine) {
-		int next = engine.randomizer.next();
-		
-		engine.nextPieceArrayID = new int[1];
-		engine.nextPieceArrayObject = new Piece[1];
-		engine.nextPieceArrayID[0] = next;
-		
-		
 		try {
 			for(int i = 0; i < engine.nextPieceArrayObject.length; i++) {
 				engine.nextPieceArrayObject[i] = newPiece(engine.nextPieceArrayID[i]);
@@ -161,6 +194,18 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 			}
 		} catch(RuntimeException re) {
 		}
+	
+	}
+
+
+	public void regenerate(GameEngine engine) {
+		int next = engine.randomizer.next();
+
+		engine.nextPieceArrayID[0] = next;
+		engine.nextPieceCount = 0;
+
+		retaunt(engine);
+		
 	}
 	
 	@Override
