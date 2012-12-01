@@ -21,7 +21,7 @@ config/rule/EvilineAngelRandomizer.rul
 config/rule/EvilineConcurrentAngelRandomizer.rul
 config/rule/EvilineBipolarRandomizer.rul
 config/rule/EvilineConcurrentBipolarRandomizer.rul
-
+config/rule/EvilineNetplayRude.rul
 
 :EXTREME
 config/rule/Standard.rul
