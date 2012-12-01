@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.zeromeaner</groupId>
 	<artifactId>zeromeaner</artifactId>
-	<version>8.0.2</version>
+	<version>8.0.3-SNAPSHOT</version>
 	<build>
 		<plugins>
 			<plugin>
@@ -172,6 +172,24 @@
 						<version>1.2.1</version>
 						<configuration>
 							<mainClass>org.zeromeaner.game.net.NetServer</mainClass>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>dev-server</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.2.1</version>
+						<configuration>
+							<mainClass>org.zeromeaner.game.net.NetServer</mainClass>
+							<arguments>
+								<argument>9201</argument>
+							</arguments>
 						</configuration>
 					</plugin>
 				</plugins>

@@ -63,22 +63,7 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 		super.playerInit(engine, playerID);
 		receiver = engine.owner.receiver;
 		engine.ruleopt = new TNRuleOptions(engine.ruleopt);
-		engine.randomizer = new TNConcurrentRandomizer() {
-			@Override
-			public void setEngine(GameEngine engine) {
-				super.setEngine(engine);
-				MaliciousRandomizerProperties mp = new MaliciousRandomizerProperties(2, .01, true, 30);
-				mp.put(RandomizerFactory.CONCURRENT, "true");
-				mp.put(RandomizerFactory.NEXT, "1");
-				Randomizer r = new RandomizerFactory().newRandomizer(mp);
-				field.setProvider(r);
-			}
-			
-			@Override
-			public String getName() {
-				return "NET EVIL";
-			}
-		};
+		engine.randomizer = new TNNetplayRandomizer();
 		randomizers.put(engine, (TNRandomizer) engine.randomizer);
 		((TNRandomizer) engine.randomizer).setEngine(engine);
 		engine.wallkick = new StandardWallkick();

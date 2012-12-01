@@ -19,6 +19,7 @@ EvilineConcurrentAggressiveRandomizer.rul
 EvilineConcurrentAngelRandomizer.rul
 EvilineConcurrentBipolarRandomizer.rul
 EvilineConcurrentRandomizer.rul
+EvilineNetplayRude.rul
 EvilineRandomizer.rul
 NintendoGBC.rul
 NintendoL.rul
@@ -40,4 +41,3 @@ StandardJ.rul
 StandardPlus.rul
 StandardSuper3.rul
 StandardZero.rul
-list.txt
