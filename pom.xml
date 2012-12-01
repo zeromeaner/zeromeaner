@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.zeromeaner</groupId>
 	<artifactId>zeromeaner</artifactId>
-	<version>8.0.3.2</version>
+	<version>8.0.3.3-SNAPSHOT</version>
 	<build>
 		<plugins>
 			<plugin>
@@ -112,7 +112,7 @@
 			<url>file://${project.basedir}/local-artifacts</url>
 		</repository>
 	</repositories>
-	
+
 	<profiles>
 		<profile>
 			<id>applet</id>
@@ -127,38 +127,38 @@
 							<excludeGroupIds>sun.plugin</excludeGroupIds>
 						</configuration>
 					</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jarsigner-plugin</artifactId>
-				<version>1.2</version>
-				<executions>
-					<execution>
-						<id>sign</id>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>package</id>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>verify</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<keystore>keystore</keystore>
-					<alias>signFiles</alias>
-					<storepass>CasioF-2</storepass>
-					<archiveDirectory>target/dependency</archiveDirectory>
-				</configuration>
-			</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jarsigner-plugin</artifactId>
+						<version>1.2</version>
+						<executions>
+							<execution>
+								<id>sign</id>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>package</id>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>verify</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<keystore>keystore</keystore>
+							<alias>signFiles</alias>
+							<storepass>CasioF-2</storepass>
+							<archiveDirectory>target/dependency</archiveDirectory>
+						</configuration>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
@@ -206,18 +206,29 @@
 						<executions>
 							<execution>
 								<phase>package</phase>
-								<goals><goal>shade</goal></goals>
-						<configuration>
-							<finalName>zeromeaner-all-${project.version}</finalName>
-							<createDependencyReducedPom>false</createDependencyReducedPom>
-							<transformers>
-                				<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  					<manifestEntries>
-                  						<Main-Class>org.zeromeaner.gui.swing.NullpoMinoSwing</Main-Class>
-                  					</manifestEntries>
-                				</transformer>
-                			</transformers>
-						</configuration>
+								<goals>
+									<goal>shade</goal>
+								</goals>
+								<configuration>
+									<finalName>zeromeaner-all-${project.version}</finalName>
+									<createDependencyReducedPom>false</createDependencyReducedPom>
+									<transformers>
+										<transformer
+											implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+											<mainClass>org.zeromeaner.gui.swing.NullpoMinoSwing</mainClass>
+										</transformer>
+									</transformers>
+									<filters>
+										<filter>
+											<artifact>*:*</artifact>
+											<excludes>
+												<exclude>META-INF/*.SF</exclude>
+												<exclude>META-INF/*.DSA</exclude>
+												<exclude>META-INF/*.RSA</exclude>
+											</excludes>
+										</filter>
+									</filters>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>
