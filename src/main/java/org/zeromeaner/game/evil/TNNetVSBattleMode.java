@@ -30,12 +30,12 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 				{2, 2, 2, 2, 2},	// Double
 				{3, 3, 3, 3, 3},	// Triple
 				{4, 4, 4, 4, 4},	// Four
-				{2, 2, 2, 2, 2},	// T-Mini-S
+				{1, 1, 1, 1, 1},	// T-Mini-S
 				{1, 1, 1, 1, 1},	// T-Single
-				{3, 3, 3, 3, 3},	// T-Double
-				{5, 5, 5, 5, 5},	// T-Triple
-				{3, 3, 3, 3, 3},	// T-Mini-D
-				{1, 1, 0, 0, 0},	// EZ-T
+				{2, 2, 2, 2, 2},	// T-Double
+				{3, 3, 3, 3, 3},	// T-Triple
+				{2, 2, 2, 2, 2},	// T-Mini-D
+				{0, 0, 0, 0, 0},	// EZ-T
 			};
 		LINE_ATTACK_TABLE_ALLSPIN =
 			new int[][] {
@@ -44,12 +44,12 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 				{2, 2, 2, 2, 2},	// Double
 				{3, 3, 3, 3, 3},	// Triple
 				{4, 4, 4, 4, 4},	// Four
-				{2, 2, 2, 2, 2},	// T-Mini-S
+				{1, 1, 1, 1, 1},	// T-Mini-S
 				{1, 1, 1, 1, 1},	// T-Single
-				{3, 3, 3, 3, 3},	// T-Double
-				{5, 5, 5, 5, 5},	// T-Triple
-				{3, 3, 3, 3, 3},	// T-Mini-D
-				{1, 1, 0, 0, 0},	// EZ-T
+				{2, 2, 2, 2, 2},	// T-Double
+				{3, 3, 3, 3, 3},	// T-Triple
+				{2, 2, 2, 2, 2},	// T-Mini-D
+				{0, 0, 0, 0, 0},	// EZ-T
 			};
 	}
 	
