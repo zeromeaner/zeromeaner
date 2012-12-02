@@ -51,6 +51,15 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 				{2, 2, 2, 2, 2},	// T-Mini-D
 				{0, 0, 0, 0, 0},	// EZ-T
 			};
+		COMBO_ATTACK_TABLE = 
+			new int[][]{
+				{0,0,0,0,0,0,0,0,0,0,0,0}, // 1-2 Player(s)
+				{0,0,0,0,0,0,0,0,0,0,0,0}, // 3 Player
+				{0,0,0,0,0,0,0,0,0,0,0,0}, // 4 Player
+				{0,0,0,0,0,0,0,0,0,0,0,0}, // 5 Player
+				{0,0,0,0,0,0,0,0,0,0,0,0}, // 6 Payers
+			};
+		
 	}
 	
 	@Override
