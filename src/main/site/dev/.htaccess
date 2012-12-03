@@ -1,3 +1,3 @@
 Options +FollowSymLinks
 RewriteEngine On
-RewriteRule ^(.+)$ http://www.zeromeaner.org/dev/?$1 [L]
+RewriteRule ^(.+)$ http://www.zeromeaner.org/dev/?$1 [R=301,L]
