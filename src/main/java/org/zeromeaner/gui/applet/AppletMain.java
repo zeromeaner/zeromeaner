@@ -121,6 +121,7 @@ public class AppletMain extends Applet {
 			return;
 		if(path.startsWith("dev/"))
 			path = path.substring("dev/".length());
+		JOptionPane.showMessageDialog(this, path);
 		Matcher m = AUTOSTART_NETPLAY.matcher(path);
 		if(m.matches()) {
 			String room = m.group(2);
