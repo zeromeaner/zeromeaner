@@ -121,6 +121,8 @@ public class AppletMain extends Applet {
 			return;
 		if(path.startsWith("/dev/"))
 			path = path.substring("/dev/".length());
+		if(path.startsWith("/"))
+			path = path.substring(1);
 		Matcher m = AUTOSTART_NETPLAY.matcher(path);
 		if(m.matches()) {
 			final String room = m.group(2);
