@@ -144,7 +144,8 @@ public class AppletMain extends Applet {
 				}
 			}
 			
-			// Room not found.  Create it.
+			// Room not found
+			nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Lobby_RoomCreate"));
 			nlf.txtfldCreateRatedName.setText(room);
 		}
 	}
