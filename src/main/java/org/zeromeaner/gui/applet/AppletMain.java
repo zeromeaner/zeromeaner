@@ -119,9 +119,8 @@ public class AppletMain extends Applet {
 		String path = url.getPath();
 		if(path == null)
 			return;
-		if(path.startsWith("dev/"))
-			path = path.substring("dev/".length());
-		JOptionPane.showMessageDialog(this, path);
+		if(path.startsWith("/dev/"))
+			path = path.substring("/dev/".length());
 		Matcher m = AUTOSTART_NETPLAY.matcher(path);
 		if(m.matches()) {
 			String room = m.group(2);
