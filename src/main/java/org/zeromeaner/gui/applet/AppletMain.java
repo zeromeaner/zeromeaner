@@ -109,7 +109,7 @@ public class AppletMain extends Applet {
 	public void autostartNetplay() {
 		URL url;
 		try {
-			url = new URL(getParameter("url"));
+			url = new URL(getParameter("zero_url"));
 		} catch(MalformedURLException me) {
 			throw new RuntimeException(me);
 		}
