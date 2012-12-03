@@ -107,7 +107,7 @@ public class AppletMain extends Applet {
 		NullpoMinoInternalFrame.mainFrame.shutdown();
 	}
 	
-	private static Pattern AUTOSTART_NETPLAY = Pattern.compile("net(/(.*))?");
+	private static Pattern AUTOSTART_NETPLAY = Pattern.compile("launch/net(/(.*))?");
 	
 	public void autostartNetplay() {
 		URL url;
@@ -116,10 +116,12 @@ public class AppletMain extends Applet {
 		} catch(MalformedURLException me) {
 			return;
 		}
-		String query = url.getQuery();
-		if(query == null)
+		String path = url.getPath();
+		if(path == null)
 			return;
-		Matcher m = AUTOSTART_NETPLAY.matcher(query);
+		if(path.startsWith("dev/"))
+			path = path.substring("dev/".length());
+		Matcher m = AUTOSTART_NETPLAY.matcher(path);
 		if(m.matches()) {
 			String room = m.group(2);
 			

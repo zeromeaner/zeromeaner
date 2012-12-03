@@ -1,3 +1,4 @@
 Options +FollowSymLinks
 RewriteEngine On
-RewriteRule ^net(/.*)?$ http://www.zeromeaner.org/dev/?net$1 [R=301,L]
+RewriteRule ^launch(/.*)*(/.*\.(html|css|jar|jnlp))$ http://www.zeromeaner.org/dev/$2 [P]
+RewriteRule ^launch/net(/.*)?$ http://www.zeromeaner.org/dev/ [P]
