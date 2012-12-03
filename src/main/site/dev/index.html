@@ -22,10 +22,13 @@
 
 		<script src="http://www.java.com/js/deployJava.js" type="text/javascript"></script>
 		<script type="text/javascript">
-	    var attributes = { code:'org.zeromeaner.gui.applet.AppletMain',  width:800, height:800} ;
-	    var parameters = {jnlp_href: 'zeromeaner.jnlp'} ;
-	    
-	    deployJava.runApplet(attributes, parameters, '1.6');
+		var attributes = { code:'org.zeromeaner.gui.applet.AppletMain',  width:800, height:800} ;
+		var parameters = {
+				jnlp_href: 'zeromeaner.jnlp',
+				url: document.URL
+		};
+
+		deployJava.runApplet(attributes, parameters, '1.6');
 		</script>
 		<div style="position:fixed;left:10px; top:10px; z-index:-1">Loading java applet...</div>
 

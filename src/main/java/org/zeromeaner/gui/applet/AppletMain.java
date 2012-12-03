@@ -10,6 +10,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -50,55 +52,61 @@ public class AppletMain extends Applet {
 
 		instance = this;
 
-		try {
-			setLayout(new BorderLayout());
-			desktop = new JDesktopPane();
-			desktop.setBackground(Color.decode("0x444488"));
-			add(desktop, BorderLayout.CENTER);
-			
-			userId = CookieAccess.get().get("userId");
-			if(userId == null)
-				userId = getParameter("userId");
-			while(userId == null || "default".equals(userId)) {
-				userId = "none";
-				int create = JOptionPane.showInternalConfirmDialog(desktop, "To save user configuration, such as custom keys, you must create a user id.\nThere is no need to remember a password.\nIf you choose not to create a user ID the default settings will be used.\n\nCreate a user ID now?", "Create User ID?", JOptionPane.YES_NO_OPTION);
-				if(create == JOptionPane.YES_OPTION) {
-					userId = (String) JOptionPane.showInternalInputDialog(desktop, "Enter Config ID", "Enter Config ID", JOptionPane.QUESTION_MESSAGE, null, null, "");
-					if(userId != null)
-						CookieAccess.set("userId", userId);
-					else
-						userId = "default";
-				}
+		setLayout(new BorderLayout());
+		desktop = new JDesktopPane();
+		desktop.setBackground(Color.decode("0x444488"));
+		add(desktop, BorderLayout.CENTER);
+
+		userId = CookieAccess.get().get("userId");
+		if(userId == null)
+			userId = getParameter("userId");
+		while(userId == null || "default".equals(userId)) {
+			userId = "none";
+			int create = JOptionPane.showInternalConfirmDialog(desktop, "To save user configuration, such as custom keys, you must create a user id.\nThere is no need to remember a password.\nIf you choose not to create a user ID the default settings will be used.\n\nCreate a user ID now?", "Create User ID?", JOptionPane.YES_NO_OPTION);
+			if(create == JOptionPane.YES_OPTION) {
+				userId = (String) JOptionPane.showInternalInputDialog(desktop, "Enter Config ID", "Enter Config ID", JOptionPane.QUESTION_MESSAGE, null, null, "");
+				if(userId != null)
+					CookieAccess.set("userId", userId);
+				else
+					userId = "default";
 			}
-			
-			final JInternalFrame launching = new JInternalFrame("Launching zeromeaner");
-			launching.setLayout(new BorderLayout());
-			JProgressBar pb = new JProgressBar();
-			pb.setIndeterminate(true);
-			launching.add(pb, BorderLayout.CENTER);
-			launching.pack();
-			launching.setSize(400, 150);
-			desktop.add(launching);
-			launching.setVisible(true);
-			
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					NullpoMinoInternalFrame.main(new String[0]);
-					launching.setVisible(false);
-				}
-			}).start();
-		} catch(Throwable t) {
-			StringWriter sw = new StringWriter();
-			PrintWriter pw = new PrintWriter(sw);
-			t.printStackTrace(pw);
-			pw.flush();
-			JOptionPane.showMessageDialog(this, sw);
 		}
+
+		final JInternalFrame launching = new JInternalFrame("Launching zeromeaner");
+		launching.setLayout(new BorderLayout());
+		JProgressBar pb = new JProgressBar();
+		pb.setIndeterminate(true);
+		launching.add(pb, BorderLayout.CENTER);
+		launching.pack();
+		launching.setSize(400, 150);
+		desktop.add(launching);
+		launching.setVisible(true);
+
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				NullpoMinoInternalFrame.main(new String[0]);
+				launching.setVisible(false);
+				autostartNetplay();
+			}
+		}).start();
 	}
 
 	@Override
 	public void destroy() {
 		NullpoMinoInternalFrame.mainFrame.shutdown();
+	}
+	
+	public void autostartNetplay() {
+		URL url;
+		try {
+			url = new URL(getParameter("url"));
+		} catch(MalformedURLException me) {
+			throw new RuntimeException(me);
+		}
+		String path = url.getPath();
+		if(path.startsWith("dev/"))
+			path = path.substring("dev/".length());
+		
 	}
 }
