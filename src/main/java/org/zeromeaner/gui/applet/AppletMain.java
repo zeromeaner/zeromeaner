@@ -133,22 +133,40 @@ public class AppletMain extends Applet {
 			nlf.listboxServerList.setSelectedIndex(0);
 			nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "ServerSelect_Connect"));
 			
-			if(room == null || room.isEmpty())
-				return;
-			// Find the room
-			for(int row = 0; row < nlf.tablemodelRoomList.getRowCount(); row++) {
-				if(room.equals(nlf.tablemodelRoomList.getValueAt(row, 1))) {
-					int columnID = nlf.tablemodelRoomList.findColumn(nlf.getUIText(nlf.ROOMTABLE_COLUMNNAMES[0]));
-					String strRoomID = (String)nlf.tablemodelRoomList.getValueAt(row, columnID);
-					int roomID = Integer.parseInt(strRoomID);
-					nlf.joinRoom(roomID, false);
-					return;
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(2000);
+					} catch(InterruptedException ie) {
+					}
 				}
-			}
+			});
 			
-			// Room not found
-			nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Lobby_RoomCreate"));
-			nlf.txtfldCreateRatedName.setText(room);
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					if(room == null || room.isEmpty())
+						return;
+					// Find the room
+					for(int row = 0; row < nlf.tablemodelRoomList.getRowCount(); row++) {
+						int namecol = nlf.tablemodelRoomList.findColumn(nlf.getUIText(nlf.ROOMTABLE_COLUMNNAMES[1]));
+						if(room.equals(nlf.tablemodelRoomList.getValueAt(row, namecol))) {
+//						if(room.equals(nlf.tablemodelRoomList.getValueAt(row, 1))) {
+							int columnID = nlf.tablemodelRoomList.findColumn(nlf.getUIText(nlf.ROOMTABLE_COLUMNNAMES[0]));
+							String strRoomID = (String)nlf.tablemodelRoomList.getValueAt(row, columnID);
+							int roomID = Integer.parseInt(strRoomID);
+							nlf.joinRoom(roomID, false);
+							return;
+						}
+					}
+					
+					// Room not found
+					nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Lobby_RoomCreate"));
+					nlf.txtfldCreateRatedName.setText(room);
+				}
+			});
+			
 		}
 	}
 }
