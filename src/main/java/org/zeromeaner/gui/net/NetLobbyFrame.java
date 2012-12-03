@@ -270,7 +270,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	protected JTextField txtfldPlayerTeam;
 
 	/** Listbox for servers (Server select screen) */
-	protected JList listboxServerList;
+	public JList listboxServerList;
 
 	/** Listbox data for servers (Server select screen) */
 	protected DefaultListModel listmodelServerList;

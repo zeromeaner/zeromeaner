@@ -12,6 +12,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -87,7 +89,12 @@ public class AppletMain extends Applet {
 			public void run() {
 				NullpoMinoInternalFrame.main(new String[0]);
 				launching.setVisible(false);
-				autostartNetplay();
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						autostartNetplay();
+					}
+				});
 			}
 		}).start();
 	}
@@ -97,6 +104,8 @@ public class AppletMain extends Applet {
 		NullpoMinoInternalFrame.mainFrame.shutdown();
 	}
 	
+	private static Pattern AUTOSTART_NETPLAY = Pattern.compile("net(/(.*))?");
+	
 	public void autostartNetplay() {
 		URL url;
 		try {
@@ -104,9 +113,14 @@ public class AppletMain extends Applet {
 		} catch(MalformedURLException me) {
 			throw new RuntimeException(me);
 		}
-		String path = url.getPath();
-		if(path.startsWith("dev/"))
-			path = path.substring("dev/".length());
-		
+		String query = url.getQuery();
+		if(query == null)
+			return;
+		Matcher m = AUTOSTART_NETPLAY.matcher(query);
+		if(m.matches()) {
+			NullpoMinoInternalFrame.mainFrame.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Menu_NetPlay"));
+			NullpoMinoInternalFrame.netLobby.frame.listboxServerList.setSelectedIndex(0);
+			NullpoMinoInternalFrame.netLobby.frame.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "ServerSelect_Connect"));
+		}
 	}
 }
