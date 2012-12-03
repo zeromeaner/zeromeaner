@@ -123,13 +123,13 @@ public class AppletMain extends Applet {
 			path = path.substring("/dev/".length());
 		Matcher m = AUTOSTART_NETPLAY.matcher(path);
 		if(m.matches()) {
-			String room = m.group(2);
+			final String room = m.group(2);
 			
 			// Launch netplay
 			NullpoMinoInternalFrame.mainFrame.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Menu_NetPlay"));
 			
 			// Connect to the server
-			NetLobbyFrame nlf = NullpoMinoInternalFrame.netLobby.frame;
+			final NetLobbyFrame nlf = NullpoMinoInternalFrame.netLobby.frame;
 			nlf.listboxServerList.setSelectedIndex(0);
 			nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "ServerSelect_Connect"));
 			
@@ -146,7 +146,12 @@ public class AppletMain extends Applet {
 			
 			// Room not found
 			nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Lobby_RoomCreate"));
-			nlf.txtfldCreateRoomName.setText(room);
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					nlf.txtfldCreateRoomName.setText(room);
+				}
+			});
 		}
 	}
 }
