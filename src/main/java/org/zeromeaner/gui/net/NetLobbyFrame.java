@@ -422,7 +422,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	/** OK button(Server add screen) */
 	protected JButton btnServerAddOK;
 
-	protected JTextField txtfldCreateRatedName;
+	public JTextField txtfldCreateRatedName;
 
 	/** Cancel button (Created rated waiting screen) */
 	protected JButton btnCreateRatedWaitingCancel;
