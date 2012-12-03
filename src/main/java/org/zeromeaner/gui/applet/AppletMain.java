@@ -25,6 +25,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.table.DefaultTableModel;
+
+import org.zeromeaner.gui.net.NetLobbyFrame;
 
 public class AppletMain extends Applet {
 	public static AppletMain instance;
@@ -118,9 +121,30 @@ public class AppletMain extends Applet {
 			return;
 		Matcher m = AUTOSTART_NETPLAY.matcher(query);
 		if(m.matches()) {
+			String room = m.group(2);
+			
+			// Launch netplay
 			NullpoMinoInternalFrame.mainFrame.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Menu_NetPlay"));
-			NullpoMinoInternalFrame.netLobby.frame.listboxServerList.setSelectedIndex(0);
-			NullpoMinoInternalFrame.netLobby.frame.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "ServerSelect_Connect"));
+			
+			// Connect to the server
+			NetLobbyFrame nlf = NullpoMinoInternalFrame.netLobby.frame;
+			nlf.listboxServerList.setSelectedIndex(0);
+			nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "ServerSelect_Connect"));
+			
+			if(room == null || room.isEmpty())
+				return;
+			// Find the room
+			for(int i = 0; i < nlf.tablemodelRoomList.getRowCount(); i++) {
+				if(room.equals(nlf.tablemodelRoomList.getValueAt(i, 1))) {
+					nlf.tableRoomList.getSelectionModel().setSelectionInterval(i, i);
+					nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Room_Join"));
+					return;
+				}
+			}
+			
+			// Room not found
+			nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Lobby_RoomCreate"));
+			nlf.txtfldCreateRoomName.setText(room);
 		}
 	}
 }

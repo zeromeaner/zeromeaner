@@ -318,13 +318,13 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	protected JTextField txtfldRoomListTeam;
 
 	/** Room list table */
-	protected JTable tableRoomList;
+	public JTable tableRoomList;
 
 	/** Room list tableのカラム名(翻訳後) */
-	protected String[] strTableColumnNames;
+	public String[] strTableColumnNames;
 
 	/** Room list tableの data */
-	protected DefaultTableModel tablemodelRoomList;
+	public DefaultTableModel tablemodelRoomList;
 
 	/** Chat logとPlayerリストの仕切り線(Lobby screen) */
 	protected JSplitPane splitLobbyChat;
@@ -443,7 +443,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	protected JButton btnCreateRatedCancel;
 
 	/** ルーム名(Create room screen) */
-	protected JTextField txtfldCreateRoomName;
+	public JTextField txtfldCreateRoomName;
 
 	/** Game Mode (Create room screen) */
 	protected JComboBox comboboxCreateRoomMode;
