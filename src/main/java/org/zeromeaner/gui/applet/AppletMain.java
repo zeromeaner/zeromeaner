@@ -136,10 +136,12 @@ public class AppletMain extends Applet {
 			if(room == null || room.isEmpty())
 				return;
 			// Find the room
-			for(int i = 0; i < nlf.tablemodelRoomList.getRowCount(); i++) {
-				if(room.equals(nlf.tablemodelRoomList.getValueAt(i, 1))) {
-					nlf.tableRoomList.getSelectionModel().setSelectionInterval(i, i);
-					nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Room_Join"));
+			for(int row = 0; row < nlf.tablemodelRoomList.getRowCount(); row++) {
+				if(room.equals(nlf.tablemodelRoomList.getValueAt(row, 1))) {
+					int columnID = nlf.tablemodelRoomList.findColumn(nlf.getUIText(nlf.ROOMTABLE_COLUMNNAMES[0]));
+					String strRoomID = (String)nlf.tablemodelRoomList.getValueAt(row, columnID);
+					int roomID = Integer.parseInt(strRoomID);
+					nlf.joinRoom(roomID, false);
 					return;
 				}
 			}
