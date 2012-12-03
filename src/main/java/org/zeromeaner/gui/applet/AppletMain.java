@@ -111,7 +111,7 @@ public class AppletMain extends Applet {
 		try {
 			url = new URL(getParameter("zero_url"));
 		} catch(MalformedURLException me) {
-			throw new RuntimeException(me);
+			return;
 		}
 		String query = url.getQuery();
 		if(query == null)
