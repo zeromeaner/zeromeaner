@@ -1,0 +1,3 @@
+Options +FollowSymLinks
+RewriteEngine On
+RewriteRule ^dev/net/(.*)$ http://www.zeromeaner.org/dev/?net=$1 [R=301,L]
