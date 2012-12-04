@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eviline.randomizer.MaliciousRandomizer.MaliciousRandomizerProperties;
 import org.eviline.randomizer.Randomizer;
@@ -29,7 +30,7 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 	
 	protected NetLobbyFrame netLobby;
 	
-	protected Semaphore sync;
+	protected AtomicInteger sync;
 	
 	public TNNetVSBattleMode() {
 		LINE_ATTACK_TABLE =
@@ -119,18 +120,45 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 	
 	@Override
 	public boolean onReady(GameEngine engine, int playerID) {
-		sync = new Semaphore(0);
+		sync = new AtomicInteger(0);
 		return super.onReady(engine, playerID);
 	}
 	
 	@Override
 	public boolean onMove(GameEngine engine, int playerID) {
+		if(sync.get() > 0)
+			return true;
+		
 		engine.randomizer = randomizers.get(engine);
 		retaunt(engine);
 		
 		return super.onMove(engine, playerID);
 	}
 	
+	@Override
+	public void netlobbyOnMessage(NetLobbyFrame lobby, NetPlayerClient client, String[] message) throws IOException {
+		super.netlobbyOnMessage(lobby, client, message);
+		System.out.println(Arrays.toString(message));
+		if("game".equals(message[0])) {
+			if("eviline".equals(message[3])) {
+				if("locked".equals(message[4])) {
+					int playerID = Integer.parseInt(message[5]);
+					sync.decrementAndGet();
+				}
+			}
+		}
+	}
+
+	@Override
+	public void pieceLocked(GameEngine engine, int playerID, int lines) {
+		netLobby.netPlayerClient.send("game\teviline\tlocked\t" + netvsMySeatID + "\n");
+	
+		sync.addAndGet(netLobby.netPlayerClient.getPlayerCount() - 1);
+		
+		regenerate(engine);
+		super.pieceLocked(engine, playerID, lines);
+	}
+
 	public void retaunt(GameEngine engine) {
 		String taunt = ((TNRandomizer) engine.randomizer).field.getProvider().getTaunt();
 		if(taunt == null || taunt.isEmpty())
@@ -212,30 +240,6 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 
 		retaunt(engine);
 		
-	}
-	
-	@Override
-	public void netlobbyOnMessage(NetLobbyFrame lobby, NetPlayerClient client, String[] message) throws IOException {
-		super.netlobbyOnMessage(lobby, client, message);
-		System.out.println(Arrays.toString(message));
-		if("game".equals(message[0])) {
-			if("eviline".equals(message[3])) {
-				if("locked".equals(message[4])) {
-					int playerID = Integer.parseInt(message[5]);
-					sync.release();
-				}
-			}
-		}
-	}
-	
-	@Override
-	public void pieceLocked(GameEngine engine, int playerID, int lines) {
-		netLobby.netPlayerClient.send("game\teviline\tlocked\t" + netvsMySeatID + "\n");
-
-		sync.acquireUninterruptibly(netLobby.netPlayerClient.getPlayerCount() - 1);
-		
-		regenerate(engine);
-		super.pieceLocked(engine, playerID, lines);
 	}
 	
 	@Override
