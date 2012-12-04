@@ -146,7 +146,13 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 					sync.decrementAndGet();
 				}
 			}
+			if("resultsscreen".equals(message[3]))
+				sync.set(0);
 		}
+		if("playerlogout".equals(message[0]))
+			sync.decrementAndGet();
+		if("dead".equals(message[0]))
+			sync.decrementAndGet();
 	}
 
 	@Override
