@@ -5,6 +5,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eviline.randomizer.MaliciousRandomizer.MaliciousRandomizerProperties;
 import org.eviline.randomizer.Randomizer;
@@ -20,13 +24,13 @@ import org.zeromeaner.gui.net.NetLobbyFrame;
 import org.zeromeaner.util.GeneralUtil;
 
 public class TNNetVSBattleMode extends NetVSBattleMode {
-	protected boolean waiting = false;
-	
 	protected EventReceiver receiver;
 	
 	protected Map<GameEngine, TNNetplayRandomizer> randomizers = new HashMap<GameEngine, TNNetplayRandomizer>();
 	
-	protected Map<Integer, Boolean> locked = new TreeMap<Integer, Boolean>();
+	protected NetLobbyFrame netLobby;
+	
+	protected AtomicInteger sync;
 	
 	public TNNetVSBattleMode() {
 		LINE_ATTACK_TABLE =
@@ -82,9 +86,6 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 		randomizers.put(engine, (TNNetplayRandomizer) engine.randomizer);
 		((TNRandomizer) engine.randomizer).setEngine(engine);
 		engine.wallkick = new StandardWallkick();
-		locked.clear();
-		locked.put(playerID, false);
-		waiting = false;
 	}
 	
 	@Override
@@ -112,23 +113,58 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 	}
 	
 	@Override
-	public boolean onMove(GameEngine engine, int playerID) {
-		engine.randomizer = randomizers.get(engine);
-		retaunt(engine);
-		if(!waiting)
-			return super.onMove(engine, playerID);
-		
-//		int next = engine.randomizer.next();
-//		if(next == -1)
-//			return true;
-		
-//		regenerate(engine);
-//		engine.statARE();
-//		waiting = false;
-		
-		return true;
+	public void netplayInit(Object obj) {
+		netLobby = (NetLobbyFrame) obj;
+		super.netplayInit(obj);
 	}
 	
+	@Override
+	public boolean onReady(GameEngine engine, int playerID) {
+		sync = new AtomicInteger(0);
+		return super.onReady(engine, playerID);
+	}
+	
+	@Override
+	public boolean onMove(GameEngine engine, int playerID) {
+		if(sync.get() > 0)
+			return true;
+		
+		engine.randomizer = randomizers.get(engine);
+		retaunt(engine);
+		
+		return super.onMove(engine, playerID);
+	}
+	
+	@Override
+	public void netlobbyOnMessage(NetLobbyFrame lobby, NetPlayerClient client, String[] message) throws IOException {
+		super.netlobbyOnMessage(lobby, client, message);
+		System.out.println(Arrays.toString(message));
+		if("game".equals(message[0])) {
+			if("eviline".equals(message[3])) {
+				if("locked".equals(message[4])) {
+					int playerID = Integer.parseInt(message[5]);
+					sync.decrementAndGet();
+				}
+			}
+			if("resultsscreen".equals(message[3]))
+				sync.set(0);
+		}
+		if("playerlogout".equals(message[0]))
+			sync.decrementAndGet();
+		if("dead".equals(message[0]))
+			sync.decrementAndGet();
+	}
+
+	@Override
+	public void pieceLocked(GameEngine engine, int playerID, int lines) {
+		netLobby.netPlayerClient.send("game\teviline\tlocked\t" + netvsMySeatID + "\n");
+	
+		sync.addAndGet(netLobby.netPlayerClient.getPlayerCount() - 1);
+		
+		regenerate(engine);
+		super.pieceLocked(engine, playerID, lines);
+	}
+
 	public void retaunt(GameEngine engine) {
 		String taunt = ((TNRandomizer) engine.randomizer).field.getProvider().getTaunt();
 		if(taunt == null || taunt.isEmpty())
@@ -210,49 +246,6 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 
 		retaunt(engine);
 		
-	}
-	
-	@Override
-	public void netlobbyOnMessage(NetLobbyFrame lobby, NetPlayerClient client, String[] message) throws IOException {
-		super.netlobbyOnMessage(lobby, client, message);
-		System.out.println(Arrays.toString(message));
-		if("game".equals(message[0])) {
-			if("eviline".equals(message[3])) {
-				if("locked".equals(message[4])) {
-					int playerID = Integer.parseInt(message[5]);
-					locked.put(playerID, true);
-					if(!locked.values().contains(false)) {
-						for(Map.Entry<Integer, Boolean> e : locked.entrySet()) {
-							e.setValue(false);
-						}
-						waiting = false;
-					}
-				}
-			}
-		}
-	}
-	
-	@Override
-	public void pieceLocked(GameEngine engine, int playerID, int lines) {
-		System.out.println(this + " locked player:" + netvsMySeatID);
-		netLobby.netPlayerClient.send("game\teviline\tlocked\t" + netvsMySeatID + "\n");
-		locked.put(netvsMySeatID, true);
-		System.out.println("locked:" + locked);
-		engine.randomizer = randomizers.get(engine);
-		if(!locked.values().contains(false)) {
-			for(GameEngine en : randomizers.keySet()) {
-				((TNRandomizer) en.randomizer).regenerate = true;
-			}
-			for(Map.Entry<Integer, Boolean> e : locked.entrySet()) {
-				e.setValue(false);
-			}
-			waiting = false;
-		} else {
-			waiting = true;
-		}		
-		
-		regenerate(engine);
-		super.pieceLocked(engine, playerID, lines);
 	}
 	
 	@Override
