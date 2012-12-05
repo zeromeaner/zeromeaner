@@ -94,6 +94,7 @@ import org.zeromeaner.gui.net.NetLobbyListener;
 import org.zeromeaner.gui.net.UpdateChecker;
 import org.zeromeaner.gui.net.UpdateCheckerListener;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
@@ -379,6 +380,13 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		} catch(IOException e) {
 			log.error("Failed to save global config", e);
 		}
+		
+		try {
+			log.info("Committing config cache");
+			ResourceDownloadStream.commitCache();
+		} catch(IOException e) {
+			log.error("Unable to save config cache", e);
+		}
 	}
 
 	/**
@@ -635,11 +643,11 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		menuFile.add(miNetPlay);
 
 		// 終了
-		JMenuItem miExit = new JMenuItem(getUIText("Menu_Exit"));
-		miExit.setMnemonic('X');
-		miExit.addActionListener(this);
-		miExit.setActionCommand("Menu_Exit");
-		menuFile.add(miExit);
+//		JMenuItem miExit = new JMenuItem(getUIText("Menu_Exit"));
+//		miExit.setMnemonic('X');
+//		miExit.addActionListener(this);
+//		miExit.setActionCommand("Menu_Exit");
+//		menuFile.add(miExit);
 
 		// 設定Menu
 		JMenu menuConfig = new JMenu(getUIText("Menu_Config"));
@@ -847,7 +855,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		propConfig.setProperty("mainwindow.x", getLocation().x);
 		propConfig.setProperty("mainwindow.y", getLocation().y);
 		saveConfig();
-		System.exit(0);
+//		System.exit(0);
 	}
 
 	/*
