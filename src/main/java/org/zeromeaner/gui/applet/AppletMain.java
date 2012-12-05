@@ -12,6 +12,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -95,7 +98,7 @@ public class AppletMain extends Applet {
 				EventQueue.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						autostartNetplay();
+						autoLaunch();
 					}
 				});
 			}
@@ -106,69 +109,114 @@ public class AppletMain extends Applet {
 	public void destroy() {
 		NullpoMinoInternalFrame.mainFrame.shutdown();
 	}
-	
-	private static Pattern AUTOSTART_NETPLAY = Pattern.compile("launch/net(/(.*))?");
-	
-	public void autostartNetplay() {
+
+	public void autoLaunch() {
 		URL url;
 		try {
 			url = new URL(getParameter("zero_url"));
 		} catch(MalformedURLException me) {
 			return;
 		}
-		String path = url.getPath();
-		if(path == null)
+		String query = url.getQuery();
+		if(query == null)
 			return;
-		if(path.startsWith("/dev/"))
-			path = path.substring("/dev/".length());
-		if(path.startsWith("/"))
-			path = path.substring(1);
-		Matcher m = AUTOSTART_NETPLAY.matcher(path);
-		if(m.matches()) {
-			final String room = m.group(2);
-			
-			// Launch netplay
-			NullpoMinoInternalFrame.mainFrame.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Menu_NetPlay"));
-			
-			// Connect to the server
-			final NetLobbyFrame nlf = NullpoMinoInternalFrame.netLobby.frame;
-			nlf.listboxServerList.setSelectedIndex(0);
-			nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "ServerSelect_Connect"));
-			
-			EventQueue.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						Thread.sleep(2000);
-					} catch(InterruptedException ie) {
-					}
+		Iterator<String> commands = Arrays.asList(query.split("/")).iterator();
+		while(commands.hasNext()) {
+			String cmd = commands.next();
+			if("net".equals(cmd)) {
+				autoNetplay(commands);
+			}
+		}
+	}
+
+	private void autoNetplay(Iterator<String> commands) {
+		final String room;
+		if(commands.hasNext())
+			room = commands.next();
+		else
+			room = null;
+		
+		final boolean customize = commands.hasNext() && "customize".equals(commands.next());
+		
+		final AtomicBoolean createdRoom = new AtomicBoolean(false);
+		
+		// Launch netplay
+		NullpoMinoInternalFrame.mainFrame.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Menu_NetPlay"));
+
+		// Connect to the server
+		final NetLobbyFrame nlf = NullpoMinoInternalFrame.netLobby.frame;
+		nlf.listboxServerList.setSelectedIndex(0);
+		nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "ServerSelect_Connect"));
+		
+		if(room == null || room.isEmpty())
+			return;
+
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(4000);
+				} catch(InterruptedException ie) {
 				}
-			});
-			
-			EventQueue.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					if(room == null || room.isEmpty())
+			}
+		});
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				// Find the room
+				for(int row = 0; row < nlf.tablemodelRoomList.getRowCount(); row++) {
+					int namecol = nlf.tablemodelRoomList.findColumn(nlf.getUIText(nlf.ROOMTABLE_COLUMNNAMES[1]));
+					if(room.equals(nlf.tablemodelRoomList.getValueAt(row, namecol))) {
+						//								if(room.equals(nlf.tablemodelRoomList.getValueAt(row, 1))) {
+						int columnID = nlf.tablemodelRoomList.findColumn(nlf.getUIText(nlf.ROOMTABLE_COLUMNNAMES[0]));
+						String strRoomID = (String)nlf.tablemodelRoomList.getValueAt(row, columnID);
+						int roomID = Integer.parseInt(strRoomID);
+						nlf.joinRoom(roomID, false);
 						return;
-					// Find the room
-					for(int row = 0; row < nlf.tablemodelRoomList.getRowCount(); row++) {
-						int namecol = nlf.tablemodelRoomList.findColumn(nlf.getUIText(nlf.ROOMTABLE_COLUMNNAMES[1]));
-						if(room.equals(nlf.tablemodelRoomList.getValueAt(row, namecol))) {
-//						if(room.equals(nlf.tablemodelRoomList.getValueAt(row, 1))) {
-							int columnID = nlf.tablemodelRoomList.findColumn(nlf.getUIText(nlf.ROOMTABLE_COLUMNNAMES[0]));
-							String strRoomID = (String)nlf.tablemodelRoomList.getValueAt(row, columnID);
-							int roomID = Integer.parseInt(strRoomID);
-							nlf.joinRoom(roomID, false);
-							return;
-						}
 					}
-					
-					// Room not found
-					nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Lobby_RoomCreate"));
-					nlf.txtfldCreateRatedName.setText(room);
 				}
-			});
+
+				// Room not found
+				nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Lobby_RoomCreate"));
+				nlf.txtfldCreateRatedName.setText(room);
+				
+				createdRoom.set(true);
+			}
+		});
+		
+		if(!customize)
+			return;
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				if(!createdRoom.get())
+					return;
+//				nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CreateRated_Custom"));
+				nlf.btnCreateRatedCustom.doClick();
+			}
+		});
+		while(commands.hasNext()) {
+			String cmd = commands.next();
+			if("mode".equals(cmd)) {
+				final String mode = commands.next();
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						nlf.comboboxCreateRoomMode.getModel().setSelectedItem(mode);
+					}
+				});
+			} else if("ok".equals(cmd)) {
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						if(!createdRoom.get())
+							return;
+						nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CreateRated_OK"));
+					}
+				});
+			}
 			
 		}
 	}
+
 }

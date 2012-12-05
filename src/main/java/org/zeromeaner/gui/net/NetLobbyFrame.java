@@ -437,7 +437,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	protected JButton btnCreateRatedOK;
 
 	/** Custom button (Create rated screen) */
-	protected JButton btnCreateRatedCustom;
+	public JButton btnCreateRatedCustom;
 
 	/** Cancel button (Created rated screen) */
 	protected JButton btnCreateRatedCancel;
@@ -446,7 +446,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	public JTextField txtfldCreateRoomName;
 
 	/** Game Mode (Create room screen) */
-	protected JComboBox comboboxCreateRoomMode;
+	public JComboBox comboboxCreateRoomMode;
 
 	/** 参加人count(Create room screen) */
 	protected JSpinner spinnerCreateRoomMaxPlayers;
