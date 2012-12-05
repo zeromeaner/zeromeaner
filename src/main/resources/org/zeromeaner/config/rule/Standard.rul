@@ -97,7 +97,7 @@
 0.ruleopt.pieceSpawnY.3.0=0
 0.ruleopt.softdropMultiplyNativeSpeed=true
 0.ruleopt.lineCancelRotate=false
-0.ruleopt.softdropSpeed=20.0
+0.ruleopt.softdropSpeed=50.0
 0.ruleopt.maxLineDelay=-1
 0.ruleopt.pieceSpawnY.10.3=0
 0.ruleopt.fieldLockoutDeath=true
