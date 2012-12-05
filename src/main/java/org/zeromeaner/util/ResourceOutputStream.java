@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.zeromeaner.gui.applet.AppletMain;
+import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 
 import com.googlecode.sardine.Factory;
 import com.googlecode.sardine.Sardine;
@@ -42,26 +43,27 @@ public class ResourceOutputStream extends FilterOutputStream {
 	}
 	
 	public static class ResourceUploadStream extends FilterOutputStream {
-		public static OutputStream getUploadStream(String resource) throws IOException {
+		public static OutputStream getUploadStream(final String resource) throws IOException {
 			final URL url = new URL("http://www.zeromeaner.org/webdav/" + AppletMain.userId + "/" + resource);
 			System.out.println("Creating new ResourceUploadStream to " + url);
 			return new ByteArrayOutputStream() {
 				@Override
 				public void close() throws IOException {
 					super.close();
-					String dir = url.toString().substring(0, url.toString().lastIndexOf("/"));
-					List<String> dirs = new ArrayList<String>();
-					while(!dir.equals("http://www.zeromeaner.org/webdav")) {
-						dirs.add(0, dir);
-						dir = dir.substring(0, dir.lastIndexOf("/"));
-					}
-					for(String d : dirs) {
-						try {
-							s.createDirectory(d);
-						} catch(SardineException se) {
-						}
-					}
-					s.put(url.toString(), toByteArray());
+					ResourceDownloadStream.getCache().put(resource, toByteArray());
+//					String dir = url.toString().substring(0, url.toString().lastIndexOf("/"));
+//					List<String> dirs = new ArrayList<String>();
+//					while(!dir.equals("http://www.zeromeaner.org/webdav")) {
+//						dirs.add(0, dir);
+//						dir = dir.substring(0, dir.lastIndexOf("/"));
+//					}
+//					for(String d : dirs) {
+//						try {
+//							s.createDirectory(d);
+//						} catch(SardineException se) {
+//						}
+//					}
+//					s.put(url.toString(), toByteArray());
 				}
 			};
 		}

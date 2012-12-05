@@ -94,6 +94,7 @@ import org.zeromeaner.gui.net.NetLobbyListener;
 import org.zeromeaner.gui.net.UpdateChecker;
 import org.zeromeaner.gui.net.UpdateCheckerListener;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
@@ -378,6 +379,13 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			out.close();
 		} catch(IOException e) {
 			log.error("Failed to save global config", e);
+		}
+		
+		try {
+			log.info("Committing config cache");
+			ResourceDownloadStream.commitCache();
+		} catch(IOException e) {
+			log.error("Unable to save config cache", e);
 		}
 	}
 
