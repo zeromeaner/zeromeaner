@@ -2,4 +2,4 @@ Options +FollowSymLinks
 RewriteEngine On
 RewriteRule ^launch(/.*)*(/.*\.(html|css|jar|jnlp))$ http://www.zeromeaner.org/$2 [P]
 RewriteRule ^launch/net(/.*)?$ http://www.zeromeaner.org/ [P]
-RewriteRule ^eviline http://www.zeromeaner.org/?net/eviline/customize/mode/NET-EVILINE-VS-BATTLE/ok
+RewriteRule ^eviline$ http://www.zeromeaner.org/?net/eviline/customize/mode/NET-EVILINE-VS-BATTLE/ok
