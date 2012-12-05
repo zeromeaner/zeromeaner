@@ -643,11 +643,11 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		menuFile.add(miNetPlay);
 
 		// 終了
-		JMenuItem miExit = new JMenuItem(getUIText("Menu_Exit"));
-		miExit.setMnemonic('X');
-		miExit.addActionListener(this);
-		miExit.setActionCommand("Menu_Exit");
-		menuFile.add(miExit);
+//		JMenuItem miExit = new JMenuItem(getUIText("Menu_Exit"));
+//		miExit.setMnemonic('X');
+//		miExit.addActionListener(this);
+//		miExit.setActionCommand("Menu_Exit");
+//		menuFile.add(miExit);
 
 		// 設定Menu
 		JMenu menuConfig = new JMenu(getUIText("Menu_Config"));
@@ -855,7 +855,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		propConfig.setProperty("mainwindow.x", getLocation().x);
 		propConfig.setProperty("mainwindow.y", getLocation().y);
 		saveConfig();
-		System.exit(0);
+//		System.exit(0);
 	}
 
 	/*
