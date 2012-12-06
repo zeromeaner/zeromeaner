@@ -8,6 +8,13 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -80,13 +87,47 @@ public class AppletMain extends Applet {
 			}
 		}
 
+		final JLabel consoleLabel = new JLabel(" ");
+		PipedOutputStream pout = new PipedOutputStream();
+		PipedInputStream pin;
+		try {
+			pin = new PipedInputStream(pout);
+		} catch(IOException ioe) {
+			pin = null;
+		}
+		if(pin != null) {
+			final PipedInputStream fpin = pin;
+			final PrintStream sout = System.out;
+			System.setOut(new PrintStream(pout));
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					BufferedReader r = new BufferedReader(new InputStreamReader(fpin));
+					try {
+						for(String line = r.readLine(); line != null; line = r.readLine()) {
+							final String fline = line;
+							EventQueue.invokeLater(new Runnable() {
+								public void run() {
+									consoleLabel.setText(fline);
+									sout.println(fline);
+								}
+							});
+						}
+					} catch(IOException ioe) {
+					}
+				}
+			}).start();
+		}
+		
 		final JInternalFrame launching = new JInternalFrame("Launching zeromeaner");
 		launching.setLayout(new BorderLayout());
 		JProgressBar pb = new JProgressBar();
 		pb.setIndeterminate(true);
+		launching.add(new JLabel("Launching zeromeaner..."), BorderLayout.NORTH);
 		launching.add(pb, BorderLayout.CENTER);
+		launching.add(consoleLabel, BorderLayout.SOUTH);
 		launching.pack();
-		launching.setSize(400, 150);
+		launching.setSize(500, 125);
 		desktop.add(launching);
 		launching.setVisible(true);
 
