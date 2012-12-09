@@ -141,8 +141,8 @@ public class RetroManiaMode extends AbstractMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		lastscore = 0;
 		scgettime = 0;
 		levelTimer = 0;
@@ -173,8 +173,8 @@ public class RetroManiaMode extends AbstractMode {
 			loadSetting(owner.replayProp);
 		}
 
-		engine.owner.backgroundStatus.bg = startlevel/2;
-		if(engine.owner.backgroundStatus.bg > 19) engine.owner.backgroundStatus.bg = 19;
+		engine.getOwner().backgroundStatus.bg = startlevel/2;
+		if(engine.getOwner().backgroundStatus.bg > 19) engine.getOwner().backgroundStatus.bg = 19;
 		engine.framecolor = GameEngine.FRAME_COLOR_GRAY;
 	}
 
@@ -197,7 +197,7 @@ public class RetroManiaMode extends AbstractMode {
 	 */
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 3);
 
@@ -214,7 +214,7 @@ public class RetroManiaMode extends AbstractMode {
 					startlevel += change;
 					if (startlevel < 0) startlevel = 15;
 					if (startlevel > 15) startlevel = 0;
-					engine.owner.backgroundStatus.bg = startlevel/2;
+					engine.getOwner().backgroundStatus.bg = startlevel/2;
 					break;
 				case 2:
 					big = !big;

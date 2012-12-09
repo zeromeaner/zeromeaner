@@ -13,7 +13,7 @@ public abstract class AbstractRenderer extends EventRenderer {
 	public void drawMenuFont(GameEngine engine, int playerID, int x, int y, String str, int color, float scale) {
 		int x2 = (scale == 0.5f) ? x * 8 : x * 16;
 		int y2 = (scale == 0.5f) ? y * 8 : y * 16;
-		if(!engine.owner.menuOnly) {
+		if(!engine.getOwner().menuOnly) {
 			x2 += getFieldDisplayPositionX(engine, playerID) + 4;
 			if(engine.displaysize == -1) {
 				y2 += getFieldDisplayPositionY(engine, playerID) + 4;
@@ -29,7 +29,7 @@ public abstract class AbstractRenderer extends EventRenderer {
 	public void drawTTFMenuFont(GameEngine engine, int playerID, int x, int y, String str, int color) {
 		int x2 = x * 16;
 		int y2 = y * 16;
-		if(!engine.owner.menuOnly) {
+		if(!engine.getOwner().menuOnly) {
 			x2 += getFieldDisplayPositionX(engine, playerID) + 4;
 			if(engine.displaysize == -1) {
 				y2 += getFieldDisplayPositionY(engine, playerID) + 4;
@@ -41,7 +41,7 @@ public abstract class AbstractRenderer extends EventRenderer {
 	}
 	
 	public void drawScoreFont(GameEngine engine, int playerID, int x, int y, String str, int color, float scale) {
-		if(engine.owner.menuOnly) return;
+		if(engine.getOwner().menuOnly) return;
 		int size = (scale == 0.5f) ? 8 : 16;
 		printFontSpecific(getScoreDisplayPositionX(engine, playerID) + (x * size),
 				getScoreDisplayPositionY(engine, playerID) + (y * size),
@@ -49,7 +49,7 @@ public abstract class AbstractRenderer extends EventRenderer {
 	}
 	
 	public void drawTTFScoreFont(GameEngine engine, int playerID, int x, int y, String str, int color) {
-		if(engine.owner.menuOnly) return;
+		if(engine.getOwner().menuOnly) return;
 		printTTFFontSpecific(getScoreDisplayPositionX(engine, playerID) + (x * 16),
 				getScoreDisplayPositionY(engine, playerID) + (y * 16),
 				str, color);

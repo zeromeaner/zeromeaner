@@ -263,20 +263,20 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		numColors[playerID] = 4;
 		ojamaHard[playerID] = 4;
 		countdownDecremented[playerID] = true;
 		ojamaChecked[playerID] = false;
 
-		if(engine.owner.replayMode == false) {
-			loadOtherSetting(engine, engine.owner.modeConfig);
-			loadPreset(engine, engine.owner.modeConfig, -1 - playerID, "spf");
+		if(engine.getOwner().replayMode == false) {
+			loadOtherSetting(engine, engine.getOwner().modeConfig);
+			loadPreset(engine, engine.getOwner().modeConfig, -1 - playerID, "spf");
 			version = CURRENT_VERSION;
 		} else {
-			loadOtherSetting(engine, engine.owner.replayProp);
-			loadPreset(engine, engine.owner.replayProp, -1 - playerID, "spf");
+			loadOtherSetting(engine, engine.getOwner().replayProp);
+			loadPreset(engine, engine.getOwner().replayProp, -1 - playerID, "spf");
 			version = owner.replayProp.getProperty("avalanchevs.version", 0);
 		}
 	}
@@ -287,7 +287,7 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
 		// Menu
-		if((engine.owner.replayMode == false) && (engine.statc[4] == 0)) {
+		if((engine.getOwner().replayMode == false) && (engine.statc[4] == 0)) {
 			// Configuration changes
 			// Up
 			if(engine.ctrl.isMenuRepeatKey(Controller.BUTTON_UP)) {

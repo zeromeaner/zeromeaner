@@ -242,7 +242,7 @@ public class RanksAI extends AbstractAI implements Runnable {
 	@Override
 	public void init(GameEngine engine, int playerID) {
 		gEngine = engine;
-		gManager = engine.owner;
+		gManager = engine.getOwner();
 
 		// Inits the ranks
 		initRanks();

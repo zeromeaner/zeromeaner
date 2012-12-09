@@ -231,8 +231,8 @@ public class PhantomManiaMode extends AbstractMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 
 		nextseclv = 0;
 		lvupflag = true;
@@ -406,7 +406,7 @@ public class PhantomManiaMode extends AbstractMode {
 	 */
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 3);
 

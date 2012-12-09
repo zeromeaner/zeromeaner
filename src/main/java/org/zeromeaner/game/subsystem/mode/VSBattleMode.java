@@ -455,14 +455,14 @@ public class VSBattleMode extends AbstractMode {
 
 		hurryupCount[playerID] = 0;
 
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			version = CURRENT_VERSION;
-			loadOtherSetting(engine, engine.owner.modeConfig);
-			loadPreset(engine, engine.owner.modeConfig, -1 - playerID);
+			loadOtherSetting(engine, engine.getOwner().modeConfig);
+			loadPreset(engine, engine.getOwner().modeConfig, -1 - playerID);
 		} else {
 			version = owner.replayProp.getProperty("vsbattle.version", 0);
-			loadOtherSetting(engine, engine.owner.replayProp);
-			loadPreset(engine, engine.owner.replayProp, -1 - playerID);
+			loadOtherSetting(engine, engine.getOwner().replayProp);
+			loadPreset(engine, engine.getOwner().replayProp, -1 - playerID);
 		}
 	}
 
@@ -472,7 +472,7 @@ public class VSBattleMode extends AbstractMode {
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
 		// Menu
-		if((engine.owner.replayMode == false) && (engine.statc[4] == 0)) {
+		if((engine.getOwner().replayMode == false) && (engine.statc[4] == 0)) {
 			// Configuration changes
 			int change = updateCursor(engine, 27, playerID);
 

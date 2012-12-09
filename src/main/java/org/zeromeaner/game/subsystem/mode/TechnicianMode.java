@@ -208,8 +208,8 @@ public class TechnicianMode extends AbstractNetMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		goal = 0;
 		levelTimer = 0;
 		levelTimeOut = false;
@@ -240,11 +240,11 @@ public class TechnicianMode extends AbstractNetMode {
 		} else {
 			loadSetting(owner.replayProp);
 			// NET: Load name
-			netPlayerName = engine.owner.replayProp.getProperty(playerID + ".net.netPlayerName", "");
+			netPlayerName = engine.getOwner().replayProp.getProperty(playerID + ".net.netPlayerName", "");
 		}
 
-		engine.owner.backgroundStatus.bg = startlevel;
-		if(engine.owner.backgroundStatus.bg > 19) engine.owner.backgroundStatus.bg = 19;
+		engine.getOwner().backgroundStatus.bg = startlevel;
+		if(engine.getOwner().backgroundStatus.bg > 19) engine.getOwner().backgroundStatus.bg = 19;
 		engine.framecolor = GameEngine.FRAME_COLOR_GRAY;
 	}
 
@@ -281,7 +281,7 @@ public class TechnicianMode extends AbstractNetMode {
 			netOnUpdateNetPlayRanking(engine, goaltype);
 		}
 		// Menu
-		else if(engine.owner.replayMode == false) {
+		else if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 8);
 
@@ -298,8 +298,8 @@ public class TechnicianMode extends AbstractNetMode {
 					startlevel += change;
 					if(startlevel < 0) startlevel = 29;
 					if(startlevel > 29) startlevel = 0;
-					engine.owner.backgroundStatus.bg = startlevel;
-					if(engine.owner.backgroundStatus.bg > 19) engine.owner.backgroundStatus.bg = 19;
+					engine.getOwner().backgroundStatus.bg = startlevel;
+					if(engine.getOwner().backgroundStatus.bg > 19) engine.getOwner().backgroundStatus.bg = 19;
 					break;
 				case 2:
 					//enableTSpin = !enableTSpin;

@@ -171,8 +171,8 @@ public class MarathonPlusMode extends AbstractNetMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		lastscore = 0;
 		scgettime = 0;
 		lastevent = EVENT_NONE;
@@ -201,11 +201,11 @@ public class MarathonPlusMode extends AbstractNetMode {
 			loadSetting(owner.replayProp);
 
 			// NET: Load name
-			netPlayerName = engine.owner.replayProp.getProperty(playerID + ".net.netPlayerName", "");
+			netPlayerName = engine.getOwner().replayProp.getProperty(playerID + ".net.netPlayerName", "");
 		}
 
-		engine.owner.backgroundStatus.bg = startlevel;
-		if(engine.owner.backgroundStatus.bg > 19) engine.owner.backgroundStatus.bg = 19;
+		engine.getOwner().backgroundStatus.bg = startlevel;
+		if(engine.getOwner().backgroundStatus.bg > 19) engine.getOwner().backgroundStatus.bg = 19;
 		engine.framecolor = GameEngine.FRAME_COLOR_GRAY;
 	}
 
@@ -248,7 +248,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 			netOnUpdateNetPlayRanking(engine, netGetGoalType());
 		}
 		// Menu
-		else if(engine.owner.replayMode == false) {
+		else if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 7);
 
@@ -260,8 +260,8 @@ public class MarathonPlusMode extends AbstractNetMode {
 					startlevel += change;
 					if(startlevel < 0) startlevel = 20;
 					if(startlevel > 20) startlevel = 0;
-					engine.owner.backgroundStatus.bg = startlevel;
-					if(engine.owner.backgroundStatus.bg > 19) engine.owner.backgroundStatus.bg = 19;
+					engine.getOwner().backgroundStatus.bg = startlevel;
+					if(engine.getOwner().backgroundStatus.bg > 19) engine.getOwner().backgroundStatus.bg = 19;
 					break;
 				case 1:
 					//enableTSpin = !enableTSpin;
@@ -1087,7 +1087,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendStats(GameEngine engine) {
-		int bg = engine.owner.backgroundStatus.fadesw ? engine.owner.backgroundStatus.fadebg : engine.owner.backgroundStatus.bg;
+		int bg = engine.getOwner().backgroundStatus.fadesw ? engine.getOwner().backgroundStatus.fadebg : engine.getOwner().backgroundStatus.bg;
 		String msg = "game\tstats\t";
 		msg += engine.statistics.score + "\t" + engine.statistics.lines + "\t" + engine.statistics.totalPieceLocked + "\t";
 		msg += engine.statistics.time + "\t" + engine.statistics.level + "\t";
@@ -1121,7 +1121,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 		lastb2b = Boolean.parseBoolean(message[18]);
 		lastcombo = Integer.parseInt(message[19]);
 		lastpiece = Integer.parseInt(message[20]);
-		engine.owner.backgroundStatus.bg = Integer.parseInt(message[21]);
+		engine.getOwner().backgroundStatus.bg = Integer.parseInt(message[21]);
 		bonusLines = Integer.parseInt(message[22]);
 		bonusFlashNow = Integer.parseInt(message[23]);
 		bonusPieceCount = Integer.parseInt(message[24]);

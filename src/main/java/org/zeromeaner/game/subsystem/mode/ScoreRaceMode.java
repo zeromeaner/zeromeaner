@@ -154,8 +154,8 @@ public class ScoreRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		lastscore = 0;
 		scgettime = 0;
 		lastevent = EVENT_NONE;
@@ -173,17 +173,17 @@ public class ScoreRaceMode extends AbstractNetMode {
 
 		netPlayerInit(engine, playerID);
 
-		if(engine.owner.replayMode == false) {
-			presetNumber = engine.owner.modeConfig.getProperty("scorerace.presetNumber", 0);
-			loadPreset(engine, engine.owner.modeConfig, -1);
+		if(engine.getOwner().replayMode == false) {
+			presetNumber = engine.getOwner().modeConfig.getProperty("scorerace.presetNumber", 0);
+			loadPreset(engine, engine.getOwner().modeConfig, -1);
 			loadRanking(owner.modeConfig, engine.ruleopt.strRuleName);
 			version = CURRENT_VERSION;
 		} else {
 			presetNumber = 0;
-			loadPreset(engine, engine.owner.replayProp, -1);
-			version = engine.owner.replayProp.getProperty("scorerace.version", 0);
+			loadPreset(engine, engine.getOwner().replayProp, -1);
+			version = engine.getOwner().replayProp.getProperty("scorerace.version", 0);
 			// NET: Load name
-			netPlayerName = engine.owner.replayProp.getProperty(playerID + ".net.netPlayerName", "");
+			netPlayerName = engine.getOwner().replayProp.getProperty(playerID + ".net.netPlayerName", "");
 		}
 	}
 
@@ -249,7 +249,7 @@ public class ScoreRaceMode extends AbstractNetMode {
 			netOnUpdateNetPlayRanking(engine, goaltype);
 		}
 		// Menu
-		else if(engine.owner.replayMode == false) {
+		else if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 17, playerID);
 
@@ -819,8 +819,8 @@ public class ScoreRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	public void saveReplay(GameEngine engine, int playerID, CustomProperties prop) {
-		savePreset(engine, engine.owner.replayProp, -1);
-		engine.owner.replayProp.setProperty("scorerace.version", version);
+		savePreset(engine, engine.getOwner().replayProp, -1);
+		engine.getOwner().replayProp.setProperty("scorerace.version", version);
 
 		// NET: Save name
 		if((netPlayerName != null) && (netPlayerName.length() > 0)) {

@@ -106,7 +106,7 @@ public class ComboRaceBot extends AbstractAI implements Runnable {
 	public void init(GameEngine engine, int playerID) {
 		delay = 0;
 		gEngine = engine;
-		gManager = engine.owner;
+		gManager = engine.getOwner();
 		thinkRequest = new ThinkRequestMutex();
 		thinking = false;
 		threadRunning = false;
@@ -909,7 +909,7 @@ public class ComboRaceBot extends AbstractAI implements Runnable {
 	 * @param playerID Player ID
 	 */
 	public void renderState(GameEngine engine, int playerID){
-		EventRenderer r = engine.owner.receiver;
+		EventRenderer r = engine.getOwner().receiver;
 		r.drawScoreFont(engine, playerID, 19, 33, getName().toUpperCase(), EventRenderer.COLOR_GREEN, 0.5f);
 		r.drawScoreFont(engine, playerID, 24, 34, "X", EventRenderer.COLOR_BLUE, 0.5f);
 		r.drawScoreFont(engine, playerID, 27, 34, "Y", EventRenderer.COLOR_BLUE, 0.5f);
@@ -985,7 +985,7 @@ public class ComboRaceBot extends AbstractAI implements Runnable {
 	}
 
 	public void renderHint(GameEngine engine, int playerID) {
-		EventRenderer r = engine.owner.receiver;
+		EventRenderer r = engine.getOwner().receiver;
 		r.drawScoreFont(engine, playerID, 10, 3, "AI HINT MOVE:", EventRenderer.COLOR_GREEN);
 		if (bestPts > 0 && (thinkComplete || ((thinkCurrentPieceNo > 0)
 				&& (thinkCurrentPieceNo <= thinkLastPieceNo))))

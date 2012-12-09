@@ -141,8 +141,8 @@ public class AvalancheFeverMode extends AbstractAvalanche1PMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 
 		cleared = false;
 		boardsPlayed = 0;
@@ -193,7 +193,7 @@ public class AvalancheFeverMode extends AbstractAvalanche1PMode {
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
 		// Menu
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, (xyzzy == 573) ? 8 : 4);
 
@@ -515,7 +515,7 @@ public class AvalancheFeverMode extends AbstractAvalanche1PMode {
 		if (!fastinuse && engine.ctrl.isPress(Controller.BUTTON_F) &&
 				((fastenable == 2) || (engine.stat == GameEngine.STAT_LINECLEAR && fastenable == 1))) {
 			fastinuse = true;
-			for (int i = 0; i < 4; i++) engine.owner.updateAll();
+			for (int i = 0; i < 4; i++) engine.getOwner().updateAll();
 			fastinuse = false;
 		}
 	}

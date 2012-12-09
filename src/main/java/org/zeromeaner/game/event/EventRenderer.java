@@ -788,8 +788,8 @@ public class EventRenderer {
 	 * @return X position of field
 	 */
 	public int getFieldDisplayPositionX(GameEngine engine, int playerID) {
-		if(getNextDisplayType() == 2) return NEW_FIELD_OFFSET_X_BSP[engine.owner.mode.getGameStyle()][engine.displaysize + 1][playerID];
-		return NEW_FIELD_OFFSET_X[engine.owner.mode.getGameStyle()][engine.displaysize + 1][playerID];
+		if(getNextDisplayType() == 2) return NEW_FIELD_OFFSET_X_BSP[engine.getOwner().mode.getGameStyle()][engine.displaysize + 1][playerID];
+		return NEW_FIELD_OFFSET_X[engine.getOwner().mode.getGameStyle()][engine.displaysize + 1][playerID];
 	}
 
 	/**
@@ -799,8 +799,8 @@ public class EventRenderer {
 	 * @return Y position of field
 	 */
 	public int getFieldDisplayPositionY(GameEngine engine, int playerID) {
-		if(getNextDisplayType() == 2) return NEW_FIELD_OFFSET_Y_BSP[engine.owner.mode.getGameStyle()][engine.displaysize + 1][playerID];
-		return NEW_FIELD_OFFSET_Y[engine.owner.mode.getGameStyle()][engine.displaysize + 1][playerID];
+		if(getNextDisplayType() == 2) return NEW_FIELD_OFFSET_Y_BSP[engine.getOwner().mode.getGameStyle()][engine.displaysize + 1][playerID];
+		return NEW_FIELD_OFFSET_Y[engine.getOwner().mode.getGameStyle()][engine.displaysize + 1][playerID];
 	}
 
 	/**

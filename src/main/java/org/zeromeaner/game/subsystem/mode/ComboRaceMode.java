@@ -209,8 +209,8 @@ public class ComboRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 
 		scgettime = 0;
 		lastevent = EVENT_NONE;
@@ -234,18 +234,18 @@ public class ComboRaceMode extends AbstractNetMode {
 
 		netPlayerInit(engine, playerID);
 
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			version = CURRENT_VERSION;
-			presetNumber = engine.owner.modeConfig.getProperty("comborace.presetNumber", 0);
-			loadPreset(engine, engine.owner.modeConfig, -1);
+			presetNumber = engine.getOwner().modeConfig.getProperty("comborace.presetNumber", 0);
+			loadPreset(engine, engine.getOwner().modeConfig, -1);
 			loadRanking(owner.modeConfig, engine.ruleopt.strRuleName);
 		} else {
-			version = engine.owner.replayProp.getProperty("comborace.version", 0);
+			version = engine.getOwner().replayProp.getProperty("comborace.version", 0);
 			presetNumber = 0;
-			loadPreset(engine, engine.owner.replayProp, -1);
+			loadPreset(engine, engine.getOwner().replayProp, -1);
 
 			// NET: Load name
-			netPlayerName = engine.owner.replayProp.getProperty(playerID + ".net.netPlayerName", "");
+			netPlayerName = engine.getOwner().replayProp.getProperty(playerID + ".net.netPlayerName", "");
 		}
 	}
 
@@ -301,7 +301,7 @@ public class ComboRaceMode extends AbstractNetMode {
 			netOnUpdateNetPlayRanking(engine, goaltype);
 		}
 		// Menu
-		else if(engine.owner.replayMode == false) {
+		else if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 15);
 
@@ -812,8 +812,8 @@ public class ComboRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	public void saveReplay(GameEngine engine, int playerID, CustomProperties prop) {
-		engine.owner.replayProp.setProperty("comborace.version", version);
-		savePreset(engine, engine.owner.replayProp, -1);
+		engine.getOwner().replayProp.setProperty("comborace.version", version);
+		savePreset(engine, engine.getOwner().replayProp, -1);
 
 		// NET: Save name
 		if((netPlayerName != null) && (netPlayerName.length() > 0)) {

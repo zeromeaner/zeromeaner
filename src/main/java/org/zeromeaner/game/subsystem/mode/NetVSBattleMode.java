@@ -255,8 +255,8 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 
 		if((playerID == 0) && (!netvsIsWatch())) {
 			lastHole = -1;

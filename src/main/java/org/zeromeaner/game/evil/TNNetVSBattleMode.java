@@ -84,7 +84,7 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
 		super.playerInit(engine, playerID);
-		receiver = engine.owner.receiver;
+		receiver = engine.getOwner().receiver;
 		engine.ruleopt = new TNRuleOptions(engine.ruleopt);
 		engine.randomizer = new TNNetplayRandomizer();
 		randomizers.put(engine, (TNNetplayRandomizer) engine.randomizer);

@@ -770,7 +770,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 			if(engine.stat == GameEngine.STAT_SETTING && !netIsWatch && netIsNetRankingViewOK(engine)) {
 				int y2 = y + 2;
 				if(y2 > 24) y2 = 24;
-				String strBtnD = engine.owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_D);
+				String strBtnD = engine.getOwner().receiver.getKeyNameByButtonID(engine, Controller.BUTTON_D);
 				owner.receiver.drawScoreFont(engine, engine.playerID, x, y2, "D(" + strBtnD + " KEY):\n NET RANKING", EventRenderer.COLOR_GREEN);
 			}
 		}

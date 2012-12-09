@@ -94,8 +94,8 @@ public class LineRaceMode extends AbstractNetMode {
 	public void playerInit(GameEngine engine, int playerID) {
 		log.debug("playerInit");
 
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 
 		bgmno = 0;
 		big = false;
@@ -111,16 +111,16 @@ public class LineRaceMode extends AbstractNetMode {
 
 		netPlayerInit(engine, playerID);
 
-		if(engine.owner.replayMode == false) {
-			presetNumber = engine.owner.modeConfig.getProperty("linerace.presetNumber", 0);
-			loadPreset(engine, engine.owner.modeConfig, -1);
+		if(engine.getOwner().replayMode == false) {
+			presetNumber = engine.getOwner().modeConfig.getProperty("linerace.presetNumber", 0);
+			loadPreset(engine, engine.getOwner().modeConfig, -1);
 			loadRanking(owner.modeConfig, engine.ruleopt.strRuleName);
 		} else {
 			presetNumber = 0;
-			loadPreset(engine, engine.owner.replayProp, -1);
+			loadPreset(engine, engine.getOwner().replayProp, -1);
 
 			// NET: Load name
-			netPlayerName = engine.owner.replayProp.getProperty(playerID + ".net.netPlayerName", "");
+			netPlayerName = engine.getOwner().replayProp.getProperty(playerID + ".net.netPlayerName", "");
 		}
 	}
 
@@ -172,7 +172,7 @@ public class LineRaceMode extends AbstractNetMode {
 			netOnUpdateNetPlayRanking(engine, goaltype);
 		}
 		// Menu
-		else if(engine.owner.replayMode == false) {
+		else if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 11, playerID);
 
@@ -321,7 +321,7 @@ public class LineRaceMode extends AbstractNetMode {
 					"BGM", String.valueOf(bgmno),
 					"BIG",  GeneralUtil.getONorOFF(big),
 					"GOAL", String.valueOf(GOAL_TABLE[goaltype]));
-			if (!engine.owner.replayMode)
+			if (!engine.getOwner().replayMode)
 			{
 				menuColor = EventRenderer.COLOR_GREEN;
 				drawMenuCompact(engine, playerID, receiver,
@@ -467,7 +467,7 @@ public class LineRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	public void saveReplay(GameEngine engine, int playerID, CustomProperties prop) {
-		savePreset(engine, engine.owner.replayProp, -1);
+		savePreset(engine, engine.getOwner().replayProp, -1);
 
 		// NET: Save name
 		if((netPlayerName != null) && (netPlayerName.length() > 0)) {

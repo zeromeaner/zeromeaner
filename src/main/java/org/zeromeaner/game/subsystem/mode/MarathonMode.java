@@ -159,8 +159,8 @@ public class MarathonMode extends AbstractNetMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		lastscore = 0;
 		scgettime = 0;
 		lastevent = EVENT_NONE;
@@ -185,10 +185,10 @@ public class MarathonMode extends AbstractNetMode {
 			if((version == 0) && (owner.replayProp.getProperty("marathon.endless", false) == true)) goaltype = 2;
 
 			// NET: Load name
-			netPlayerName = engine.owner.replayProp.getProperty(playerID + ".net.netPlayerName", "");
+			netPlayerName = engine.getOwner().replayProp.getProperty(playerID + ".net.netPlayerName", "");
 		}
 
-		engine.owner.backgroundStatus.bg = startlevel;
+		engine.getOwner().backgroundStatus.bg = startlevel;
 		engine.framecolor = GameEngine.FRAME_COLOR_GREEN;
 	}
 
@@ -216,7 +216,7 @@ public class MarathonMode extends AbstractNetMode {
 			netOnUpdateNetPlayRanking(engine, goaltype);
 		}
 		// Menu
-		else if(engine.owner.replayMode == false) {
+		else if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 8, playerID);
 
@@ -233,7 +233,7 @@ public class MarathonMode extends AbstractNetMode {
 						if(startlevel < 0) startlevel = 19;
 						if(startlevel > 19) startlevel = 0;
 					}
-					engine.owner.backgroundStatus.bg = startlevel;
+					engine.getOwner().backgroundStatus.bg = startlevel;
 					break;
 				case 1:
 					//enableTSpin = !enableTSpin;
@@ -265,7 +265,7 @@ public class MarathonMode extends AbstractNetMode {
 
 					if((startlevel > (tableGameClearLines[goaltype] - 1) / 10) && (tableGameClearLines[goaltype] >= 0)) {
 						startlevel = (tableGameClearLines[goaltype] - 1) / 10;
-						engine.owner.backgroundStatus.bg = startlevel;
+						engine.getOwner().backgroundStatus.bg = startlevel;
 					}
 					break;
 				case 8:
@@ -845,7 +845,7 @@ public class MarathonMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendStats(GameEngine engine) {
-		int bg = engine.owner.backgroundStatus.fadesw ? engine.owner.backgroundStatus.fadebg : engine.owner.backgroundStatus.bg;
+		int bg = engine.getOwner().backgroundStatus.fadesw ? engine.getOwner().backgroundStatus.fadebg : engine.getOwner().backgroundStatus.bg;
 		String msg = "game\tstats\t";
 		msg += engine.statistics.score + "\t" + engine.statistics.lines + "\t" + engine.statistics.totalPieceLocked + "\t";
 		msg += engine.statistics.time + "\t" + engine.statistics.level + "\t";
@@ -877,7 +877,7 @@ public class MarathonMode extends AbstractNetMode {
 		lastb2b = Boolean.parseBoolean(message[17]);
 		lastcombo = Integer.parseInt(message[18]);
 		lastpiece = Integer.parseInt(message[19]);
-		engine.owner.backgroundStatus.bg = Integer.parseInt(message[20]);
+		engine.getOwner().backgroundStatus.bg = Integer.parseInt(message[20]);
 
 		// Meter
 		engine.meterValue = ((engine.statistics.lines % 10) * receiver.getMeterMax(engine)) / 9;

@@ -178,8 +178,8 @@ public abstract class AbstractMode implements GameMode {
 	}
 
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 	}
 
 	public void renderARE(GameEngine engine, int playerID) {
@@ -228,7 +228,7 @@ public abstract class AbstractMode implements GameMode {
 		{
 			menuItem = menu.get(i);
 			receiver.drawMenuFont(engine, playerID, 0, i << 1, menuItem.displayName, menuItem.color);
-			if (engine.statc[2] == i && !engine.owner.replayMode)
+			if (engine.statc[2] == i && !engine.getOwner().replayMode)
 				receiver.drawMenuFont(engine, playerID, 0, (i << 1) + 1, "b" + menuItem.getValueString(), true);
 			else 
 				receiver.drawMenuFont(engine, playerID, 1, (i << 1) + 1, menuItem.getValueString());
@@ -328,7 +328,7 @@ public abstract class AbstractMode implements GameMode {
 		{
 			if ((i&1) == 0)
 				receiver.drawMenuFont(engine, playerID, 0, menuY, str[i], menuColor);
-			else if (engine.statc[2] == statcMenu && !engine.owner.replayMode)
+			else if (engine.statc[2] == statcMenu && !engine.getOwner().replayMode)
 			{
 				receiver.drawMenuFont(engine, playerID, 0, menuY, "b" + str[i], true);
 				statcMenu++;
@@ -353,7 +353,7 @@ public abstract class AbstractMode implements GameMode {
 		for (int i = 0; i < str.length-1; i+= 2)
 		{
 			receiver.drawMenuFont(engine, playerID, 1, menuY, str[i] + ":", menuColor);
-			if (engine.statc[2] == statcMenu && !engine.owner.replayMode)
+			if (engine.statc[2] == statcMenu && !engine.getOwner().replayMode)
 			{
 				receiver.drawMenuFont(engine, playerID, 0, menuY, "b", true);
 				receiver.drawMenuFont(engine, playerID, str[i].length()+2, menuY, str[i+1], true);
@@ -489,7 +489,7 @@ public abstract class AbstractMode implements GameMode {
 	 * @param playerID Player ID
 	 */
 	public void renderInput(GameEngine engine, int playerID) {
-		EventRenderer receiver = engine.owner.receiver;
+		EventRenderer receiver = engine.getOwner().receiver;
 		int y = 24;
 		if (isVSMode() && !isNetplayMode()) {
 			int color = EventRenderer.COLOR_BLUE;

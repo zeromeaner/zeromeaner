@@ -95,7 +95,7 @@ public class BasicAI extends AbstractAI implements Runnable {
 	public void init(GameEngine engine, int playerID) {
 		delay = 0;
 		gEngine = engine;
-		gManager = engine.owner;
+		gManager = engine.getOwner();
 		thinkRequest = false;
 		thinking = false;
 		threadRunning = false;

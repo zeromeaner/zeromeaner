@@ -30,7 +30,7 @@ public class TNMode extends MarathonMode {
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
 		super.playerInit(engine, playerID);
-		receiver = engine.owner.receiver;
+		receiver = engine.getOwner().receiver;
 		engine.ruleopt = new TNRuleOptions(engine.ruleopt);
 		engine.randomizer = GeneralUtil.loadRandomizer(engine.ruleopt.strRandomizer);
 		if(!(engine.randomizer instanceof TNRandomizer))

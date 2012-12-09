@@ -165,7 +165,7 @@ public class GameEngine {
 	};;
 
 	/** GameManager: Owner of this GameEngine */
-	public GameManager owner;
+	private GameManager owner;
 	
 	public EngineEventManager eventManager = new EngineEventManager(this);
 
@@ -3510,5 +3510,9 @@ public class GameEngine {
 	
 	public boolean isSynchronousBlocked() {
 		return synchronousSync.get() > 0;
+	}
+
+	public GameManager getOwner() {
+		return owner;
 	}
 }

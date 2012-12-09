@@ -160,8 +160,8 @@ public abstract class AbstractAvalanche1PMode extends AbstractMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		lastscore = 0;
 		lastmultiplier = 0;
 		scgettime = 0;

@@ -151,8 +151,8 @@ public class RetroMasteryMode extends AbstractMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		lastscore = 0;
 		scgettime = 0;
 		softdropscore = 0;
@@ -185,8 +185,8 @@ public class RetroMasteryMode extends AbstractMode {
 			loadSetting(owner.replayProp);
 		}
 
-		engine.owner.backgroundStatus.bg = gametype == GAMETYPE_PRESSURE ? 0 : startlevel;
-		if(engine.owner.backgroundStatus.bg > 19) engine.owner.backgroundStatus.bg = 19;
+		engine.getOwner().backgroundStatus.bg = gametype == GAMETYPE_PRESSURE ? 0 : startlevel;
+		if(engine.getOwner().backgroundStatus.bg > 19) engine.getOwner().backgroundStatus.bg = 19;
 		engine.framecolor = GameEngine.FRAME_COLOR_GRAY;
 	}
 
@@ -212,7 +212,7 @@ public class RetroMasteryMode extends AbstractMode {
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
 		// Menu
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Check for UP button, when pressed it will move cursor up.
 			if(engine.ctrl.isMenuRepeatKey(Controller.BUTTON_UP)) {
 				engine.statc[2]--;
@@ -241,13 +241,13 @@ public class RetroMasteryMode extends AbstractMode {
 					gametype += change;
 					if(gametype < 0) gametype = GAMETYPE_MAX - 1;
 					if(gametype > GAMETYPE_MAX - 1) gametype = 0;
-					engine.owner.backgroundStatus.bg = gametype == GAMETYPE_PRESSURE ? 0 : startlevel;
+					engine.getOwner().backgroundStatus.bg = gametype == GAMETYPE_PRESSURE ? 0 : startlevel;
 					break;
 				case 1:
 					startlevel += change;
 					if(startlevel < 0) startlevel = 19;
 					if(startlevel > 19) startlevel = 0;
-					engine.owner.backgroundStatus.bg = startlevel;
+					engine.getOwner().backgroundStatus.bg = startlevel;
 					break;
 				case 2:
 					big = !big;
@@ -286,7 +286,7 @@ public class RetroMasteryMode extends AbstractMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			receiver.drawMenuFont(engine, playerID, 0, (engine.statc[2] * 2) + 1, "b", EventRenderer.COLOR_RED);
 		}
 

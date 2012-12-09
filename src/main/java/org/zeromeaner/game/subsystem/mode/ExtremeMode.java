@@ -168,8 +168,8 @@ public class ExtremeMode extends AbstractNetMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		lastscore = 0;
 		scgettime = 0;
 		lastevent = EVENT_NONE;
@@ -194,14 +194,14 @@ public class ExtremeMode extends AbstractNetMode {
 			loadSetting(owner.replayProp);
 
 			// NET: Load name
-			netPlayerName = engine.owner.replayProp.getProperty(playerID + ".net.netPlayerName", "");
+			netPlayerName = engine.getOwner().replayProp.getProperty(playerID + ".net.netPlayerName", "");
 		}
 
 		engine.staffrollEnable = true;
 		engine.staffrollNoDeath = true;
 		engine.staffrollEnableStatistics = true;
 
-		engine.owner.backgroundStatus.bg = startlevel;
+		engine.getOwner().backgroundStatus.bg = startlevel;
 		engine.framecolor = GameEngine.FRAME_COLOR_RED;
 	}
 
@@ -233,7 +233,7 @@ public class ExtremeMode extends AbstractNetMode {
 			netOnUpdateNetPlayRanking(engine, netGetGoalType());
 		}
 		// Menu
-		else if(engine.owner.replayMode == false) {
+		else if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 8);
 
@@ -245,7 +245,7 @@ public class ExtremeMode extends AbstractNetMode {
 					startlevel += change;
 					if(startlevel < 0) startlevel = 19;
 					if(startlevel > 19) startlevel = 0;
-					engine.owner.backgroundStatus.bg = startlevel;
+					engine.getOwner().backgroundStatus.bg = startlevel;
 					break;
 				case 1:
 					//enableTSpin = !enableTSpin;
@@ -872,7 +872,7 @@ public class ExtremeMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendStats(GameEngine engine) {
-		int bg = engine.owner.backgroundStatus.fadesw ? engine.owner.backgroundStatus.fadebg : engine.owner.backgroundStatus.bg;
+		int bg = engine.getOwner().backgroundStatus.fadesw ? engine.getOwner().backgroundStatus.fadebg : engine.getOwner().backgroundStatus.bg;
 		String msg = "game\tstats\t";
 		msg += engine.statistics.score + "\t" + engine.statistics.lines + "\t" + engine.statistics.totalPieceLocked + "\t";
 		msg += engine.statistics.time + "\t" + engine.statistics.level + "\t";
@@ -904,7 +904,7 @@ public class ExtremeMode extends AbstractNetMode {
 		lastb2b = Boolean.parseBoolean(message[17]);
 		lastcombo = Integer.parseInt(message[18]);
 		lastpiece = Integer.parseInt(message[19]);
-		engine.owner.backgroundStatus.bg = Integer.parseInt(message[20]);
+		engine.getOwner().backgroundStatus.bg = Integer.parseInt(message[20]);
 		rolltime = Integer.parseInt(message[21]);
 		engine.meterValue = Integer.parseInt(message[22]);
 		engine.meterColor = Integer.parseInt(message[23]);

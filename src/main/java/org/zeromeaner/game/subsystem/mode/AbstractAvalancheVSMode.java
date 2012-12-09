@@ -478,8 +478,8 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		if(playerID == 1) {
 			engine.randSeed = owner.engine[0].randSeed;
 			engine.random = new Random(owner.engine[0].randSeed);

@@ -243,8 +243,8 @@ public class PracticeMode extends AbstractMode {
 	public void playerInit(GameEngine engine, int playerID) {
 		log.debug("playerInit called");
 
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		goal = 0;
 		lastgoal = 0;
 		lastscore = 0;
@@ -265,16 +265,16 @@ public class PracticeMode extends AbstractMode {
 		timelimitTimer = 0;
 		engine.framecolor = GameEngine.FRAME_COLOR_YELLOW;
 
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			version = CURRENT_VERSION;
-			presetNumber = engine.owner.modeConfig.getProperty("practice.presetNumber", 0);
-			mapNumber = engine.owner.modeConfig.getProperty("practice.mapNumber", 0);
-			loadPreset(engine, engine.owner.modeConfig, -1);
+			presetNumber = engine.getOwner().modeConfig.getProperty("practice.presetNumber", 0);
+			mapNumber = engine.getOwner().modeConfig.getProperty("practice.mapNumber", 0);
+			loadPreset(engine, engine.getOwner().modeConfig, -1);
 		} else {
-			version = engine.owner.replayProp.getProperty("practice.version", CURRENT_VERSION);
+			version = engine.getOwner().replayProp.getProperty("practice.version", CURRENT_VERSION);
 			presetNumber = 0;
 			mapNumber = 0;
-			loadPreset(engine, engine.owner.replayProp, -1);
+			loadPreset(engine, engine.getOwner().replayProp, -1);
 		}
 	}
 
@@ -394,7 +394,7 @@ public class PracticeMode extends AbstractMode {
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
 		// Menu
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			owner.menuOnly = true;
 
 			// Configuration changes
@@ -670,7 +670,7 @@ public class PracticeMode extends AbstractMode {
 	public void renderSetting(GameEngine engine, int playerID) {
 		receiver.drawMenuFont(engine, playerID, 1, 1, "PRACTICE MODE SETTINGS", EventRenderer.COLOR_ORANGE);
 
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			receiver.drawMenuFont(engine, playerID, 1, 27, "A:START B:EXIT C+<>:FAST CHANGE", EventRenderer.COLOR_CYAN);
 		} else {
 			receiver.drawMenuFont(engine, playerID, 1, 27, "F:SKIP", EventRenderer.COLOR_RED);
@@ -1599,10 +1599,10 @@ public class PracticeMode extends AbstractMode {
 	 */
 	@Override
 	public void saveReplay(GameEngine engine, int playerID, CustomProperties prop) {
-		engine.owner.replayProp.setProperty("practice.version", version);
+		engine.getOwner().replayProp.setProperty("practice.version", version);
 		if(useMap && (fldBackup != null)) {
 			saveMap(fldBackup, prop, 0);
 		}
-		savePreset(engine, engine.owner.replayProp, -1);
+		savePreset(engine, engine.getOwner().replayProp, -1);
 	}
 }

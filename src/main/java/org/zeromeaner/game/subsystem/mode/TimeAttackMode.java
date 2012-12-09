@@ -301,8 +301,8 @@ public class TimeAttackMode extends AbstractNetMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 
 		norm = 0;
 		goaltype = 0;
@@ -339,10 +339,10 @@ public class TimeAttackMode extends AbstractNetMode {
 			loadSetting(owner.replayProp);
 
 			// NET: Load name
-			netPlayerName = engine.owner.replayProp.getProperty(playerID + ".net.netPlayerName", "");
+			netPlayerName = engine.getOwner().replayProp.getProperty(playerID + ".net.netPlayerName", "");
 		}
 
-		engine.owner.backgroundStatus.bg = startlevel;
+		engine.getOwner().backgroundStatus.bg = startlevel;
 	}
 
 	/**
@@ -486,7 +486,7 @@ public class TimeAttackMode extends AbstractNetMode {
 			netOnUpdateNetPlayRanking(engine, netGetGoalType());
 		}
 		// Menu
-		else if(engine.owner.replayMode == false) {
+		else if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 3);
 
@@ -499,13 +499,13 @@ public class TimeAttackMode extends AbstractNetMode {
 					if(goaltype < 0) goaltype = GAMETYPE_MAX - 1;
 					if(goaltype > GAMETYPE_MAX - 1) goaltype = 0;
 					if(startlevel > tableGoalLevel[goaltype] - 1) startlevel = tableGoalLevel[goaltype] - 1;
-					engine.owner.backgroundStatus.bg = startlevel;
+					engine.getOwner().backgroundStatus.bg = startlevel;
 					break;
 				case 1:
 					startlevel += change;
 					if(startlevel < 0) startlevel = tableGoalLevel[goaltype] - 1;
 					if(startlevel > tableGoalLevel[goaltype] - 1) startlevel = 0;
-					engine.owner.backgroundStatus.bg = startlevel;
+					engine.getOwner().backgroundStatus.bg = startlevel;
 					break;
 				case 2:
 					showsectiontime = !showsectiontime;
@@ -1085,7 +1085,7 @@ public class TimeAttackMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendStats(GameEngine engine) {
-		int bg = engine.owner.backgroundStatus.fadesw ? engine.owner.backgroundStatus.fadebg : engine.owner.backgroundStatus.bg;
+		int bg = engine.getOwner().backgroundStatus.fadesw ? engine.getOwner().backgroundStatus.fadebg : engine.getOwner().backgroundStatus.bg;
 		String msg = "game\tstats\t";
 		msg += engine.statistics.lines + "\t" + engine.statistics.totalPieceLocked + "\t";
 		msg += engine.statistics.time + "\t" + engine.statistics.lpm + "\t";
@@ -1116,7 +1116,7 @@ public class TimeAttackMode extends AbstractNetMode {
 		levelTimerMax = Integer.parseInt(message[14]);
 		rolltime = Integer.parseInt(message[15]);
 		norm = Integer.parseInt(message[16]);
-		engine.owner.backgroundStatus.bg = Integer.parseInt(message[17]);
+		engine.getOwner().backgroundStatus.bg = Integer.parseInt(message[17]);
 		engine.meterValue = Integer.parseInt(message[18]);
 		engine.meterColor = Integer.parseInt(message[19]);
 		engine.heboHiddenEnable = Boolean.parseBoolean(message[20]);

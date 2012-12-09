@@ -89,7 +89,7 @@ public class Nohoho extends AbstractAI implements Runnable {
 	public void init(GameEngine engine, int playerID) {
 		delay = 0;
 		gEngine = engine;
-		gManager = engine.owner;
+		gManager = engine.getOwner();
 		thinkRequest = new ThinkRequestMutex();
 		thinking = false;
 		threadRunning = false;

@@ -97,7 +97,7 @@ public class PoochyBot extends AbstractAI implements Runnable {
 	public void init(GameEngine engine, int playerID) {
 		delay = 0;
 		gEngine = engine;
-		gManager = engine.owner;
+		gManager = engine.getOwner();
 		thinkRequest = new ThinkRequestMutex();
 		thinking = false;
 		threadRunning = false;
@@ -1909,7 +1909,7 @@ public class PoochyBot extends AbstractAI implements Runnable {
 	 * @param playerID Player ID
 	 */
 	public void renderState(GameEngine engine, int playerID){
-		EventRenderer r = engine.owner.receiver;
+		EventRenderer r = engine.getOwner().receiver;
 		r.drawScoreFont(engine, playerID, 19, 39, getName().toUpperCase(), EventRenderer.COLOR_GREEN, 0.5f);
 		r.drawScoreFont(engine, playerID, 24, 40, "X", EventRenderer.COLOR_BLUE, 0.5f);
 		r.drawScoreFont(engine, playerID, 27, 40, "Y", EventRenderer.COLOR_BLUE, 0.5f);

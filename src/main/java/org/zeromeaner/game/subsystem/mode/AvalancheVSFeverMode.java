@@ -120,20 +120,20 @@ public class AvalancheVSFeverMode extends AbstractAvalancheVSMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		ojamaCounterMode[playerID] = OJAMA_COUNTER_FEVER;
 
 		ojama[playerID] = 0;
 		feverChainDisplay[playerID] = 0;
 
-		if(engine.owner.replayMode == false) {
-			loadOtherSetting(engine, engine.owner.modeConfig);
-			loadPreset(engine, engine.owner.modeConfig, -1 - playerID, "fever");
+		if(engine.getOwner().replayMode == false) {
+			loadOtherSetting(engine, engine.getOwner().modeConfig);
+			loadPreset(engine, engine.getOwner().modeConfig, -1 - playerID, "fever");
 			version = CURRENT_VERSION;
 		} else {
-			loadOtherSetting(engine, engine.owner.replayProp);
-			loadPreset(engine, engine.owner.replayProp, -1 - playerID, "fever");
+			loadOtherSetting(engine, engine.getOwner().replayProp);
+			loadPreset(engine, engine.getOwner().replayProp, -1 - playerID, "fever");
 			version = owner.replayProp.getProperty("avalanchevsfever.version", 0);
 		}
 	}
@@ -144,7 +144,7 @@ public class AvalancheVSFeverMode extends AbstractAvalancheVSMode {
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
 		// Menu
-		if((engine.owner.replayMode == false) && (engine.statc[4] == 0)) {
+		if((engine.getOwner().replayMode == false) && (engine.statc[4] == 0)) {
 			// Configuration changes
 			int change = updateCursor(engine, 29);
 

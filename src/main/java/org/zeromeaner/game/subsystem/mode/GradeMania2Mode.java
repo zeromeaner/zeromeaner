@@ -325,8 +325,8 @@ public class GradeMania2Mode extends AbstractMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 
 		gravityindex = 0;
 		nextseclv = 0;
@@ -533,7 +533,7 @@ public class GradeMania2Mode extends AbstractMode {
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
 		// Menu
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			updateMenu(engine);
 			owner.backgroundStatus.bg = Math.min(9, startlevel.value);
 

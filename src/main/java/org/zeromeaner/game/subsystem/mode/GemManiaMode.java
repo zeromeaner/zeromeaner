@@ -244,8 +244,8 @@ public class GemManiaMode extends AbstractMode {
 	public void playerInit(GameEngine engine, int playerID) {
 		log.debug("playerInit called");
 
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 
 		rest = 0;
 		stage = 0;
@@ -691,7 +691,7 @@ public class GemManiaMode extends AbstractMode {
 			engine.statc[3]++;
 		}
 		// 普通のMenu
-		else if(engine.owner.replayMode == false) {
+		else if(engine.getOwner().replayMode == false) {
 			// Up
 			if(engine.ctrl.isMenuRepeatKey(Controller.BUTTON_UP)) {
 				engine.statc[2]--;
@@ -825,7 +825,7 @@ public class GemManiaMode extends AbstractMode {
 					"MIRROR", (gimmickMirror == 0) ? "OFF" : String.valueOf(gimmickMirror));
 		} else {
 			// 普通のMenu
-			if(engine.owner.replayMode == false) {
+			if(engine.getOwner().replayMode == false) {
 				receiver.drawMenuFont(engine, playerID, 0, 19, "D:EDIT", EventRenderer.COLOR_ORANGE);
 			}
 			String strTrainingType = "OFF";

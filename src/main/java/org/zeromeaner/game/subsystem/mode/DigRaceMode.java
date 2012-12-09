@@ -99,8 +99,8 @@ public class DigRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 
 		bgmno = 0;
 		big = false;
@@ -116,18 +116,18 @@ public class DigRaceMode extends AbstractNetMode {
 
 		netPlayerInit(engine, playerID);
 
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			version = CURRENT_VERSION;
-			presetNumber = engine.owner.modeConfig.getProperty("digrace.presetNumber", 0);
-			loadPreset(engine, engine.owner.modeConfig, -1);
+			presetNumber = engine.getOwner().modeConfig.getProperty("digrace.presetNumber", 0);
+			loadPreset(engine, engine.getOwner().modeConfig, -1);
 			loadRanking(owner.modeConfig, engine.ruleopt.strRuleName);
 		} else {
-			version = engine.owner.replayProp.getProperty("digrace.version", 0);
+			version = engine.getOwner().replayProp.getProperty("digrace.version", 0);
 			presetNumber = 0;
-			loadPreset(engine, engine.owner.replayProp, -1);
+			loadPreset(engine, engine.getOwner().replayProp, -1);
 
 			// NET: Load name
-			netPlayerName = engine.owner.replayProp.getProperty(playerID + ".net.netPlayerName", "");
+			netPlayerName = engine.getOwner().replayProp.getProperty(playerID + ".net.netPlayerName", "");
 		}
 	}
 
@@ -179,7 +179,7 @@ public class DigRaceMode extends AbstractNetMode {
 			netOnUpdateNetPlayRanking(engine, goaltype);
 		}
 		// Menu
-		else if(engine.owner.replayMode == false) {
+		else if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 10, playerID);
 
@@ -324,7 +324,7 @@ public class DigRaceMode extends AbstractNetMode {
 					"DAS", String.valueOf(engine.speed.das),
 					"BGM", String.valueOf(bgmno),
 					"GOAL", String.valueOf(GOAL_TABLE[goaltype]));
-			if (!engine.owner.replayMode)
+			if (!engine.getOwner().replayMode)
 			{
 				menuColor = EventRenderer.COLOR_GREEN;
 				drawMenuCompact(engine, playerID, receiver,
@@ -557,8 +557,8 @@ public class DigRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	public void saveReplay(GameEngine engine, int playerID, CustomProperties prop) {
-		engine.owner.replayProp.setProperty("digrace.version", version);
-		savePreset(engine, engine.owner.replayProp, -1);
+		engine.getOwner().replayProp.setProperty("digrace.version", version);
+		savePreset(engine, engine.getOwner().replayProp, -1);
 
 		// NET: Save name
 		if((netPlayerName != null) && (netPlayerName.length() > 0)) {

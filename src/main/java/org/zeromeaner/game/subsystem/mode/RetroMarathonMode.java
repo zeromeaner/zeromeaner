@@ -182,8 +182,8 @@ public class RetroMarathonMode extends AbstractMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		lastscore = 0;
 		scgettime = 0;
 		softdropscore = 0;
@@ -215,8 +215,8 @@ public class RetroMarathonMode extends AbstractMode {
 			loadSetting(owner.replayProp);
 		}
 
-		engine.owner.backgroundStatus.bg = startlevel;
-		if(engine.owner.backgroundStatus.bg > 19) engine.owner.backgroundStatus.bg = 19;
+		engine.getOwner().backgroundStatus.bg = startlevel;
+		if(engine.getOwner().backgroundStatus.bg > 19) engine.getOwner().backgroundStatus.bg = 19;
 		levellines = Math.min((startlevel+1)*10,Math.max(100,(startlevel-5)*10));
 		engine.framecolor = GameEngine.FRAME_COLOR_GRAY;
 	}
@@ -249,7 +249,7 @@ public class RetroMarathonMode extends AbstractMode {
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
 		// Menu
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 3);
 
@@ -266,7 +266,7 @@ public class RetroMarathonMode extends AbstractMode {
 					startlevel += change;
 					if(startlevel < 0) startlevel = 19;
 					if(startlevel > 19) startlevel = 0;
-					engine.owner.backgroundStatus.bg = startlevel;
+					engine.getOwner().backgroundStatus.bg = startlevel;
 					levellines = Math.min((startlevel+1)*10,Math.max(100,(startlevel-5)*10));
 					break;
 				case 2:
