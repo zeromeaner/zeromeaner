@@ -5,3 +5,4 @@ net.tetrisconcept.poochy.nullpomino.ai.PoochyBotDefensive
 org.zeromeaner.game.subsystem.ai.RanksAI
 net.tetrisconcept.poochy.nullpomino.ai.Nohoho
 net.tetrisconcept.poochy.nullpomino.ai.ComboRaceBot
+org.zeromeaner.game.evil.TNBot

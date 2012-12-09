@@ -88,36 +88,37 @@ public class AppletMain extends Applet {
 		}
 
 		final JLabel consoleLabel = new JLabel(" ");
-		PipedOutputStream pout = new PipedOutputStream();
-		PipedInputStream pin;
-		try {
-			pin = new PipedInputStream(pout);
-		} catch(IOException ioe) {
-			pin = null;
-		}
-		if(pin != null) {
-			final PipedInputStream fpin = pin;
-			final PrintStream sout = System.out;
-			System.setOut(new PrintStream(pout));
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					BufferedReader r = new BufferedReader(new InputStreamReader(fpin));
-					try {
-						for(String line = r.readLine(); line != null; line = r.readLine()) {
-							final String fline = line;
-							EventQueue.invokeLater(new Runnable() {
-								public void run() {
-									consoleLabel.setText(fline);
-									sout.println(fline);
-								}
-							});
-						}
-					} catch(IOException ioe) {
-					}
-				}
-			}).start();
-		}
+//		PipedOutputStream pout = new PipedOutputStream();
+//		PipedInputStream pin;
+//		try {
+//			pin = new PipedInputStream(pout);
+//		} catch(IOException ioe) {
+//			pin = null;
+//		}
+//		if(pin != null) {
+//			final PipedInputStream fpin = pin;
+//			final PrintStream sout = System.out;
+//			System.setOut(new PrintStream(pout));
+//			new Thread(new Runnable() {
+//				@Override
+//				public void run() {
+//					BufferedReader r = new BufferedReader(new InputStreamReader(fpin));
+//					try {
+//						for(String line = r.readLine(); line != null; line = r.readLine()) {
+//							final String fline = line;
+//							EventQueue.invokeLater(new Runnable() {
+//								public void run() {
+//									consoleLabel.setText(fline);
+//									sout.println(fline);
+//								}
+//							});
+//						}
+//					} catch(IOException ioe) {
+//						ioe.printStackTrace();
+//					}
+//				}
+//			}).start();
+//		}
 		
 		final JInternalFrame launching = new JInternalFrame("Launching zeromeaner");
 		launching.setLayout(new BorderLayout());
