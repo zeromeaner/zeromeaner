@@ -462,6 +462,8 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 
 	/** ARE(Create room screen) */
 	protected JSpinner spinnerCreateRoomARE;
+	
+	protected JCheckBox chkboxSynchronousPlay;
 
 	/** ARE after line clear(Create room screen) */
 	protected JSpinner spinnerCreateRoomARELine;
@@ -1588,6 +1590,15 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		spinnerCreateRoomMaxPlayers.setToolTipText(getUIText("CreateRoom_MaxPlayers_Tip"));
 		subpanelMaxPlayers.add(spinnerCreateRoomMaxPlayers, BorderLayout.EAST);
 
+		JPanel subpanelSynchronousPlay = new JPanel(new BorderLayout());
+		containerpanelCreateRoomMain.add(subpanelSynchronousPlay);
+		
+		boolean defaultSyncPlay = propConfig.getProperty("createroom.defaultSyncPlay", false);
+		chkboxSynchronousPlay = new JCheckBox(getUIText("CreateRoom_SyncPlay"));
+		chkboxSynchronousPlay.setToolTipText(getUIText("CreateRoom_SyncPlay_Tip"));
+		chkboxSynchronousPlay.setSelected(defaultSyncPlay);
+		subpanelSynchronousPlay.add(chkboxSynchronousPlay, BorderLayout.EAST);
+		
 		// ** Hurryup秒countパネル
 		JPanel subpanelHurryupSeconds = new JPanel(new BorderLayout());
 		containerpanelCreateRoomMain.add(subpanelHurryupSeconds);
@@ -3593,6 +3604,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 			boolean b2bChunk = chkboxCreateRoomB2BChunk.isSelected();
 			boolean isTarget = chkboxCreateRoomIsTarget.isSelected();
 			Integer integerTargetTimer = (Integer)spinnerCreateRoomTargetTimer.getValue();
+			boolean syncPlay = chkboxSynchronousPlay.isSelected();
 
 			roomInfo.strName = roomName;
 			roomInfo.strMode = modeName;
@@ -3627,6 +3639,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 			roomInfo.b2bChunk = b2bChunk;
 			roomInfo.isTarget = isTarget;
 			roomInfo.targetTimer = integerTargetTimer;
+			roomInfo.syncPlay = syncPlay;
 
 			return roomInfo;
 		} catch (Exception e) {
@@ -4055,9 +4068,12 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		// Create rated - go to custom settings
 		if(e.getActionCommand() == "CreateRated_Custom") {
 			// Load preset into field
-			NetRoomInfo r = presets.get(comboboxCreateRatedPresets.getSelectedIndex());
-			setCreateRoomUIType(false, null);
-			importRoomInfoToCreateRoomScreen(r);
+			if(comboboxCreateRatedPresets.getSelectedIndex() != -1) {
+				NetRoomInfo r = presets.get(comboboxCreateRatedPresets.getSelectedIndex());
+				setCreateRoomUIType(false, null);
+				importRoomInfoToCreateRoomScreen(r);
+			} else
+				setCreateRoomUIType(false, null);
 			// Copy name and number of players
 			txtfldCreateRoomName.setText(txtfldCreateRatedName.getText());
 			spinnerCreateRoomMaxPlayers.setValue(spinnerCreateRatedMaxPlayers.getValue());

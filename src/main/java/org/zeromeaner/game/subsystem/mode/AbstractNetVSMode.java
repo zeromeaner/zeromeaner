@@ -520,6 +520,8 @@ public class AbstractNetVSMode extends AbstractNetMode {
 				engine.tspinEnable = true;
 				engine.useAllSpinBonus = true;
 			}
+			
+			synchronousPlay = netCurrentRoomInfo.syncPlay;
 		}
 	}
 
