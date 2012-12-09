@@ -1,10 +1,10 @@
 package org.zeromeaner.game.event;
 
-public class EngineReceiverAdapter implements EngineListener {
+public class EngineRendererAdapter implements EngineListener {
 
 	private EventRenderer renderer;
 	
-	public EngineReceiverAdapter(EventRenderer receiver) {
+	public EngineRendererAdapter(EventRenderer receiver) {
 		this.renderer = receiver;
 	}
 

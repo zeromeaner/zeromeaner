@@ -33,7 +33,7 @@ public class EngineEventManager implements EngineEventGenerator {
 	
 	@Override
 	public void addReceiver(EventRenderer receiver) {
-		addEngineListener(new EngineReceiverAdapter(receiver));
+		addEngineListener(new EngineRendererAdapter(receiver));
 	}
 	
 	@Override
