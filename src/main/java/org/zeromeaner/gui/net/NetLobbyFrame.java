@@ -1590,15 +1590,6 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		spinnerCreateRoomMaxPlayers.setToolTipText(getUIText("CreateRoom_MaxPlayers_Tip"));
 		subpanelMaxPlayers.add(spinnerCreateRoomMaxPlayers, BorderLayout.EAST);
 
-		JPanel subpanelSynchronousPlay = new JPanel(new BorderLayout());
-		containerpanelCreateRoomMain.add(subpanelSynchronousPlay);
-		
-		boolean defaultSyncPlay = propConfig.getProperty("createroom.defaultSyncPlay", false);
-		chkboxSynchronousPlay = new JCheckBox(getUIText("CreateRoom_SyncPlay"));
-		chkboxSynchronousPlay.setToolTipText(getUIText("CreateRoom_SyncPlay_Tip"));
-		chkboxSynchronousPlay.setSelected(defaultSyncPlay);
-		subpanelSynchronousPlay.add(chkboxSynchronousPlay, BorderLayout.EAST);
-		
 		// ** Hurryup秒countパネル
 		JPanel subpanelHurryupSeconds = new JPanel(new BorderLayout());
 		containerpanelCreateRoomMain.add(subpanelHurryupSeconds);
@@ -1763,6 +1754,13 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		spinnerCreateRoomDAS.setPreferredSize(new Dimension(200, 20));
 		subpanelDAS.add(spinnerCreateRoomDAS, BorderLayout.EAST);
 
+		boolean defaultSyncPlay = propConfig.getProperty("createroom.defaultSyncPlay", false);
+		chkboxSynchronousPlay = new JCheckBox(getUIText("CreateRoom_SyncPlay"));
+		chkboxSynchronousPlay.setToolTipText(getUIText("CreateRoom_SyncPlay_Tip"));
+		chkboxSynchronousPlay.setSelected(defaultSyncPlay);
+		containerpanelCreateRoomSpeed.add(chkboxSynchronousPlay);
+
+		
 		// bonus tab
 
 		// bonus panel
