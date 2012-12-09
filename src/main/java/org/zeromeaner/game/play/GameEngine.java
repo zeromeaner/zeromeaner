@@ -45,6 +45,8 @@ import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.component.WallkickResult;
+import org.zeromeaner.game.event.EngineAdapter;
+import org.zeromeaner.game.event.EngineEvent;
 import org.zeromeaner.game.event.EngineEventManager;
 import org.zeromeaner.game.event.EngineManagerAdapter;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
@@ -683,6 +685,12 @@ public class GameEngine {
 	public GameEngine(GameManager owner, int playerID) {
 		this.owner = owner;
 		eventManager.addEngineListener(new EngineManagerAdapter(owner));
+		eventManager.addEngineListener(new EngineAdapter() {
+			@Override
+			public void enginePieceLocked(EngineEvent e) {
+				synchronousSync.addAndGet(synchronousIncrement);
+			}
+		});
 		this.playerID = playerID;
 		this.ruleopt = new RuleOptions();
 		this.wallkick = null;
@@ -2100,10 +2108,6 @@ public class GameEngine {
 		if(eventManager.engineMove())
 			return;
 
-		// Check the sync
-		if(synchronousSync.get() > 0)
-			return;
-		
 		// 横溜めInitialization
 		int moveDirection = getMoveDirection();
 
@@ -2235,6 +2239,9 @@ public class GameEngine {
 
 			if((ai != null) && (!owner.replayMode || owner.replayRerecord)) ai.newPiece(this, playerID);
 		}
+		
+		if(isSynchronousBlocked())
+			return;
 
 		checkDropContinuousUse();
 
@@ -2715,7 +2722,6 @@ public class GameEngine {
 //				if(owner.mode != null) owner.mode.pieceLocked(this, playerID, lineClearing);
 //				owner.receiver.pieceLocked(this, playerID, lineClearing);
 				eventManager.enginePieceLocked(lineClearing);
-				synchronousSync.addAndGet(synchronousIncrement);
 
 				dasRepeat = false;
 				dasInstant = false;
@@ -3500,5 +3506,9 @@ public class GameEngine {
 
 		statc[0]++;
 		return true;
+	}
+	
+	public boolean isSynchronousBlocked() {
+		return synchronousSync.get() > 0;
 	}
 }

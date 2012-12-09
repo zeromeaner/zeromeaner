@@ -138,6 +138,10 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 
 	protected boolean synchronousPlay;
 	
+	public boolean isSynchronousPlay() {
+		return synchronousPlay;
+	}
+
 	/*
 	 * NET: Mode name
 	 */
@@ -615,7 +619,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 			}
 		}
 		
-		if(synchronousPlay) {
+		if(isSynchronousPlay()) {
 			GameEngine e = owner.engine[0];
 			e.synchronousIncrement = netLobby.netPlayerClient.getPlayerCount() - 1;
 			if("game".equals(message[0])) {

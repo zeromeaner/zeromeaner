@@ -1211,7 +1211,7 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	 */
 	@Override
 	public void netlobbyOnMessage(NetLobbyFrame lobby, NetPlayerClient client, String[] message) throws IOException {
-		if(synchronousPlay) {
+		if(isSynchronousPlay()) {
 			GameEngine e = owner.engine[0];
 			e.synchronousIncrement = netLobby.netPlayerClient.getPlayerCount() - 1;
 			if("game".equals(message[0])) {

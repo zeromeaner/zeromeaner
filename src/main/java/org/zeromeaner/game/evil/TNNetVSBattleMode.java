@@ -69,7 +69,11 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 				{0,0,0,0,0,0,0,0,0,0,0,0}, // 5 Player
 				{0,0,0,0,0,0,0,0,0,0,0,0}, // 6 Payers
 			};
-		synchronousPlay = true;
+	}
+	
+	@Override
+	public boolean isSynchronousPlay() {
+		return true;
 	}
 	
 	@Override
