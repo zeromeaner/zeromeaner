@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.gui.EffectObject;
@@ -49,7 +49,7 @@ import sdljava.video.SDLVideo;
 /**
  * ゲームの event 処理と描画処理 (SDL版）
  */
-public class RendererSDL extends EventReceiver {
+public class RendererSDL extends EventRenderer {
 	/** Log */
 	static Logger log = Logger.getLogger(RendererSDL.class);
 

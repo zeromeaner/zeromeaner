@@ -15,7 +15,7 @@ import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.Statistics;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.net.NetPlayerClient;
 import org.zeromeaner.game.net.NetPlayerInfo;
 import org.zeromeaner.game.net.NetRoomInfo;
@@ -718,9 +718,9 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 */
 	protected void netDrawAllPlayersCount(GameEngine engine) {
 		if((netLobby != null) && (netLobby.netPlayerClient != null) && (netLobby.netPlayerClient.isConnected())) {
-			int fontcolor = EventReceiver.COLOR_BLUE;
-			if(netLobby.netPlayerClient.getObserverCount() > 0) fontcolor = EventReceiver.COLOR_GREEN;
-			if(netLobby.netPlayerClient.getPlayerCount() > 1) fontcolor = EventReceiver.COLOR_RED;
+			int fontcolor = EventRenderer.COLOR_BLUE;
+			if(netLobby.netPlayerClient.getObserverCount() > 0) fontcolor = EventRenderer.COLOR_GREEN;
+			if(netLobby.netPlayerClient.getPlayerCount() > 1) fontcolor = EventRenderer.COLOR_RED;
 			String strObserverInfo = String.format("%d/%d", netLobby.netPlayerClient.getObserverCount(), netLobby.netPlayerClient.getPlayerCount());
 			String strObserverString = String.format("%40s", strObserverInfo);
 			owner.receiver.drawDirectFont(engine, 0, 0, 480-16, strObserverString, fontcolor);
@@ -744,10 +744,10 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 			String strTemp = String.format("%.0f%%", (float)(gamerate * 100f));
 			String strTemp2 = String.format("%40s", strTemp);
 
-			int fontcolor = EventReceiver.COLOR_BLUE;
-			if(gamerate < 1f) fontcolor = EventReceiver.COLOR_YELLOW;
-			if(gamerate < 0.9f) fontcolor = EventReceiver.COLOR_ORANGE;
-			if(gamerate < 0.8f) fontcolor = EventReceiver.COLOR_RED;
+			int fontcolor = EventRenderer.COLOR_BLUE;
+			if(gamerate < 1f) fontcolor = EventRenderer.COLOR_YELLOW;
+			if(gamerate < 0.9f) fontcolor = EventRenderer.COLOR_ORANGE;
+			if(gamerate < 0.8f) fontcolor = EventRenderer.COLOR_RED;
 			owner.receiver.drawDirectFont(engine, 0, 0, 480-32, strTemp2, fontcolor);
 		}
 	}
@@ -760,15 +760,15 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 */
 	protected void netDrawSpectatorsCount(GameEngine engine, int x, int y) {
 		if(netIsNetPlay) {
-			int fontcolor = netIsWatch ? EventReceiver.COLOR_GREEN : EventReceiver.COLOR_RED;
+			int fontcolor = netIsWatch ? EventRenderer.COLOR_GREEN : EventRenderer.COLOR_RED;
 			owner.receiver.drawScoreFont(engine, engine.playerID, x, y+0, "SPECTATORS", fontcolor);
-			owner.receiver.drawScoreFont(engine, engine.playerID, x, y+1, "" + netNumSpectators, EventReceiver.COLOR_WHITE);
+			owner.receiver.drawScoreFont(engine, engine.playerID, x, y+1, "" + netNumSpectators, EventRenderer.COLOR_WHITE);
 
 			if(engine.stat == GameEngine.STAT_SETTING && !netIsWatch && netIsNetRankingViewOK(engine)) {
 				int y2 = y + 2;
 				if(y2 > 24) y2 = 24;
 				String strBtnD = engine.owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_D);
-				owner.receiver.drawScoreFont(engine, engine.playerID, x, y2, "D(" + strBtnD + " KEY):\n NET RANKING", EventReceiver.COLOR_GREEN);
+				owner.receiver.drawScoreFont(engine, engine.playerID, x, y2, "D(" + strBtnD + " KEY):\n NET RANKING", EventRenderer.COLOR_GREEN);
 			}
 		}
 	}
@@ -1090,7 +1090,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 * @param playerID Player ID
 	 * @param receiver EventReceiver
 	 */
-	protected void netOnRenderNetPlayRanking(GameEngine engine, int playerID, EventReceiver receiver) {
+	protected void netOnRenderNetPlayRanking(GameEngine engine, int playerID, EventRenderer receiver) {
 		if(netIsNetRankingDisplayMode) {
 			String strBtnA = receiver.getKeyNameByButtonID(engine, Controller.BUTTON_A);
 			String strBtnB = receiver.getKeyNameByButtonID(engine, Controller.BUTTON_B);
@@ -1098,11 +1098,11 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 			int d = netRankingView;
 
 			if(!netRankingNoDataFlag[d] && netRankingReady[d] && (netRankingPlace != null) && (netRankingPlace[d] != null)) {
-				receiver.drawMenuFont(engine, playerID, 0, 1, "<<", EventReceiver.COLOR_ORANGE);
-				receiver.drawMenuFont(engine, playerID, 38, 1, ">>", EventReceiver.COLOR_ORANGE);
+				receiver.drawMenuFont(engine, playerID, 0, 1, "<<", EventRenderer.COLOR_ORANGE);
+				receiver.drawMenuFont(engine, playerID, 38, 1, ">>", EventRenderer.COLOR_ORANGE);
 				receiver.drawMenuFont(engine, playerID, 3, 1,
 						((d != 0) ? "DAILY" : "ALL-TIME") + " RANKING (" + (netRankingCursor[d]+1) + "/" + netRankingPlace[d].size() + ")",
-						EventReceiver.COLOR_GREEN);
+						EventRenderer.COLOR_GREEN);
 
 				int startIndex = (netRankingCursor[d] / 20) * 20;
 				int endIndex = startIndex + 20;
@@ -1110,29 +1110,29 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 				int c = 0;
 
 				if(netRankingType == NetSPRecord.RANKINGTYPE_GENERIC_SCORE) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    SCORE   LINE TIME     NAME", EventReceiver.COLOR_BLUE);
+					receiver.drawMenuFont(engine, playerID, 1, 3, "    SCORE   LINE TIME     NAME", EventRenderer.COLOR_BLUE);
 				} else if(netRankingType == NetSPRecord.RANKINGTYPE_GENERIC_TIME) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    TIME     PIECE PPS    NAME", EventReceiver.COLOR_BLUE);
+					receiver.drawMenuFont(engine, playerID, 1, 3, "    TIME     PIECE PPS    NAME", EventRenderer.COLOR_BLUE);
 				} else if(netRankingType == NetSPRecord.RANKINGTYPE_SCORERACE) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    TIME     LINE SPL    NAME", EventReceiver.COLOR_BLUE);
+					receiver.drawMenuFont(engine, playerID, 1, 3, "    TIME     LINE SPL    NAME", EventRenderer.COLOR_BLUE);
 				} else if(netRankingType == NetSPRecord.RANKINGTYPE_DIGRACE) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    TIME     LINE PIECE  NAME", EventReceiver.COLOR_BLUE);
+					receiver.drawMenuFont(engine, playerID, 1, 3, "    TIME     LINE PIECE  NAME", EventRenderer.COLOR_BLUE);
 				} else if(netRankingType == NetSPRecord.RANKINGTYPE_ULTRA) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    SCORE   LINE PIECE    NAME", EventReceiver.COLOR_BLUE);
+					receiver.drawMenuFont(engine, playerID, 1, 3, "    SCORE   LINE PIECE    NAME", EventRenderer.COLOR_BLUE);
 				} else if(netRankingType == NetSPRecord.RANKINGTYPE_COMBORACE) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    COMBO TIME     PPS    NAME", EventReceiver.COLOR_BLUE);
+					receiver.drawMenuFont(engine, playerID, 1, 3, "    COMBO TIME     PPS    NAME", EventRenderer.COLOR_BLUE);
 				} else if(netRankingType == NetSPRecord.RANKINGTYPE_DIGCHALLENGE) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    SCORE   LINE TIME     NAME", EventReceiver.COLOR_BLUE);
+					receiver.drawMenuFont(engine, playerID, 1, 3, "    SCORE   LINE TIME     NAME", EventRenderer.COLOR_BLUE);
 				} else if(netRankingType == NetSPRecord.RANKINGTYPE_TIMEATTACK) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    LINE  TIME     PPS    NAME", EventReceiver.COLOR_BLUE);
+					receiver.drawMenuFont(engine, playerID, 1, 3, "    LINE  TIME     PPS    NAME", EventRenderer.COLOR_BLUE);
 				}
 
 				for(int i = startIndex; i < endIndex; i++) {
 					if(i == netRankingCursor[d]) {
-						receiver.drawMenuFont(engine, playerID, 0, 4 + c, "b", EventReceiver.COLOR_RED);
+						receiver.drawMenuFont(engine, playerID, 0, 4 + c, "b", EventRenderer.COLOR_RED);
 					}
 
-					int rankColor = (i == netRankingMyRank[d]) ? EventReceiver.COLOR_PINK : EventReceiver.COLOR_YELLOW;
+					int rankColor = (i == netRankingMyRank[d]) ? EventRenderer.COLOR_PINK : EventRenderer.COLOR_YELLOW;
 					if(netRankingPlace[d].get(i) == -1) {
 						receiver.drawMenuFont(engine, playerID, 1, 4 + c, "N/A", rankColor);
 					} else {
@@ -1175,9 +1175,9 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 						receiver.drawMenuFont(engine, playerID, 18, 4 + c, GeneralUtil.getTime(netRankingTime[d].get(i)), (i == netRankingCursor[d]));
 						receiver.drawTTFMenuFont(engine, playerID, 27, 4 + c, netRankingName[d].get(i), (i == netRankingCursor[d]));
 					} else if(netRankingType == NetSPRecord.RANKINGTYPE_TIMEATTACK) {
-						int fontcolor = EventReceiver.COLOR_WHITE;
-						if(netRankingRollclear[d].get(i) == 1) fontcolor = EventReceiver.COLOR_GREEN;
-						if(netRankingRollclear[d].get(i) == 2) fontcolor = EventReceiver.COLOR_ORANGE;
+						int fontcolor = EventRenderer.COLOR_WHITE;
+						if(netRankingRollclear[d].get(i) == 1) fontcolor = EventRenderer.COLOR_GREEN;
+						if(netRankingRollclear[d].get(i) == 2) fontcolor = EventRenderer.COLOR_ORANGE;
 						receiver.drawMenuFont(engine, playerID, 5, 4 + c, "" + netRankingLines[d].get(i), fontcolor);
 						receiver.drawMenuFont(engine, playerID, 11, 4 + c, GeneralUtil.getTime(netRankingTime[d].get(i)), (i == netRankingCursor[d]));
 						receiver.drawMenuFont(engine, playerID, 20, 4 + c, String.format("%.4g", netRankingPPS[d].get(i)), (i == netRankingCursor[d]));
@@ -1193,38 +1193,38 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 					if(calendar != null) {
 						strDate = GeneralUtil.getCalendarString(calendar, TimeZone.getDefault());
 					}
-					receiver.drawMenuFont(engine, playerID, 1, 25, "DATE:" + strDate, EventReceiver.COLOR_CYAN);
+					receiver.drawMenuFont(engine, playerID, 1, 25, "DATE:" + strDate, EventRenderer.COLOR_CYAN);
 
 					float gamerate = netRankingGamerate[d].get(netRankingCursor[d]);
 					receiver.drawMenuFont(engine, playerID, 1, 26, "GAMERATE:" + ((gamerate == 0f) ? "UNKNOWN" : (100*gamerate)+"%"),
-							EventReceiver.COLOR_CYAN);
+							EventRenderer.COLOR_CYAN);
 				}
 
 				receiver.drawMenuFont(engine, playerID, 1, 27,
 						"A(" + strBtnA + " KEY):DOWNLOAD\nB(" + strBtnB + " KEY):BACK LEFT/RIGHT:" + ((d == 0) ? "DAILY" : "ALL-TIME"),
-						EventReceiver.COLOR_ORANGE);
+						EventRenderer.COLOR_ORANGE);
 			} else if(netRankingNoDataFlag[d]) {
-				receiver.drawMenuFont(engine, playerID, 0, 1, "<<", EventReceiver.COLOR_ORANGE);
-				receiver.drawMenuFont(engine, playerID, 38, 1, ">>", EventReceiver.COLOR_ORANGE);
+				receiver.drawMenuFont(engine, playerID, 0, 1, "<<", EventRenderer.COLOR_ORANGE);
+				receiver.drawMenuFont(engine, playerID, 38, 1, ">>", EventRenderer.COLOR_ORANGE);
 				receiver.drawMenuFont(engine, playerID, 3, 1,
 						((d != 0) ? "DAILY" : "ALL-TIME") + " RANKING",
-						EventReceiver.COLOR_GREEN);
+						EventRenderer.COLOR_GREEN);
 
-				receiver.drawMenuFont(engine, playerID, 1, 3, "NO DATA", EventReceiver.COLOR_DARKBLUE);
+				receiver.drawMenuFont(engine, playerID, 1, 3, "NO DATA", EventRenderer.COLOR_DARKBLUE);
 
 				receiver.drawMenuFont(engine, playerID, 1, 28, "B(" + strBtnB + " KEY):BACK LEFT/RIGHT:" + ((d == 0) ? "DAILY" : "ALL-TIME"),
-						EventReceiver.COLOR_ORANGE);
+						EventRenderer.COLOR_ORANGE);
 			} else if(!netRankingReady[d] && (netRankingPlace == null) || (netRankingPlace[d] == null)) {
-				receiver.drawMenuFont(engine, playerID, 0, 1, "<<", EventReceiver.COLOR_ORANGE);
-				receiver.drawMenuFont(engine, playerID, 38, 1, ">>", EventReceiver.COLOR_ORANGE);
+				receiver.drawMenuFont(engine, playerID, 0, 1, "<<", EventRenderer.COLOR_ORANGE);
+				receiver.drawMenuFont(engine, playerID, 38, 1, ">>", EventRenderer.COLOR_ORANGE);
 				receiver.drawMenuFont(engine, playerID, 3, 1,
 						((d != 0) ? "DAILY" : "ALL-TIME") + " RANKING",
-						EventReceiver.COLOR_GREEN);
+						EventRenderer.COLOR_GREEN);
 
-				receiver.drawMenuFont(engine, playerID, 1, 3, "LOADING...", EventReceiver.COLOR_CYAN);
+				receiver.drawMenuFont(engine, playerID, 1, 3, "LOADING...", EventRenderer.COLOR_CYAN);
 
 				receiver.drawMenuFont(engine, playerID, 1, 28, "B(" + strBtnB + " KEY):BACK LEFT/RIGHT:" + ((d == 0) ? "DAILY" : "ALL-TIME"),
-						EventReceiver.COLOR_ORANGE);
+						EventRenderer.COLOR_ORANGE);
 			}
 		}
 	}

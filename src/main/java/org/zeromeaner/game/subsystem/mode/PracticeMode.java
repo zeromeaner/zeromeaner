@@ -35,7 +35,7 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
@@ -668,17 +668,17 @@ public class PracticeMode extends AbstractMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		receiver.drawMenuFont(engine, playerID, 1, 1, "PRACTICE MODE SETTINGS", EventReceiver.COLOR_ORANGE);
+		receiver.drawMenuFont(engine, playerID, 1, 1, "PRACTICE MODE SETTINGS", EventRenderer.COLOR_ORANGE);
 
 		if(engine.owner.replayMode == false) {
-			receiver.drawMenuFont(engine, playerID, 1, 27, "A:START B:EXIT C+<>:FAST CHANGE", EventReceiver.COLOR_CYAN);
+			receiver.drawMenuFont(engine, playerID, 1, 27, "A:START B:EXIT C+<>:FAST CHANGE", EventRenderer.COLOR_CYAN);
 		} else {
-			receiver.drawMenuFont(engine, playerID, 1, 27, "F:SKIP", EventReceiver.COLOR_RED);
+			receiver.drawMenuFont(engine, playerID, 1, 27, "F:SKIP", EventRenderer.COLOR_RED);
 		}
 
 		if(engine.statc[2] < 23) {
 			if(owner.replayMode == false) {
-				receiver.drawMenuFont(engine, playerID, 1, engine.statc[2] + 3, "b", EventReceiver.COLOR_RED);
+				receiver.drawMenuFont(engine, playerID, 1, engine.statc[2] + 3, "b", EventRenderer.COLOR_RED);
 			}
 
 			receiver.drawMenuFont(engine, playerID, 2,  3, "GRAVITY:" + engine.speed.gravity, (engine.statc[2] == 0));
@@ -726,7 +726,7 @@ public class PracticeMode extends AbstractMode {
 					  (engine.statc[2] == 22));
 		} else if(engine.statc[2] < 46) {
 			if(owner.replayMode == false) {
-				receiver.drawMenuFont(engine, playerID, 1, engine.statc[2] - 23 + 3, "b", EventReceiver.COLOR_RED);
+				receiver.drawMenuFont(engine, playerID, 1, engine.statc[2] - 23 + 3, "b", EventRenderer.COLOR_RED);
 			}
 
 			receiver.drawMenuFont(engine, playerID, 2,  3, "USE BONE BLOCKS:" + GeneralUtil.getONorOFF(bone), (engine.statc[2] == 23));
@@ -913,15 +913,15 @@ public class PracticeMode extends AbstractMode {
 	 */
 	@Override
 	public void renderLast(GameEngine engine, int playerID) {
-		receiver.drawScoreFont(engine, playerID, 0, 0, "PRACTICE", EventReceiver.COLOR_YELLOW);
+		receiver.drawScoreFont(engine, playerID, 0, 0, "PRACTICE", EventRenderer.COLOR_YELLOW);
 
 		if(engine.stat == GameEngine.STAT_FIELDEDIT) {
 			// fieldエディットのとき
 
 			// 座標
-			receiver.drawScoreFont(engine, playerID, 0, 2, "X POS", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 2, "X POS", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 3, "" + engine.fldeditX);
-			receiver.drawScoreFont(engine, playerID, 0, 4, "Y POS", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 4, "Y POS", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 5, "" + engine.fldeditY);
 
 			// Put your field-checking algorithm test codes here
@@ -937,13 +937,13 @@ public class PracticeMode extends AbstractMode {
 			//  levelタイプがMANIAのとき
 
 			// Score
-			receiver.drawScoreFont(engine, playerID, 0, 5, "SCORE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 5, "SCORE", EventRenderer.COLOR_BLUE);
 			String strScore = String.valueOf(engine.statistics.score);
 			if((lastscore > 0) && (scgettime < 120)) strScore += "(+" + lastscore + ")";
 			receiver.drawScoreFont(engine, playerID, 0, 6, strScore);
 
 			//  level
-			receiver.drawScoreFont(engine, playerID, 0, 9, "LEVEL", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 9, "LEVEL", EventRenderer.COLOR_BLUE);
 			int tempLevel = engine.statistics.level;
 			if(tempLevel < 0) tempLevel = 0;
 			String strLevel = String.format("%3d", tempLevel);
@@ -956,79 +956,79 @@ public class PracticeMode extends AbstractMode {
 			receiver.drawScoreFont(engine, playerID, 0, 12, String.format("%3d", nextseclv));
 
 			// Time
-			receiver.drawScoreFont(engine, playerID, 0, 14, "TIME", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 14, "TIME", EventRenderer.COLOR_BLUE);
 			int time = engine.statistics.time;
 			if(timelimit > 0) time = timelimitTimer;
 			if(time < 0) time = 0;
-			int fontcolor = EventReceiver.COLOR_WHITE;
-			if((time < 30 * 60) && (time > 0) && (timelimit > 0)) fontcolor = EventReceiver.COLOR_YELLOW;
-			if((time < 20 * 60) && (time > 0) && (timelimit > 0)) fontcolor = EventReceiver.COLOR_ORANGE;
-			if((time < 10 * 60) && (time > 0) && (timelimit > 0)) fontcolor = EventReceiver.COLOR_RED;
+			int fontcolor = EventRenderer.COLOR_WHITE;
+			if((time < 30 * 60) && (time > 0) && (timelimit > 0)) fontcolor = EventRenderer.COLOR_YELLOW;
+			if((time < 20 * 60) && (time > 0) && (timelimit > 0)) fontcolor = EventRenderer.COLOR_ORANGE;
+			if((time < 10 * 60) && (time > 0) && (timelimit > 0)) fontcolor = EventRenderer.COLOR_RED;
 			receiver.drawScoreFont(engine, playerID, 0, 15, GeneralUtil.getTime(time), fontcolor);
 
 			// Roll 残り time
 			if((engine.gameActive) && (engine.ending == 2)) {
 				int remainTime = rolltimelimit - rolltime;
 				if(remainTime < 0) remainTime = 0;
-				receiver.drawScoreFont(engine, playerID, 0, 17, "ROLL TIME", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 0, 17, "ROLL TIME", EventRenderer.COLOR_BLUE);
 				receiver.drawScoreFont(engine, playerID, 0, 18, GeneralUtil.getTime(remainTime), ((remainTime > 0) && (remainTime < 10 * 60)));
 			}
 		} else {
 			//  levelタイプがMANIA以外のとき
 
 			// Score
-			receiver.drawScoreFont(engine, playerID, 0, 2, "SCORE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 2, "SCORE", EventRenderer.COLOR_BLUE);
 			String strScore = String.valueOf(engine.statistics.score);
 			if((lastscore > 0) && (scgettime < 120)) strScore += "(+" + lastscore + ")";
 			receiver.drawScoreFont(engine, playerID, 0, 3, strScore);
 
 			if(leveltype == LEVELTYPE_POINTS) {
 				// ゴール
-				receiver.drawScoreFont(engine, playerID, 0, 5, "GOAL", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 0, 5, "GOAL", EventRenderer.COLOR_BLUE);
 				String strGoal = String.valueOf(goal);
 				if((lastgoal != 0) && (scgettime < 120) && (engine.ending == 0))
 					strGoal += "(-" + String.valueOf(lastgoal) + ")";
 				receiver.drawScoreFont(engine, playerID, 0, 6, strGoal);
 			} else if(leveltype == LEVELTYPE_10LINES) {
 				// Lines( levelタイプが10LINESのとき)
-				receiver.drawScoreFont(engine, playerID, 0, 5, "LINE", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 0, 5, "LINE", EventRenderer.COLOR_BLUE);
 				receiver.drawScoreFont(engine, playerID, 0, 6, engine.statistics.lines + "/" + ((engine.statistics.level + 1) * 10));
 			} else {
 				// Lines( levelタイプがNONEのとき)
-				receiver.drawScoreFont(engine, playerID, 0, 5, "LINE", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 0, 5, "LINE", EventRenderer.COLOR_BLUE);
 				receiver.drawScoreFont(engine, playerID, 0, 6, String.valueOf(engine.statistics.lines));
 			}
 
 			//  level
 			if(leveltype != LEVELTYPE_NONE) {
-				receiver.drawScoreFont(engine, playerID, 0, 8, "LEVEL", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 0, 8, "LEVEL", EventRenderer.COLOR_BLUE);
 				receiver.drawScoreFont(engine, playerID, 0, 9, String.valueOf(engine.statistics.level + 1));
 			}
 
 			// 1分間あたり score
-			receiver.drawScoreFont(engine, playerID, 0, 11, "SCORE/MIN", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 11, "SCORE/MIN", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 12, String.format("%-10g", engine.statistics.spm));
 
 			// 1分間あたりのLines
-			receiver.drawScoreFont(engine, playerID, 0, 14, "LINE/MIN", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 14, "LINE/MIN", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 15, String.valueOf(engine.statistics.lpm));
 
 			// Time
-			receiver.drawScoreFont(engine, playerID, 0, 17, "TIME", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 17, "TIME", EventRenderer.COLOR_BLUE);
 			int time = engine.statistics.time;
 			if(timelimit > 0) time = timelimitTimer;
 			if(time < 0) time = 0;
-			int fontcolor = EventReceiver.COLOR_WHITE;
-			if((time < 30 * 60) && (time > 0) && (timelimit > 0)) fontcolor = EventReceiver.COLOR_YELLOW;
-			if((time < 20 * 60) && (time > 0) && (timelimit > 0)) fontcolor = EventReceiver.COLOR_ORANGE;
-			if((time < 10 * 60) && (time > 0) && (timelimit > 0)) fontcolor = EventReceiver.COLOR_RED;
+			int fontcolor = EventRenderer.COLOR_WHITE;
+			if((time < 30 * 60) && (time > 0) && (timelimit > 0)) fontcolor = EventRenderer.COLOR_YELLOW;
+			if((time < 20 * 60) && (time > 0) && (timelimit > 0)) fontcolor = EventRenderer.COLOR_ORANGE;
+			if((time < 10 * 60) && (time > 0) && (timelimit > 0)) fontcolor = EventRenderer.COLOR_RED;
 			receiver.drawScoreFont(engine, playerID, 0, 18, GeneralUtil.getTime(time), fontcolor);
 
 			// Roll 残り time
 			if((engine.gameActive) && (engine.ending == 2)) {
 				int remainTime = rolltimelimit - rolltime;
 				if(remainTime < 0) remainTime = 0;
-				receiver.drawScoreFont(engine, playerID, 0, 20, "ROLL TIME", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 0, 20, "ROLL TIME", EventRenderer.COLOR_BLUE);
 				receiver.drawScoreFont(engine, playerID, 0, 21, GeneralUtil.getTime(remainTime), ((remainTime > 0) && (remainTime < 10 * 60)));
 			}
 
@@ -1038,52 +1038,52 @@ public class PracticeMode extends AbstractMode {
 
 				switch(lastevent) {
 				case EVENT_SINGLE:
-					receiver.drawMenuFont(engine, playerID, 2, 21, "SINGLE", EventReceiver.COLOR_DARKBLUE);
+					receiver.drawMenuFont(engine, playerID, 2, 21, "SINGLE", EventRenderer.COLOR_DARKBLUE);
 					break;
 				case EVENT_DOUBLE:
-					receiver.drawMenuFont(engine, playerID, 2, 21, "DOUBLE", EventReceiver.COLOR_BLUE);
+					receiver.drawMenuFont(engine, playerID, 2, 21, "DOUBLE", EventRenderer.COLOR_BLUE);
 					break;
 				case EVENT_TRIPLE:
-					receiver.drawMenuFont(engine, playerID, 2, 21, "TRIPLE", EventReceiver.COLOR_GREEN);
+					receiver.drawMenuFont(engine, playerID, 2, 21, "TRIPLE", EventRenderer.COLOR_GREEN);
 					break;
 				case EVENT_FOUR:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 3, 21, "FOUR", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 3, 21, "FOUR", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 3, 21, "FOUR", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 3, 21, "FOUR", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_ZERO_MINI:
-					receiver.drawMenuFont(engine, playerID, 2, 21, strPieceName + "-SPIN", EventReceiver.COLOR_PURPLE);
+					receiver.drawMenuFont(engine, playerID, 2, 21, strPieceName + "-SPIN", EventRenderer.COLOR_PURPLE);
 					break;
 				case EVENT_TSPIN_ZERO:
-					receiver.drawMenuFont(engine, playerID, 2, 21, strPieceName + "-SPIN", EventReceiver.COLOR_PINK);
+					receiver.drawMenuFont(engine, playerID, 2, 21, strPieceName + "-SPIN", EventRenderer.COLOR_PINK);
 					break;
 				case EVENT_TSPIN_SINGLE_MINI:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-S", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-S", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-S", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-S", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_SINGLE:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-SINGLE", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-SINGLE", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-SINGLE", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-SINGLE", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_DOUBLE_MINI:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-D", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-D", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-D", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-D", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_DOUBLE:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-DOUBLE", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-DOUBLE", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-DOUBLE", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-DOUBLE", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_TRIPLE:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-TRIPLE", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-TRIPLE", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-TRIPLE", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-TRIPLE", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_EZ:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 3, 21, "EZ-" + strPieceName, EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 3, 21, "EZ-" + strPieceName, EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 3, 21, "EZ-" + strPieceName, EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 3, 21, "EZ-" + strPieceName, EventRenderer.COLOR_ORANGE);
 					break;
 				}
 
 				if((lastcombo >= 2) && (lastevent != EVENT_TSPIN_ZERO_MINI) && (lastevent != EVENT_TSPIN_ZERO))
-					receiver.drawMenuFont(engine, playerID, 2, 22, (lastcombo - 1) + "COMBO", EventReceiver.COLOR_CYAN);
+					receiver.drawMenuFont(engine, playerID, 2, 22, (lastcombo - 1) + "COMBO", EventRenderer.COLOR_CYAN);
 			}
 		}
 	}
@@ -1586,10 +1586,10 @@ public class PracticeMode extends AbstractMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		drawResultStats(engine, playerID, receiver, 0, EventReceiver.COLOR_BLUE,
+		drawResultStats(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE,
 				STAT_SCORE, STAT_LINES, STAT_LEVEL_ADD_DISP, STAT_TIME, STAT_SPL, STAT_SPM, STAT_LPM);
 		if(secretGrade > 0) {
-			drawResult(engine, playerID, receiver, 14, EventReceiver.COLOR_BLUE,
+			drawResult(engine, playerID, receiver, 14, EventRenderer.COLOR_BLUE,
 					"S. GRADE", String.format("%10s", tableSecretGradeName[secretGrade-1]));
 		}
 	}

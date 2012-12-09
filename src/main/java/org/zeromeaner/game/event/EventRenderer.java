@@ -44,9 +44,9 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * Drawing and event handling EventReceiver
  */
-public class EventReceiver {
+public class EventRenderer {
 	/** Log */
-	static Logger log = Logger.getLogger(EventReceiver.class);
+	static Logger log = Logger.getLogger(EventRenderer.class);
 
 	/** Field X position */
 	public static final int[][][] NEW_FIELD_OFFSET_X = {

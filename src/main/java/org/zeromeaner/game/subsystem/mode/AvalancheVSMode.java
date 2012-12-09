@@ -33,7 +33,7 @@ import java.util.Random;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.CustomProperties;
@@ -68,15 +68,15 @@ public class AvalancheVSMode extends AbstractAvalancheVSMode {
 	/** Fever meter colors */
 	private static final int[] FEVER_METER_COLORS =
 	{
-		EventReceiver.COLOR_RED,
-		EventReceiver.COLOR_ORANGE,
-		EventReceiver.COLOR_YELLOW,
-		EventReceiver.COLOR_GREEN,
-		EventReceiver.COLOR_CYAN,
-		EventReceiver.COLOR_BLUE,
-		EventReceiver.COLOR_DARKBLUE,
-		EventReceiver.COLOR_PURPLE,
-		EventReceiver.COLOR_PINK
+		EventRenderer.COLOR_RED,
+		EventRenderer.COLOR_ORANGE,
+		EventRenderer.COLOR_YELLOW,
+		EventRenderer.COLOR_GREEN,
+		EventRenderer.COLOR_CYAN,
+		EventRenderer.COLOR_BLUE,
+		EventRenderer.COLOR_DARKBLUE,
+		EventRenderer.COLOR_PURPLE,
+		EventRenderer.COLOR_PINK
 	};
 
 	/** Version */
@@ -653,7 +653,7 @@ public class AvalancheVSMode extends AbstractAvalancheVSMode {
 	public void renderSetting(GameEngine engine, int playerID) {
 		if(engine.statc[4] == 0) {
 			if(engine.statc[2] < 9) {
-				drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_ORANGE, 0,
+				drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_ORANGE, 0,
 						"GRAVITY", String.valueOf(engine.speed.gravity),
 						"G-MAX", String.valueOf(engine.speed.denominator),
 						"ARE", String.valueOf(engine.speed.are),
@@ -664,9 +664,9 @@ public class AvalancheVSMode extends AbstractAvalancheVSMode {
 						"FALL DELAY", String.valueOf(engine.cascadeDelay),
 						"CLEAR DELAY", String.valueOf(engine.cascadeClearDelay));
 
-				receiver.drawMenuFont(engine, playerID, 0, 21, "PAGE 1/5", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 0, 21, "PAGE 1/5", EventRenderer.COLOR_YELLOW);
 			} else if(engine.statc[2] < 17) {
-				drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_CYAN, 9,
+				drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_CYAN, 9,
 						"COUNTER", OJAMA_COUNTER_STRING[ojamaCounterMode[playerID]],
 						"MAX ATTACK", String.valueOf(maxAttack[playerID]),
 						"COLORS", String.valueOf(numColors[playerID]),
@@ -676,38 +676,38 @@ public class AvalancheVSMode extends AbstractAvalancheVSMode {
 						"HURRYUP", (hurryupSeconds[playerID] == 0) ? "NONE" : hurryupSeconds[playerID]+"SEC",
 						"CHAINPOWER", newChainPower[playerID] ? "FEVER" : "CLASSIC");
 
-				receiver.drawMenuFont(engine, playerID, 0, 21, "PAGE 2/5", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 0, 21, "PAGE 2/5", EventRenderer.COLOR_YELLOW);
 			} else if(engine.statc[2] < 26) {
-				initMenu(EventReceiver.COLOR_DARKBLUE, 17);
+				initMenu(EventRenderer.COLOR_DARKBLUE, 17);
 				drawMenu(engine, playerID, receiver,
 						"OUTLINE", OUTLINE_TYPE_NAMES[outlineType[playerID]],
 						"SHOW CHAIN", CHAIN_DISPLAY_NAMES[chainDisplayType[playerID]],
 						"FALL ANIM", cascadeSlow[playerID] ? "FEVER" : "CLASSIC");
-				menuColor = EventReceiver.COLOR_CYAN;
+				menuColor = EventRenderer.COLOR_CYAN;
 				drawMenu(engine, playerID, receiver, "BIG", GeneralUtil.getONorOFF(big[playerID]));
 				if (big[playerID])
-					menuColor = EventReceiver.COLOR_WHITE;
+					menuColor = EventRenderer.COLOR_WHITE;
 				drawMenu(engine, playerID, receiver,
 						"HARD OJAMA", String.valueOf(ojamaHard[playerID]),
 						"X COLUMN", dangerColumnDouble[playerID] ? "3 AND 4" : "3 ONLY",
 						"X SHOW", GeneralUtil.getONorOFF(dangerColumnShowX[playerID]),
 						"ZENKESHI", ZENKESHI_TYPE_NAMES[zenKeshiType[playerID]]);
 				if (zenKeshiType[playerID] == ZENKESHI_MODE_OFF)
-					menuColor = EventReceiver.COLOR_WHITE;
+					menuColor = EventRenderer.COLOR_WHITE;
 				drawMenu(engine, playerID, receiver,
 						"ZK-BONUS", (zenKeshiType[playerID] == ZENKESHI_MODE_FEVER) ?
 							zenKeshiChain[playerID] + " CHAIN" : zenKeshiOjama[playerID] + " OJAMA");
-				receiver.drawMenuFont(engine, playerID, 0, 21, "PAGE 3/5", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 0, 21, "PAGE 3/5", EventRenderer.COLOR_YELLOW);
 			} else if(engine.statc[2] < 36) {
-				initMenu(big[playerID] ? EventReceiver.COLOR_WHITE : EventReceiver.COLOR_PURPLE, 26);
+				initMenu(big[playerID] ? EventRenderer.COLOR_WHITE : EventRenderer.COLOR_PURPLE, 26);
 				drawMenu(engine, playerID, receiver,
 						"FEVER", (feverThreshold[playerID] == 0) ? "NONE" : feverThreshold[playerID]+" PTS");
 				if (feverThreshold[playerID] == 0 && zenKeshiType[playerID] != ZENKESHI_MODE_FEVER)
-					menuColor = EventReceiver.COLOR_WHITE;
+					menuColor = EventRenderer.COLOR_WHITE;
 				drawMenu(engine, playerID, receiver,
 						"F-MAP SET", FEVER_MAPS[feverMapSet[playerID]].toUpperCase());
 				if (feverThreshold[playerID] == 0)
-					menuColor = EventReceiver.COLOR_WHITE;
+					menuColor = EventRenderer.COLOR_WHITE;
 				drawMenu(engine, playerID, receiver,
 						"F-MIN TIME", feverTimeMin[playerID] + "SEC",
 						"F-MAX TIME", feverTimeMax[playerID] + "SEC",
@@ -718,35 +718,35 @@ public class AvalancheVSMode extends AbstractAvalancheVSMode {
 						"F-1STCHAIN", String.valueOf(feverChainStart[playerID]),
 						"SIDE METER", (ojamaMeter[playerID] || feverThreshold[playerID] == 0) ? "OJAMA" : "FEVER");
 
-				receiver.drawMenuFont(engine, playerID, 0, 21, "PAGE 4/5", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 0, 21, "PAGE 4/5", EventRenderer.COLOR_YELLOW);
 			} else if (engine.statc[2] < 44){
-				initMenu(EventReceiver.COLOR_PINK, 36);
+				initMenu(EventRenderer.COLOR_PINK, 36);
 				drawMenu(engine, playerID, receiver,
 						"USE MAP", GeneralUtil.getONorOFF(useMap[playerID]),
 						"MAP SET", String.valueOf(mapSet[playerID]),
 						"MAP NO.", (mapNumber[playerID] < 0) ? "RANDOM" : mapNumber[playerID]+"/"+(mapMaxNo[playerID]-1));
-				menuColor = EventReceiver.COLOR_DARKBLUE;
+				menuColor = EventRenderer.COLOR_DARKBLUE;
 				drawMenu(engine, playerID, receiver, "BGM", String.valueOf(bgmno));
-				menuColor = EventReceiver.COLOR_YELLOW;
+				menuColor = EventRenderer.COLOR_YELLOW;
 				drawMenu(engine, playerID, receiver, "SE", GeneralUtil.getONorOFF(enableSE[playerID]));
-				menuColor = EventReceiver.COLOR_DARKBLUE;
+				menuColor = EventRenderer.COLOR_DARKBLUE;
 				drawMenu(engine, playerID, receiver, "BIG DISP", GeneralUtil.getONorOFF(bigDisplay));
-				menuColor = EventReceiver.COLOR_GREEN;
+				menuColor = EventRenderer.COLOR_GREEN;
 				drawMenu(engine, playerID, receiver,
 						"LOAD", String.valueOf(presetNumber[playerID]),
 						"SAVE", String.valueOf(presetNumber[playerID]));
 
-				receiver.drawMenuFont(engine, playerID, 0, 21, "PAGE 5/5", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 0, 21, "PAGE 5/5", EventRenderer.COLOR_YELLOW);
 			} else {
-				receiver.drawMenuFont(engine, playerID, 0, 13, "MAP PREVIEW", EventReceiver.COLOR_YELLOW);
-				receiver.drawMenuFont(engine, playerID, 0, 14, "A:DISPLAY", EventReceiver.COLOR_GREEN);
-				drawMenu(engine, playerID, receiver, 15, EventReceiver.COLOR_BLUE, 44,
+				receiver.drawMenuFont(engine, playerID, 0, 13, "MAP PREVIEW", EventRenderer.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 0, 14, "A:DISPLAY", EventRenderer.COLOR_GREEN);
+				drawMenu(engine, playerID, receiver, 15, EventRenderer.COLOR_BLUE, 44,
 						"F-MAP SET", FEVER_MAPS[feverMapSet[playerID]].toUpperCase(),
 						"SUBSET", feverMapSubsets[playerID][previewSubset[playerID]].toUpperCase(),
 						"CHAIN", String.valueOf(previewChain[playerID]));
 			}
 		} else {
-			receiver.drawMenuFont(engine, playerID, 3, 10, "WAIT", EventReceiver.COLOR_YELLOW);
+			receiver.drawMenuFont(engine, playerID, 3, 10, "WAIT", EventRenderer.COLOR_YELLOW);
 		}
 	}
 
@@ -786,8 +786,8 @@ public class AvalancheVSMode extends AbstractAvalancheVSMode {
 	public void renderLast(GameEngine engine, int playerID) {
 		int fldPosX = receiver.getFieldDisplayPositionX(engine, playerID);
 		int fldPosY = receiver.getFieldDisplayPositionY(engine, playerID);
-		int playerColor = (playerID == 0) ? EventReceiver.COLOR_RED : EventReceiver.COLOR_BLUE;
-		int fontColor = EventReceiver.COLOR_WHITE;
+		int playerColor = (playerID == 0) ? EventRenderer.COLOR_RED : EventRenderer.COLOR_BLUE;
+		int fontColor = EventRenderer.COLOR_WHITE;
 
 		// Timer
 		if(playerID == 0) {
@@ -795,10 +795,10 @@ public class AvalancheVSMode extends AbstractAvalancheVSMode {
 		}
 
 		// Ojama Counter
-		fontColor = EventReceiver.COLOR_WHITE;
-		if(ojama[playerID] >= 1) fontColor = EventReceiver.COLOR_YELLOW;
-		if(ojama[playerID] >= 6) fontColor = EventReceiver.COLOR_ORANGE;
-		if(ojama[playerID] >= 12) fontColor = EventReceiver.COLOR_RED;
+		fontColor = EventRenderer.COLOR_WHITE;
+		if(ojama[playerID] >= 1) fontColor = EventRenderer.COLOR_YELLOW;
+		if(ojama[playerID] >= 6) fontColor = EventRenderer.COLOR_ORANGE;
+		if(ojama[playerID] >= 12) fontColor = EventRenderer.COLOR_RED;
 
 		String strOjama = String.valueOf(ojama[playerID]);
 		if(ojamaAdd[playerID] > 0 && !(inFever[playerID] && ojamaAddToFever[playerID]))
@@ -809,10 +809,10 @@ public class AvalancheVSMode extends AbstractAvalancheVSMode {
 		}
 
 		// Fever Ojama Counter
-		fontColor = EventReceiver.COLOR_WHITE;
-		if(ojamaFever[playerID] >= 1) fontColor = EventReceiver.COLOR_YELLOW;
-		if(ojamaFever[playerID] >= 6) fontColor = EventReceiver.COLOR_ORANGE;
-		if(ojamaFever[playerID] >= 12) fontColor = EventReceiver.COLOR_RED;
+		fontColor = EventRenderer.COLOR_WHITE;
+		if(ojamaFever[playerID] >= 1) fontColor = EventRenderer.COLOR_YELLOW;
+		if(ojamaFever[playerID] >= 6) fontColor = EventRenderer.COLOR_ORANGE;
+		if(ojamaFever[playerID] >= 12) fontColor = EventRenderer.COLOR_RED;
 
 		String ojamaFeverStr = String.valueOf(ojamaFever[playerID]);
 		if(ojamaAdd[playerID] > 0 && inFever[playerID] && ojamaAddToFever[playerID])
@@ -845,7 +845,7 @@ public class AvalancheVSMode extends AbstractAvalancheVSMode {
 
 				if(feverTimeLimitAddDisplay[playerID] > 0) {
 					receiver.drawDirectFont(engine, playerID, fldPosX + 216, fldPosY + 240,
-							String.format("+%d SEC.", feverTimeLimitAdd[playerID]/60), EventReceiver.COLOR_YELLOW, 0.5f);
+							String.format("+%d SEC.", feverTimeLimitAdd[playerID]/60), EventRenderer.COLOR_YELLOW, 0.5f);
 				}
 			} else if(engine.gameStarted) {
 				receiver.drawDirectFont(engine, playerID, fldPosX + 128, fldPosY + 184, "REST", playerColor, 0.5f);
@@ -854,7 +854,7 @@ public class AvalancheVSMode extends AbstractAvalancheVSMode {
 
 				if(feverTimeLimitAddDisplay[playerID] > 0) {
 					receiver.drawDirectFont(engine, playerID, fldPosX + 120, fldPosY + 216,
-							String.format("+%d SEC.", feverTimeLimitAdd[playerID]/60), EventReceiver.COLOR_YELLOW, 0.5f);
+							String.format("+%d SEC.", feverTimeLimitAdd[playerID]/60), EventRenderer.COLOR_YELLOW, 0.5f);
 				}
 			}
 
@@ -907,10 +907,10 @@ public class AvalancheVSMode extends AbstractAvalancheVSMode {
 				if((engine.field == null) || (engine.field.getBlockEmpty(2 + i, 0))) {
 					if(engine.displaysize == 1) {
 						receiver.drawMenuFont(engine, playerID, 4 + (i * 2), 0, ""+strFeverTimer.charAt(i),
-								feverTime[playerID] < 360 ? EventReceiver.COLOR_RED : EventReceiver.COLOR_WHITE, 2.0f);
+								feverTime[playerID] < 360 ? EventRenderer.COLOR_RED : EventRenderer.COLOR_WHITE, 2.0f);
 					} else {
 						receiver.drawMenuFont(engine, playerID, 2 + i, 0, ""+strFeverTimer.charAt(i),
-								feverTime[playerID] < 360 ? EventReceiver.COLOR_RED : EventReceiver.COLOR_WHITE);
+								feverTime[playerID] < 360 ? EventRenderer.COLOR_RED : EventRenderer.COLOR_WHITE);
 					}
 				}
 			}

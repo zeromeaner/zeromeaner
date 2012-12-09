@@ -32,7 +32,7 @@ package org.zeromeaner.game.play;
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.BackgroundStatus;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.Version;
@@ -79,7 +79,7 @@ public class GameManager {
 	public boolean menuOnly;
 
 	/** EventReceiver: Manages various events, and renders everything to the screen */
-	public EventReceiver receiver;
+	public EventRenderer receiver;
 
 	/** BGMStatus: Manages the status of background music */
 	public BGMStatus bgmStatus;
@@ -165,7 +165,7 @@ public class GameManager {
 	 * Normal constructor
 	 * @param receiver EventReceiver
 	 */
-	public GameManager(EventReceiver receiver) {
+	public GameManager(EventRenderer receiver) {
 		this();
 		this.receiver = receiver;
 	}
@@ -176,7 +176,7 @@ public class GameManager {
 	public void init() {
 		log.debug("GameManager init()");
 
-		if(receiver == null) receiver = new EventReceiver();
+		if(receiver == null) receiver = new EventRenderer();
 
 		modeConfig = receiver.loadModeConfig();
 		if(modeConfig == null) modeConfig = new CustomProperties();

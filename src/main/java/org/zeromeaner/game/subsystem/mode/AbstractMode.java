@@ -32,7 +32,7 @@ import java.util.ArrayList;
 
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.menu.AbstractMenuItem;
@@ -56,7 +56,7 @@ public abstract class AbstractMode implements GameMode {
 	protected GameManager owner;
 
 	/** Drawing and event handling EventReceiver */
-	protected EventReceiver receiver;
+	protected EventRenderer receiver;
 
 	/** Current state of menu for drawMenu */
 	protected int statcMenu, menuColor, menuY;
@@ -68,7 +68,7 @@ public abstract class AbstractMode implements GameMode {
 
 	public AbstractMode() {
 		statcMenu = 0;
-		menuColor = EventReceiver.COLOR_WHITE;
+		menuColor = EventRenderer.COLOR_WHITE;
 		menuY = 0;
 		menu = new ArrayList<AbstractMenuItem>();
 		propName = "dummy";
@@ -323,7 +323,7 @@ public abstract class AbstractMode implements GameMode {
 		menuColor = color;
 	}
 
-	protected void drawMenu (GameEngine engine, int playerID, EventReceiver receiver, String... str) {
+	protected void drawMenu (GameEngine engine, int playerID, EventRenderer receiver, String... str) {
 		for (int i = 0; i < str.length; i++)
 		{
 			if ((i&1) == 0)
@@ -341,7 +341,7 @@ public abstract class AbstractMode implements GameMode {
 		}
 	}
 
-	protected void drawMenu (GameEngine engine, int playerID, EventReceiver receiver,
+	protected void drawMenu (GameEngine engine, int playerID, EventRenderer receiver,
 			int y, int color, int statc, String... str) {
 		menuY = y;
 		menuColor = color;
@@ -349,7 +349,7 @@ public abstract class AbstractMode implements GameMode {
 		drawMenu(engine, playerID, receiver, str);
 	}
 
-	protected void drawMenuCompact (GameEngine engine, int playerID, EventReceiver receiver, String... str) {
+	protected void drawMenuCompact (GameEngine engine, int playerID, EventRenderer receiver, String... str) {
 		for (int i = 0; i < str.length-1; i+= 2)
 		{
 			receiver.drawMenuFont(engine, playerID, 1, menuY, str[i] + ":", menuColor);
@@ -365,7 +365,7 @@ public abstract class AbstractMode implements GameMode {
 		}
 	}
 
-	protected void drawMenuCompact (GameEngine engine, int playerID, EventReceiver receiver,
+	protected void drawMenuCompact (GameEngine engine, int playerID, EventRenderer receiver,
 			int y, int color, int statc, String... str) {
 		menuY = y;
 		menuColor = color;
@@ -373,44 +373,44 @@ public abstract class AbstractMode implements GameMode {
 		drawMenuCompact(engine, playerID, receiver, str);
 	}
 
-	protected void drawResult (GameEngine engine, int playerID, EventReceiver receiver, int y, int color, String... str) {
+	protected void drawResult (GameEngine engine, int playerID, EventRenderer receiver, int y, int color, String... str) {
 		drawResultScale(engine, playerID, receiver, y, color, 1.0f, str);
 	}
-	protected void drawResultScale (GameEngine engine, int playerID, EventReceiver receiver, int y, int color, float scale, String... str) {
+	protected void drawResultScale (GameEngine engine, int playerID, EventRenderer receiver, int y, int color, float scale, String... str) {
 		for (int i = 0; i < str.length; i++)
-			receiver.drawMenuFont(engine, playerID, 0, y+i, str[i], ((i&1) == 0) ? color : EventReceiver.COLOR_WHITE, scale);
+			receiver.drawMenuFont(engine, playerID, 0, y+i, str[i], ((i&1) == 0) ? color : EventRenderer.COLOR_WHITE, scale);
 	}
-	protected void drawResultRank (GameEngine engine, int playerID, EventReceiver receiver, int y, int color, int rank) {
+	protected void drawResultRank (GameEngine engine, int playerID, EventRenderer receiver, int y, int color, int rank) {
 		drawResultRankScale(engine, playerID, receiver, y, color, 1.0f, rank);
 	}
-	protected void drawResultRankScale (GameEngine engine, int playerID, EventReceiver receiver, int y, int color, float scale, int rank) {
+	protected void drawResultRankScale (GameEngine engine, int playerID, EventRenderer receiver, int y, int color, float scale, int rank) {
 		if(rank != -1) {
 			receiver.drawMenuFont(engine, playerID, 0, y, "RANK", color, scale);
 			receiver.drawMenuFont(engine, playerID, 0, y+1, String.format("%10d", rank + 1), scale);
 		}
 	}
-	protected void drawResultNetRank (GameEngine engine, int playerID, EventReceiver receiver, int y, int color, int rank) {
+	protected void drawResultNetRank (GameEngine engine, int playerID, EventRenderer receiver, int y, int color, int rank) {
 		drawResultNetRankScale(engine, playerID, receiver, y, color, 1.0f, rank);
 	}
-	protected void drawResultNetRankScale (GameEngine engine, int playerID, EventReceiver receiver, int y, int color, float scale, int rank) {
+	protected void drawResultNetRankScale (GameEngine engine, int playerID, EventRenderer receiver, int y, int color, float scale, int rank) {
 		if(rank != -1) {
 			receiver.drawMenuFont(engine, playerID, 0, y, "NET-RANK", color, scale);
 			receiver.drawMenuFont(engine, playerID, 0, y+1, String.format("%10d", rank + 1), scale);
 		}
 	}
-	protected void drawResultNetRankDaily(GameEngine engine, int playerID, EventReceiver receiver, int y, int color, int rank) {
+	protected void drawResultNetRankDaily(GameEngine engine, int playerID, EventRenderer receiver, int y, int color, int rank) {
 		drawResultNetRankDailyScale(engine, playerID, receiver, y, color, 1.0f, rank);
 	}
-	protected void drawResultNetRankDailyScale(GameEngine engine, int playerID, EventReceiver receiver, int y, int color, float scale, int rank) {
+	protected void drawResultNetRankDailyScale(GameEngine engine, int playerID, EventRenderer receiver, int y, int color, float scale, int rank) {
 		if(rank != -1) {
 			receiver.drawMenuFont(engine, playerID, 0, y, "DAILY-RANK", color, scale);
 			receiver.drawMenuFont(engine, playerID, 0, y+1, String.format("%10d", rank + 1), scale);
 		}
 	}
-	protected void drawResultStats (GameEngine engine, int playerID, EventReceiver receiver, int y, int color, int... stats) {
+	protected void drawResultStats (GameEngine engine, int playerID, EventRenderer receiver, int y, int color, int... stats) {
 		drawResultStatsScale(engine, playerID, receiver, y, color, 1.0f, stats);
 	}
-	protected void drawResultStatsScale (GameEngine engine, int playerID, EventReceiver receiver, int y, int color, float scale, int... stats) {
+	protected void drawResultStatsScale (GameEngine engine, int playerID, EventRenderer receiver, int y, int color, float scale, int... stats) {
 		for (int i = 0; i < stats.length; i++)
 		{
 			switch(stats[i]) {
@@ -489,17 +489,17 @@ public abstract class AbstractMode implements GameMode {
 	 * @param playerID Player ID
 	 */
 	public void renderInput(GameEngine engine, int playerID) {
-		EventReceiver receiver = engine.owner.receiver;
+		EventRenderer receiver = engine.owner.receiver;
 		int y = 24;
 		if (isVSMode() && !isNetplayMode()) {
-			int color = EventReceiver.COLOR_BLUE;
+			int color = EventRenderer.COLOR_BLUE;
 			if (playerID == 0) {
-				color = EventReceiver.COLOR_RED;
+				color = EventRenderer.COLOR_RED;
 				y--;
 			}
 			receiver.drawScoreFont(engine, 0, -9, y, (playerID+1) + "P INPUT:", color);
 		} else {
-			receiver.drawScoreFont(engine, 0, -6, y, "INPUT:", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, 0, -6, y, "INPUT:", EventRenderer.COLOR_BLUE);
 		}
 		Controller ctrl = engine.ctrl;
 		if (ctrl.isPress(Controller.BUTTON_LEFT)) receiver.drawScoreFont(engine, 0, 0, y, "<");

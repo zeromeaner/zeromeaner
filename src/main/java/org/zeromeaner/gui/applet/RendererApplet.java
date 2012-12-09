@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.gui.EffectObject;
@@ -51,7 +51,7 @@ import org.zeromeaner.util.CustomProperties;
 /**
  * ゲームの event 処理と描画処理 (Swing版）
  */
-public class RendererApplet extends EventReceiver {
+public class RendererApplet extends EventRenderer {
 	/** Log */
 	//static Logger log = Logger.getLogger(RendererSwing.class);
 

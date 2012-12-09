@@ -6,7 +6,7 @@ import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.WallkickResult;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
@@ -909,23 +909,23 @@ public class ComboRaceBot extends AbstractAI implements Runnable {
 	 * @param playerID Player ID
 	 */
 	public void renderState(GameEngine engine, int playerID){
-		EventReceiver r = engine.owner.receiver;
-		r.drawScoreFont(engine, playerID, 19, 33, getName().toUpperCase(), EventReceiver.COLOR_GREEN, 0.5f);
-		r.drawScoreFont(engine, playerID, 24, 34, "X", EventReceiver.COLOR_BLUE, 0.5f);
-		r.drawScoreFont(engine, playerID, 27, 34, "Y", EventReceiver.COLOR_BLUE, 0.5f);
-		r.drawScoreFont(engine, playerID, 30, 34, "RT", EventReceiver.COLOR_BLUE, 0.5f);
-		r.drawScoreFont(engine, playerID, 19, 35, "BEST:", EventReceiver.COLOR_BLUE, 0.5f);
+		EventRenderer r = engine.owner.receiver;
+		r.drawScoreFont(engine, playerID, 19, 33, getName().toUpperCase(), EventRenderer.COLOR_GREEN, 0.5f);
+		r.drawScoreFont(engine, playerID, 24, 34, "X", EventRenderer.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 27, 34, "Y", EventRenderer.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 30, 34, "RT", EventRenderer.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 19, 35, "BEST:", EventRenderer.COLOR_BLUE, 0.5f);
 		r.drawScoreFont(engine, playerID, 24, 35, String.valueOf(bestX), !thinkSuccess, 0.5f);
 		r.drawScoreFont(engine, playerID, 27, 35, String.valueOf(bestY), !thinkSuccess, 0.5f);
 		r.drawScoreFont(engine, playerID, 30, 35, String.valueOf(bestRt), !thinkSuccess, 0.5f);
-		r.drawScoreFont(engine, playerID, 19, 36, "SUB:", EventReceiver.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 19, 36, "SUB:", EventRenderer.COLOR_BLUE, 0.5f);
 		if (engine.aiShowHint)
 		{
 			r.drawScoreFont(engine, playerID, 24, 36, String.valueOf(bestXSub), !thinkSuccess, 0.5f);
 			r.drawScoreFont(engine, playerID, 27, 36, String.valueOf(bestYSub), !thinkSuccess, 0.5f);
 		}
 		r.drawScoreFont(engine, playerID, 30, 36, String.valueOf(bestRtSub), !thinkSuccess, 0.5f);
-		r.drawScoreFont(engine, playerID, 19, 37, "NOW:", EventReceiver.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 19, 37, "NOW:", EventRenderer.COLOR_BLUE, 0.5f);
 		if (engine.nowPieceObject == null)
 			r.drawScoreFont(engine, playerID, 24, 37, "-- -- --", 0.5f);
 		else
@@ -934,27 +934,27 @@ public class ComboRaceBot extends AbstractAI implements Runnable {
 			r.drawScoreFont(engine, playerID, 27, 37, String.valueOf(engine.nowPieceY), 0.5f);
 			r.drawScoreFont(engine, playerID, 30, 37, String.valueOf(engine.nowPieceObject.direction), 0.5f);
 		}
-		r.drawScoreFont(engine, playerID, 19, 38, "MOVE SCORE:", EventReceiver.COLOR_BLUE, 0.5f);
-		int scoreColor = EventReceiver.COLOR_GREEN;
+		r.drawScoreFont(engine, playerID, 19, 38, "MOVE SCORE:", EventRenderer.COLOR_BLUE, 0.5f);
+		int scoreColor = EventRenderer.COLOR_GREEN;
 		if (bestPts < (MAX_THINK_DEPTH-2) * 1000)
-			scoreColor = EventReceiver.COLOR_RED;
+			scoreColor = EventRenderer.COLOR_RED;
 		else if (bestPts < (MAX_THINK_DEPTH-1) * 1000)
-			scoreColor = EventReceiver.COLOR_ORANGE;
+			scoreColor = EventRenderer.COLOR_ORANGE;
 		else if (bestPts < MAX_THINK_DEPTH * 1000)
-			scoreColor = EventReceiver.COLOR_YELLOW;
+			scoreColor = EventRenderer.COLOR_YELLOW;
 		r.drawScoreFont(engine, playerID, 31, 38, String.valueOf(bestPts), scoreColor, 0.5f);
-		r.drawScoreFont(engine, playerID, 19, 39, "THINK ACTIVE:", EventReceiver.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 19, 39, "THINK ACTIVE:", EventRenderer.COLOR_BLUE, 0.5f);
 		r.drawScoreFont(engine, playerID, 32, 39, GeneralUtil.getOorX(thinking), 0.5f);
-		r.drawScoreFont(engine, playerID, 19, 40, "THINK REQUEST:", EventReceiver.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 19, 40, "THINK REQUEST:", EventRenderer.COLOR_BLUE, 0.5f);
 		r.drawScoreFont(engine, playerID, 33, 40, GeneralUtil.getOorX(thinkRequest.active), 0.5f);
 		r.drawScoreFont(engine, playerID, 19, 41, "THINK SUCCESS:",
-				thinkSuccess ? EventReceiver.COLOR_BLUE :  EventReceiver.COLOR_RED, 0.5f);
+				thinkSuccess ? EventRenderer.COLOR_BLUE :  EventRenderer.COLOR_RED, 0.5f);
 		r.drawScoreFont(engine, playerID, 33, 41, GeneralUtil.getOorX(thinkSuccess), !thinkSuccess, 0.5f);
-		r.drawScoreFont(engine, playerID, 19, 42, "THINK COMPLETE:", EventReceiver.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 19, 42, "THINK COMPLETE:", EventRenderer.COLOR_BLUE, 0.5f);
 		r.drawScoreFont(engine, playerID, 34, 42, GeneralUtil.getOorX(thinkComplete), 0.5f);
-		r.drawScoreFont(engine, playerID, 19, 43, "IN ARE:", EventReceiver.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 19, 43, "IN ARE:", EventRenderer.COLOR_BLUE, 0.5f);
 		r.drawScoreFont(engine, playerID, 26, 43, GeneralUtil.getOorX(inARE), 0.5f);
-		r.drawScoreFont(engine, playerID, 19, 44, "QUEUE:", EventReceiver.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 19, 44, "QUEUE:", EventRenderer.COLOR_BLUE, 0.5f);
 		if (nextQueueIDs == null)
 		{
 			for (int i = 0; i < MAX_THINK_DEPTH; i++)
@@ -962,15 +962,15 @@ public class ComboRaceBot extends AbstractAI implements Runnable {
 		}
 		else
 		{
-			int color = EventReceiver.COLOR_GREEN;
+			int color = EventRenderer.COLOR_GREEN;
 			for (int i = 0; i < nextQueueIDs.length; i++)
 			{
-				if (i >= bestPts/1000 && color != EventReceiver.COLOR_RED)
+				if (i >= bestPts/1000 && color != EventRenderer.COLOR_RED)
 				{
 					if (i < nextQueueIDs.length-1 && thinkComplete)
-						color = EventReceiver.COLOR_RED;
+						color = EventRenderer.COLOR_RED;
 					else
-						color = EventReceiver.COLOR_YELLOW;
+						color = EventRenderer.COLOR_YELLOW;
 				}
 				r.drawScoreFont(engine, playerID, 25+i, 44, Piece.PIECE_NAMES[nextQueueIDs[i]], color, 0.5f);
 			}
@@ -978,15 +978,15 @@ public class ComboRaceBot extends AbstractAI implements Runnable {
 		int code = -1;
 		if (engine.field != null)
 			code = fieldToCode(engine.field);
-		r.drawScoreFont(engine, playerID, 19, 45, "STATE:", EventReceiver.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 19, 45, "STATE:", EventRenderer.COLOR_BLUE, 0.5f);
 		r.drawScoreFont(engine, playerID, 25, 45,
 				(code == -1) ? "---" : Integer.toHexString(code).toUpperCase(), 0.5f);
 		
 	}
 
 	public void renderHint(GameEngine engine, int playerID) {
-		EventReceiver r = engine.owner.receiver;
-		r.drawScoreFont(engine, playerID, 10, 3, "AI HINT MOVE:", EventReceiver.COLOR_GREEN);
+		EventRenderer r = engine.owner.receiver;
+		r.drawScoreFont(engine, playerID, 10, 3, "AI HINT MOVE:", EventRenderer.COLOR_GREEN);
 		if (bestPts > 0 && (thinkComplete || ((thinkCurrentPieceNo > 0)
 				&& (thinkCurrentPieceNo <= thinkLastPieceNo))))
 		{

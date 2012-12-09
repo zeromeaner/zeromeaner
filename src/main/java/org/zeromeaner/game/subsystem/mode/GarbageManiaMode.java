@@ -30,7 +30,7 @@ package org.zeromeaner.game.subsystem.mode;
 
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
@@ -451,7 +451,7 @@ public class GarbageManiaMode extends AbstractMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_BLUE, 0,
+		drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
 				"LEVEL", String.valueOf(startlevel * 100),
 				"FULL GHOST", GeneralUtil.getONorOFF(alwaysghost),
 				"20G MODE", GeneralUtil.getONorOFF(always20g),
@@ -485,24 +485,24 @@ public class GarbageManiaMode extends AbstractMode {
 	 */
 	@Override
 	public void renderLast(GameEngine engine, int playerID) {
-		receiver.drawScoreFont(engine, playerID, 0, 0, "GARBAGE MANIA", EventReceiver.COLOR_CYAN);
+		receiver.drawScoreFont(engine, playerID, 0, 0, "GARBAGE MANIA", EventRenderer.COLOR_CYAN);
 
 		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (startlevel == 0) && (big == false) && (always20g == false) && (engine.ai == null)) {
 				if(!isShowBestSectionTime) {
 					// Rankings
-					receiver.drawScoreFont(engine, playerID, 3, 2, "LEVEL TIME", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, 3, 2, "LEVEL TIME", EventRenderer.COLOR_BLUE);
 
 					for(int i = 0; i < RANKING_MAX; i++) {
-						receiver.drawScoreFont(engine, playerID, 0, 3 + i, String.format("%2d", i + 1), EventReceiver.COLOR_YELLOW);
+						receiver.drawScoreFont(engine, playerID, 0, 3 + i, String.format("%2d", i + 1), EventRenderer.COLOR_YELLOW);
 						receiver.drawScoreFont(engine, playerID, 3, 3 + i, String.valueOf(rankingLevel[i]), (i == rankingRank));
 						receiver.drawScoreFont(engine, playerID, 9, 3 + i, GeneralUtil.getTime(rankingTime[i]), (i == rankingRank));
 					}
 
-					receiver.drawScoreFont(engine, playerID, 0, 17, "F:VIEW SECTION TIME", EventReceiver.COLOR_GREEN);
+					receiver.drawScoreFont(engine, playerID, 0, 17, "F:VIEW SECTION TIME", EventRenderer.COLOR_GREEN);
 				} else {
 					// Section Time
-					receiver.drawScoreFont(engine, playerID, 0, 2, "SECTION TIME", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, 0, 2, "SECTION TIME", EventRenderer.COLOR_BLUE);
 
 					int totalTime = 0;
 					for(int i = 0; i < SECTION_MAX; i++) {
@@ -517,12 +517,12 @@ public class GarbageManiaMode extends AbstractMode {
 						totalTime += bestSectionTime[i];
 					}
 
-					receiver.drawScoreFont(engine, playerID, 0, 14, "TOTAL", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, 0, 14, "TOTAL", EventRenderer.COLOR_BLUE);
 					receiver.drawScoreFont(engine, playerID, 0, 15, GeneralUtil.getTime(totalTime));
-					receiver.drawScoreFont(engine, playerID, 9, 14, "AVERAGE", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, 9, 14, "AVERAGE", EventRenderer.COLOR_BLUE);
 					receiver.drawScoreFont(engine, playerID, 9, 15, GeneralUtil.getTime(totalTime / SECTION_MAX));
 
-					receiver.drawScoreFont(engine, playerID, 0, 17, "F:VIEW RANKING", EventReceiver.COLOR_GREEN);
+					receiver.drawScoreFont(engine, playerID, 0, 17, "F:VIEW RANKING", EventRenderer.COLOR_GREEN);
 				}
 			}
 		} else {
@@ -530,7 +530,7 @@ public class GarbageManiaMode extends AbstractMode {
 			//receiver.drawScoreFont(engine, playerID, 0, 3, "" + garbageCount + ":" + garbagePos);
 
 			// Score
-			receiver.drawScoreFont(engine, playerID, 0, 5, "SCORE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 5, "SCORE", EventRenderer.COLOR_BLUE);
 			String strScore;
 			if((lastscore == 0) || (scgettime <= 0)) {
 				strScore = String.valueOf(engine.statistics.score);
@@ -540,7 +540,7 @@ public class GarbageManiaMode extends AbstractMode {
 			receiver.drawScoreFont(engine, playerID, 0, 6, strScore);
 
 			//  level
-			receiver.drawScoreFont(engine, playerID, 0, 9, "LEVEL", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 9, "LEVEL", EventRenderer.COLOR_BLUE);
 			int tempLevel = engine.statistics.level;
 			if(tempLevel < 0) tempLevel = 0;
 			String strLevel = String.format("%3d", tempLevel);
@@ -553,14 +553,14 @@ public class GarbageManiaMode extends AbstractMode {
 			receiver.drawScoreFont(engine, playerID, 0, 12, String.format("%3d", nextseclv));
 
 			// Time
-			receiver.drawScoreFont(engine, playerID, 0, 14, "TIME", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 14, "TIME", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 15, GeneralUtil.getTime(engine.statistics.time));
 
 			// Roll 残り time
 			if((engine.gameActive) && (engine.ending == 2)) {
 				int time = ROLLTIMELIMIT - rolltime;
 				if(time < 0) time = 0;
-				receiver.drawScoreFont(engine, playerID, 0, 17, "ROLL TIME", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 0, 17, "ROLL TIME", EventRenderer.COLOR_BLUE);
 				receiver.drawScoreFont(engine, playerID, 0, 18, GeneralUtil.getTime(time), ((time > 0) && (time < 10 * 60)));
 			}
 
@@ -569,7 +569,7 @@ public class GarbageManiaMode extends AbstractMode {
 				int x = (receiver.getNextDisplayType() == 2) ? 8 : 12;
 				int x2 = (receiver.getNextDisplayType() == 2) ? 9 : 12;
 
-				receiver.drawScoreFont(engine, playerID, x, 2, "SECTION TIME", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, x, 2, "SECTION TIME", EventRenderer.COLOR_BLUE);
 
 				for(int i = 0; i < sectiontime.length; i++) {
 					if(sectiontime[i] > 0) {
@@ -588,7 +588,7 @@ public class GarbageManiaMode extends AbstractMode {
 				}
 
 				if(sectionavgtime > 0) {
-					receiver.drawScoreFont(engine, playerID, x2, 14, "AVERAGE", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, x2, 14, "AVERAGE", EventRenderer.COLOR_BLUE);
 					receiver.drawScoreFont(engine, playerID, x2, 15, GeneralUtil.getTime(sectionavgtime));
 				}
 			}
@@ -847,20 +847,20 @@ public class GarbageManiaMode extends AbstractMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		receiver.drawMenuFont(engine, playerID, 0, 0, "kn PAGE" + (engine.statc[1] + 1) + "/3", EventReceiver.COLOR_RED);
+		receiver.drawMenuFont(engine, playerID, 0, 0, "kn PAGE" + (engine.statc[1] + 1) + "/3", EventRenderer.COLOR_RED);
 
 		if(engine.statc[1] == 0) {
-			drawResultStats(engine, playerID, receiver, 2, EventReceiver.COLOR_BLUE,
+			drawResultStats(engine, playerID, receiver, 2, EventRenderer.COLOR_BLUE,
 					STAT_SCORE, STAT_LINES, STAT_LEVEL_MANIA, STAT_TIME);
-			drawResult(engine, playerID, receiver, 10, EventReceiver.COLOR_BLUE,
+			drawResult(engine, playerID, receiver, 10, EventRenderer.COLOR_BLUE,
 					"GARBAGE", String.format("%10d", garbageTotal));
-			drawResultRank(engine, playerID, receiver, 12, EventReceiver.COLOR_BLUE, rankingRank);
+			drawResultRank(engine, playerID, receiver, 12, EventRenderer.COLOR_BLUE, rankingRank);
 			if(secretGrade > 4) {
-				drawResult(engine, playerID, receiver, 14, EventReceiver.COLOR_BLUE,
+				drawResult(engine, playerID, receiver, 14, EventRenderer.COLOR_BLUE,
 						"S. GRADE", String.format("%10s", tableSecretGradeName[secretGrade-1]));
 			}
 		} else if(engine.statc[1] == 1) {
-			receiver.drawMenuFont(engine, playerID, 0, 2, "SECTION", EventReceiver.COLOR_BLUE);
+			receiver.drawMenuFont(engine, playerID, 0, 2, "SECTION", EventRenderer.COLOR_BLUE);
 
 			for(int i = 0; i < sectiontime.length; i++) {
 				if(sectiontime[i] > 0) {
@@ -869,11 +869,11 @@ public class GarbageManiaMode extends AbstractMode {
 			}
 
 			if(sectionavgtime > 0) {
-				receiver.drawMenuFont(engine, playerID, 0, 14, "AVERAGE", EventReceiver.COLOR_BLUE);
+				receiver.drawMenuFont(engine, playerID, 0, 14, "AVERAGE", EventRenderer.COLOR_BLUE);
 				receiver.drawMenuFont(engine, playerID, 2, 15, GeneralUtil.getTime(sectionavgtime));
 			}
 		} else if(engine.statc[1] == 2) {
-			drawResultStats(engine, playerID, receiver, 1, EventReceiver.COLOR_BLUE,
+			drawResultStats(engine, playerID, receiver, 1, EventRenderer.COLOR_BLUE,
 					STAT_LPM, STAT_SPM, STAT_PIECE, STAT_PPS);
 		}
 	}

@@ -3,10 +3,10 @@ package org.zeromeaner.gui.common;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 
-public abstract class AbstractRenderer extends EventReceiver {
+public abstract class AbstractRenderer extends EventRenderer {
 	
 	ResourceHolder resources;
 	

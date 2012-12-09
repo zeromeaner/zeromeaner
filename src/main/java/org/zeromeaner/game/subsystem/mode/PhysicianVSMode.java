@@ -37,7 +37,7 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.CustomProperties;
@@ -76,9 +76,9 @@ public class PhysicianVSMode extends AbstractMode {
 	/** Colors for speed settings */
 	private static final int[] SPEED_COLOR =
 	{
-		EventReceiver.COLOR_BLUE,
-		EventReceiver.COLOR_YELLOW,
-		EventReceiver.COLOR_RED
+		EventRenderer.COLOR_BLUE,
+		EventRenderer.COLOR_YELLOW,
+		EventRenderer.COLOR_RED
 	};
 
 	/** Number of players */
@@ -565,7 +565,7 @@ public class PhysicianVSMode extends AbstractMode {
 	public void renderSetting(GameEngine engine, int playerID) {
 		if(engine.statc[4] == 0) {
 			if(engine.statc[2] < 9) {
-				initMenu(EventReceiver.COLOR_ORANGE, 0);
+				initMenu(EventRenderer.COLOR_ORANGE, 0);
 				drawMenu(engine, playerID, receiver,
 						"GRAVITY", String.valueOf(engine.speed.gravity),
 						"G-MAX", String.valueOf(engine.speed.denominator),
@@ -574,28 +574,28 @@ public class PhysicianVSMode extends AbstractMode {
 						"LINE DELAY", String.valueOf(engine.speed.lineDelay),
 						"LOCK DELAY", String.valueOf(engine.speed.lockDelay),
 						"DAS", String.valueOf(engine.speed.das));
-				menuColor = EventReceiver.COLOR_GREEN;
+				menuColor = EventRenderer.COLOR_GREEN;
 				drawMenu(engine, playerID, receiver,
 						"LOAD", String.valueOf(presetNumber[playerID]),
 						"SAVE", String.valueOf(presetNumber[playerID]));
 			} else {
-				initMenu(EventReceiver.COLOR_CYAN, 9);
+				initMenu(EventRenderer.COLOR_CYAN, 9);
 				drawMenu(engine, playerID, receiver,
 						"SPEED", SPEED_NAME[speed[playerID]],
 						"VIRUS", String.valueOf(hoverBlocks[playerID]),
 						"MODE", (flash[playerID] ? "FLASH" : "NORMAL"));
-				menuColor = EventReceiver.COLOR_PINK;
+				menuColor = EventRenderer.COLOR_PINK;
 				drawMenu(engine, playerID, receiver,
 						"SE", GeneralUtil.getONorOFF(enableSE[playerID]),
 						"BGM", String.valueOf(bgmno));
-				menuColor = EventReceiver.COLOR_CYAN;
+				menuColor = EventRenderer.COLOR_CYAN;
 				drawMenu(engine, playerID, receiver,
 						"USE MAP", GeneralUtil.getONorOFF(useMap[playerID]),
 						"MAP SET", String.valueOf(mapSet[playerID]),
 						"MAP NO.", (mapNumber[playerID] < 0) ? "RANDOM" : mapNumber[playerID]+"/"+(mapMaxNo[playerID]-1));
 			}
 		} else {
-			receiver.drawMenuFont(engine, playerID, 3, 10, "WAIT", EventReceiver.COLOR_YELLOW);
+			receiver.drawMenuFont(engine, playerID, 3, 10, "WAIT", EventRenderer.COLOR_YELLOW);
 		}
 	}
 
@@ -679,7 +679,7 @@ public class PhysicianVSMode extends AbstractMode {
 	public void renderLast(GameEngine engine, int playerID) {
 		int fldPosX = receiver.getFieldDisplayPositionX(engine, playerID);
 		int fldPosY = receiver.getFieldDisplayPositionY(engine, playerID);
-		int playerColor = (playerID == 0) ? EventReceiver.COLOR_RED : EventReceiver.COLOR_BLUE;
+		int playerColor = (playerID == 0) ? EventRenderer.COLOR_RED : EventRenderer.COLOR_BLUE;
 		int tempX = 0;
 
 		// Timer
@@ -693,7 +693,7 @@ public class PhysicianVSMode extends AbstractMode {
 			tempX = (rest[playerID] < 10) ? 8 : 0;
 			receiver.drawDirectFont(engine, playerID, fldPosX + 160 + tempX, fldPosY + 257,
 					String.valueOf(rest[playerID]), (rest[playerID] <= (flash[playerID] ? 1 : 3)),
-					EventReceiver.COLOR_WHITE, EventReceiver.COLOR_RED);
+					EventRenderer.COLOR_WHITE, EventRenderer.COLOR_RED);
 
 			// Speed
 			receiver.drawDirectFont(engine, playerID, fldPosX + 156, fldPosY + 280, "SPEED", playerColor, 0.5f);
@@ -915,16 +915,16 @@ public class PhysicianVSMode extends AbstractMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		receiver.drawMenuFont(engine, playerID, 0, 1, "RESULT", EventReceiver.COLOR_ORANGE);
+		receiver.drawMenuFont(engine, playerID, 0, 1, "RESULT", EventRenderer.COLOR_ORANGE);
 		if(winnerID == -1) {
-			receiver.drawMenuFont(engine, playerID, 6, 2, "DRAW", EventReceiver.COLOR_GREEN);
+			receiver.drawMenuFont(engine, playerID, 6, 2, "DRAW", EventRenderer.COLOR_GREEN);
 		} else if(winnerID == playerID) {
-			receiver.drawMenuFont(engine, playerID, 6, 2, "WIN!", EventReceiver.COLOR_YELLOW);
+			receiver.drawMenuFont(engine, playerID, 6, 2, "WIN!", EventRenderer.COLOR_YELLOW);
 		} else {
-			receiver.drawMenuFont(engine, playerID, 6, 2, "LOSE", EventReceiver.COLOR_WHITE);
+			receiver.drawMenuFont(engine, playerID, 6, 2, "LOSE", EventRenderer.COLOR_WHITE);
 		}
 
-		drawResultStats(engine, playerID, receiver, 3, EventReceiver.COLOR_ORANGE,
+		drawResultStats(engine, playerID, receiver, 3, EventRenderer.COLOR_ORANGE,
 				STAT_LINES, STAT_PIECE, STAT_LPM, STAT_PPS, STAT_TIME);
 		/*
 		float apm = (float)(garbageSent[playerID] * 3600) / (float)(engine.statistics.time);

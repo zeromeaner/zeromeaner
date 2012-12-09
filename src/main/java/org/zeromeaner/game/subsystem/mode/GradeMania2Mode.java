@@ -30,7 +30,7 @@ package org.zeromeaner.game.subsystem.mode;
 
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Controller;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.mode.menu.IntegerMenuItem;
 import org.zeromeaner.game.subsystem.mode.menu.OnOffMenuItem;
@@ -290,7 +290,7 @@ public class GradeMania2Mode extends AbstractMode {
 
 	public GradeMania2Mode() {
 		propName = "grademania2";
-		startlevel = new IntegerMenuItem("startlevel", "LEVEL", EventReceiver.COLOR_BLUE, 0, 0, 9) {
+		startlevel = new IntegerMenuItem("startlevel", "LEVEL", EventRenderer.COLOR_BLUE, 0, 0, 9) {
 			public String getValueString() {
 				if (value == 10)
 					return "ROLL";
@@ -299,11 +299,11 @@ public class GradeMania2Mode extends AbstractMode {
 				return String.valueOf(value * 100);
 			}
 		};
-		alwaysghost = new OnOffMenuItem("alwaysghost", "FULL GHOST", EventReceiver.COLOR_BLUE, false);
-		always20g = new OnOffMenuItem("always20g", "20G MODE", EventReceiver.COLOR_BLUE, false);
-		lvstopse = new OnOffMenuItem("lvstopse", "LVSTOPSE", EventReceiver.COLOR_BLUE, false);
-		big = new OnOffMenuItem("big", "BIG", EventReceiver.COLOR_BLUE, false);
-		showsectiontime = new OnOffMenuItem("big", "BIG", EventReceiver.COLOR_BLUE, false);
+		alwaysghost = new OnOffMenuItem("alwaysghost", "FULL GHOST", EventRenderer.COLOR_BLUE, false);
+		always20g = new OnOffMenuItem("always20g", "20G MODE", EventRenderer.COLOR_BLUE, false);
+		lvstopse = new OnOffMenuItem("lvstopse", "LVSTOPSE", EventRenderer.COLOR_BLUE, false);
+		big = new OnOffMenuItem("big", "BIG", EventRenderer.COLOR_BLUE, false);
+		showsectiontime = new OnOffMenuItem("big", "BIG", EventRenderer.COLOR_BLUE, false);
 		menu.add(startlevel);
 		menu.add(alwaysghost);
 		menu.add(always20g);
@@ -521,9 +521,9 @@ public class GradeMania2Mode extends AbstractMode {
 	 * @return  medal の文字色
 	 */
 	private int getMedalFontColor(int medalColor) {
-		if(medalColor == 1) return EventReceiver.COLOR_RED;
-		if(medalColor == 2) return EventReceiver.COLOR_WHITE;
-		if(medalColor == 3) return EventReceiver.COLOR_YELLOW;
+		if(medalColor == 1) return EventRenderer.COLOR_RED;
+		if(medalColor == 2) return EventRenderer.COLOR_WHITE;
+		if(medalColor == 3) return EventRenderer.COLOR_YELLOW;
 		return -1;
 	}
 
@@ -619,7 +619,7 @@ public class GradeMania2Mode extends AbstractMode {
 	 */
 	@Override
 	public void renderLast(GameEngine engine, int playerID) {
-		receiver.drawScoreFont(engine, playerID, 0, 0, "GRADE MANIA 2", EventReceiver.COLOR_CYAN);
+		receiver.drawScoreFont(engine, playerID, 0, 0, "GRADE MANIA 2", EventRenderer.COLOR_CYAN);
 
 		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (startlevel.value == 0) && (big.value == false) && (always20g.value == false) && (engine.ai == null)) {
@@ -627,24 +627,24 @@ public class GradeMania2Mode extends AbstractMode {
 					// Rankings
 					float scale = (receiver.getNextDisplayType() == 2) ? 0.5f : 1.0f;
 					int topY = (receiver.getNextDisplayType() == 2) ? 5 : 3;
-					receiver.drawScoreFont(engine, playerID, 3, topY-1, "GRADE LEVEL TIME", EventReceiver.COLOR_BLUE, scale);
+					receiver.drawScoreFont(engine, playerID, 3, topY-1, "GRADE LEVEL TIME", EventRenderer.COLOR_BLUE, scale);
 
 					for(int i = 0; i < RANKING_MAX; i++) {
-						int gcolor = EventReceiver.COLOR_WHITE;
-						if((rankingRollclear[i] == 1) || (rankingRollclear[i] == 3)) gcolor = EventReceiver.COLOR_GREEN;
-						if((rankingRollclear[i] == 2) || (rankingRollclear[i] == 4)) gcolor = EventReceiver.COLOR_ORANGE;
+						int gcolor = EventRenderer.COLOR_WHITE;
+						if((rankingRollclear[i] == 1) || (rankingRollclear[i] == 3)) gcolor = EventRenderer.COLOR_GREEN;
+						if((rankingRollclear[i] == 2) || (rankingRollclear[i] == 4)) gcolor = EventRenderer.COLOR_ORANGE;
 
-						receiver.drawScoreFont(engine, playerID, 0, topY+i, String.format("%2d", i + 1), EventReceiver.COLOR_YELLOW, scale);
+						receiver.drawScoreFont(engine, playerID, 0, topY+i, String.format("%2d", i + 1), EventRenderer.COLOR_YELLOW, scale);
 						if((rankingGrade[i] >= 0) && (rankingGrade[i] < tableGradeName.length))
 							receiver.drawScoreFont(engine, playerID, 3, topY+i, tableGradeName[rankingGrade[i]], gcolor, scale);
 						receiver.drawScoreFont(engine, playerID, 9, topY+i, String.valueOf(rankingLevel[i]), (i == rankingRank), scale);
 						receiver.drawScoreFont(engine, playerID, 15, topY+i, GeneralUtil.getTime(rankingTime[i]), (i == rankingRank), scale);
 					}
 
-					receiver.drawScoreFont(engine, playerID, 0, 17, "F:VIEW SECTION TIME", EventReceiver.COLOR_GREEN);
+					receiver.drawScoreFont(engine, playerID, 0, 17, "F:VIEW SECTION TIME", EventRenderer.COLOR_GREEN);
 				} else {
 					// Section Time
-					receiver.drawScoreFont(engine, playerID, 0, 2, "SECTION TIME", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, 0, 2, "SECTION TIME", EventRenderer.COLOR_BLUE);
 
 					int totalTime = 0;
 					for(int i = 0; i < SECTION_MAX; i++) {
@@ -659,22 +659,22 @@ public class GradeMania2Mode extends AbstractMode {
 						totalTime += bestSectionTime[i];
 					}
 
-					receiver.drawScoreFont(engine, playerID, 0, 14, "TOTAL", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, 0, 14, "TOTAL", EventRenderer.COLOR_BLUE);
 					receiver.drawScoreFont(engine, playerID, 0, 15, GeneralUtil.getTime(totalTime));
-					receiver.drawScoreFont(engine, playerID, 9, 14, "AVERAGE", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, 9, 14, "AVERAGE", EventRenderer.COLOR_BLUE);
 					receiver.drawScoreFont(engine, playerID, 9, 15, GeneralUtil.getTime(totalTime / SECTION_MAX));
 
-					receiver.drawScoreFont(engine, playerID, 0, 17, "F:VIEW RANKING", EventReceiver.COLOR_GREEN);
+					receiver.drawScoreFont(engine, playerID, 0, 17, "F:VIEW RANKING", EventRenderer.COLOR_GREEN);
 				}
 			}
 		} else {
 			// 段位
-			receiver.drawScoreFont(engine, playerID, 0, 2, "GRADE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 2, "GRADE", EventRenderer.COLOR_BLUE);
 			if((grade >= 0) && (grade < tableGradeName.length))
 				receiver.drawScoreFont(engine, playerID, 0, 3, tableGradeName[grade], ((gradeflash > 0) && (gradeflash % 4 == 0)));
 
 			// Score
-			receiver.drawScoreFont(engine, playerID, 0, 5, "SCORE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 5, "SCORE", EventRenderer.COLOR_BLUE);
 			String strScore;
 			if((lastscore == 0) || (scgettime <= 0)) {
 				strScore = String.valueOf(engine.statistics.score);
@@ -684,7 +684,7 @@ public class GradeMania2Mode extends AbstractMode {
 			receiver.drawScoreFont(engine, playerID, 0, 6, strScore);
 
 			//  level
-			receiver.drawScoreFont(engine, playerID, 0, 9, "LEVEL", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 9, "LEVEL", EventRenderer.COLOR_BLUE);
 			int tempLevel = engine.statistics.level;
 			if(tempLevel < 0) tempLevel = 0;
 			String strLevel = String.format("%3d", tempLevel);
@@ -697,14 +697,14 @@ public class GradeMania2Mode extends AbstractMode {
 			receiver.drawScoreFont(engine, playerID, 0, 12, String.format("%3d", nextseclv));
 
 			// Time
-			receiver.drawScoreFont(engine, playerID, 0, 14, "TIME", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 14, "TIME", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 15, GeneralUtil.getTime(engine.statistics.time));
 
 			// Roll 残り time
 			if((engine.gameActive) && (engine.ending == 2)) {
 				int time = ROLLTIMELIMIT - rolltime;
 				if(time < 0) time = 0;
-				receiver.drawScoreFont(engine, playerID, 0, 17, "ROLL TIME", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 0, 17, "ROLL TIME", EventRenderer.COLOR_BLUE);
 				receiver.drawScoreFont(engine, playerID, 0, 18, GeneralUtil.getTime(time), ((time > 0) && (time < 10 * 60)));
 			}
 
@@ -720,7 +720,7 @@ public class GradeMania2Mode extends AbstractMode {
 			if((showsectiontime.value) && (sectiontime != null)) {
 				int x = (receiver.getNextDisplayType() == 2) ? 8 : 12;
 				int x2 = (receiver.getNextDisplayType() == 2) ? 9 : 12;
-				receiver.drawScoreFont(engine, playerID, x, 2, "SECTION TIME", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, x, 2, "SECTION TIME", EventRenderer.COLOR_BLUE);
 
 				for(int i = 0; i < sectiontime.length; i++) {
 					if(sectiontime[i] > 0) {
@@ -739,7 +739,7 @@ public class GradeMania2Mode extends AbstractMode {
 				}
 
 				if(sectionavgtime > 0) {
-					receiver.drawScoreFont(engine, playerID, x2, 14, "AVERAGE", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, x2, 14, "AVERAGE", EventRenderer.COLOR_BLUE);
 					receiver.drawScoreFont(engine, playerID, x2, 15, GeneralUtil.getTime(sectionavgtime));
 				}
 			}
@@ -1167,25 +1167,25 @@ public class GradeMania2Mode extends AbstractMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		receiver.drawMenuFont(engine, playerID, 0, 0, "kn PAGE" + (engine.statc[1] + 1) + "/3", EventReceiver.COLOR_RED);
+		receiver.drawMenuFont(engine, playerID, 0, 0, "kn PAGE" + (engine.statc[1] + 1) + "/3", EventRenderer.COLOR_RED);
 
 		if(engine.statc[1] == 0) {
-			int gcolor = EventReceiver.COLOR_WHITE;
-			if((rollclear == 1) || (rollclear == 3)) gcolor = EventReceiver.COLOR_GREEN;
-			if((rollclear == 2) || (rollclear == 4)) gcolor = EventReceiver.COLOR_ORANGE;
-			receiver.drawMenuFont(engine, playerID, 0, 2, "GRADE", EventReceiver.COLOR_BLUE);
+			int gcolor = EventRenderer.COLOR_WHITE;
+			if((rollclear == 1) || (rollclear == 3)) gcolor = EventRenderer.COLOR_GREEN;
+			if((rollclear == 2) || (rollclear == 4)) gcolor = EventRenderer.COLOR_ORANGE;
+			receiver.drawMenuFont(engine, playerID, 0, 2, "GRADE", EventRenderer.COLOR_BLUE);
 			String strGrade = String.format("%10s", tableGradeName[grade]);
 			receiver.drawMenuFont(engine, playerID, 0, 3, strGrade, gcolor);
 
-			drawResultStats(engine, playerID, receiver, 4, EventReceiver.COLOR_BLUE,
+			drawResultStats(engine, playerID, receiver, 4, EventRenderer.COLOR_BLUE,
 					STAT_SCORE, STAT_LINES, STAT_LEVEL_MANIA, STAT_TIME);
-			drawResultRank(engine, playerID, receiver, 12, EventReceiver.COLOR_BLUE, rankingRank);
+			drawResultRank(engine, playerID, receiver, 12, EventRenderer.COLOR_BLUE, rankingRank);
 			if(secretGrade > 4) {
-				drawResult(engine, playerID, receiver, 14, EventReceiver.COLOR_BLUE,
+				drawResult(engine, playerID, receiver, 14, EventRenderer.COLOR_BLUE,
 						"S. GRADE", String.format("%10s", tableSecretGradeName[secretGrade-1]));
 			}
 		} else if(engine.statc[1] == 1) {
-			receiver.drawMenuFont(engine, playerID, 0, 2, "SECTION", EventReceiver.COLOR_BLUE);
+			receiver.drawMenuFont(engine, playerID, 0, 2, "SECTION", EventRenderer.COLOR_BLUE);
 
 			for(int i = 0; i < sectiontime.length; i++) {
 				if(sectiontime[i] > 0) {
@@ -1194,11 +1194,11 @@ public class GradeMania2Mode extends AbstractMode {
 			}
 
 			if(sectionavgtime > 0) {
-				receiver.drawMenuFont(engine, playerID, 0, 14, "AVERAGE", EventReceiver.COLOR_BLUE);
+				receiver.drawMenuFont(engine, playerID, 0, 14, "AVERAGE", EventRenderer.COLOR_BLUE);
 				receiver.drawMenuFont(engine, playerID, 2, 15, GeneralUtil.getTime(sectionavgtime));
 			}
 		} else if(engine.statc[1] == 2) {
-			receiver.drawMenuFont(engine, playerID, 0, 2, "MEDAL", EventReceiver.COLOR_BLUE);
+			receiver.drawMenuFont(engine, playerID, 0, 2, "MEDAL", EventRenderer.COLOR_BLUE);
 			if(medalAC >= 1) receiver.drawMenuFont(engine, playerID, 5, 3, "AC", getMedalFontColor(medalAC));
 			if(medalST >= 1) receiver.drawMenuFont(engine, playerID, 8, 3, "ST", getMedalFontColor(medalST));
 			if(medalSK >= 1) receiver.drawMenuFont(engine, playerID, 5, 4, "SK", getMedalFontColor(medalSK));
@@ -1206,7 +1206,7 @@ public class GradeMania2Mode extends AbstractMode {
 			if(medalRO >= 1) receiver.drawMenuFont(engine, playerID, 5, 5, "SK", getMedalFontColor(medalRO));
 			if(medalCO >= 1) receiver.drawMenuFont(engine, playerID, 8, 5, "CO", getMedalFontColor(medalCO));
 
-			drawResultStats(engine, playerID, receiver, 6, EventReceiver.COLOR_BLUE,
+			drawResultStats(engine, playerID, receiver, 6, EventRenderer.COLOR_BLUE,
 					STAT_LPM, STAT_SPM, STAT_PIECE, STAT_PPS);
 		}
 	}

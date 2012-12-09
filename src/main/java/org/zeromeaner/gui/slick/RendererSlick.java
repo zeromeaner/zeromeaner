@@ -38,7 +38,7 @@ import org.newdawn.slick.Image;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.gui.EffectObject;
@@ -47,7 +47,7 @@ import org.zeromeaner.util.CustomProperties;
 /**
  * ゲームの event 処理と描画処理 (Slick版）
  */
-public class RendererSlick extends EventReceiver {
+public class RendererSlick extends EventRenderer {
 	/** Log */
 	//static Logger log = Logger.getLogger(RendererSlick.class);
 

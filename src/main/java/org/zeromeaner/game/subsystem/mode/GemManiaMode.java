@@ -34,7 +34,7 @@ import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
@@ -807,17 +807,17 @@ public class GemManiaMode extends AbstractMode {
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
 		if(editModeScreen == 1) {
-			drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_GREEN, 0,
+			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_GREEN, 0,
 					"STAGE EDIT", "[PUSH A]",
 					"LOAD STAGE", "[" + getStageName(startstage) + "]",
 					"SAVE STAGE", "[" + getStageName(startstage) + "]",
 					"LOAD", "[SET " + stageset + "]",
 					"SAVE", "[SET " + stageset + "]");
 
-			receiver.drawMenuFont(engine, playerID, 0, 19, "EXIT-> D+E", EventReceiver.COLOR_ORANGE);
+			receiver.drawMenuFont(engine, playerID, 0, 19, "EXIT-> D+E", EventRenderer.COLOR_ORANGE);
 		} else if(editModeScreen == 2) {
 			// エディットMenu   stage 画面
-			drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_GREEN, 0,
+			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_GREEN, 0,
 					"MAP EDIT", "[PUSH A]",
 					"STAGE TIME", GeneralUtil.getTime(stagetimeStart),
 					"LIMIT TIME", GeneralUtil.getTime(limittimeStart),
@@ -826,12 +826,12 @@ public class GemManiaMode extends AbstractMode {
 		} else {
 			// 普通のMenu
 			if(engine.owner.replayMode == false) {
-				receiver.drawMenuFont(engine, playerID, 0, 19, "D:EDIT", EventReceiver.COLOR_ORANGE);
+				receiver.drawMenuFont(engine, playerID, 0, 19, "D:EDIT", EventRenderer.COLOR_ORANGE);
 			}
 			String strTrainingType = "OFF";
 			if(trainingType == 1) strTrainingType = "ON";
 			if(trainingType == 2) strTrainingType = "ON+RESET";
-			drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_PINK, 0,
+			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_PINK, 0,
 					"STAGE NO.", getStageName(startstage),
 					"STAGE SET", (stageset < 0) ? "DEFAULT" : "EDIT "+stageset,
 					"FULL GHOST", GeneralUtil.getONorOFF(alwaysghost),
@@ -876,15 +876,15 @@ public class GemManiaMode extends AbstractMode {
 		if(engine.statc[0] >= engine.readyStart) {
 			// トレーニング
 			if(trainingType != 0) {
-				receiver.drawMenuFont(engine, playerID, 1, 5, "TRAINING", EventReceiver.COLOR_GREEN);
+				receiver.drawMenuFont(engine, playerID, 1, 5, "TRAINING", EventRenderer.COLOR_GREEN);
 			}
 
 			// STAGE XX
 			if(stage >= MAX_STAGE_NORMAL) {
-				receiver.drawMenuFont(engine, playerID, 0, 7, "EX STAGE ", EventReceiver.COLOR_GREEN);
+				receiver.drawMenuFont(engine, playerID, 0, 7, "EX STAGE ", EventRenderer.COLOR_GREEN);
 				receiver.drawMenuFont(engine, playerID, 9, 7, "" + (stage + 1 - MAX_STAGE_NORMAL));
 			} else {
-				receiver.drawMenuFont(engine, playerID, 1, 7, "STAGE", EventReceiver.COLOR_GREEN);
+				receiver.drawMenuFont(engine, playerID, 1, 7, "STAGE", EventRenderer.COLOR_GREEN);
 				String strStage = String.format("%2s", getStageName(stage));
 				receiver.drawMenuFont(engine, playerID, 7, 7, strStage);
 			}
@@ -911,55 +911,55 @@ public class GemManiaMode extends AbstractMode {
 	 */
 	@Override
 	public void renderLast(GameEngine engine, int playerID) {
-		receiver.drawScoreFont(engine, playerID, 0, 0, "GEM MANIA " + ((randomnext) ? "(RANDOM)" : ""), EventReceiver.COLOR_RED);
+		receiver.drawScoreFont(engine, playerID, 0, 0, "GEM MANIA " + ((randomnext) ? "(RANDOM)" : ""), EventRenderer.COLOR_RED);
 
 		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
 			if((startstage == 0) && (always20g == false) && (trainingType == 0) && (startnextc == 0) && (stageset < 0) && (engine.ai == null)) {
 				float scale = (receiver.getNextDisplayType() == 2) ? 0.5f : 1.0f;
 				int topY = (receiver.getNextDisplayType() == 2) ? 5 : 3;
 
-				receiver.drawScoreFont(engine, playerID, 3, topY-1, "STAGE CLEAR TIME", EventReceiver.COLOR_PINK, scale);
+				receiver.drawScoreFont(engine, playerID, 3, topY-1, "STAGE CLEAR TIME", EventRenderer.COLOR_PINK, scale);
 				int type = randomnext ? 1 : 0;
 
 				for(int i = 0; i < RANKING_MAX; i++) {
-					int gcolor = EventReceiver.COLOR_WHITE;
-					if(rankingAllClear[type][i] == 1) gcolor = EventReceiver.COLOR_GREEN;
-					if(rankingAllClear[type][i] == 2) gcolor = EventReceiver.COLOR_ORANGE;
+					int gcolor = EventRenderer.COLOR_WHITE;
+					if(rankingAllClear[type][i] == 1) gcolor = EventRenderer.COLOR_GREEN;
+					if(rankingAllClear[type][i] == 2) gcolor = EventRenderer.COLOR_ORANGE;
 
-					receiver.drawScoreFont(engine, playerID, 0, topY+i, String.format("%2d", i + 1), EventReceiver.COLOR_YELLOW, scale);
+					receiver.drawScoreFont(engine, playerID, 0, topY+i, String.format("%2d", i + 1), EventRenderer.COLOR_YELLOW, scale);
 					receiver.drawScoreFont(engine, playerID, 3, topY+i, getStageName(rankingStage[type][i]), gcolor, scale);
 					receiver.drawScoreFont(engine, playerID, 9, topY+i, rankingClearPer[type][i] + "%", (i == rankingRank), scale);
 					receiver.drawScoreFont(engine, playerID, 15, topY+i, GeneralUtil.getTime(rankingTime[type][i]), (i == rankingRank), scale);
 				}
 			}
 		} else {
-			receiver.drawScoreFont(engine, playerID, 0, 2, "STAGE", EventReceiver.COLOR_PINK);
+			receiver.drawScoreFont(engine, playerID, 0, 2, "STAGE", EventRenderer.COLOR_PINK);
 			receiver.drawScoreFont(engine, playerID, 0, 3, getStageName(stage));
 			if(gimmickMirror > 0) {
-				receiver.drawScoreFont(engine, playerID, 0, 4, "MIRROR", EventReceiver.COLOR_RED);
+				receiver.drawScoreFont(engine, playerID, 0, 4, "MIRROR", EventRenderer.COLOR_RED);
 			} else if(gimmickRoll > 0) {
-				receiver.drawScoreFont(engine, playerID, 0, 4, "ROLL ROLL", EventReceiver.COLOR_RED);
+				receiver.drawScoreFont(engine, playerID, 0, 4, "ROLL ROLL", EventRenderer.COLOR_RED);
 			} else if(gimmickBig > 0) {
-				receiver.drawScoreFont(engine, playerID, 0, 4, "DEATH BLOCK", EventReceiver.COLOR_RED);
+				receiver.drawScoreFont(engine, playerID, 0, 4, "DEATH BLOCK", EventRenderer.COLOR_RED);
 			} else if(gimmickXRay > 0) {
-				receiver.drawScoreFont(engine, playerID, 0, 4, "X-RAY", EventReceiver.COLOR_RED);
+				receiver.drawScoreFont(engine, playerID, 0, 4, "X-RAY", EventRenderer.COLOR_RED);
 			} else if(gimmickColor > 0) {
-				receiver.drawScoreFont(engine, playerID, 0, 4, "COLOR", EventReceiver.COLOR_RED);
+				receiver.drawScoreFont(engine, playerID, 0, 4, "COLOR", EventRenderer.COLOR_RED);
 			}
 
-			receiver.drawScoreFont(engine, playerID, 0, 5, "REST", EventReceiver.COLOR_PINK);
+			receiver.drawScoreFont(engine, playerID, 0, 5, "REST", EventRenderer.COLOR_PINK);
 			receiver.drawScoreFont(engine, playerID, 0, 6, ""+rest);
 
 			if(trainingType == 0) {
-				receiver.drawScoreFont(engine, playerID, 0, 8, "CLEAR", EventReceiver.COLOR_PINK);
+				receiver.drawScoreFont(engine, playerID, 0, 8, "CLEAR", EventRenderer.COLOR_PINK);
 				receiver.drawScoreFont(engine, playerID, 0, 9, clearper + "%");
 			} else {
-				receiver.drawScoreFont(engine, playerID, 0, 8, "BEST TIME", EventReceiver.COLOR_PINK);
+				receiver.drawScoreFont(engine, playerID, 0, 8, "BEST TIME", EventRenderer.COLOR_PINK);
 				receiver.drawScoreFont(engine, playerID, 0, 9, GeneralUtil.getTime(trainingBestTime));
 			}
 
 			//  level
-			receiver.drawScoreFont(engine, playerID, 0, 11, "LEVEL", EventReceiver.COLOR_PINK);
+			receiver.drawScoreFont(engine, playerID, 0, 11, "LEVEL", EventRenderer.COLOR_PINK);
 			int tempLevel = speedlevel;
 			if(tempLevel < 0) tempLevel = 0;
 			String strLevel = String.format("%3d", tempLevel);
@@ -973,14 +973,14 @@ public class GemManiaMode extends AbstractMode {
 
 			//  stage Time
 			if(stagetimeStart > 0) {
-				receiver.drawScoreFont(engine, playerID, 0, 16, "STAGE TIME", EventReceiver.COLOR_PINK);
+				receiver.drawScoreFont(engine, playerID, 0, 16, "STAGE TIME", EventRenderer.COLOR_PINK);
 				receiver.drawScoreFont(engine, playerID, 0, 17, GeneralUtil.getTime(stagetimeNow),
 										((engine.timerActive) && (stagetimeNow < 600) && (stagetimeNow % 4 == 0)));
 			}
 
 			// Time limit
 			if(limittimeStart > 0) {
-				receiver.drawScoreFont(engine, playerID, 0, 19, "LIMIT TIME", EventReceiver.COLOR_PINK);
+				receiver.drawScoreFont(engine, playerID, 0, 19, "LIMIT TIME", EventRenderer.COLOR_PINK);
 				String strLimitTime = GeneralUtil.getTime(limittimeNow);
 				if(timeextendDisp > 0) {
 					strLimitTime += "\n(+" + timeextendSeconds + " SEC.)";
@@ -994,7 +994,7 @@ public class GemManiaMode extends AbstractMode {
 				int x = (receiver.getNextDisplayType() == 2) ? 22 : 12;
 				float scale = (receiver.getNextDisplayType() == 2) ? 0.5f : 1.0f;
 
-				receiver.drawScoreFont(engine, playerID, x, y, "SECTION TIME", EventReceiver.COLOR_PINK, scale);
+				receiver.drawScoreFont(engine, playerID, x, y, "SECTION TIME", EventRenderer.COLOR_PINK, scale);
 
 				for(int i = 0; i < sectiontime.length; i++) {
 					if(sectiontime[i] != 0) {
@@ -1015,10 +1015,10 @@ public class GemManiaMode extends AbstractMode {
 				}
 
 				if(receiver.getNextDisplayType() == 2) {
-					receiver.drawScoreFont(engine, playerID, 11, 19, "TOTAL", EventReceiver.COLOR_PINK);
+					receiver.drawScoreFont(engine, playerID, 11, 19, "TOTAL", EventRenderer.COLOR_PINK);
 					receiver.drawScoreFont(engine, playerID, 11, 20, GeneralUtil.getTime(engine.statistics.time));
 				} else {
-					receiver.drawScoreFont(engine, playerID, 12, 19, "TOTAL TIME", EventReceiver.COLOR_PINK);
+					receiver.drawScoreFont(engine, playerID, 12, 19, "TOTAL TIME", EventRenderer.COLOR_PINK);
 					receiver.drawScoreFont(engine, playerID, 12, 20, GeneralUtil.getTime(engine.statistics.time));
 				}
 			}
@@ -1359,58 +1359,58 @@ public class GemManiaMode extends AbstractMode {
 		if(engine.statc[0] < 1) return;
 
 		// STAGE XX
-		receiver.drawMenuFont(engine, playerID, 1, 2, "STAGE", EventReceiver.COLOR_GREEN);
+		receiver.drawMenuFont(engine, playerID, 1, 2, "STAGE", EventRenderer.COLOR_GREEN);
 		String strStage = String.format("%2s", getStageName(stage));
 		receiver.drawMenuFont(engine, playerID, 7, 2, strStage);
 
 		if(clearflag) {
 			// クリア
-			receiver.drawMenuFont(engine, playerID, 2, 4, "CLEAR!", (engine.statc[0] % 2 == 0), EventReceiver.COLOR_WHITE, EventReceiver.COLOR_ORANGE);
+			receiver.drawMenuFont(engine, playerID, 2, 4, "CLEAR!", (engine.statc[0] % 2 == 0), EventRenderer.COLOR_WHITE, EventRenderer.COLOR_ORANGE);
 
-			receiver.drawMenuFont(engine, playerID, 0, 7, "LIMIT TIME", EventReceiver.COLOR_PINK);
+			receiver.drawMenuFont(engine, playerID, 0, 7, "LIMIT TIME", EventRenderer.COLOR_PINK);
 			receiver.drawMenuFont(engine, playerID, 1, 8, GeneralUtil.getTime(limittimeNow + engine.statc[1]),
 					((engine.statc[0] % 2 == 0) && (engine.statc[1] < timeextendStageClearSeconds * 60)),
-					EventReceiver.COLOR_WHITE, EventReceiver.COLOR_ORANGE);
+					EventRenderer.COLOR_WHITE, EventRenderer.COLOR_ORANGE);
 
-			receiver.drawMenuFont(engine, playerID, 2, 10, "EXTEND", EventReceiver.COLOR_PINK);
+			receiver.drawMenuFont(engine, playerID, 2, 10, "EXTEND", EventRenderer.COLOR_PINK);
 			receiver.drawMenuFont(engine, playerID, 2, 11, timeextendStageClearSeconds + " SEC.");
 
-			receiver.drawMenuFont(engine, playerID, 0, 13, "CLEAR TIME", EventReceiver.COLOR_PINK);
+			receiver.drawMenuFont(engine, playerID, 0, 13, "CLEAR TIME", EventRenderer.COLOR_PINK);
 			receiver.drawMenuFont(engine, playerID, 1, 14, GeneralUtil.getTime(cleartime));
 
-			receiver.drawMenuFont(engine, playerID, 0, 16, "TOTAL TIME", EventReceiver.COLOR_PINK);
+			receiver.drawMenuFont(engine, playerID, 0, 16, "TOTAL TIME", EventRenderer.COLOR_PINK);
 			receiver.drawMenuFont(engine, playerID, 1, 17, GeneralUtil.getTime(engine.statistics.time));
 		} else if(skipflag) {
 			// スキップ
 			receiver.drawMenuFont(engine, playerID, 1, 4, "SKIPPED");
 			receiver.drawMenuFont(engine, playerID, 1, 5, "-30 SEC.");
 
-			receiver.drawMenuFont(engine, playerID, 0, 10, "LIMIT TIME", EventReceiver.COLOR_PINK);
+			receiver.drawMenuFont(engine, playerID, 0, 10, "LIMIT TIME", EventRenderer.COLOR_PINK);
 			receiver.drawMenuFont(engine, playerID, 1, 11, GeneralUtil.getTime(limittimeNow - engine.statc[1]),
 					((engine.statc[0] % 2 == 0) && (engine.statc[1] < 30 * 60)),
-					EventReceiver.COLOR_WHITE, EventReceiver.COLOR_RED);
+					EventRenderer.COLOR_WHITE, EventRenderer.COLOR_RED);
 
 			if(trainingType == 0) {
-				receiver.drawMenuFont(engine, playerID, 0, 13, "CLEAR PER.", EventReceiver.COLOR_PINK);
+				receiver.drawMenuFont(engine, playerID, 0, 13, "CLEAR PER.", EventRenderer.COLOR_PINK);
 				receiver.drawMenuFont(engine, playerID, 3, 14, clearper + "%");
 			}
 
-			receiver.drawMenuFont(engine, playerID, 0, 16, "TOTAL TIME", EventReceiver.COLOR_PINK);
+			receiver.drawMenuFont(engine, playerID, 0, 16, "TOTAL TIME", EventRenderer.COLOR_PINK);
 			receiver.drawMenuFont(engine, playerID, 1, 17, GeneralUtil.getTime(engine.statistics.time));
 		} else if((stagetimeNow <= 0) && (stagetimeStart > 0)) {
 			// Timeアップ
 			receiver.drawMenuFont(engine, playerID, 1, 4, "TIME UP!");
 			receiver.drawMenuFont(engine, playerID, 1, 5, "TRY NEXT");
 
-			receiver.drawMenuFont(engine, playerID, 0, 10, "LIMIT TIME", EventReceiver.COLOR_PINK);
+			receiver.drawMenuFont(engine, playerID, 0, 10, "LIMIT TIME", EventRenderer.COLOR_PINK);
 			receiver.drawMenuFont(engine, playerID, 1, 11, GeneralUtil.getTime(limittimeNow));
 
 			if(trainingType == 0) {
-				receiver.drawMenuFont(engine, playerID, 0, 13, "CLEAR PER.", EventReceiver.COLOR_PINK);
+				receiver.drawMenuFont(engine, playerID, 0, 13, "CLEAR PER.", EventRenderer.COLOR_PINK);
 				receiver.drawMenuFont(engine, playerID, 3, 14, clearper + "%");
 			}
 
-			receiver.drawMenuFont(engine, playerID, 0, 16, "TOTAL TIME", EventReceiver.COLOR_PINK);
+			receiver.drawMenuFont(engine, playerID, 0, 16, "TOTAL TIME", EventRenderer.COLOR_PINK);
 			receiver.drawMenuFont(engine, playerID, 1, 17, GeneralUtil.getTime(engine.statistics.time));
 		}
 	}
@@ -1496,19 +1496,19 @@ public class GemManiaMode extends AbstractMode {
 	public void renderGameOver(GameEngine engine, int playerID) {
 		if((engine.ending == 0) && (!noContinue)) {
 			if((engine.statc[0] >= engine.field.getHeight() + 1) && (engine.statc[0] < (engine.field.getHeight() + 1) + 600)) {
-				receiver.drawMenuFont(engine, playerID, 1, 7, "CONTINUE?", EventReceiver.COLOR_PINK);
+				receiver.drawMenuFont(engine, playerID, 1, 7, "CONTINUE?", EventRenderer.COLOR_PINK);
 
-				receiver.drawMenuFont(engine, playerID, 3, 9 + engine.statc[1] * 2, "b", EventReceiver.COLOR_RED);
+				receiver.drawMenuFont(engine, playerID, 3, 9 + engine.statc[1] * 2, "b", EventRenderer.COLOR_RED);
 				receiver.drawMenuFont(engine, playerID, 4, 9, "YES", (engine.statc[1] == 0));
 				receiver.drawMenuFont(engine, playerID, 4, 11, "NO", (engine.statc[1] == 1));
 
 				int t = ((engine.field.getHeight() + 1) + 600) - engine.statc[0];
-				receiver.drawMenuFont(engine, playerID, 2, 13, "TIME " + ((t-1) / 60), EventReceiver.COLOR_GREEN);
+				receiver.drawMenuFont(engine, playerID, 2, 13, "TIME " + ((t-1) / 60), EventRenderer.COLOR_GREEN);
 
-				receiver.drawMenuFont(engine, playerID, 0, 16, "TOTAL TIME", EventReceiver.COLOR_PINK);
+				receiver.drawMenuFont(engine, playerID, 0, 16, "TOTAL TIME", EventRenderer.COLOR_PINK);
 				receiver.drawMenuFont(engine, playerID, 1, 17, GeneralUtil.getTime(engine.statistics.time));
 
-				if(trainingType == 0) receiver.drawMenuFont(engine, playerID, 0, 18, "+2 MINUTES", EventReceiver.COLOR_RED);
+				if(trainingType == 0) receiver.drawMenuFont(engine, playerID, 0, 18, "+2 MINUTES", EventRenderer.COLOR_RED);
 			}
 		}
 	}
@@ -1537,24 +1537,24 @@ public class GemManiaMode extends AbstractMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		receiver.drawMenuFont(engine, playerID, 0, 0, "kn PAGE" + (engine.statc[1] + 1) + "/3", EventReceiver.COLOR_RED);
+		receiver.drawMenuFont(engine, playerID, 0, 0, "kn PAGE" + (engine.statc[1] + 1) + "/3", EventRenderer.COLOR_RED);
 
 		if(engine.statc[1] == 0) {
-			int gcolor = EventReceiver.COLOR_WHITE;
-			if(allclear == 1) gcolor = EventReceiver.COLOR_GREEN;
-			if(allclear == 2) gcolor = EventReceiver.COLOR_ORANGE;
+			int gcolor = EventRenderer.COLOR_WHITE;
+			if(allclear == 1) gcolor = EventRenderer.COLOR_GREEN;
+			if(allclear == 2) gcolor = EventRenderer.COLOR_ORANGE;
 
-			receiver.drawMenuFont(engine, playerID,  0, 2, "STAGE", EventReceiver.COLOR_PINK);
+			receiver.drawMenuFont(engine, playerID,  0, 2, "STAGE", EventRenderer.COLOR_PINK);
 			String strStage = String.format("%10s", getStageName(stage));
 			receiver.drawMenuFont(engine, playerID,  0, 3, strStage, gcolor);
 
-			drawResult(engine, playerID, receiver, 4, EventReceiver.COLOR_PINK,
+			drawResult(engine, playerID, receiver, 4, EventRenderer.COLOR_PINK,
 					"CLEAR", String.format("%9d%%", clearper));
-			drawResultStats(engine, playerID, receiver, 6, EventReceiver.COLOR_PINK,
+			drawResultStats(engine, playerID, receiver, 6, EventRenderer.COLOR_PINK,
 					STAT_LINES, STAT_PIECE, STAT_TIME);
-			drawResultRank(engine, playerID, receiver, 12, EventReceiver.COLOR_PINK, rankingRank);
+			drawResultRank(engine, playerID, receiver, 12, EventRenderer.COLOR_PINK, rankingRank);
 		} else if(engine.statc[1] == 1) {
-			receiver.drawMenuFont(engine, playerID, 0, 2, "SECTION1/2", EventReceiver.COLOR_PINK);
+			receiver.drawMenuFont(engine, playerID, 0, 2, "SECTION1/2", EventRenderer.COLOR_PINK);
 
 			for(int i = 0; i < 15; i++) {
 				if(sectiontime[i] != 0) {
@@ -1565,7 +1565,7 @@ public class GemManiaMode extends AbstractMode {
 				}
 			}
 		} else if(engine.statc[1] == 2) {
-			receiver.drawMenuFont(engine, playerID, 0, 2, "SECTION2/2", EventReceiver.COLOR_PINK);
+			receiver.drawMenuFont(engine, playerID, 0, 2, "SECTION2/2", EventRenderer.COLOR_PINK);
 
 			for(int i = 15; i < sectiontime.length; i++) {
 				if(sectiontime[i] != 0) {

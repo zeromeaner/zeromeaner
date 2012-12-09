@@ -5,7 +5,7 @@ import java.util.Random;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.CustomProperties;
@@ -309,7 +309,7 @@ public class VSDigRaceMode extends AbstractMode {
 	public void renderSetting(GameEngine engine, int playerID) {
 		if(engine.statc[4] == 0) {
 			if(engine.statc[2] < 9) {
-				drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_ORANGE, 0,
+				drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_ORANGE, 0,
 						"GRAVITY", String.valueOf(engine.speed.gravity),
 						"G-MAX", String.valueOf(engine.speed.denominator),
 						"ARE", String.valueOf(engine.speed.are),
@@ -317,19 +317,19 @@ public class VSDigRaceMode extends AbstractMode {
 						"LINE DELAY", String.valueOf(engine.speed.lineDelay),
 						"LOCK DELAY", String.valueOf(engine.speed.lockDelay),
 						"DAS", String.valueOf(engine.speed.das));
-				drawMenu(engine, playerID, receiver, 14, EventReceiver.COLOR_GREEN, 7,
+				drawMenu(engine, playerID, receiver, 14, EventRenderer.COLOR_GREEN, 7,
 						"LOAD", String.valueOf(presetNumber[playerID]),
 						"SAVE", String.valueOf(presetNumber[playerID]));
 			} else {
-				drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_CYAN, 9,
+				drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_CYAN, 9,
 						"GOAL", String.valueOf(goalLines[playerID]),
 						"CHANGERATE", String.valueOf(garbagePercent[playerID]) + "%",
 						"SE", GeneralUtil.getONorOFF(enableSE[playerID]));
-				drawMenu(engine, playerID, receiver, 6, EventReceiver.COLOR_PINK, 12,
+				drawMenu(engine, playerID, receiver, 6, EventRenderer.COLOR_PINK, 12,
 						"BGM", String.valueOf(bgmno));
 			}
 		} else {
-			receiver.drawMenuFont(engine, playerID, 3, 10, "WAIT", EventReceiver.COLOR_YELLOW);
+			receiver.drawMenuFont(engine, playerID, 3, 10, "WAIT", EventRenderer.COLOR_YELLOW);
 		}
 	}
 
@@ -448,13 +448,13 @@ public class VSDigRaceMode extends AbstractMode {
 
 		int x = receiver.getFieldDisplayPositionX(engine, playerID);
 		int y = receiver.getFieldDisplayPositionY(engine, playerID);
-		int fontColor = EventReceiver.COLOR_WHITE;
+		int fontColor = EventRenderer.COLOR_WHITE;
 
 		int remainLines = Math.max(0, getRemainGarbageLines(engine, playerID));
-		fontColor = EventReceiver.COLOR_WHITE;
-		if((remainLines <= 14) && (remainLines > 0)) fontColor = EventReceiver.COLOR_YELLOW;
-		if((remainLines <=  8) && (remainLines > 0)) fontColor = EventReceiver.COLOR_ORANGE;
-		if((remainLines <=  4) && (remainLines > 0)) fontColor = EventReceiver.COLOR_RED;
+		fontColor = EventRenderer.COLOR_WHITE;
+		if((remainLines <= 14) && (remainLines > 0)) fontColor = EventRenderer.COLOR_YELLOW;
+		if((remainLines <=  8) && (remainLines > 0)) fontColor = EventRenderer.COLOR_ORANGE;
+		if((remainLines <=  4) && (remainLines > 0)) fontColor = EventRenderer.COLOR_RED;
 
 		int enemyRemainLines = Math.max(0, getRemainGarbageLines(owner.engine[enemyID], enemyID));
 		/*
@@ -479,9 +479,9 @@ public class VSDigRaceMode extends AbstractMode {
 
 		// 1st/2nd
 		if(remainLines < enemyRemainLines)
-			receiver.drawMenuFont(engine, playerID, -2, 22, "1ST", EventReceiver.COLOR_ORANGE);
+			receiver.drawMenuFont(engine, playerID, -2, 22, "1ST", EventRenderer.COLOR_ORANGE);
 		else if(remainLines > enemyRemainLines)
-			receiver.drawMenuFont(engine, playerID, -2, 22, "2ND", EventReceiver.COLOR_WHITE);
+			receiver.drawMenuFont(engine, playerID, -2, 22, "2ND", EventRenderer.COLOR_WHITE);
 
 		// Timer
 		if(playerID == 0) {
@@ -490,24 +490,24 @@ public class VSDigRaceMode extends AbstractMode {
 
 		// Normal layout
 		if((owner.receiver.getNextDisplayType() != 2) && (playerID == 0)) {
-			receiver.drawScoreFont(engine, playerID, 0, 2, "1P LINES", EventReceiver.COLOR_RED);
+			receiver.drawScoreFont(engine, playerID, 0, 2, "1P LINES", EventRenderer.COLOR_RED);
 			receiver.drawScoreFont(engine, playerID, 0, 3, String.valueOf(owner.engine[0].statistics.lines));
 
-			receiver.drawScoreFont(engine, playerID, 0, 5, "2P LINES", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 5, "2P LINES", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 6, String.valueOf(owner.engine[1].statistics.lines));
 
 			if(!owner.replayMode) {
-				receiver.drawScoreFont(engine, playerID, 0, 8, "1P WINS", EventReceiver.COLOR_RED);
+				receiver.drawScoreFont(engine, playerID, 0, 8, "1P WINS", EventRenderer.COLOR_RED);
 				receiver.drawScoreFont(engine, playerID, 0, 9, String.valueOf(winCount[0]));
 
-				receiver.drawScoreFont(engine, playerID, 0, 11, "2P WINS", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 0, 11, "2P WINS", EventRenderer.COLOR_BLUE);
 				receiver.drawScoreFont(engine, playerID, 0, 12, String.valueOf(winCount[1]));
 			}
 		}
 
 		// Big-side-next layout
 		if(owner.receiver.getNextDisplayType() == 2) {
-			int fontColor2 = (playerID == 0) ? EventReceiver.COLOR_RED : EventReceiver.COLOR_BLUE;
+			int fontColor2 = (playerID == 0) ? EventRenderer.COLOR_RED : EventRenderer.COLOR_BLUE;
 
 			if(!owner.replayMode) {
 				receiver.drawDirectFont(engine, playerID, x - 44, y + 190, "WINS", fontColor2, 0.5f);
@@ -581,15 +581,15 @@ public class VSDigRaceMode extends AbstractMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		receiver.drawMenuFont(engine, playerID, 0, 0, "RESULT", EventReceiver.COLOR_ORANGE);
+		receiver.drawMenuFont(engine, playerID, 0, 0, "RESULT", EventRenderer.COLOR_ORANGE);
 		if(winnerID == -1) {
-			receiver.drawMenuFont(engine, playerID, 6, 1, "DRAW", EventReceiver.COLOR_GREEN);
+			receiver.drawMenuFont(engine, playerID, 6, 1, "DRAW", EventRenderer.COLOR_GREEN);
 		} else if(winnerID == playerID) {
-			receiver.drawMenuFont(engine, playerID, 6, 1, "WIN!", EventReceiver.COLOR_YELLOW);
+			receiver.drawMenuFont(engine, playerID, 6, 1, "WIN!", EventRenderer.COLOR_YELLOW);
 		} else {
-			receiver.drawMenuFont(engine, playerID, 6, 1, "LOSE", EventReceiver.COLOR_WHITE);
+			receiver.drawMenuFont(engine, playerID, 6, 1, "LOSE", EventRenderer.COLOR_WHITE);
 		}
-		drawResultStats(engine, playerID, receiver, 2, EventReceiver.COLOR_ORANGE,
+		drawResultStats(engine, playerID, receiver, 2, EventRenderer.COLOR_ORANGE,
 				STAT_LINES, STAT_PIECE, STAT_LPM, STAT_PPS, STAT_TIME);
 	}
 

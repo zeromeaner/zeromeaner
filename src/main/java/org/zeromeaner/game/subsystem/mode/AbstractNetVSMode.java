@@ -8,7 +8,7 @@ import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomize
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.net.NetPlayerClient;
 import org.zeromeaner.game.net.NetPlayerInfo;
 import org.zeromeaner.game.net.NetRoomInfo;
@@ -52,9 +52,9 @@ public class AbstractNetVSMode extends AbstractNetMode {
 
 	/** NET-VS: Team font colors */
 	protected static final int[] NETVS_TEAM_FONT_COLORS = {
-		EventReceiver.COLOR_WHITE,
-		EventReceiver.COLOR_RED, EventReceiver.COLOR_GREEN, EventReceiver.COLOR_BLUE, EventReceiver.COLOR_YELLOW,
-		EventReceiver.COLOR_PURPLE, EventReceiver.COLOR_CYAN
+		EventRenderer.COLOR_WHITE,
+		EventRenderer.COLOR_RED, EventRenderer.COLOR_GREEN, EventRenderer.COLOR_BLUE, EventRenderer.COLOR_YELLOW,
+		EventRenderer.COLOR_PURPLE, EventRenderer.COLOR_CYAN
 	};
 
 	/** NET-VS: Default time before forced piece lock */
@@ -651,21 +651,21 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	 */
 	protected void netvsDrawRoomInfoBox(GameEngine engine, int x, int y) {
 		if(netCurrentRoomInfo != null) {
-			owner.receiver.drawDirectFont(engine, 0, x, y +  0, "PLAYERS", EventReceiver.COLOR_CYAN, 0.5f);
-			owner.receiver.drawDirectFont(engine, 0, x, y +  8, "" + netvsNumPlayers, EventReceiver.COLOR_WHITE, 0.5f);
-			owner.receiver.drawDirectFont(engine, 0, x, y + 16, "SPECTATORS", EventReceiver.COLOR_CYAN, 0.5f);
-			owner.receiver.drawDirectFont(engine, 0, x, y + 24, "" + netNumSpectators, EventReceiver.COLOR_WHITE, 0.5f);
+			owner.receiver.drawDirectFont(engine, 0, x, y +  0, "PLAYERS", EventRenderer.COLOR_CYAN, 0.5f);
+			owner.receiver.drawDirectFont(engine, 0, x, y +  8, "" + netvsNumPlayers, EventRenderer.COLOR_WHITE, 0.5f);
+			owner.receiver.drawDirectFont(engine, 0, x, y + 16, "SPECTATORS", EventRenderer.COLOR_CYAN, 0.5f);
+			owner.receiver.drawDirectFont(engine, 0, x, y + 24, "" + netNumSpectators, EventRenderer.COLOR_WHITE, 0.5f);
 
 			if(!netvsIsWatch()) {
-				owner.receiver.drawDirectFont(engine, 0, x, y + 32, "MATCHES", EventReceiver.COLOR_CYAN, 0.5f);
-				owner.receiver.drawDirectFont(engine, 0, x, y + 40, "" + netvsPlayerPlayCount[0], EventReceiver.COLOR_WHITE, 0.5f);
-				owner.receiver.drawDirectFont(engine, 0, x, y + 48, "WINS", EventReceiver.COLOR_CYAN, 0.5f);
-				owner.receiver.drawDirectFont(engine, 0, x, y + 56, "" + netvsPlayerWinCount[0], EventReceiver.COLOR_WHITE, 0.5f);
+				owner.receiver.drawDirectFont(engine, 0, x, y + 32, "MATCHES", EventRenderer.COLOR_CYAN, 0.5f);
+				owner.receiver.drawDirectFont(engine, 0, x, y + 40, "" + netvsPlayerPlayCount[0], EventRenderer.COLOR_WHITE, 0.5f);
+				owner.receiver.drawDirectFont(engine, 0, x, y + 48, "WINS", EventRenderer.COLOR_CYAN, 0.5f);
+				owner.receiver.drawDirectFont(engine, 0, x, y + 56, "" + netvsPlayerWinCount[0], EventRenderer.COLOR_WHITE, 0.5f);
 			}
 		}
-		owner.receiver.drawDirectFont(engine, 0, x, y + 72, "ALL ROOMS", EventReceiver.COLOR_GREEN, 0.5f);
+		owner.receiver.drawDirectFont(engine, 0, x, y + 72, "ALL ROOMS", EventRenderer.COLOR_GREEN, 0.5f);
 		if(netLobby != null && netLobby.netPlayerClient != null)
-			owner.receiver.drawDirectFont(engine, 0, x, y + 80, "" + netLobby.netPlayerClient.getRoomInfoList().size(), EventReceiver.COLOR_WHITE, 0.5f);
+			owner.receiver.drawDirectFont(engine, 0, x, y + 80, "" + netLobby.netPlayerClient.getRoomInfoList().size(), EventRenderer.COLOR_WHITE, 0.5f);
 	}
 
 	/**
@@ -739,22 +739,22 @@ public class AbstractNetVSMode extends AbstractNetMode {
 		if(netCurrentRoomInfo != null) {
 			if(netvsPlayerReady[playerID] && netvsPlayerExist[playerID]) {
 				if(engine.displaysize != -1)
-					owner.receiver.drawDirectFont(engine, playerID, x + 68, y + 204, "OK", EventReceiver.COLOR_YELLOW);
+					owner.receiver.drawDirectFont(engine, playerID, x + 68, y + 204, "OK", EventRenderer.COLOR_YELLOW);
 				else
-					owner.receiver.drawDirectFont(engine, playerID, x + 36, y + 80, "OK", EventReceiver.COLOR_YELLOW, 0.5f);
+					owner.receiver.drawDirectFont(engine, playerID, x + 36, y + 80, "OK", EventRenderer.COLOR_YELLOW, 0.5f);
 			}
 
 			if((playerID == 0) && !netvsIsWatch() && (!netvsIsReadyChangePending) && (netvsNumPlayers >= 2) && !netvsIsNewcomer) {
 				if(!netvsPlayerReady[playerID]) {
 					String strTemp = "A(" + owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_A) + " KEY):";
 					if(strTemp.length() > 10) strTemp = strTemp.substring(0, 10);
-					owner.receiver.drawMenuFont(engine, playerID, 0, 16, strTemp, EventReceiver.COLOR_CYAN);
-					owner.receiver.drawMenuFont(engine, playerID, 1, 17, "READY", EventReceiver.COLOR_CYAN);
+					owner.receiver.drawMenuFont(engine, playerID, 0, 16, strTemp, EventRenderer.COLOR_CYAN);
+					owner.receiver.drawMenuFont(engine, playerID, 1, 17, "READY", EventRenderer.COLOR_CYAN);
 				} else {
 					String strTemp = "B(" + owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_B) + " KEY):";
 					if(strTemp.length() > 10) strTemp = strTemp.substring(0, 10);
-					owner.receiver.drawMenuFont(engine, playerID, 0, 16, strTemp, EventReceiver.COLOR_BLUE);
-					owner.receiver.drawMenuFont(engine, playerID, 1, 17, "CANCEL", EventReceiver.COLOR_BLUE);
+					owner.receiver.drawMenuFont(engine, playerID, 0, 16, strTemp, EventRenderer.COLOR_BLUE);
+					owner.receiver.drawMenuFont(engine, playerID, 1, 17, "CANCEL", EventRenderer.COLOR_BLUE);
 				}
 			}
 		}
@@ -763,8 +763,8 @@ public class AbstractNetVSMode extends AbstractNetMode {
 			String strTemp = "F(" + owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_F) + " KEY):";
 			if(strTemp.length() > 10) strTemp = strTemp.substring(0, 10);
 			strTemp = strTemp.toUpperCase();
-			owner.receiver.drawMenuFont(engine, playerID, 0, 18, strTemp, EventReceiver.COLOR_PURPLE);
-			owner.receiver.drawMenuFont(engine, playerID, 1, 19, "PRACTICE", EventReceiver.COLOR_PURPLE);
+			owner.receiver.drawMenuFont(engine, playerID, 0, 18, strTemp, EventRenderer.COLOR_PURPLE);
+			owner.receiver.drawMenuFont(engine, playerID, 1, 19, "PRACTICE", EventRenderer.COLOR_PURPLE);
 		}
 	}
 
@@ -919,14 +919,14 @@ public class AbstractNetVSMode extends AbstractNetMode {
 			owner.receiver.drawDirectFont(engine, 0, 256, 16, GeneralUtil.getTime(netvsPlayTimer));
 
 			if(netvsIsPractice) {
-				owner.receiver.drawDirectFont(engine, 0, 256, 32, GeneralUtil.getTime(engine.statistics.time), EventReceiver.COLOR_PURPLE);
+				owner.receiver.drawDirectFont(engine, 0, 256, 32, GeneralUtil.getTime(engine.statistics.time), EventRenderer.COLOR_PURPLE);
 			}
 		}
 
 		// Automatic start timer
 		if((playerID == 0) && (netCurrentRoomInfo != null) && (netvsAutoStartTimerActive) && (!netvsIsGameActive)) {
 			owner.receiver.drawDirectFont(engine, 0, 496, 16, GeneralUtil.getTime(netvsAutoStartTimer), netCurrentRoomInfo.autoStartTNET2,
-					EventReceiver.COLOR_RED, EventReceiver.COLOR_YELLOW);
+					EventRenderer.COLOR_RED, EventRenderer.COLOR_YELLOW);
 		}
 
 		// Name
@@ -997,39 +997,39 @@ public class AbstractNetVSMode extends AbstractNetMode {
 
 		if(engine.displaysize != -1) {
 			if(netvsPlayerReady[playerID] && !netvsIsGameActive) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 68, y + 204, "OK", EventReceiver.COLOR_YELLOW);
+				owner.receiver.drawDirectFont(engine, playerID, x + 68, y + 204, "OK", EventRenderer.COLOR_YELLOW);
 			} else if((netvsNumNowPlayers == 2) || (netCurrentRoomInfo.maxPlayers == 2)) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 52, y + 204, "LOSE", EventReceiver.COLOR_WHITE);
+				owner.receiver.drawDirectFont(engine, playerID, x + 52, y + 204, "LOSE", EventRenderer.COLOR_WHITE);
 			} else if(place == 1) {
 				//owner.receiver.drawDirectFont(engine, playerID, x + 12, y + 204, "GAME OVER", EventReceiver.COLOR_WHITE);
 			} else if(place == 2) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 12, y + 204, "2ND PLACE", EventReceiver.COLOR_WHITE);
+				owner.receiver.drawDirectFont(engine, playerID, x + 12, y + 204, "2ND PLACE", EventRenderer.COLOR_WHITE);
 			} else if(place == 3) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 12, y + 204, "3RD PLACE", EventReceiver.COLOR_RED);
+				owner.receiver.drawDirectFont(engine, playerID, x + 12, y + 204, "3RD PLACE", EventRenderer.COLOR_RED);
 			} else if(place == 4) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 12, y + 204, "4TH PLACE", EventReceiver.COLOR_GREEN);
+				owner.receiver.drawDirectFont(engine, playerID, x + 12, y + 204, "4TH PLACE", EventRenderer.COLOR_GREEN);
 			} else if(place == 5) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 12, y + 204, "5TH PLACE", EventReceiver.COLOR_BLUE);
+				owner.receiver.drawDirectFont(engine, playerID, x + 12, y + 204, "5TH PLACE", EventRenderer.COLOR_BLUE);
 			} else if(place == 6) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 12, y + 204, "6TH PLACE", EventReceiver.COLOR_PURPLE);
+				owner.receiver.drawDirectFont(engine, playerID, x + 12, y + 204, "6TH PLACE", EventRenderer.COLOR_PURPLE);
 			}
 		} else {
 			if(netvsPlayerReady[playerID] && !netvsIsGameActive) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 36, y + 80, "OK", EventReceiver.COLOR_YELLOW, 0.5f);
+				owner.receiver.drawDirectFont(engine, playerID, x + 36, y + 80, "OK", EventRenderer.COLOR_YELLOW, 0.5f);
 			} else if((netvsNumNowPlayers == 2) || (netCurrentRoomInfo.maxPlayers == 2)) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 28, y + 80, "LOSE", EventReceiver.COLOR_WHITE, 0.5f);
+				owner.receiver.drawDirectFont(engine, playerID, x + 28, y + 80, "LOSE", EventRenderer.COLOR_WHITE, 0.5f);
 			} else if(place == 1) {
 				//owner.receiver.drawDirectFont(engine, playerID, x + 8, y + 80, "GAME OVER", EventReceiver.COLOR_WHITE, 0.5f);
 			} else if(place == 2) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 8, y + 80, "2ND PLACE", EventReceiver.COLOR_WHITE, 0.5f);
+				owner.receiver.drawDirectFont(engine, playerID, x + 8, y + 80, "2ND PLACE", EventRenderer.COLOR_WHITE, 0.5f);
 			} else if(place == 3) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 8, y + 80, "3RD PLACE", EventReceiver.COLOR_RED, 0.5f);
+				owner.receiver.drawDirectFont(engine, playerID, x + 8, y + 80, "3RD PLACE", EventRenderer.COLOR_RED, 0.5f);
 			} else if(place == 4) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 8, y + 80, "4TH PLACE", EventReceiver.COLOR_GREEN, 0.5f);
+				owner.receiver.drawDirectFont(engine, playerID, x + 8, y + 80, "4TH PLACE", EventRenderer.COLOR_GREEN, 0.5f);
 			} else if(place == 5) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 8, y + 80, "5TH PLACE", EventReceiver.COLOR_BLUE, 0.5f);
+				owner.receiver.drawDirectFont(engine, playerID, x + 8, y + 80, "5TH PLACE", EventRenderer.COLOR_BLUE, 0.5f);
 			} else if(place == 6) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 8, y + 80, "6TH PLACE", EventReceiver.COLOR_PURPLE, 0.5f);
+				owner.receiver.drawDirectFont(engine, playerID, x + 8, y + 80, "6TH PLACE", EventRenderer.COLOR_PURPLE, 0.5f);
 			}
 		}
 	}
@@ -1078,23 +1078,23 @@ public class AbstractNetVSMode extends AbstractNetMode {
 
 		if(engine.displaysize != -1) {
 			if((playerID == 0) && netvsIsPractice && !netvsIsWatch()) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 4, y + 204, "EXCELLENT!", EventReceiver.COLOR_YELLOW);
+				owner.receiver.drawDirectFont(engine, playerID, x + 4, y + 204, "EXCELLENT!", EventRenderer.COLOR_YELLOW);
 			} else if(netvsPlayerReady[playerID] && !netvsIsGameActive) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 68, y + 204, "OK", EventReceiver.COLOR_YELLOW);
+				owner.receiver.drawDirectFont(engine, playerID, x + 68, y + 204, "OK", EventRenderer.COLOR_YELLOW);
 			} else if((netvsNumNowPlayers == 2) || (netCurrentRoomInfo.maxPlayers == 2)) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 52, y + 204, "WIN!", EventReceiver.COLOR_YELLOW);
+				owner.receiver.drawDirectFont(engine, playerID, x + 52, y + 204, "WIN!", EventRenderer.COLOR_YELLOW);
 			} else {
-				owner.receiver.drawDirectFont(engine, playerID, x + 4, y + 204, "1ST PLACE!", EventReceiver.COLOR_YELLOW);
+				owner.receiver.drawDirectFont(engine, playerID, x + 4, y + 204, "1ST PLACE!", EventRenderer.COLOR_YELLOW);
 			}
 		} else {
 			if((playerID == 0) && netvsIsPractice && !netvsIsWatch()) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 4, y + 80, "EXCELLENT!", EventReceiver.COLOR_YELLOW, 0.5f);
+				owner.receiver.drawDirectFont(engine, playerID, x + 4, y + 80, "EXCELLENT!", EventRenderer.COLOR_YELLOW, 0.5f);
 			} else if(netvsPlayerReady[playerID] && !netvsIsGameActive) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 36, y + 80, "OK", EventReceiver.COLOR_YELLOW, 0.5f);
+				owner.receiver.drawDirectFont(engine, playerID, x + 36, y + 80, "OK", EventRenderer.COLOR_YELLOW, 0.5f);
 			} else if((netvsNumNowPlayers == 2) || (netCurrentRoomInfo.maxPlayers == 2)) {
-				owner.receiver.drawDirectFont(engine, playerID, x + 28, y + 80, "WIN!", EventReceiver.COLOR_YELLOW, 0.5f);
+				owner.receiver.drawDirectFont(engine, playerID, x + 28, y + 80, "WIN!", EventRenderer.COLOR_YELLOW, 0.5f);
 			} else {
-				owner.receiver.drawDirectFont(engine, playerID, x + 4, y + 80, "1ST PLACE!", EventReceiver.COLOR_YELLOW, 0.5f);
+				owner.receiver.drawDirectFont(engine, playerID, x + 4, y + 80, "1ST PLACE!", EventRenderer.COLOR_YELLOW, 0.5f);
 			}
 		}
 	}
@@ -1136,46 +1136,46 @@ public class AbstractNetVSMode extends AbstractNetMode {
 
 		// Place
 		if(!netvsIsPractice || (playerID != 0)) {
-			owner.receiver.drawMenuFont(engine, playerID, 0, 0, "RESULT", EventReceiver.COLOR_ORANGE, scale);
+			owner.receiver.drawMenuFont(engine, playerID, 0, 0, "RESULT", EventRenderer.COLOR_ORANGE, scale);
 			if(netvsPlayerPlace[playerID] == 1) {
 				if(netvsNumNowPlayers == 2) {
-					owner.receiver.drawMenuFont(engine, playerID, 6, 1, "WIN!", EventReceiver.COLOR_YELLOW, scale);
+					owner.receiver.drawMenuFont(engine, playerID, 6, 1, "WIN!", EventRenderer.COLOR_YELLOW, scale);
 				} else {
-					owner.receiver.drawMenuFont(engine, playerID, 6, 1, "1ST!", EventReceiver.COLOR_YELLOW, scale);
+					owner.receiver.drawMenuFont(engine, playerID, 6, 1, "1ST!", EventRenderer.COLOR_YELLOW, scale);
 				}
 			} else if(netvsPlayerPlace[playerID] == 2) {
 				if(netvsNumNowPlayers == 2) {
-					owner.receiver.drawMenuFont(engine, playerID, 6, 1, "LOSE", EventReceiver.COLOR_WHITE, scale);
+					owner.receiver.drawMenuFont(engine, playerID, 6, 1, "LOSE", EventRenderer.COLOR_WHITE, scale);
 				} else {
-					owner.receiver.drawMenuFont(engine, playerID, 7, 1, "2ND", EventReceiver.COLOR_WHITE, scale);
+					owner.receiver.drawMenuFont(engine, playerID, 7, 1, "2ND", EventRenderer.COLOR_WHITE, scale);
 				}
 			} else if(netvsPlayerPlace[playerID] == 3) {
-				owner.receiver.drawMenuFont(engine, playerID, 7, 1, "3RD", EventReceiver.COLOR_RED, scale);
+				owner.receiver.drawMenuFont(engine, playerID, 7, 1, "3RD", EventRenderer.COLOR_RED, scale);
 			} else if(netvsPlayerPlace[playerID] == 4) {
-				owner.receiver.drawMenuFont(engine, playerID, 7, 1, "4TH", EventReceiver.COLOR_GREEN, scale);
+				owner.receiver.drawMenuFont(engine, playerID, 7, 1, "4TH", EventRenderer.COLOR_GREEN, scale);
 			} else if(netvsPlayerPlace[playerID] == 5) {
-				owner.receiver.drawMenuFont(engine, playerID, 7, 1, "5TH", EventReceiver.COLOR_BLUE, scale);
+				owner.receiver.drawMenuFont(engine, playerID, 7, 1, "5TH", EventRenderer.COLOR_BLUE, scale);
 			} else if(netvsPlayerPlace[playerID] == 6) {
-				owner.receiver.drawMenuFont(engine, playerID, 7, 1, "6TH", EventReceiver.COLOR_DARKBLUE, scale);
+				owner.receiver.drawMenuFont(engine, playerID, 7, 1, "6TH", EventRenderer.COLOR_DARKBLUE, scale);
 			}
 		} else {
-			owner.receiver.drawMenuFont(engine, playerID, 0, 0, "PRACTICE", EventReceiver.COLOR_PINK, scale);
+			owner.receiver.drawMenuFont(engine, playerID, 0, 0, "PRACTICE", EventRenderer.COLOR_PINK, scale);
 		}
 
 		if((playerID == 0) && (!netvsIsWatch())) {
 			// Restart/Practice
 			String strTemp = "A(" + owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_A) + " KEY):";
 			if(strTemp.length() > 10) strTemp = strTemp.substring(0, 10);
-			owner.receiver.drawMenuFont(engine, playerID, 0, 18, strTemp, EventReceiver.COLOR_RED);
-			owner.receiver.drawMenuFont(engine, playerID, 1, 19, "RESTART", EventReceiver.COLOR_RED);
+			owner.receiver.drawMenuFont(engine, playerID, 0, 18, strTemp, EventRenderer.COLOR_RED);
+			owner.receiver.drawMenuFont(engine, playerID, 1, 19, "RESTART", EventRenderer.COLOR_RED);
 
 			String strTempF = "F(" + owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_F) + " KEY):";
 			if(strTempF.length() > 10) strTempF = strTempF.substring(0, 10);
-			owner.receiver.drawMenuFont(engine, playerID, 0, 20, strTempF, EventReceiver.COLOR_PURPLE);
+			owner.receiver.drawMenuFont(engine, playerID, 0, 20, strTempF, EventRenderer.COLOR_PURPLE);
 			if(!netvsIsPractice) {
-				owner.receiver.drawMenuFont(engine, playerID, 1, 21, "PRACTICE", EventReceiver.COLOR_PURPLE);
+				owner.receiver.drawMenuFont(engine, playerID, 1, 21, "PRACTICE", EventRenderer.COLOR_PURPLE);
 			} else {
-				owner.receiver.drawMenuFont(engine, playerID, 1, 21, "RETRY", EventReceiver.COLOR_PURPLE);
+				owner.receiver.drawMenuFont(engine, playerID, 1, 21, "RETRY", EventRenderer.COLOR_PURPLE);
 			}
 		} else if(netvsPlayerReady[playerID] && netvsPlayerExist[playerID]) {
 			// Player Ready
@@ -1183,9 +1183,9 @@ public class AbstractNetVSMode extends AbstractNetMode {
 			int y = owner.receiver.getFieldDisplayPositionY(engine, playerID);
 
 			if(engine.displaysize != -1)
-				owner.receiver.drawDirectFont(engine, playerID, x + 68, y + 356, "OK", EventReceiver.COLOR_YELLOW);
+				owner.receiver.drawDirectFont(engine, playerID, x + 68, y + 356, "OK", EventRenderer.COLOR_YELLOW);
 			else
-				owner.receiver.drawDirectFont(engine, playerID, x + 36, y + 156, "OK", EventReceiver.COLOR_YELLOW, 0.5f);
+				owner.receiver.drawDirectFont(engine, playerID, x + 36, y + 156, "OK", EventRenderer.COLOR_YELLOW, 0.5f);
 		}
 	}
 

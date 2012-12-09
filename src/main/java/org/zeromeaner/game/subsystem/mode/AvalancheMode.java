@@ -29,7 +29,7 @@
 package org.zeromeaner.game.subsystem.mode;
 
 import org.zeromeaner.game.component.Controller;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
@@ -261,14 +261,14 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
 		if (engine.statc[2] <= 8) {
-			drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_BLUE, 0,
+			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
 					"GAME TYPE", GAMETYPE_NAME[gametype]);
 			if (gametype == 2)
 			{
-				drawMenu(engine, playerID, receiver, 2, EventReceiver.COLOR_BLUE, 1,
+				drawMenu(engine, playerID, receiver, 2, EventRenderer.COLOR_BLUE, 1,
 						"TARGET", String.valueOf(SPRINT_MAX_SCORE[sprintTarget]));
 			}
-			drawMenu(engine, playerID, receiver, 4, EventReceiver.COLOR_BLUE, 2,
+			drawMenu(engine, playerID, receiver, 4, EventRenderer.COLOR_BLUE, 2,
 					"SCORE TYPE", SCORETYPE_NAME[scoreType],
 					"COLORS", String.valueOf(numColors),
 					"X COLUMN", dangerColumnDouble ? "3 AND 4" : "3 ONLY",
@@ -277,17 +277,17 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 					"FALL ANIM", cascadeSlow ?  "FEVER" : "CLASSIC",
 					"BIG DISP", GeneralUtil.getONorOFF(bigDisplay));
 			
-			receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 1/2", EventReceiver.COLOR_YELLOW);
+			receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 1/2", EventRenderer.COLOR_YELLOW);
 		} else {
 			String strOutline = "";
 			if(outlinetype == 0) strOutline = "NORMAL";
 			if(outlinetype == 1) strOutline = "COLOR";
 			if(outlinetype == 2) strOutline = "NONE";
-			drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_BLUE, 9,
+			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 9,
 					"OUTLINE", strOutline,
 					"SHOW CHAIN", GeneralUtil.getONorOFF(showChains));
 			
-			receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 2/2", EventReceiver.COLOR_YELLOW);
+			receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 2/2", EventRenderer.COLOR_YELLOW);
 		}
 	}
 
@@ -309,8 +309,8 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 		String modeStr = GAMETYPE_NAME[gametype];
 		if (gametype == 2)
 			modeStr = modeStr + " " + (SPRINT_MAX_SCORE[sprintTarget]/1000) + "K";
-		receiver.drawScoreFont(engine, playerID, 0, 0, "AVALANCHE (" + modeStr + ")", EventReceiver.COLOR_DARKBLUE);
-		receiver.drawScoreFont(engine, playerID, 0, 1, "("+SCORETYPE_NAME[scoreType] + " " + numColors + " COLORS)", EventReceiver.COLOR_DARKBLUE);
+		receiver.drawScoreFont(engine, playerID, 0, 0, "AVALANCHE (" + modeStr + ")", EventRenderer.COLOR_DARKBLUE);
+		receiver.drawScoreFont(engine, playerID, 0, 1, "("+SCORETYPE_NAME[scoreType] + " " + numColors + " COLORS)", EventRenderer.COLOR_DARKBLUE);
 
 		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (engine.ai == null) && (engine.colorClearSize == 4)) {
@@ -318,15 +318,15 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 				int topY = ((receiver.getNextDisplayType() == 2) && (gametype == 0)) ? 6 : 4;
 
 				if (gametype == 0) {
-					receiver.drawScoreFont(engine, playerID, 3, topY-1, "SCORE      TIME", EventReceiver.COLOR_BLUE, scale);
+					receiver.drawScoreFont(engine, playerID, 3, topY-1, "SCORE      TIME", EventRenderer.COLOR_BLUE, scale);
 				} else if (gametype == 1) {
-					receiver.drawScoreFont(engine, playerID, 3, 3, "SCORE", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, 3, 3, "SCORE", EventRenderer.COLOR_BLUE);
 				} else if (gametype == 2) {
-					receiver.drawScoreFont(engine, playerID, 3, 3, "TIME", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, 3, 3, "TIME", EventRenderer.COLOR_BLUE);
 				}
 
 				for(int i = 0; i < RANKING_MAX; i++) {
-					receiver.drawScoreFont(engine, playerID, 0, topY+i, String.format("%2d", i + 1), EventReceiver.COLOR_YELLOW, scale);
+					receiver.drawScoreFont(engine, playerID, 0, topY+i, String.format("%2d", i + 1), EventRenderer.COLOR_YELLOW, scale);
 					if (gametype == 0) {
 						receiver.drawScoreFont(engine, playerID, 3, topY+i, String.valueOf(rankingScore[scoreType][numColors-3][gametype][i]), (i == rankingRank), scale);
 						receiver.drawScoreFont(engine, playerID, 14, topY+i, GeneralUtil.getTime(rankingTime[scoreType][numColors-3][gametype][i]), (i == rankingRank), scale);
@@ -338,7 +338,7 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 				}
 			}
 		} else {
-			receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE", EventRenderer.COLOR_BLUE);
 			String strScore;
 			if((lastscore == 0) || (lastmultiplier == 0) || (scgettime <= 0)) {
 				strScore = String.valueOf(engine.statistics.score);
@@ -348,26 +348,26 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 			}
 			receiver.drawScoreFont(engine, playerID, 0, 4, strScore);
 
-			receiver.drawScoreFont(engine, playerID, 0, 6, "LEVEL", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 6, "LEVEL", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 7, String.valueOf(level));
 
-			receiver.drawScoreFont(engine, playerID, 0, 9, "OJAMA SENT", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 9, "OJAMA SENT", EventRenderer.COLOR_BLUE);
 			String strSent = String.valueOf(garbageSent);
 			if(garbageAdd > 0) {
 				strSent = strSent + "(+" + String.valueOf(garbageAdd)+ ")";
 			}
 			receiver.drawScoreFont(engine, playerID, 0, 10, strSent);
 
-			receiver.drawScoreFont(engine, playerID, 0, 12, "TIME", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 12, "TIME", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 13, GeneralUtil.getTime(engine.statistics.time));
 
-			receiver.drawScoreFont(engine, playerID, 11, 6, "CLEARED", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 11, 6, "CLEARED", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 11, 7, String.valueOf(blocksCleared));
 
-			receiver.drawScoreFont(engine, playerID, 11, 9, "ZENKESHI", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 11, 9, "ZENKESHI", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 11, 10, String.valueOf(zenKeshiCount));
 
-			receiver.drawScoreFont(engine, playerID, 11, 12, "MAX CHAIN", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 11, 12, "MAX CHAIN", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 11, 13, String.valueOf(engine.statistics.maxChain));
 
 			if(dangerColumnShowX && engine.gameStarted && (engine.stat != GameEngine.STAT_MOVE) && (engine.stat != GameEngine.STAT_RESULT)) {
@@ -382,9 +382,9 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 
 			int baseX = (engine.displaysize == 1) ? 1 : 0;
 			if (engine.chain > 0 && chainDisplay > 0 && showChains)
-				receiver.drawMenuFont(engine, playerID, baseX + (engine.chain > 9 ? 0 : 1), textHeight, engine.chain + " CHAIN!", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, baseX + (engine.chain > 9 ? 0 : 1), textHeight, engine.chain + " CHAIN!", EventRenderer.COLOR_YELLOW);
 			if (zenKeshi)
-				receiver.drawMenuFont(engine, playerID, baseX, textHeight+1, "ZENKESHI!", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, baseX, textHeight+1, "ZENKESHI!", EventRenderer.COLOR_YELLOW);
 		}
 	}
 
@@ -397,9 +397,9 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 		for(int i = 0; i < (dangerColumnDouble ? 2 : 1); i++) {
 			if((engine.field == null) || (engine.field.getBlockEmpty(2 + i, 0))) {
 				if(engine.displaysize == 1) {
-					receiver.drawMenuFont(engine, playerID, 4 + (i * 2), 0, "e", EventReceiver.COLOR_RED, 2.0f);
+					receiver.drawMenuFont(engine, playerID, 4 + (i * 2), 0, "e", EventRenderer.COLOR_RED, 2.0f);
 				} else {
-					receiver.drawMenuFont(engine, playerID, 2 + i, 0, "e", EventReceiver.COLOR_RED);
+					receiver.drawMenuFont(engine, playerID, 2 + i, 0, "e", EventRenderer.COLOR_RED);
 				}
 			}
 		}
@@ -496,18 +496,18 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 
 		if (gametype == 2)
 		{
-			receiver.drawMenuFont(engine, playerID,  0, 1, "PLAY DATA", EventReceiver.COLOR_ORANGE);
-			receiver.drawMenuFont(engine, playerID,  0, 3, "TIME", EventReceiver.COLOR_BLUE);
+			receiver.drawMenuFont(engine, playerID,  0, 1, "PLAY DATA", EventRenderer.COLOR_ORANGE);
+			receiver.drawMenuFont(engine, playerID,  0, 3, "TIME", EventRenderer.COLOR_BLUE);
 			String strTime = String.format("%10s", GeneralUtil.getTime(engine.statistics.time));
 			receiver.drawMenuFont(engine, playerID,  0, 4, strTime);
-			receiver.drawMenuFont(engine, playerID,  0, 5, "SCORE", EventReceiver.COLOR_BLUE);
+			receiver.drawMenuFont(engine, playerID,  0, 5, "SCORE", EventRenderer.COLOR_BLUE);
 			receiver.drawMenuFont(engine, playerID,  0, 6, String.valueOf(engine.statistics.score));
-			receiver.drawMenuFont(engine, playerID,  0, 7, "ZENKESHI", EventReceiver.COLOR_BLUE);
+			receiver.drawMenuFont(engine, playerID,  0, 7, "ZENKESHI", EventRenderer.COLOR_BLUE);
 			receiver.drawMenuFont(engine, playerID,  0, 8, String.format("%10d", zenKeshiCount));
-			receiver.drawMenuFont(engine, playerID,  0, 9, "MAX CHAIN", EventReceiver.COLOR_BLUE);
+			receiver.drawMenuFont(engine, playerID,  0, 9, "MAX CHAIN", EventRenderer.COLOR_BLUE);
 			receiver.drawMenuFont(engine, playerID,  0, 10, String.format("%10d", engine.statistics.maxChain));
 			if(rankingRank != -1) {
-				receiver.drawMenuFont(engine, playerID,  0, 11, "RANK", EventReceiver.COLOR_BLUE);
+				receiver.drawMenuFont(engine, playerID,  0, 11, "RANK", EventRenderer.COLOR_BLUE);
 				String strRank = String.format("%10d", rankingRank + 1);
 				receiver.drawMenuFont(engine, playerID,  0, 12, strRank);
 			}
@@ -517,7 +517,7 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 			super.renderResult(engine, playerID);
 
 			if(rankingRank != -1) {
-				receiver.drawMenuFont(engine, playerID,  0, 15, "RANK", EventReceiver.COLOR_BLUE);
+				receiver.drawMenuFont(engine, playerID,  0, 15, "RANK", EventRenderer.COLOR_BLUE);
 				String strRank = String.format("%10d", rankingRank + 1);
 				receiver.drawMenuFont(engine, playerID,  0, 16, strRank);
 			}
