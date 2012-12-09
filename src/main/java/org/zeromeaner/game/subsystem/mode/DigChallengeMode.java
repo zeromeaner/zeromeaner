@@ -5,7 +5,7 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.net.NetUtil;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
@@ -151,8 +151,8 @@ public class DigChallengeMode extends AbstractNetMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 
 		lastscore = 0;
 		lastbonusscore = 0;
@@ -186,10 +186,10 @@ public class DigChallengeMode extends AbstractNetMode {
 			loadSetting(owner.replayProp);
 
 			// NET: Load name
-			netPlayerName = engine.owner.replayProp.getProperty(playerID + ".net.netPlayerName", "");
+			netPlayerName = engine.getOwner().replayProp.getProperty(playerID + ".net.netPlayerName", "");
 		}
 
-		engine.owner.backgroundStatus.bg = startlevel;
+		engine.getOwner().backgroundStatus.bg = startlevel;
 	}
 
 	/**
@@ -226,7 +226,7 @@ public class DigChallengeMode extends AbstractNetMode {
 			netOnUpdateNetPlayRanking(engine, goaltype);
 		}
 		// Menu
-		else if(engine.owner.replayMode == false) {
+		else if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 9, playerID);
 
@@ -243,7 +243,7 @@ public class DigChallengeMode extends AbstractNetMode {
 					startlevel += change;
 					if(startlevel < 0) startlevel = 19;
 					if(startlevel > 19) startlevel = 0;
-					engine.owner.backgroundStatus.bg = startlevel;
+					engine.getOwner().backgroundStatus.bg = startlevel;
 					break;
 				case 2:
 					bgmno += change;
@@ -336,7 +336,7 @@ public class DigChallengeMode extends AbstractNetMode {
 			if(tspinEnableType == 1) strTSpinEnable = "T-ONLY";
 			if(tspinEnableType == 2) strTSpinEnable = "ALL";
 
-			drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_BLUE, 0,
+			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
 					"GAME TYPE", (goaltype == 0) ? "NORMAL" : "REALTIME",
 					"LEVEL", String.valueOf(startlevel + 1),
 					"BGM", String.valueOf(bgmno),
@@ -397,28 +397,28 @@ public class DigChallengeMode extends AbstractNetMode {
 	public void renderLast(GameEngine engine, int playerID) {
 		if(owner.menuOnly) return;
 
-		receiver.drawScoreFont(engine, playerID, 0, 0, "DIG CHALLENGE", EventReceiver.COLOR_GREEN);
+		receiver.drawScoreFont(engine, playerID, 0, 0, "DIG CHALLENGE", EventRenderer.COLOR_GREEN);
 		if(goaltype == 0) {
-			receiver.drawScoreFont(engine, playerID, 0, 1, "(NORMAL GAME)", EventReceiver.COLOR_GREEN);
+			receiver.drawScoreFont(engine, playerID, 0, 1, "(NORMAL GAME)", EventRenderer.COLOR_GREEN);
 		} else {
-			receiver.drawScoreFont(engine, playerID, 0, 1, "(REALTIME GAME)", EventReceiver.COLOR_GREEN);
+			receiver.drawScoreFont(engine, playerID, 0, 1, "(REALTIME GAME)", EventRenderer.COLOR_GREEN);
 		}
 
 		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (startlevel == 0) && (engine.ai == null)) {
 				float scale = (receiver.getNextDisplayType() == 2) ? 0.5f : 1.0f;
 				int topY = (receiver.getNextDisplayType() == 2) ? 6 : 4;
-				receiver.drawScoreFont(engine, playerID, 3, topY-1, "SCORE  LINE TIME", EventReceiver.COLOR_BLUE, scale);
+				receiver.drawScoreFont(engine, playerID, 3, topY-1, "SCORE  LINE TIME", EventRenderer.COLOR_BLUE, scale);
 
 				for(int i = 0; i < RANKING_MAX; i++) {
-					receiver.drawScoreFont(engine, playerID,  0, topY+i, String.format("%2d", i + 1), EventReceiver.COLOR_YELLOW, scale);
+					receiver.drawScoreFont(engine, playerID,  0, topY+i, String.format("%2d", i + 1), EventRenderer.COLOR_YELLOW, scale);
 					receiver.drawScoreFont(engine, playerID,  3, topY+i, String.valueOf(rankingScore[goaltype][i]), (i == rankingRank), scale);
 					receiver.drawScoreFont(engine, playerID, 10, topY+i, String.valueOf(rankingLines[goaltype][i]), (i == rankingRank), scale);
 					receiver.drawScoreFont(engine, playerID, 15, topY+i, GeneralUtil.getTime(rankingTime[goaltype][i]), (i == rankingRank), scale);
 				}
 			}
 		} else {
-			receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE", EventRenderer.COLOR_BLUE);
 			String strScore = null;
 			if((lastscore == 0) || (scgettime >= 120)) {
 				strScore = String.valueOf(engine.statistics.score);
@@ -429,16 +429,16 @@ public class DigChallengeMode extends AbstractNetMode {
 			}
 			receiver.drawScoreFont(engine, playerID, 0, 4, strScore);
 
-			receiver.drawScoreFont(engine, playerID, 0, 6, "LINE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 6, "LINE", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 7, String.valueOf(engine.statistics.lines));
 
-			receiver.drawScoreFont(engine, playerID, 0, 9, "GARBAGE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 9, "GARBAGE", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 10, String.valueOf(garbageTotal));
 
-			receiver.drawScoreFont(engine, playerID, 0, 12, "LEVEL", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 12, "LEVEL", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 13, String.valueOf(engine.statistics.level + 1));
 
-			receiver.drawScoreFont(engine, playerID, 0, 15, "TIME", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 15, "TIME", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 16, GeneralUtil.getTime(engine.statistics.time));
 
 			if((lastevent != EVENT_NONE) && (scgettime < 120)) {
@@ -446,56 +446,56 @@ public class DigChallengeMode extends AbstractNetMode {
 
 				switch(lastevent) {
 				case EVENT_SINGLE:
-					receiver.drawMenuFont(engine, playerID, 2, 21, "SINGLE", EventReceiver.COLOR_DARKBLUE);
+					receiver.drawMenuFont(engine, playerID, 2, 21, "SINGLE", EventRenderer.COLOR_DARKBLUE);
 					break;
 				case EVENT_DOUBLE:
-					receiver.drawMenuFont(engine, playerID, 2, 21, "DOUBLE", EventReceiver.COLOR_BLUE);
+					receiver.drawMenuFont(engine, playerID, 2, 21, "DOUBLE", EventRenderer.COLOR_BLUE);
 					break;
 				case EVENT_TRIPLE:
-					receiver.drawMenuFont(engine, playerID, 2, 21, "TRIPLE", EventReceiver.COLOR_GREEN);
+					receiver.drawMenuFont(engine, playerID, 2, 21, "TRIPLE", EventRenderer.COLOR_GREEN);
 					break;
 				case EVENT_FOUR:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 3, 21, "FOUR", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 3, 21, "FOUR", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 3, 21, "FOUR", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 3, 21, "FOUR", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_SINGLE_MINI:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-S", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-S", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-S", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-S", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_SINGLE:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-SINGLE", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-SINGLE", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-SINGLE", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-SINGLE", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_DOUBLE_MINI:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-D", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-D", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-D", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-D", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_DOUBLE:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-DOUBLE", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-DOUBLE", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-DOUBLE", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-DOUBLE", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_TRIPLE:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-TRIPLE", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-TRIPLE", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-TRIPLE", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-TRIPLE", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_EZ:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 3, 21, "EZ-" + strPieceName, EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 3, 21, "EZ-" + strPieceName, EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 3, 21, "EZ-" + strPieceName, EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 3, 21, "EZ-" + strPieceName, EventRenderer.COLOR_ORANGE);
 					break;
 				}
 
 				if(lastcombo >= 2)
-					receiver.drawMenuFont(engine, playerID, 2, 22, (lastcombo - 1) + "COMBO", EventReceiver.COLOR_CYAN);
+					receiver.drawMenuFont(engine, playerID, 2, 22, (lastcombo - 1) + "COMBO", EventRenderer.COLOR_CYAN);
 			}
 
 			if(garbagePending > 0) {
 				int x = receiver.getFieldDisplayPositionX(engine, playerID);
 				int y = receiver.getFieldDisplayPositionY(engine, playerID);
-				int fontColor = EventReceiver.COLOR_WHITE;
+				int fontColor = EventRenderer.COLOR_WHITE;
 
-				if(garbagePending >= 1) fontColor = EventReceiver.COLOR_YELLOW;
-				if(garbagePending >= 3) fontColor = EventReceiver.COLOR_ORANGE;
-				if(garbagePending >= 4) fontColor = EventReceiver.COLOR_RED;
+				if(garbagePending >= 1) fontColor = EventRenderer.COLOR_YELLOW;
+				if(garbagePending >= 3) fontColor = EventRenderer.COLOR_ORANGE;
+				if(garbagePending >= 4) fontColor = EventRenderer.COLOR_RED;
 
 				String strTempGarbage = String.format("%5d", garbagePending);
 				receiver.drawDirectFont(engine, playerID, x + 96, y + 372, strTempGarbage, fontColor);
@@ -811,24 +811,24 @@ public class DigChallengeMode extends AbstractNetMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		drawResultStats(engine, playerID, receiver, 0, EventReceiver.COLOR_BLUE,
+		drawResultStats(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE,
 				STAT_SCORE, STAT_LINES);
-		drawResult(engine, playerID, receiver, 4, EventReceiver.COLOR_BLUE,
+		drawResult(engine, playerID, receiver, 4, EventRenderer.COLOR_BLUE,
 				"GARBAGE", String.format("%10d", garbageTotal));
-		drawResultStats(engine, playerID, receiver, 6, EventReceiver.COLOR_BLUE,
+		drawResultStats(engine, playerID, receiver, 6, EventRenderer.COLOR_BLUE,
 				STAT_PIECE, STAT_LEVEL, STAT_TIME);
-		drawResultRank(engine, playerID, receiver, 12, EventReceiver.COLOR_BLUE, rankingRank);
-		drawResultNetRank(engine, playerID, receiver, 14, EventReceiver.COLOR_BLUE, netRankingRank[0]);
-		drawResultNetRankDaily(engine, playerID, receiver, 16, EventReceiver.COLOR_BLUE, netRankingRank[1]);
+		drawResultRank(engine, playerID, receiver, 12, EventRenderer.COLOR_BLUE, rankingRank);
+		drawResultNetRank(engine, playerID, receiver, 14, EventRenderer.COLOR_BLUE, netRankingRank[0]);
+		drawResultNetRankDaily(engine, playerID, receiver, 16, EventRenderer.COLOR_BLUE, netRankingRank[1]);
 
 		if(netIsPB) {
-			receiver.drawMenuFont(engine, playerID, 2, 18, "NEW PB", EventReceiver.COLOR_ORANGE);
+			receiver.drawMenuFont(engine, playerID, 2, 18, "NEW PB", EventRenderer.COLOR_ORANGE);
 		}
 
 		if(netIsNetPlay && (netReplaySendStatus == 1)) {
-			receiver.drawMenuFont(engine, playerID, 0, 19, "SENDING...", EventReceiver.COLOR_PINK);
+			receiver.drawMenuFont(engine, playerID, 0, 19, "SENDING...", EventRenderer.COLOR_PINK);
 		} else if(netIsNetPlay && !netIsWatch && (netReplaySendStatus == 2)) {
-			receiver.drawMenuFont(engine, playerID, 1, 19, "A: RETRY", EventReceiver.COLOR_RED);
+			receiver.drawMenuFont(engine, playerID, 1, 19, "A: RETRY", EventRenderer.COLOR_RED);
 		}
 	}
 
@@ -973,7 +973,7 @@ public class DigChallengeMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendStats(GameEngine engine) {
-		int bg = engine.owner.backgroundStatus.fadesw ? engine.owner.backgroundStatus.fadebg : engine.owner.backgroundStatus.bg;
+		int bg = engine.getOwner().backgroundStatus.fadesw ? engine.getOwner().backgroundStatus.fadebg : engine.getOwner().backgroundStatus.bg;
 		String msg = "game\tstats\t";
 		msg += engine.statistics.score + "\t" + engine.statistics.lines + "\t" + engine.statistics.totalPieceLocked + "\t";
 		msg += engine.statistics.time + "\t" + engine.statistics.level + "\t";
@@ -1005,7 +1005,7 @@ public class DigChallengeMode extends AbstractNetMode {
 		lastb2b = Boolean.parseBoolean(message[17]);
 		lastcombo = Integer.parseInt(message[18]);
 		lastpiece = Integer.parseInt(message[19]);
-		engine.owner.backgroundStatus.bg = Integer.parseInt(message[20]);
+		engine.getOwner().backgroundStatus.bg = Integer.parseInt(message[20]);
 		garbagePending = Integer.parseInt(message[21]);
 
 		// Meter

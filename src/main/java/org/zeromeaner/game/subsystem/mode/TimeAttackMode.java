@@ -30,7 +30,7 @@ package org.zeromeaner.game.subsystem.mode;
 
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Controller;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.net.NetUtil;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
@@ -301,8 +301,8 @@ public class TimeAttackMode extends AbstractNetMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 
 		norm = 0;
 		goaltype = 0;
@@ -339,10 +339,10 @@ public class TimeAttackMode extends AbstractNetMode {
 			loadSetting(owner.replayProp);
 
 			// NET: Load name
-			netPlayerName = engine.owner.replayProp.getProperty(playerID + ".net.netPlayerName", "");
+			netPlayerName = engine.getOwner().replayProp.getProperty(playerID + ".net.netPlayerName", "");
 		}
 
-		engine.owner.backgroundStatus.bg = startlevel;
+		engine.getOwner().backgroundStatus.bg = startlevel;
 	}
 
 	/**
@@ -486,7 +486,7 @@ public class TimeAttackMode extends AbstractNetMode {
 			netOnUpdateNetPlayRanking(engine, netGetGoalType());
 		}
 		// Menu
-		else if(engine.owner.replayMode == false) {
+		else if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 3);
 
@@ -499,13 +499,13 @@ public class TimeAttackMode extends AbstractNetMode {
 					if(goaltype < 0) goaltype = GAMETYPE_MAX - 1;
 					if(goaltype > GAMETYPE_MAX - 1) goaltype = 0;
 					if(startlevel > tableGoalLevel[goaltype] - 1) startlevel = tableGoalLevel[goaltype] - 1;
-					engine.owner.backgroundStatus.bg = startlevel;
+					engine.getOwner().backgroundStatus.bg = startlevel;
 					break;
 				case 1:
 					startlevel += change;
 					if(startlevel < 0) startlevel = tableGoalLevel[goaltype] - 1;
 					if(startlevel > tableGoalLevel[goaltype] - 1) startlevel = 0;
-					engine.owner.backgroundStatus.bg = startlevel;
+					engine.getOwner().backgroundStatus.bg = startlevel;
 					break;
 				case 2:
 					showsectiontime = !showsectiontime;
@@ -565,7 +565,7 @@ public class TimeAttackMode extends AbstractNetMode {
 			// NET: Netplay Ranking
 			netOnRenderNetPlayRanking(engine, playerID, receiver);
 		} else {
-			drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_BLUE, 0,
+			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
 					"DIFFICULTY", GAMETYPE_NAME[goaltype],
 					"LEVEL", String.valueOf(startlevel + 1),
 					"SHOW STIME", GeneralUtil.getONorOFF(showsectiontime),
@@ -609,36 +609,36 @@ public class TimeAttackMode extends AbstractNetMode {
 	public void renderLast(GameEngine engine, int playerID) {
 		if(owner.menuOnly) return;
 
-		receiver.drawScoreFont(engine, playerID, 0, 0, "TIME ATTACK", EventReceiver.COLOR_PURPLE);
-		receiver.drawScoreFont(engine, playerID, 0, 1, "("+GAMETYPE_NAME_LONG[goaltype]+")", EventReceiver.COLOR_PURPLE);
+		receiver.drawScoreFont(engine, playerID, 0, 0, "TIME ATTACK", EventRenderer.COLOR_PURPLE);
+		receiver.drawScoreFont(engine, playerID, 0, 1, "("+GAMETYPE_NAME_LONG[goaltype]+")", EventRenderer.COLOR_PURPLE);
 
 		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (startlevel == 0) && (big == false) && (engine.ai == null) && (!netIsWatch)) {
-				receiver.drawScoreFont(engine, playerID, 3, 3, "LINE TIME", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 3, 3, "LINE TIME", EventRenderer.COLOR_BLUE);
 
 				for(int i = 0; i < RANKING_MAX; i++) {
-					int gcolor = EventReceiver.COLOR_WHITE;
-					if(rankingRollclear[goaltype][i] == 1) gcolor = EventReceiver.COLOR_GREEN;
-					if(rankingRollclear[goaltype][i] == 2) gcolor = EventReceiver.COLOR_ORANGE;
+					int gcolor = EventRenderer.COLOR_WHITE;
+					if(rankingRollclear[goaltype][i] == 1) gcolor = EventRenderer.COLOR_GREEN;
+					if(rankingRollclear[goaltype][i] == 2) gcolor = EventRenderer.COLOR_ORANGE;
 
 					receiver.drawScoreFont(engine, playerID, 0, 4 + i, String.format("%2d", i + 1),
-							(i == rankingRank) ? EventReceiver.COLOR_RED : EventReceiver.COLOR_YELLOW);
+							(i == rankingRank) ? EventRenderer.COLOR_RED : EventRenderer.COLOR_YELLOW);
 					receiver.drawScoreFont(engine, playerID, 3, 4 + i, String.valueOf(rankingLines[goaltype][i]), gcolor);
 					receiver.drawScoreFont(engine, playerID, 8, 4 + i, GeneralUtil.getTime(rankingTime[goaltype][i]), gcolor);
 				}
 			}
 		} else {
-			receiver.drawScoreFont(engine, playerID, 0, 3, "LEVEL", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 3, "LEVEL", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 4, String.valueOf(engine.statistics.level + 1));
 
-			receiver.drawScoreFont(engine, playerID, 0, 6, "TIME LIMIT", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 6, "TIME LIMIT", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 7, GeneralUtil.getTime(levelTimer),
 									((levelTimer > 0) && (levelTimer < 600) && (levelTimer % 4 == 0)));
 
-			receiver.drawScoreFont(engine, playerID, 0, 9, "TOTAL TIME", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 9, "TOTAL TIME", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 10, GeneralUtil.getTime(engine.statistics.time));
 
-			receiver.drawScoreFont(engine, playerID, 0, 12, "NORM", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 12, "NORM", EventRenderer.COLOR_BLUE);
 			String strLevel = String.format("%3d", norm);
 			receiver.drawScoreFont(engine, playerID, 0, 13, strLevel);
 
@@ -652,7 +652,7 @@ public class TimeAttackMode extends AbstractNetMode {
 			if((engine.gameActive) && (engine.ending == 2) && (engine.staffrollEnable)) {
 				int time = ROLLTIMELIMIT - rolltime;
 				if(time < 0) time = 0;
-				receiver.drawScoreFont(engine, playerID, 0, 17, "ROLL TIME", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 0, 17, "ROLL TIME", EventRenderer.COLOR_BLUE);
 				receiver.drawScoreFont(engine, playerID, 0, 18, GeneralUtil.getTime(time), ((time > 0) && (time < 10 * 60)));
 			}
 
@@ -663,7 +663,7 @@ public class TimeAttackMode extends AbstractNetMode {
 				int x2 = (receiver.getNextDisplayType() == 2) ? 10 : 12;
 				float scale = (receiver.getNextDisplayType() == 2) ? 0.5f : 1.0f;
 
-				receiver.drawScoreFont(engine, playerID, x, y, "SECTION TIME", EventReceiver.COLOR_BLUE, scale);
+				receiver.drawScoreFont(engine, playerID, x, y, "SECTION TIME", EventRenderer.COLOR_BLUE, scale);
 
 				for(int i = 0; i < sectiontime.length; i++) {
 					if(sectiontime[i] > 0) {
@@ -680,7 +680,7 @@ public class TimeAttackMode extends AbstractNetMode {
 				}
 
 				if((sectionavgtime > 0) && (!netIsWatch)) {
-					receiver.drawScoreFont(engine, playerID, x2, 15, "AVERAGE", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, x2, 15, "AVERAGE", EventRenderer.COLOR_BLUE);
 					receiver.drawScoreFont(engine, playerID, x2, 16, GeneralUtil.getTime(sectionavgtime));
 				}
 			}
@@ -881,25 +881,25 @@ public class TimeAttackMode extends AbstractNetMode {
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
 		if(!netIsWatch) {
-			receiver.drawMenuFont(engine, playerID, 0, 0, "kn PAGE" + (engine.statc[1] + 1) + "/3", EventReceiver.COLOR_RED);
+			receiver.drawMenuFont(engine, playerID, 0, 0, "kn PAGE" + (engine.statc[1] + 1) + "/3", EventRenderer.COLOR_RED);
 		}
 
 		if(engine.statc[1] == 0) {
-			int gcolor = EventReceiver.COLOR_WHITE;
-			if(engine.statistics.rollclear == 1) gcolor = EventReceiver.COLOR_GREEN;
-			if(engine.statistics.rollclear == 2) gcolor = EventReceiver.COLOR_ORANGE;
+			int gcolor = EventRenderer.COLOR_WHITE;
+			if(engine.statistics.rollclear == 1) gcolor = EventRenderer.COLOR_GREEN;
+			if(engine.statistics.rollclear == 2) gcolor = EventRenderer.COLOR_ORANGE;
 
-			receiver.drawMenuFont(engine, playerID,  0, 2, "NORM", EventReceiver.COLOR_BLUE);
+			receiver.drawMenuFont(engine, playerID,  0, 2, "NORM", EventRenderer.COLOR_BLUE);
 			String strLines = String.format("%10d", norm);
 			receiver.drawMenuFont(engine, playerID,  0, 3, strLines, gcolor);
 
-			drawResultStats(engine, playerID, receiver, 4, EventReceiver.COLOR_BLUE,
+			drawResultStats(engine, playerID, receiver, 4, EventRenderer.COLOR_BLUE,
 					STAT_LEVEL, STAT_TIME, STAT_PIECE, STAT_LPM, STAT_PPS);
-			drawResultRank(engine, playerID, receiver, 14, EventReceiver.COLOR_BLUE, rankingRank);
-			drawResultNetRank(engine, playerID, receiver, 16, EventReceiver.COLOR_BLUE, netRankingRank[0]);
-			drawResultNetRankDaily(engine, playerID, receiver, 18, EventReceiver.COLOR_BLUE, netRankingRank[1]);
+			drawResultRank(engine, playerID, receiver, 14, EventRenderer.COLOR_BLUE, rankingRank);
+			drawResultNetRank(engine, playerID, receiver, 16, EventRenderer.COLOR_BLUE, netRankingRank[0]);
+			drawResultNetRankDaily(engine, playerID, receiver, 18, EventRenderer.COLOR_BLUE, netRankingRank[1]);
 		} else if(engine.statc[1] == 1) {
-			receiver.drawMenuFont(engine, playerID, 0, 2, "SECTION", EventReceiver.COLOR_BLUE);
+			receiver.drawMenuFont(engine, playerID, 0, 2, "SECTION", EventRenderer.COLOR_BLUE);
 
 			for(int i = 0; i < 10; i++) {
 				if(sectiontime[i] > 0) {
@@ -908,11 +908,11 @@ public class TimeAttackMode extends AbstractNetMode {
 			}
 
 			if(sectionavgtime > 0) {
-				receiver.drawMenuFont(engine, playerID, 0, 14, "AVERAGE", EventReceiver.COLOR_BLUE);
+				receiver.drawMenuFont(engine, playerID, 0, 14, "AVERAGE", EventRenderer.COLOR_BLUE);
 				receiver.drawMenuFont(engine, playerID, 2, 15, GeneralUtil.getTime(sectionavgtime));
 			}
 		} else if(engine.statc[1] == 2) {
-			receiver.drawMenuFont(engine, playerID, 0, 2, "SECTION", EventReceiver.COLOR_BLUE);
+			receiver.drawMenuFont(engine, playerID, 0, 2, "SECTION", EventRenderer.COLOR_BLUE);
 
 			for(int i = 10; i < sectiontime.length; i++) {
 				if(sectiontime[i] > 0) {
@@ -921,18 +921,18 @@ public class TimeAttackMode extends AbstractNetMode {
 			}
 
 			if(sectionavgtime > 0) {
-				receiver.drawMenuFont(engine, playerID, 0, 14, "AVERAGE", EventReceiver.COLOR_BLUE);
+				receiver.drawMenuFont(engine, playerID, 0, 14, "AVERAGE", EventRenderer.COLOR_BLUE);
 				receiver.drawMenuFont(engine, playerID, 2, 15, GeneralUtil.getTime(sectionavgtime));
 			}
 		}
 
 		if(netIsPB) {
-			receiver.drawMenuFont(engine, playerID, 2, 20, "NEW PB", EventReceiver.COLOR_ORANGE);
+			receiver.drawMenuFont(engine, playerID, 2, 20, "NEW PB", EventRenderer.COLOR_ORANGE);
 		}
 		if(netIsNetPlay && (netReplaySendStatus == 1)) {
-			receiver.drawMenuFont(engine, playerID, 0, 21, "SENDING...", EventReceiver.COLOR_PINK);
+			receiver.drawMenuFont(engine, playerID, 0, 21, "SENDING...", EventRenderer.COLOR_PINK);
 		} else if(netIsNetPlay && !netIsWatch && (netReplaySendStatus == 2)) {
-			receiver.drawMenuFont(engine, playerID, 1, 21, "A: RETRY", EventReceiver.COLOR_RED);
+			receiver.drawMenuFont(engine, playerID, 1, 21, "A: RETRY", EventRenderer.COLOR_RED);
 		}
 	}
 
@@ -1085,7 +1085,7 @@ public class TimeAttackMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendStats(GameEngine engine) {
-		int bg = engine.owner.backgroundStatus.fadesw ? engine.owner.backgroundStatus.fadebg : engine.owner.backgroundStatus.bg;
+		int bg = engine.getOwner().backgroundStatus.fadesw ? engine.getOwner().backgroundStatus.fadebg : engine.getOwner().backgroundStatus.bg;
 		String msg = "game\tstats\t";
 		msg += engine.statistics.lines + "\t" + engine.statistics.totalPieceLocked + "\t";
 		msg += engine.statistics.time + "\t" + engine.statistics.lpm + "\t";
@@ -1116,7 +1116,7 @@ public class TimeAttackMode extends AbstractNetMode {
 		levelTimerMax = Integer.parseInt(message[14]);
 		rolltime = Integer.parseInt(message[15]);
 		norm = Integer.parseInt(message[16]);
-		engine.owner.backgroundStatus.bg = Integer.parseInt(message[17]);
+		engine.getOwner().backgroundStatus.bg = Integer.parseInt(message[17]);
 		engine.meterValue = Integer.parseInt(message[18]);
 		engine.meterColor = Integer.parseInt(message[19]);
 		engine.heboHiddenEnable = Boolean.parseBoolean(message[20]);

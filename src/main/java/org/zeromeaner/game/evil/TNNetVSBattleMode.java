@@ -15,7 +15,7 @@ import org.eviline.randomizer.Randomizer;
 import org.eviline.randomizer.RandomizerFactory;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.net.NetPlayerClient;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
@@ -24,7 +24,7 @@ import org.zeromeaner.gui.net.NetLobbyFrame;
 import org.zeromeaner.util.GeneralUtil;
 
 public class TNNetVSBattleMode extends NetVSBattleMode {
-	protected EventReceiver receiver;
+	protected EventRenderer receiver;
 	
 	protected Map<GameEngine, TNNetplayRandomizer> randomizers = new HashMap<GameEngine, TNNetplayRandomizer>();
 	
@@ -69,7 +69,11 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 				{0,0,0,0,0,0,0,0,0,0,0,0}, // 5 Player
 				{0,0,0,0,0,0,0,0,0,0,0,0}, // 6 Payers
 			};
-		synchronousPlay = true;
+	}
+	
+	@Override
+	public boolean isSynchronousPlay() {
+		return true;
 	}
 	
 	@Override
@@ -80,7 +84,7 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
 		super.playerInit(engine, playerID);
-		receiver = engine.owner.receiver;
+		receiver = engine.getOwner().receiver;
 		engine.ruleopt = new TNRuleOptions(engine.ruleopt);
 		engine.randomizer = new TNNetplayRandomizer();
 		randomizers.put(engine, (TNNetplayRandomizer) engine.randomizer);

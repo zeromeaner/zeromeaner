@@ -30,7 +30,7 @@ package org.zeromeaner.game.subsystem.mode;
 
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.GeneralUtil;
 
@@ -160,8 +160,8 @@ public abstract class AbstractAvalanche1PMode extends AbstractMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		lastscore = 0;
 		lastmultiplier = 0;
 		scgettime = 0;
@@ -421,27 +421,27 @@ public abstract class AbstractAvalanche1PMode extends AbstractMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		receiver.drawMenuFont(engine, playerID,  0, 1, "PLAY DATA", EventReceiver.COLOR_ORANGE);
+		receiver.drawMenuFont(engine, playerID,  0, 1, "PLAY DATA", EventRenderer.COLOR_ORANGE);
 
-		receiver.drawMenuFont(engine, playerID,  0, 3, "SCORE", EventReceiver.COLOR_BLUE);
+		receiver.drawMenuFont(engine, playerID,  0, 3, "SCORE", EventRenderer.COLOR_BLUE);
 		String strScoreBefore = String.format("%10d", scoreBeforeBonus);
-		receiver.drawMenuFont(engine, playerID,  0, 4, strScoreBefore, EventReceiver.COLOR_GREEN);
+		receiver.drawMenuFont(engine, playerID,  0, 4, strScoreBefore, EventRenderer.COLOR_GREEN);
 
-		receiver.drawMenuFont(engine, playerID,  0, 5, "ZENKESHI", EventReceiver.COLOR_BLUE);
+		receiver.drawMenuFont(engine, playerID,  0, 5, "ZENKESHI", EventRenderer.COLOR_BLUE);
 		receiver.drawMenuFont(engine, playerID,  0, 6, String.format("%10d", zenKeshiCount));
 		String strZenKeshiBonus = "+" + zenKeshiBonus;
-		receiver.drawMenuFont(engine, playerID, 10-strZenKeshiBonus.length(), 7, strZenKeshiBonus, EventReceiver.COLOR_GREEN);
+		receiver.drawMenuFont(engine, playerID, 10-strZenKeshiBonus.length(), 7, strZenKeshiBonus, EventRenderer.COLOR_GREEN);
 
-		receiver.drawMenuFont(engine, playerID,  0, 8, "MAX CHAIN", EventReceiver.COLOR_BLUE);
+		receiver.drawMenuFont(engine, playerID,  0, 8, "MAX CHAIN", EventRenderer.COLOR_BLUE);
 		receiver.drawMenuFont(engine, playerID,  0, 9, String.format("%10d", engine.statistics.maxChain));
 		String strMaxChainBonus = "+" + maxChainBonus;
-		receiver.drawMenuFont(engine, playerID, 10-strMaxChainBonus.length(), 10, strMaxChainBonus, EventReceiver.COLOR_GREEN);
+		receiver.drawMenuFont(engine, playerID, 10-strMaxChainBonus.length(), 10, strMaxChainBonus, EventRenderer.COLOR_GREEN);
 
-		receiver.drawMenuFont(engine, playerID,  0, 11, "TOTAL", EventReceiver.COLOR_BLUE);
+		receiver.drawMenuFont(engine, playerID,  0, 11, "TOTAL", EventRenderer.COLOR_BLUE);
 		String strScore = String.format("%10d", engine.statistics.score);
-		receiver.drawMenuFont(engine, playerID,  0, 12, strScore, EventReceiver.COLOR_RED);
+		receiver.drawMenuFont(engine, playerID,  0, 12, strScore, EventRenderer.COLOR_RED);
 
-		receiver.drawMenuFont(engine, playerID,  0, 13, "TIME", EventReceiver.COLOR_BLUE);
+		receiver.drawMenuFont(engine, playerID,  0, 13, "TIME", EventRenderer.COLOR_BLUE);
 		String strTime = String.format("%10s", GeneralUtil.getTime(engine.statistics.time));
 		receiver.drawMenuFont(engine, playerID,  0, 14, strTime);
 	}

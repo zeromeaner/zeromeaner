@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.gui.EffectObject;
@@ -49,7 +49,7 @@ import sdljava.video.SDLVideo;
 /**
  * ゲームの event 処理と描画処理 (SDL版）
  */
-public class RendererSDL extends EventReceiver {
+public class RendererSDL extends EventRenderer {
 	/** Log */
 	static Logger log = Logger.getLogger(RendererSDL.class);
 
@@ -158,7 +158,7 @@ public class RendererSDL extends EventReceiver {
 		try {
 			int x2 = (scale == 0.5f) ? x * 8 : x * 16;
 			int y2 = (scale == 0.5f) ? y * 8 : y * 16;
-			if(!engine.owner.menuOnly) {
+			if(!engine.getOwner().menuOnly) {
 				x2 += getFieldDisplayPositionX(engine, playerID) + 4;
 				if(engine.displaysize == -1) {
 					y2 += getFieldDisplayPositionY(engine, playerID) + 4;
@@ -180,7 +180,7 @@ public class RendererSDL extends EventReceiver {
 		try {
 			int x2 = x * 16;
 			int y2 = y * 16;
-			if(!engine.owner.menuOnly) {
+			if(!engine.getOwner().menuOnly) {
 				x2 += getFieldDisplayPositionX(engine, playerID) + 4;
 				if(engine.displaysize == -1) {
 					y2 += getFieldDisplayPositionY(engine, playerID) + 4;
@@ -199,7 +199,7 @@ public class RendererSDL extends EventReceiver {
 	 */
 	@Override
 	public void drawScoreFont(GameEngine engine, int playerID, int x, int y, String str, int color, float scale) {
-		if(engine.owner.menuOnly) return;
+		if(engine.getOwner().menuOnly) return;
 
 		try {
 			int size = (scale == 0.5f) ? 8 : 16;
@@ -216,7 +216,7 @@ public class RendererSDL extends EventReceiver {
 	 */
 	@Override
 	public void drawTTFScoreFont(GameEngine engine, int playerID, int x, int y, String str, int color) {
-		if(engine.owner.menuOnly) return;
+		if(engine.getOwner().menuOnly) return;
 
 		try {
 			NormalFontSDL.printTTFFont(getScoreDisplayPositionX(engine, playerID) + (x * 16),
@@ -257,7 +257,7 @@ public class RendererSDL extends EventReceiver {
 	@Override
 	public void drawSpeedMeter(GameEngine engine, int playerID, int x, int y, int s) {
 		if(graphics == null) return;
-		if(engine.owner.menuOnly) return;
+		if(engine.getOwner().menuOnly) return;
 
 		int dx1 = getScoreDisplayPositionX(engine, playerID) + 6 + (x * 16);
 		int dy1 = getScoreDisplayPositionY(engine, playerID) + 6 + (y * 16);
@@ -299,7 +299,7 @@ public class RendererSDL extends EventReceiver {
 	 */
 	@Override
 	public String getKeyNameByButtonID(GameEngine engine, int btnID) {
-		int[] keymap = engine.isInGame ? GameKeySDL.gamekey[engine.playerID].keymap : GameKeySDL.gamekey[engine.playerID].keymapNav;
+		int[] keymap = engine.isInGame ? GameKeySDL.gamekey[engine.getPlayerID()].keymap : GameKeySDL.gamekey[engine.getPlayerID()].keymapNav;
 
 		if((btnID >= 0) && (btnID < keymap.length)) {
 			int keycode = keymap[btnID];
@@ -880,7 +880,7 @@ public class RendererSDL extends EventReceiver {
 
 		SDLSurface imgFieldbg = ResourceHolderSDL.imgFieldbg;
 		//if((width == 10) && (height == 20)) imgFieldbg = ResourceHolderSDL.imgFieldbg2;
-		if(engine.owner.getPlayers() < 2)
+		if(engine.getOwner().getPlayers() < 2)
 			imgFieldbg.setAlpha(SDLVideo.SDL_SRCALPHA | SDLVideo.SDL_RLEACCEL, fieldbgbright);
 		else
 			imgFieldbg.setAlpha(0, 255);
@@ -897,7 +897,7 @@ public class RendererSDL extends EventReceiver {
 					if(blk.getAttribute(Block.BLOCK_ATTRIBUTE_WALL)) {
 						drawBlock(x2, y2, Block.BLOCK_COLOR_NONE, blk.skin, blk.getAttribute(Block.BLOCK_ATTRIBUTE_BONE),
 								  blk.darkness, blk.alpha, scale, blk.attribute);
-					} else if (engine.owner.replayMode && engine.owner.replayShowInvisible) {
+					} else if (engine.getOwner().replayMode && engine.getOwner().replayShowInvisible) {
 						drawBlockForceVisible(x2, y2, blk, scale);
 					} else if(blk.getAttribute(Block.BLOCK_ATTRIBUTE_VISIBLE)) {
 						drawBlock(x2, y2, blk, scale);
@@ -1000,7 +1000,7 @@ public class RendererSDL extends EventReceiver {
 				if(displaysize == -1) img = ResourceHolderSDL.imgFieldbg2Small;
 				if(displaysize == 1) img = ResourceHolderSDL.imgFieldbg2Big;
 
-				if(engine.owner.getPlayers() < 2)
+				if(engine.getOwner().getPlayers() < 2)
 					img.setAlpha(SDLVideo.SDL_SRCALPHA | SDLVideo.SDL_RLEACCEL, fieldbgbright);
 				else
 					img.setAlpha(0, 255);
@@ -1398,19 +1398,19 @@ public class RendererSDL extends EventReceiver {
 		try {
 			// Background
 			if(playerID == 0) {
-				if(engine.owner.menuOnly) {
+				if(engine.getOwner().menuOnly) {
 					ResourceHolderSDL.imgMenu.blitSurface(graphics);
 				} else {
-					int bg = engine.owner.backgroundStatus.bg;
-					if(engine.owner.backgroundStatus.fadesw && !heavyeffect) {
-						bg = engine.owner.backgroundStatus.fadebg;
+					int bg = engine.getOwner().backgroundStatus.bg;
+					if(engine.getOwner().backgroundStatus.fadesw && !heavyeffect) {
+						bg = engine.getOwner().backgroundStatus.fadebg;
 					}
 
 					if((ResourceHolderSDL.imgPlayBG != null) && (bg >= 0) && (bg < ResourceHolderSDL.imgPlayBG.length) && (showbg == true)) {
 						ResourceHolderSDL.imgPlayBG[bg].blitSurface(graphics);
 
-						if(engine.owner.backgroundStatus.fadesw && heavyeffect) {
-							int alphalv = engine.owner.backgroundStatus.fadestat ? (100 - engine.owner.backgroundStatus.fadecount) : engine.owner.backgroundStatus.fadecount;
+						if(engine.getOwner().backgroundStatus.fadesw && heavyeffect) {
+							int alphalv = engine.getOwner().backgroundStatus.fadestat ? (100 - engine.getOwner().backgroundStatus.fadecount) : engine.getOwner().backgroundStatus.fadecount;
 							ResourceHolderSDL.imgBlankBlack.setAlpha(SDLVideo.SDL_SRCALPHA | SDLVideo.SDL_RLEACCEL, alphalv * 2);
 							ResourceHolderSDL.imgBlankBlack.blitSurface(graphics);
 						}
@@ -1421,7 +1421,7 @@ public class RendererSDL extends EventReceiver {
 			}
 
 			// NEXTなど
-			if(!engine.owner.menuOnly && engine.isVisible) {
+			if(!engine.getOwner().menuOnly && engine.isVisible) {
 				int offsetX = getFieldDisplayPositionX(engine, playerID);
 				int offsetY = getFieldDisplayPositionY(engine, playerID);
 
@@ -1547,14 +1547,14 @@ public class RendererSDL extends EventReceiver {
 			if(engine.displaysize != -1) {
 				if(engine.statc[1] == 0)
 					NormalFontSDL.printFont(offsetX + 4, offsetY + 204, "EXCELLENT!", COLOR_ORANGE, 1.0f);
-				else if(engine.owner.getPlayers() < 3)
+				else if(engine.getOwner().getPlayers() < 3)
 					NormalFontSDL.printFont(offsetX + 52, offsetY + 204, "WIN!", COLOR_ORANGE, 1.0f);
 				else
 					NormalFontSDL.printFont(offsetX + 4, offsetY + 204, "1ST PLACE!", COLOR_ORANGE, 1.0f);
 			} else {
 				if(engine.statc[1] == 0)
 					NormalFontSDL.printFont(offsetX + 4, offsetY + 80, "EXCELLENT!", COLOR_ORANGE, 0.5f);
-				else if(engine.owner.getPlayers() < 3)
+				else if(engine.getOwner().getPlayers() < 3)
 					NormalFontSDL.printFont(offsetX + 33, offsetY + 80, "WIN!", COLOR_ORANGE, 0.5f);
 				else
 					NormalFontSDL.printFont(offsetX + 4, offsetY + 80, "1ST PLACE!", COLOR_ORANGE, 0.5f);
@@ -1579,18 +1579,18 @@ public class RendererSDL extends EventReceiver {
 				int offsetY = getFieldDisplayPositionY(engine, playerID);
 
 				if(engine.displaysize != -1) {
-					if(engine.owner.getPlayers() < 2)
+					if(engine.getOwner().getPlayers() < 2)
 						NormalFontSDL.printFont(offsetX + 12, offsetY + 204, "GAME OVER", COLOR_WHITE, 1.0f);
-					else if(engine.owner.getWinner() == -2)
+					else if(engine.getOwner().getWinner() == -2)
 						NormalFontSDL.printFont(offsetX + 52, offsetY + 204, "DRAW", COLOR_GREEN, 1.0f);
-					else if(engine.owner.getPlayers() < 3)
+					else if(engine.getOwner().getPlayers() < 3)
 						NormalFontSDL.printFont(offsetX + 52, offsetY + 204, "LOSE", COLOR_WHITE, 1.0f);
 				} else {
-					if(engine.owner.getPlayers() < 2)
+					if(engine.getOwner().getPlayers() < 2)
 						NormalFontSDL.printFont(offsetX + 4, offsetY + 80, "GAME OVER", COLOR_WHITE, 0.5f);
-					else if(engine.owner.getWinner() == -2)
+					else if(engine.getOwner().getWinner() == -2)
 						NormalFontSDL.printFont(offsetX + 28, offsetY + 80, "DRAW", COLOR_GREEN, 0.5f);
-					else if(engine.owner.getPlayers() < 3)
+					else if(engine.getOwner().getPlayers() < 3)
 						NormalFontSDL.printFont(offsetX + 28, offsetY + 80, "LOSE", COLOR_WHITE, 0.5f);
 				}
 			} catch (SDLException e) {
@@ -1651,7 +1651,7 @@ public class RendererSDL extends EventReceiver {
 	 */
 	@Override
 	public void onLast(GameEngine engine, int playerID) {
-		if(playerID == engine.owner.getPlayers() - 1) effectUpdate();
+		if(playerID == engine.getOwner().getPlayers() - 1) effectUpdate();
 	}
 
 	/*
@@ -1659,7 +1659,7 @@ public class RendererSDL extends EventReceiver {
 	 */
 	@Override
 	public void renderLast(GameEngine engine, int playerID) {
-		if(playerID == engine.owner.getPlayers() - 1) effectRender();
+		if(playerID == engine.getOwner().getPlayers() - 1) effectRender();
 	}
 
 	/**

@@ -45,6 +45,10 @@ import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.component.WallkickResult;
+import org.zeromeaner.game.event.EngineAdapter;
+import org.zeromeaner.game.event.EngineEvent;
+import org.zeromeaner.game.event.EngineEventManager;
+import org.zeromeaner.game.event.EngineManagerAdapter;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.util.GeneralUtil;
@@ -161,10 +165,12 @@ public class GameEngine {
 	};;
 
 	/** GameManager: Owner of this GameEngine */
-	public GameManager owner;
+	private GameManager owner;
+	
+	public EngineEventManager eventManager = new EngineEventManager(this);
 
 	/** Player ID (0=1P) */
-	public int playerID;
+	private int playerID;
 
 	/** RuleOptions: Most game settings are here */
 	public RuleOptions ruleopt;
@@ -678,6 +684,13 @@ public class GameEngine {
 	 */
 	public GameEngine(GameManager owner, int playerID) {
 		this.owner = owner;
+		eventManager.addEngineListener(new EngineManagerAdapter(owner));
+		eventManager.addEngineListener(new EngineAdapter() {
+			@Override
+			public void enginePieceLocked(EngineEvent e) {
+				synchronousSync.addAndGet(synchronousIncrement);
+			}
+		});
 		this.playerID = playerID;
 		this.ruleopt = new RuleOptions();
 		this.wallkick = null;
@@ -941,11 +954,16 @@ public class GameEngine {
 		endTime = 0;
 
 		//  event 発生
-		if(owner.mode != null) {
-			owner.mode.playerInit(this, playerID);
-			if(owner.replayMode) owner.mode.loadReplay(this, playerID, owner.replayProp);
-		}
-		owner.receiver.playerInit(this, playerID);
+//		if(owner.mode != null) {
+//			owner.mode.playerInit(this, playerID);
+//			if(owner.replayMode) owner.mode.loadReplay(this, playerID, owner.replayProp);
+//		}
+//		owner.receiver.playerInit(this, playerID);
+		
+		eventManager.enginePlayerInit();
+		if(owner.replayMode)
+			eventManager.engineLoadReplay(owner.replayProp);
+		
 		if(ai != null) {
 			ai.shutdown(this, playerID);
 			ai.init(this, playerID);
@@ -1663,7 +1681,8 @@ public class GameEngine {
 		owner.replayProp.setProperty(playerID + ".tuning.owReverseUpDown", owReverseUpDown);
 		owner.replayProp.setProperty(playerID + ".tuning.owMoveDiagonal", owMoveDiagonal);
 
-		if(owner.mode != null) owner.mode.saveReplay(this, playerID, owner.replayProp);
+//		if(owner.mode != null) owner.mode.saveReplay(this, playerID, owner.replayProp);
+		eventManager.engineSaveReplay(owner.replayProp);
 	}
 
 	/**
@@ -1751,8 +1770,9 @@ public class GameEngine {
 		ctrl.updateButtonTime();
 
 		// 最初の処理
-		if(owner.mode != null) owner.mode.onFirst(this, playerID);
-		owner.receiver.onFirst(this, playerID);
+//		if(owner.mode != null) owner.mode.onFirst(this, playerID);
+//		owner.receiver.onFirst(this, playerID);
+		eventManager.engineFrameFirst();
 		if((ai != null) && (!owner.replayMode || owner.replayRerecord)) ai.onFirst(this, playerID);
 
 		// 各ステータスの処理
@@ -1811,8 +1831,9 @@ public class GameEngine {
 		if((ending == 0) || (staffrollEnableStatistics)) statistics.update();
 
 		// 最後の処理
-		if(owner.mode != null) owner.mode.onLast(this, playerID);
-		owner.receiver.onLast(this, playerID);
+//		if(owner.mode != null) owner.mode.onLast(this, playerID);
+//		owner.receiver.onLast(this, playerID);
+		eventManager.engineFrameLast();
 		if((ai != null) && (!owner.replayMode || owner.replayRerecord)) ai.onLast(this, playerID);
 
 		// Timer増加
@@ -1833,9 +1854,10 @@ public class GameEngine {
 	 */
 	public void render() {
 		// 最初の処理
-		owner.receiver.renderFirst(this, playerID);
-		if(owner.mode != null) owner.mode.renderFirst(this, playerID);
-
+//		owner.receiver.renderFirst(this, playerID);
+//		if(owner.mode != null) owner.mode.renderFirst(this, playerID);
+		eventManager.engineRenderFirst();
+		
 		if (rainbowAnimate)
 			Block.updateRainbowPhase(this);
 
@@ -1844,52 +1866,64 @@ public class GameEngine {
 		case STAT_NOTHING:
 			break;
 		case STAT_SETTING:
-			if(owner.mode != null) owner.mode.renderSetting(this, playerID);
-			owner.receiver.renderSetting(this, playerID);
+//			if(owner.mode != null) owner.mode.renderSetting(this, playerID);
+//			owner.receiver.renderSetting(this, playerID);
+			eventManager.engineRenderSettings();
 			break;
 		case STAT_READY:
-			if(owner.mode != null) owner.mode.renderReady(this, playerID);
-			owner.receiver.renderReady(this, playerID);
+//			if(owner.mode != null) owner.mode.renderReady(this, playerID);
+//			owner.receiver.renderReady(this, playerID);
+			eventManager.engineRenderReady();
 			break;
 		case STAT_MOVE:
-			if(owner.mode != null) owner.mode.renderMove(this, playerID);
-			owner.receiver.renderMove(this, playerID);
+//			if(owner.mode != null) owner.mode.renderMove(this, playerID);
+//			owner.receiver.renderMove(this, playerID);
+			eventManager.engineRenderMove();
 			break;
 		case STAT_LOCKFLASH:
-			if(owner.mode != null) owner.mode.renderLockFlash(this, playerID);
-			owner.receiver.renderLockFlash(this, playerID);
+//			if(owner.mode != null) owner.mode.renderLockFlash(this, playerID);
+//			owner.receiver.renderLockFlash(this, playerID);
+			eventManager.engineRenderLockFlash();
 			break;
 		case STAT_LINECLEAR:
-			if(owner.mode != null) owner.mode.renderLineClear(this, playerID);
-			owner.receiver.renderLineClear(this, playerID);
+//			if(owner.mode != null) owner.mode.renderLineClear(this, playerID);
+//			owner.receiver.renderLineClear(this, playerID);
+			eventManager.engineRenderLineClear();
 			break;
 		case STAT_ARE:
-			if(owner.mode != null) owner.mode.renderARE(this, playerID);
-			owner.receiver.renderARE(this, playerID);
+//			if(owner.mode != null) owner.mode.renderARE(this, playerID);
+//			owner.receiver.renderARE(this, playerID);
+			eventManager.engineRenderARE();
 			break;
 		case STAT_ENDINGSTART:
-			if(owner.mode != null) owner.mode.renderEndingStart(this, playerID);
-			owner.receiver.renderEndingStart(this, playerID);
+//			if(owner.mode != null) owner.mode.renderEndingStart(this, playerID);
+//			owner.receiver.renderEndingStart(this, playerID);
+			eventManager.engineRenderEndingStart();
 			break;
 		case STAT_CUSTOM:
-			if(owner.mode != null) owner.mode.renderCustom(this, playerID);
-			owner.receiver.renderCustom(this, playerID);
+//			if(owner.mode != null) owner.mode.renderCustom(this, playerID);
+//			owner.receiver.renderCustom(this, playerID);
+			eventManager.engineRenderCustom();
 			break;
 		case STAT_EXCELLENT:
-			if(owner.mode != null) owner.mode.renderExcellent(this, playerID);
-			owner.receiver.renderExcellent(this, playerID);
+//			if(owner.mode != null) owner.mode.renderExcellent(this, playerID);
+//			owner.receiver.renderExcellent(this, playerID);
+			eventManager.engineRenderExcellent();
 			break;
 		case STAT_GAMEOVER:
-			if(owner.mode != null) owner.mode.renderGameOver(this, playerID);
-			owner.receiver.renderGameOver(this, playerID);
+//			if(owner.mode != null) owner.mode.renderGameOver(this, playerID);
+//			owner.receiver.renderGameOver(this, playerID);
+			eventManager.engineRenderGameOver();
 			break;
 		case STAT_RESULT:
-			if(owner.mode != null) owner.mode.renderResult(this, playerID);
-			owner.receiver.renderResult(this, playerID);
+//			if(owner.mode != null) owner.mode.renderResult(this, playerID);
+//			owner.receiver.renderResult(this, playerID);
+			eventManager.engineRenderResults();
 			break;
 		case STAT_FIELDEDIT:
-			if(owner.mode != null) owner.mode.renderFieldEdit(this, playerID);
-			owner.receiver.renderFieldEdit(this, playerID);
+//			if(owner.mode != null) owner.mode.renderFieldEdit(this, playerID);
+//			owner.receiver.renderFieldEdit(this, playerID);
+			eventManager.engineRenderFieldEditor();
 			break;
 		case STAT_INTERRUPTITEM:
 			break;
@@ -1897,8 +1931,9 @@ public class GameEngine {
 
 		if (owner.showInput)
 		{
-			if(owner.mode != null) owner.mode.renderInput(this, playerID);
-			owner.receiver.renderInput(this, playerID);
+//			if(owner.mode != null) owner.mode.renderInput(this, playerID);
+//			owner.receiver.renderInput(this, playerID);
+			eventManager.engineRenderInput();
 		}
 		if (ai != null)
 		{
@@ -1909,8 +1944,9 @@ public class GameEngine {
 		}
 
 		// 最後の処理
-		if(owner.mode != null) owner.mode.renderLast(this, playerID);
-		owner.receiver.renderLast(this, playerID);
+//		if(owner.mode != null) owner.mode.renderLast(this, playerID);
+//		owner.receiver.renderLast(this, playerID);
+		eventManager.engineRenderLast();
 	}
 
 	/**
@@ -1918,10 +1954,12 @@ public class GameEngine {
 	 */
 	public void statSetting() {
 		//  event 発生
-		if(owner.mode != null) {
-			if(owner.mode.onSetting(this, playerID) == true) return;
-		}
-		owner.receiver.onSetting(this, playerID);
+//		if(owner.mode != null) {
+//			if(owner.mode.onSetting(this, playerID) == true) return;
+//		}
+//		owner.receiver.onSetting(this, playerID);
+		if(eventManager.engineSettings())
+			return;
 
 		// Mode側が何もしない場合はReady画面へ移動
 		stat = STAT_READY;
@@ -1936,10 +1974,12 @@ public class GameEngine {
 		synchronousSync = new AtomicInteger(0);
 		
 		//  event 発生
-		if(owner.mode != null) {
-			if(owner.mode.onReady(this, playerID) == true) return;
-		}
-		owner.receiver.onReady(this, playerID);
+//		if(owner.mode != null) {
+//			if(owner.mode.onReady(this, playerID) == true) return;
+//		}
+//		owner.receiver.onReady(this, playerID);
+		if(eventManager.engineReady())
+			return;
 
 
 		// 横溜め
@@ -2036,8 +2076,9 @@ public class GameEngine {
 		// 開始
 		if(statc[0] >= goEnd) {
 			if(!readyDone) owner.bgmStatus.bgm = 0;
-			if(owner.mode != null) owner.mode.startGame(this, playerID);
-			owner.receiver.startGame(this, playerID);
+//			if(owner.mode != null) owner.mode.startGame(this, playerID);
+//			owner.receiver.startGame(this, playerID);
+			eventManager.engineGameStarted();
 			initialRotate();
 			stat = STAT_MOVE;
 			resetStatc();
@@ -2060,15 +2101,13 @@ public class GameEngine {
 		dasRepeat = false;
 
 		//  event 発生
-		if(owner.mode != null) {
-			if(owner.mode.onMove(this, playerID) == true) return;
-		}
-		owner.receiver.onMove(this, playerID);
-
-		// Check the sync
-		if(synchronousSync.get() > 0)
+//		if(owner.mode != null) {
+//			if(owner.mode.onMove(this, playerID) == true) return;
+//		}
+//		owner.receiver.onMove(this, playerID);
+		if(eventManager.engineMove())
 			return;
-		
+
 		// 横溜めInitialization
 		int moveDirection = getMoveDirection();
 
@@ -2199,6 +2238,9 @@ public class GameEngine {
 			if(ending == 0) timerActive = true;
 
 			if((ai != null) && (!owner.replayMode || owner.replayRerecord)) ai.newPiece(this, playerID);
+		} else {
+			if(isSynchronousBlocked())
+				return;
 		}
 
 		checkDropContinuousUse();
@@ -2455,8 +2497,9 @@ public class GameEngine {
 						playSE("harddrop");
 					}
 	
-					if(owner.mode != null) owner.mode.afterHardDropFall(this, playerID, harddropFall);
-					owner.receiver.afterHardDropFall(this, playerID, harddropFall);
+//					if(owner.mode != null) owner.mode.afterHardDropFall(this, playerID, harddropFall);
+//					owner.receiver.afterHardDropFall(this, playerID, harddropFall);
+					eventManager.engineAfterHardDropFall(harddropFall);
 	
 					lastmove = LASTMOVE_FALL_SELF;
 					if(ruleopt.lockresetFall == true) {
@@ -2541,8 +2584,9 @@ public class GameEngine {
 		}
 
 		if(softdropFallNow > 0) {
-			if(owner.mode != null) owner.mode.afterSoftDropFall(this, playerID, softdropFallNow);
-			owner.receiver.afterSoftDropFall(this, playerID, softdropFallNow);
+//			if(owner.mode != null) owner.mode.afterSoftDropFall(this, playerID, softdropFallNow);
+//			owner.receiver.afterSoftDropFall(this, playerID, softdropFallNow);
+			eventManager.engineAfterSoftDropFall(softdropFallNow);
 		}
 
 		// 接地と固定
@@ -2670,13 +2714,14 @@ public class GameEngine {
 						}
 					}
 
-					if(owner.mode != null) owner.mode.calcScore(this, playerID, lineClearing);
-					owner.receiver.calcScore(this, playerID, lineClearing);
+//					if(owner.mode != null) owner.mode.calcScore(this, playerID, lineClearing);
+//					owner.receiver.calcScore(this, playerID, lineClearing);
+					eventManager.engineCalcScore(lineClearing);
 				}
 
-				if(owner.mode != null) owner.mode.pieceLocked(this, playerID, lineClearing);
-				owner.receiver.pieceLocked(this, playerID, lineClearing);
-				synchronousSync.addAndGet(synchronousIncrement);
+//				if(owner.mode != null) owner.mode.pieceLocked(this, playerID, lineClearing);
+//				owner.receiver.pieceLocked(this, playerID, lineClearing);
+				eventManager.enginePieceLocked(lineClearing);
 
 				dasRepeat = false;
 				dasInstant = false;
@@ -2740,10 +2785,12 @@ public class GameEngine {
 	 */
 	public void statLockFlash() {
 		//  event 発生
-		if(owner.mode != null) {
-			if(owner.mode.onLockFlash(this, playerID) == true) return;
-		}
-		owner.receiver.onLockFlash(this, playerID);
+//		if(owner.mode != null) {
+//			if(owner.mode.onLockFlash(this, playerID) == true) return;
+//		}
+//		owner.receiver.onLockFlash(this, playerID);
+		if(eventManager.engineLockFlash())
+			return;
 
 		statc[0]++;
 
@@ -2775,10 +2822,12 @@ public class GameEngine {
 	 */
 	public void statLineClear() {
 		//  event 発生
-		if(owner.mode != null) {
-			if(owner.mode.onLineClear(this, playerID) == true) return;
-		}
-		owner.receiver.onLineClear(this, playerID);
+//		if(owner.mode != null) {
+//			if(owner.mode.onLineClear(this, playerID) == true) return;
+//		}
+//		owner.receiver.onLineClear(this, playerID);
+		if(eventManager.engineLineClear())
+			return;
 
 		checkDropContinuousUse();
 
@@ -2878,8 +2927,9 @@ public class GameEngine {
 			if(field.getHowManyGemClears() > 0) playSE("gem");
 
 			// Calculate score
-			if(owner.mode != null) owner.mode.calcScore(this, playerID, li);
-			owner.receiver.calcScore(this, playerID, li);
+//			if(owner.mode != null) owner.mode.calcScore(this, playerID, li);
+//			owner.receiver.calcScore(this, playerID, li);
+			eventManager.engineCalcScore(li);
 
 			// Blockを消す演出を出す (まだ実際には消えていない）
 			if (clearMode == CLEAR_LINE) {
@@ -2889,8 +2939,9 @@ public class GameEngine {
 							Block blk = field.getBlock(j, i);
 
 							if(blk != null) {
-								if(owner.mode != null) owner.mode.blockBreak(this, playerID, j, i, blk);
-								owner.receiver.blockBreak(this, playerID, j, i, blk);
+//								if(owner.mode != null) owner.mode.blockBreak(this, playerID, j, i, blk);
+//								owner.receiver.blockBreak(this, playerID, j, i, blk);
+								eventManager.engineBlockBreak(j, i, blk);
 							}
 						}
 					}
@@ -2902,16 +2953,17 @@ public class GameEngine {
 						if (blk == null)
 							continue;
 						if(blk.getAttribute(Block.BLOCK_ATTRIBUTE_ERASE)) {
-							if(owner.mode != null) owner.mode.blockBreak(this, playerID, j, i, blk);
 							if (displaysize == 1)
 							{
+								if(owner.mode != null) owner.mode.blockBreak(this, playerID, j, i, blk);
 								owner.receiver.blockBreak(this, playerID, 2*j, 2*i, blk);
 								owner.receiver.blockBreak(this, playerID, 2*j+1, 2*i, blk);
 								owner.receiver.blockBreak(this, playerID, 2*j, 2*i+1, blk);
 								owner.receiver.blockBreak(this, playerID, 2*j+1, 2*i+1, blk);
 							}
 							else
-								owner.receiver.blockBreak(this, playerID, j, i, blk);
+//								owner.receiver.blockBreak(this, playerID, j, i, blk);
+								eventManager.engineBlockBreak(j, i, blk);
 						}
 					}
 				}
@@ -2981,8 +3033,9 @@ public class GameEngine {
 			}
 
 			boolean skip = false;
-			if(owner.mode != null) skip = owner.mode.lineClearEnd(this, playerID);
-			owner.receiver.lineClearEnd(this, playerID);
+//			if(owner.mode != null) skip = owner.mode.lineClearEnd(this, playerID);
+//			owner.receiver.lineClearEnd(this, playerID);
+			eventManager.engineLineClearEnd();
 			if (sticky > 0)
 				field.setBlockLinkByColor();
 			if (sticky == 2)
@@ -3038,10 +3091,12 @@ public class GameEngine {
 	 */
 	public void statARE() {
 		//  event 発生
-		if(owner.mode != null) {
-			if(owner.mode.onARE(this, playerID) == true) return;
-		}
-		owner.receiver.onARE(this, playerID);
+//		if(owner.mode != null) {
+//			if(owner.mode.onARE(this, playerID) == true) return;
+//		}
+//		owner.receiver.onARE(this, playerID);
+		if(eventManager.engineARE())
+			return;
 
 		statc[0]++;
 
@@ -3091,10 +3146,12 @@ public class GameEngine {
 	 */
 	public void statEndingStart() {
 		//  event 発生
-		if(owner.mode != null) {
-			if(owner.mode.onEndingStart(this, playerID) == true) return;
-		}
-		owner.receiver.onEndingStart(this, playerID);
+//		if(owner.mode != null) {
+//			if(owner.mode.onEndingStart(this, playerID) == true) return;
+//		}
+//		owner.receiver.onEndingStart(this, playerID);
+		if(eventManager.engineEndingStart())
+			return;
 
 		checkDropContinuousUse();
 
@@ -3120,8 +3177,9 @@ public class GameEngine {
 					Block blk = field.getBlock(i, y);
 
 					if((blk != null) && (blk.color != Block.BLOCK_COLOR_NONE)) {
-						if(owner.mode != null) owner.mode.blockBreak(this, playerID, i, y, blk);
-						owner.receiver.blockBreak(this, playerID, i, y, blk);
+//						if(owner.mode != null) owner.mode.blockBreak(this, playerID, i, y, blk);
+//						owner.receiver.blockBreak(this, playerID, i, y, blk);
+						eventManager.engineBlockBreak(i, y, blk);
 						field.setBlockColor(i, y, Block.BLOCK_COLOR_NONE);
 					}
 				}
@@ -3149,10 +3207,12 @@ public class GameEngine {
 	 */
 	public void statCustom() {
 		//  event 発生
-		if(owner.mode != null) {
-			if(owner.mode.onCustom(this, playerID) == true) return;
-		}
-		owner.receiver.onCustom(this, playerID);
+//		if(owner.mode != null) {
+//			if(owner.mode.onCustom(this, playerID) == true) return;
+//		}
+//		owner.receiver.onCustom(this, playerID);
+		if(eventManager.engineCustom())
+			return;
 	}
 
 	/**
@@ -3160,10 +3220,12 @@ public class GameEngine {
 	 */
 	public void statExcellent() {
 		//  event 発生
-		if(owner.mode != null) {
-			if(owner.mode.onExcellent(this, playerID) == true) return;
-		}
-		owner.receiver.onExcellent(this, playerID);
+//		if(owner.mode != null) {
+//			if(owner.mode.onExcellent(this, playerID) == true) return;
+//		}
+//		owner.receiver.onExcellent(this, playerID);
+		if(eventManager.engineExcellent())
+			return;
 
 		if(statc[0] == 0) {
 			gameEnded();
@@ -3191,10 +3253,12 @@ public class GameEngine {
 	 */
 	public void statGameOver() {
 		//  event 発生
-		if(owner.mode != null) {
-			if(owner.mode.onGameOver(this, playerID) == true) return;
-		}
-		owner.receiver.onGameOver(this, playerID);
+//		if(owner.mode != null) {
+//			if(owner.mode.onGameOver(this, playerID) == true) return;
+//		}
+//		owner.receiver.onGameOver(this, playerID);
+		if(eventManager.engineGameOver())
+			return;
 
 		if(lives <= 0) {
 			// もう復活できないとき
@@ -3286,10 +3350,12 @@ public class GameEngine {
 	 */
 	public void statResult() {
 		// Event
-		if(owner.mode != null) {
-			if(owner.mode.onResult(this, playerID) == true) return;
-		}
-		owner.receiver.onResult(this, playerID);
+//		if(owner.mode != null) {
+//			if(owner.mode.onResult(this, playerID) == true) return;
+//		}
+//		owner.receiver.onResult(this, playerID);
+		if(eventManager.engineResults())
+			return;
 
 		// Turn-off in-game flags
 		gameActive = false;
@@ -3320,10 +3386,12 @@ public class GameEngine {
 	 */
 	public void statFieldEdit() {
 		//  event 発生
-		if(owner.mode != null) {
-			if(owner.mode.onFieldEdit(this, playerID) == true) return;
-		}
-		owner.receiver.onFieldEdit(this, playerID);
+//		if(owner.mode != null) {
+//			if(owner.mode.onFieldEdit(this, playerID) == true) return;
+//		}
+//		owner.receiver.onFieldEdit(this, playerID);
+		if(eventManager.engineFieldEditor())
+			return;
 
 		fldeditFrames++;
 
@@ -3385,8 +3453,9 @@ public class GameEngine {
 		// 終了
 		if(ctrl.isPush(Controller.BUTTON_B) && (fldeditFrames > 10)) {
 			stat = fldeditPreviousStat;
-			if(owner.mode != null) owner.mode.fieldEditExit(this, playerID);
-			owner.receiver.fieldEditExit(this, playerID);
+//			if(owner.mode != null) owner.mode.fieldEditExit(this, playerID);
+//			owner.receiver.fieldEditExit(this, playerID);
+			eventManager.engineFieldEditorExit();
 		}
 	}
 
@@ -3437,5 +3506,17 @@ public class GameEngine {
 
 		statc[0]++;
 		return true;
+	}
+	
+	public boolean isSynchronousBlocked() {
+		return synchronousSync.get() > 0;
+	}
+
+	public GameManager getOwner() {
+		return owner;
+	}
+
+	public int getPlayerID() {
+		return playerID;
 	}
 }

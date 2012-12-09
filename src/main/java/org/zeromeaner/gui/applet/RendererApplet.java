@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.gui.EffectObject;
@@ -51,7 +51,7 @@ import org.zeromeaner.util.CustomProperties;
 /**
  * ゲームの event 処理と描画処理 (Swing版）
  */
-public class RendererApplet extends EventReceiver {
+public class RendererApplet extends EventRenderer {
 	/** Log */
 	//static Logger log = Logger.getLogger(RendererSwing.class);
 
@@ -199,7 +199,7 @@ public class RendererApplet extends EventReceiver {
 	public void drawMenuFont(GameEngine engine, int playerID, int x, int y, String str, int color, float scale) {
 		int x2 = (scale == 0.5f) ? x * 8 : x * 16;
 		int y2 = (scale == 0.5f) ? y * 8 : y * 16;
-		if(!engine.owner.menuOnly) {
+		if(!engine.getOwner().menuOnly) {
 			x2 += getFieldDisplayPositionX(engine, playerID) + 4;
 			if(engine.displaysize == -1) {
 				y2 += getFieldDisplayPositionY(engine, playerID) + 4;
@@ -217,7 +217,7 @@ public class RendererApplet extends EventReceiver {
 	public void drawTTFMenuFont(GameEngine engine, int playerID, int x, int y, String str, int color) {
 		int x2 = x * 16;
 		int y2 = y * 16 + 12;
-		if(!engine.owner.menuOnly) {
+		if(!engine.getOwner().menuOnly) {
 			x2 += getFieldDisplayPositionX(engine, playerID) + 4;
 			if(engine.displaysize == -1) {
 				y2 += getFieldDisplayPositionY(engine, playerID) + 4;
@@ -235,7 +235,7 @@ public class RendererApplet extends EventReceiver {
 	 */
 	@Override
 	public void drawScoreFont(GameEngine engine, int playerID, int x, int y, String str, int color, float scale) {
-		if(engine.owner.menuOnly) return;
+		if(engine.getOwner().menuOnly) return;
 		int size = (scale == 0.5f) ? 8 : 16;
 		NormalFontApplet.printFont(getScoreDisplayPositionX(engine, playerID) + (x * size),
 								  getScoreDisplayPositionY(engine, playerID) + (y * size), str, color, scale);
@@ -246,7 +246,7 @@ public class RendererApplet extends EventReceiver {
 	 */
 	@Override
 	public void drawTTFScoreFont(GameEngine engine, int playerID, int x, int y, String str, int color) {
-		if(engine.owner.menuOnly) return;
+		if(engine.getOwner().menuOnly) return;
 
 		graphics.setColor(getFontColorAsColor(color));
 		graphics.drawString(str,
@@ -279,7 +279,7 @@ public class RendererApplet extends EventReceiver {
 	@Override
 	public void drawSpeedMeter(GameEngine engine, int playerID, int x, int y, int s) {
 		if(graphics == null) return;
-		if(engine.owner.menuOnly) return;
+		if(engine.getOwner().menuOnly) return;
 
 		int dx1 = getScoreDisplayPositionX(engine, playerID) + 6 + (x * 16);
 		int dy1 = getScoreDisplayPositionY(engine, playerID) + 6 + (y * 16);
@@ -313,7 +313,7 @@ public class RendererApplet extends EventReceiver {
 	 */
 	@Override
 	public String getKeyNameByButtonID(GameEngine engine, int btnID) {
-		int[] keymap = engine.isInGame ? GameKeyApplet.gamekey[engine.playerID].keymap : GameKeyApplet.gamekey[engine.playerID].keymapNav;
+		int[] keymap = engine.isInGame ? GameKeyApplet.gamekey[engine.getPlayerID()].keymap : GameKeyApplet.gamekey[engine.getPlayerID()].keymapNav;
 
 		if((btnID >= 0) && (btnID < keymap.length)) {
 			int keycode = keymap[btnID];
@@ -886,7 +886,7 @@ public class RendererApplet extends EventReceiver {
 					if(blk.getAttribute(Block.BLOCK_ATTRIBUTE_WALL)) {
 						drawBlock(x2, y2, Block.BLOCK_COLOR_NONE, blk.skin, blk.getAttribute(Block.BLOCK_ATTRIBUTE_BONE),
 								  blk.darkness, blk.alpha, scale, blk.attribute);
-					} else if (showfieldblockgraphics && engine.owner.replayMode && engine.owner.replayShowInvisible) {
+					} else if (showfieldblockgraphics && engine.getOwner().replayMode && engine.getOwner().replayShowInvisible) {
 						drawBlockForceVisible(x2, y2, blk, scale);
 					} else if(showfieldblockgraphics && blk.getAttribute(Block.BLOCK_ATTRIBUTE_VISIBLE)) {
 						drawBlock(x2, y2, blk, scale);
@@ -1299,14 +1299,14 @@ public class RendererApplet extends EventReceiver {
 	public void renderFirst(GameEngine engine, int playerID) {
 		if(graphics == null) return;
 
-		if(engine.playerID == 0) {
+		if(engine.getPlayerID() == 0) {
 			// Background
-			if(!showbg || engine.owner.menuOnly) {
+			if(!showbg || engine.getOwner().menuOnly) {
 				graphics.setColor(Color.black);
 				graphics.fillRect(0, 0, 640, 480);
 			} else {
-				int bg = engine.owner.backgroundStatus.bg;
-				if(engine.owner.backgroundStatus.fadesw) bg = engine.owner.backgroundStatus.fadebg;
+				int bg = engine.getOwner().backgroundStatus.bg;
+				if(engine.getOwner().backgroundStatus.fadesw) bg = engine.getOwner().backgroundStatus.fadebg;
 
 				if((ResourceHolderApplet.imgPlayBG != null) && (bg >= 0) && (bg < ResourceHolderApplet.BACKGROUND_MAX)) {
 					graphics.drawImage(ResourceHolderApplet.imgPlayBG[bg], 0, 0, null);
@@ -1315,7 +1315,7 @@ public class RendererApplet extends EventReceiver {
 		}
 
 		// NEXTなど
-		if(!engine.owner.menuOnly && engine.isVisible) {
+		if(!engine.getOwner().menuOnly && engine.isVisible) {
 			int offsetX = getFieldDisplayPositionX(engine, playerID);
 			int offsetY = getFieldDisplayPositionY(engine, playerID);
 
@@ -1429,14 +1429,14 @@ public class RendererApplet extends EventReceiver {
 		if(engine.displaysize != -1) {
 			if(engine.statc[1] == 0)
 				NormalFontApplet.printFont(offsetX + 4, offsetY + 204, "EXCELLENT!", COLOR_ORANGE, 1.0f);
-			else if(engine.owner.getPlayers() < 3)
+			else if(engine.getOwner().getPlayers() < 3)
 				NormalFontApplet.printFont(offsetX + 52, offsetY + 204, "WIN!", COLOR_ORANGE, 1.0f);
 			else
 				NormalFontApplet.printFont(offsetX + 4, offsetY + 204, "1ST PLACE!", COLOR_ORANGE, 1.0f);
 		} else {
 			if(engine.statc[1] == 0)
 				NormalFontApplet.printFont(offsetX + 4, offsetY + 80, "EXCELLENT!", COLOR_ORANGE, 0.5f);
-			else if(engine.owner.getPlayers() < 3)
+			else if(engine.getOwner().getPlayers() < 3)
 				NormalFontApplet.printFont(offsetX + 33, offsetY + 80, "WIN!", COLOR_ORANGE, 0.5f);
 			else
 				NormalFontApplet.printFont(offsetX + 4, offsetY + 80, "1ST PLACE!", COLOR_ORANGE, 0.5f);
@@ -1457,18 +1457,18 @@ public class RendererApplet extends EventReceiver {
 			int offsetY = getFieldDisplayPositionY(engine, playerID);
 
 			if(engine.displaysize != -1) {
-				if(engine.owner.getPlayers() < 2)
+				if(engine.getOwner().getPlayers() < 2)
 					NormalFontApplet.printFont(offsetX + 12, offsetY + 204, "GAME OVER", COLOR_WHITE, 1.0f);
-				else if(engine.owner.getWinner() == -2)
+				else if(engine.getOwner().getWinner() == -2)
 					NormalFontApplet.printFont(offsetX + 52, offsetY + 204, "DRAW", COLOR_GREEN, 1.0f);
-				else if(engine.owner.getPlayers() < 3)
+				else if(engine.getOwner().getPlayers() < 3)
 					NormalFontApplet.printFont(offsetX + 52, offsetY + 204, "LOSE", COLOR_WHITE, 1.0f);
 			} else {
-				if(engine.owner.getPlayers() < 2)
+				if(engine.getOwner().getPlayers() < 2)
 					NormalFontApplet.printFont(offsetX + 4, offsetY + 80, "GAME OVER", COLOR_WHITE, 0.5f);
-				else if(engine.owner.getWinner() == -2)
+				else if(engine.getOwner().getWinner() == -2)
 					NormalFontApplet.printFont(offsetX + 28, offsetY + 80, "DRAW", COLOR_GREEN, 0.5f);
-				else if(engine.owner.getPlayers() < 3)
+				else if(engine.getOwner().getPlayers() < 3)
 					NormalFontApplet.printFont(offsetX + 28, offsetY + 80, "LOSE", COLOR_WHITE, 0.5f);
 			}
 		}
@@ -1517,7 +1517,7 @@ public class RendererApplet extends EventReceiver {
 	 */
 	@Override
 	public void onLast(GameEngine engine, int playerID) {
-		if(playerID == engine.owner.getPlayers() - 1) effectUpdate();
+		if(playerID == engine.getOwner().getPlayers() - 1) effectUpdate();
 	}
 
 	/*
@@ -1525,7 +1525,7 @@ public class RendererApplet extends EventReceiver {
 	 */
 	@Override
 	public void renderLast(GameEngine engine, int playerID) {
-		if(playerID == engine.owner.getPlayers() - 1) effectRender();
+		if(playerID == engine.getOwner().getPlayers() - 1) effectRender();
 	}
 
 	/**

@@ -29,7 +29,7 @@
 package org.zeromeaner.game.subsystem.mode;
 
 import org.zeromeaner.game.component.Controller;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
@@ -151,8 +151,8 @@ public class RetroMasteryMode extends AbstractMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		lastscore = 0;
 		scgettime = 0;
 		softdropscore = 0;
@@ -185,8 +185,8 @@ public class RetroMasteryMode extends AbstractMode {
 			loadSetting(owner.replayProp);
 		}
 
-		engine.owner.backgroundStatus.bg = gametype == GAMETYPE_PRESSURE ? 0 : startlevel;
-		if(engine.owner.backgroundStatus.bg > 19) engine.owner.backgroundStatus.bg = 19;
+		engine.getOwner().backgroundStatus.bg = gametype == GAMETYPE_PRESSURE ? 0 : startlevel;
+		if(engine.getOwner().backgroundStatus.bg > 19) engine.getOwner().backgroundStatus.bg = 19;
 		engine.framecolor = GameEngine.FRAME_COLOR_GRAY;
 	}
 
@@ -212,7 +212,7 @@ public class RetroMasteryMode extends AbstractMode {
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
 		// Menu
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Check for UP button, when pressed it will move cursor up.
 			if(engine.ctrl.isMenuRepeatKey(Controller.BUTTON_UP)) {
 				engine.statc[2]--;
@@ -241,13 +241,13 @@ public class RetroMasteryMode extends AbstractMode {
 					gametype += change;
 					if(gametype < 0) gametype = GAMETYPE_MAX - 1;
 					if(gametype > GAMETYPE_MAX - 1) gametype = 0;
-					engine.owner.backgroundStatus.bg = gametype == GAMETYPE_PRESSURE ? 0 : startlevel;
+					engine.getOwner().backgroundStatus.bg = gametype == GAMETYPE_PRESSURE ? 0 : startlevel;
 					break;
 				case 1:
 					startlevel += change;
 					if(startlevel < 0) startlevel = 19;
 					if(startlevel > 19) startlevel = 0;
-					engine.owner.backgroundStatus.bg = startlevel;
+					engine.getOwner().backgroundStatus.bg = startlevel;
 					break;
 				case 2:
 					big = !big;
@@ -286,17 +286,17 @@ public class RetroMasteryMode extends AbstractMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		if(engine.owner.replayMode == false) {
-			receiver.drawMenuFont(engine, playerID, 0, (engine.statc[2] * 2) + 1, "b", EventReceiver.COLOR_RED);
+		if(engine.getOwner().replayMode == false) {
+			receiver.drawMenuFont(engine, playerID, 0, (engine.statc[2] * 2) + 1, "b", EventRenderer.COLOR_RED);
 		}
 
-		receiver.drawMenuFont(engine, playerID, 0, 0, "GAME TYPE", EventReceiver.COLOR_BLUE);
+		receiver.drawMenuFont(engine, playerID, 0, 0, "GAME TYPE", EventRenderer.COLOR_BLUE);
 		receiver.drawMenuFont(engine, playerID, 1, 1, GAMETYPE_NAME[gametype], (engine.statc[2] == 0));
 		if(gametype != GAMETYPE_PRESSURE){
-			receiver.drawMenuFont(engine, playerID, 0, 2, "LEVEL", EventReceiver.COLOR_BLUE);
+			receiver.drawMenuFont(engine, playerID, 0, 2, "LEVEL", EventRenderer.COLOR_BLUE);
 			receiver.drawMenuFont(engine, playerID, 1, 3, String.format("%02d", startlevel), (engine.statc[2] == 1));
 		}
-		receiver.drawMenuFont(engine, playerID, 0, 4, "BIG", EventReceiver.COLOR_BLUE);
+		receiver.drawMenuFont(engine, playerID, 0, 4, "BIG", EventRenderer.COLOR_BLUE);
 		receiver.drawMenuFont(engine, playerID, 1, 5, GeneralUtil.getONorOFF(big), (engine.statc[2] == 2));
 	}
 
@@ -331,22 +331,22 @@ public class RetroMasteryMode extends AbstractMode {
 	 */
 	@Override
 	public void renderLast(GameEngine engine, int playerID) {
-		receiver.drawScoreFont(engine, playerID, 0, 0, "RETRO MASTERY", EventReceiver.COLOR_GREEN);
-		receiver.drawScoreFont(engine, playerID, 0, 1, "("+GAMETYPE_NAME[gametype]+")", EventReceiver.COLOR_GREEN);
+		receiver.drawScoreFont(engine, playerID, 0, 0, "RETRO MASTERY", EventRenderer.COLOR_GREEN);
+		receiver.drawScoreFont(engine, playerID, 0, 1, "("+GAMETYPE_NAME[gametype]+")", EventRenderer.COLOR_GREEN);
 
 		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (big == false) && (engine.ai == null)) {
-				receiver.drawScoreFont(engine, playerID, 3, 3, "SCORE    LINE LV.", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 3, 3, "SCORE    LINE LV.", EventRenderer.COLOR_BLUE);
 
 				for(int i = 0; i < RANKING_MAX; i++) {
-					receiver.drawScoreFont(engine, playerID, 0, 4 + i, String.format("%2d", i + 1), EventReceiver.COLOR_YELLOW);
+					receiver.drawScoreFont(engine, playerID, 0, 4 + i, String.format("%2d", i + 1), EventRenderer.COLOR_YELLOW);
 					receiver.drawScoreFont(engine, playerID, 3, 4 + i, String.valueOf(rankingScore[gametype][i]), (i == rankingRank));
 					receiver.drawScoreFont(engine, playerID, 12, 4 + i, String.valueOf(rankingLines[gametype][i]), (i == rankingRank));
 					receiver.drawScoreFont(engine, playerID, 17, 4 + i, String.format("%02d", rankingLevel[gametype][i]), (i == rankingRank));
 				}
 			}
 		} else {
-			receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE", EventRenderer.COLOR_BLUE);
 			String strScore;
 			if((lastscore == 0) || (scgettime >= 120)) {
 				strScore = String.valueOf(engine.statistics.score);
@@ -358,13 +358,13 @@ public class RetroMasteryMode extends AbstractMode {
 			String strLine;
 			strLine = String.valueOf(loons);
 
-			receiver.drawScoreFont(engine, playerID, 0, 6, "LINES", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 6, "LINES", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 7, strLine);
 
-			receiver.drawScoreFont(engine, playerID, 0, 9, "LEVEL", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 9, "LEVEL", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 10, String.format("%02d", engine.statistics.level));
 
-			receiver.drawScoreFont(engine, playerID, 0, 12, "TIME", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 12, "TIME", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 13, GeneralUtil.getTime(engine.statistics.time));
 		}
 	}
@@ -491,21 +491,21 @@ public class RetroMasteryMode extends AbstractMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		receiver.drawMenuFont(engine, playerID,  0, 1, "PLAY DATA", EventReceiver.COLOR_ORANGE);
+		receiver.drawMenuFont(engine, playerID,  0, 1, "PLAY DATA", EventRenderer.COLOR_ORANGE);
 
-		drawResultStats(engine, playerID, receiver, 3, EventReceiver.COLOR_BLUE, STAT_SCORE);
+		drawResultStats(engine, playerID, receiver, 3, EventRenderer.COLOR_BLUE, STAT_SCORE);
 
-		receiver.drawMenuFont(engine, playerID,  0, 5, "LINES", EventReceiver.COLOR_BLUE);
+		receiver.drawMenuFont(engine, playerID,  0, 5, "LINES", EventRenderer.COLOR_BLUE);
 		String strLines = String.format("%10d", loons);
 		receiver.drawMenuFont(engine, playerID,  0, 6, strLines);
 		String strFour = String.format("%10s", String.format("+%d", engine.statistics.totalFour));
 		receiver.drawMenuFont(engine, playerID,  0, 7, strFour);
 
-		drawResultStats(engine, playerID, receiver, 8, EventReceiver.COLOR_BLUE,
+		drawResultStats(engine, playerID, receiver, 8, EventRenderer.COLOR_BLUE,
 				STAT_LEVEL, STAT_TIME);
-		drawResult(engine, playerID, receiver, 12, EventReceiver.COLOR_BLUE,
+		drawResult(engine, playerID, receiver, 12, EventRenderer.COLOR_BLUE,
 				"EFFICIENCY", String.format("%10.3f", efficiency));
-		drawResultRank(engine, playerID, receiver, 14, EventReceiver.COLOR_BLUE, rankingRank);
+		drawResultRank(engine, playerID, receiver, 14, EventRenderer.COLOR_BLUE, rankingRank);
 	}
 
 	/**

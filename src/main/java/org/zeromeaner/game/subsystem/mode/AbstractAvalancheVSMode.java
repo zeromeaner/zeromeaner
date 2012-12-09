@@ -34,7 +34,7 @@ import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.CustomProperties;
@@ -353,7 +353,7 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 	 * @param prop Property file to read from
 	 */
 	protected void loadOtherSetting(GameEngine engine, CustomProperties prop, String name) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		bgmno = prop.getProperty("avalanchevs" + name + ".bgmno", 0);
 		ojamaCounterMode[playerID] = prop.getProperty("avalanchevs" + name + ".ojamaCounterMode", OJAMA_COUNTER_ON);
 		big[playerID] = prop.getProperty("avalanchevs" + name + ".big.p" + playerID, false);
@@ -386,7 +386,7 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 	 * @param prop Property file to save to
 	 */
 	protected void saveOtherSetting(GameEngine engine, CustomProperties prop, String name) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		prop.setProperty("avalanchevs" + name + ".bgmno", bgmno);
 		prop.setProperty("avalanchevs" + name + ".ojamaCounterMode", ojamaCounterMode[playerID]);
 		prop.setProperty("avalanchevs" + name + ".big.p" + playerID, big[playerID]);
@@ -478,8 +478,8 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		if(playerID == 1) {
 			engine.randSeed = owner.engine[0].randSeed;
 			engine.random = new Random(owner.engine[0].randSeed);
@@ -851,16 +851,16 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 			receiver.drawMenuFont(engine, playerID, baseX + (engine.chain > 9 ? 0 : 1), textHeight,
 					engine.chain + " CHAIN!", getChainColor(engine, playerID));
 		if(zenKeshi[playerID] || zenKeshiDisplay[playerID] > 0)
-			receiver.drawMenuFont(engine, playerID, baseX+1, textHeight+1, "ZENKESHI!", EventReceiver.COLOR_YELLOW);
+			receiver.drawMenuFont(engine, playerID, baseX+1, textHeight+1, "ZENKESHI!", EventRenderer.COLOR_YELLOW);
 	}
 
 	protected int getChainColor (GameEngine engine, int playerID) {
 		if (chainDisplayType[playerID] == CHAIN_DISPLAY_PLAYER)
-			return (playerID == 0) ? EventReceiver.COLOR_RED : EventReceiver.COLOR_BLUE;
+			return (playerID == 0) ? EventRenderer.COLOR_RED : EventRenderer.COLOR_BLUE;
 		else if (chainDisplayType[playerID] == CHAIN_DISPLAY_SIZE)
-			return (engine.chain >= rensaShibari[playerID]) ? EventReceiver.COLOR_GREEN : EventReceiver.COLOR_RED;
+			return (engine.chain >= rensaShibari[playerID]) ? EventRenderer.COLOR_GREEN : EventRenderer.COLOR_RED;
 		else
-			return EventReceiver.COLOR_YELLOW;
+			return EventRenderer.COLOR_YELLOW;
 	}
 
 	protected void drawX (GameEngine engine, int playerID) {
@@ -871,11 +871,11 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 		for(int i = 0; i < ((dangerColumnDouble[playerID] && !big[playerID]) ? 2 : 1); i++) {
 			if((engine.field == null) || (engine.field.getBlockEmpty(baseX + i, 0))) {
 				if(big[playerID])
-					receiver.drawMenuFont(engine, playerID, 2, 0, "e", EventReceiver.COLOR_RED, 2.0f);
+					receiver.drawMenuFont(engine, playerID, 2, 0, "e", EventRenderer.COLOR_RED, 2.0f);
 				else if(engine.displaysize == 1)
-					receiver.drawMenuFont(engine, playerID, 4 + (i * 2), 0, "e", EventReceiver.COLOR_RED, 2.0f);
+					receiver.drawMenuFont(engine, playerID, 4 + (i * 2), 0, "e", EventRenderer.COLOR_RED, 2.0f);
 				else
-					receiver.drawMenuFont(engine, playerID, 2 + i, 0, "e", EventReceiver.COLOR_RED);
+					receiver.drawMenuFont(engine, playerID, 2 + i, 0, "e", EventRenderer.COLOR_RED);
 			}
 		}
 	}
@@ -888,9 +888,9 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 					int hard = engine.field.getBlock(x, y).hard;
 					if (hard > 0) {
 						if(engine.displaysize == 1)
-							receiver.drawMenuFont(engine, playerID, x * 2, y * 2, String.valueOf(hard), EventReceiver.COLOR_YELLOW, 2.0f);
+							receiver.drawMenuFont(engine, playerID, x * 2, y * 2, String.valueOf(hard), EventRenderer.COLOR_YELLOW, 2.0f);
 						else
-							receiver.drawMenuFont(engine, playerID, x, y, String.valueOf(hard), EventReceiver.COLOR_YELLOW);
+							receiver.drawMenuFont(engine, playerID, x, y, String.valueOf(hard), EventRenderer.COLOR_YELLOW);
 					}
 				}
 	}
@@ -898,19 +898,19 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 	protected void drawScores (GameEngine engine, int playerID, int x, int y, int headerColor) {
 		receiver.drawScoreFont(engine, playerID, x, y, "SCORE", headerColor);
 		y++;
-		receiver.drawScoreFont(engine, playerID, x, y, "1P: ", EventReceiver.COLOR_RED);
+		receiver.drawScoreFont(engine, playerID, x, y, "1P: ", EventRenderer.COLOR_RED);
 		if (scgettime[0] > 0 && lastscore[0] > 0 && lastmultiplier[0] > 0)
 			receiver.drawScoreFont(engine, playerID, x+4, y, "+" + lastscore[0] + "e" + lastmultiplier[0],
-					EventReceiver.COLOR_RED);
+					EventRenderer.COLOR_RED);
 		else
-			receiver.drawScoreFont(engine, playerID, x+4, y, String.valueOf(score[0]), EventReceiver.COLOR_RED);
+			receiver.drawScoreFont(engine, playerID, x+4, y, String.valueOf(score[0]), EventRenderer.COLOR_RED);
 		y++;
-		receiver.drawScoreFont(engine, playerID, x, y, "2P: ", EventReceiver.COLOR_BLUE);
+		receiver.drawScoreFont(engine, playerID, x, y, "2P: ", EventRenderer.COLOR_BLUE);
 		if (scgettime[1] > 0 && lastscore[1] > 0 && lastmultiplier[1] > 0)
 			receiver.drawScoreFont(engine, playerID, x+4, y, "+" + lastscore[1] + "e" + lastmultiplier[1],
-					EventReceiver.COLOR_BLUE);
+					EventRenderer.COLOR_BLUE);
 		else
-			receiver.drawScoreFont(engine, playerID, x+4, y, String.valueOf(score[1]), EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, x+4, y, String.valueOf(score[1]), EventRenderer.COLOR_BLUE);
 	}
 
 	protected void drawOjama (GameEngine engine, int playerID, int x, int y, int headerColor) {
@@ -921,16 +921,16 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 		String ojamaStr2P = String.valueOf(ojama[1]);
 		if (ojamaAdd[1] > 0)
 			ojamaStr2P = ojamaStr2P + "(+" + String.valueOf(ojamaAdd[1]) + ")";
-		receiver.drawScoreFont(engine, playerID, x, y+1, "1P:", EventReceiver.COLOR_RED);
+		receiver.drawScoreFont(engine, playerID, x, y+1, "1P:", EventRenderer.COLOR_RED);
 		receiver.drawScoreFont(engine, playerID, x+4, y+1, ojamaStr1P, (ojama[0] > 0));
-		receiver.drawScoreFont(engine, playerID, x, y+2, "2P:", EventReceiver.COLOR_BLUE);
+		receiver.drawScoreFont(engine, playerID, x, y+2, "2P:", EventRenderer.COLOR_BLUE);
 		receiver.drawScoreFont(engine, playerID, x+4, y+2, ojamaStr2P, (ojama[1] > 0));
 	}
 
 	protected void drawAttack (GameEngine engine, int playerID, int x, int y, int headerColor) {
 		receiver.drawScoreFont(engine, playerID, x, y, "ATTACK", headerColor);
-		receiver.drawScoreFont(engine, playerID, x, y+1, "1P: " + String.valueOf(ojamaSent[0]), EventReceiver.COLOR_RED);
-		receiver.drawScoreFont(engine, playerID, x, y+2, "2P: " + String.valueOf(ojamaSent[1]), EventReceiver.COLOR_BLUE);
+		receiver.drawScoreFont(engine, playerID, x, y+1, "1P: " + String.valueOf(ojamaSent[0]), EventRenderer.COLOR_RED);
+		receiver.drawScoreFont(engine, playerID, x, y+2, "2P: " + String.valueOf(ojamaSent[1]), EventRenderer.COLOR_BLUE);
 	}
 
 	/*
@@ -938,17 +938,17 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		receiver.drawMenuFont(engine, playerID, 0, 1, "RESULT", EventReceiver.COLOR_ORANGE);
+		receiver.drawMenuFont(engine, playerID, 0, 1, "RESULT", EventRenderer.COLOR_ORANGE);
 		if(winnerID == -1) {
-			receiver.drawMenuFont(engine, playerID, 6, 2, "DRAW", EventReceiver.COLOR_GREEN);
+			receiver.drawMenuFont(engine, playerID, 6, 2, "DRAW", EventRenderer.COLOR_GREEN);
 		} else if(winnerID == playerID) {
-			receiver.drawMenuFont(engine, playerID, 6, 2, "WIN!", EventReceiver.COLOR_YELLOW);
+			receiver.drawMenuFont(engine, playerID, 6, 2, "WIN!", EventRenderer.COLOR_YELLOW);
 		} else {
-			receiver.drawMenuFont(engine, playerID, 6, 2, "LOSE", EventReceiver.COLOR_WHITE);
+			receiver.drawMenuFont(engine, playerID, 6, 2, "LOSE", EventRenderer.COLOR_WHITE);
 		}
 
 		float apm = (float)(ojamaSent[playerID] * 3600) / (float)(engine.statistics.time);
-		drawResult(engine, playerID, receiver, 3, EventReceiver.COLOR_ORANGE,
+		drawResult(engine, playerID, receiver, 3, EventRenderer.COLOR_ORANGE,
 				"ATTACK", String.format("%10d", ojamaSent[playerID]),
 				"CLEARED", String.format("%10d", engine.statistics.lines),
 				"MAX CHAIN", String.format("%10d", engine.statistics.maxChain),

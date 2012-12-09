@@ -242,7 +242,7 @@ public class RanksAI extends AbstractAI implements Runnable {
 	@Override
 	public void init(GameEngine engine, int playerID) {
 		gEngine = engine;
-		gManager = engine.owner;
+		gManager = engine.getOwner();
 
 		// Inits the ranks
 		initRanks();
@@ -869,7 +869,7 @@ public class RanksAI extends AbstractAI implements Runnable {
 				 thinkRequest = false;
 				 thinking = true;
 				 try {
-					 thinkBestPosition(gEngine, gEngine.playerID);
+					 thinkBestPosition(gEngine, gEngine.getPlayerID());
 
 				 } catch (Throwable e) {
 					 log.debug("RanksAI: thinkBestPosition Failed", e);

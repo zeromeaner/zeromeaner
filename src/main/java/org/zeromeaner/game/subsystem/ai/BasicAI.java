@@ -95,7 +95,7 @@ public class BasicAI extends AbstractAI implements Runnable {
 	public void init(GameEngine engine, int playerID) {
 		delay = 0;
 		gEngine = engine;
-		gManager = engine.owner;
+		gManager = engine.getOwner();
 		thinkRequest = false;
 		thinking = false;
 		threadRunning = false;
@@ -650,7 +650,7 @@ public class BasicAI extends AbstractAI implements Runnable {
 				thinkRequest = false;
 				thinking = true;
 				try {
-					thinkBestPosition(gEngine, gEngine.playerID);
+					thinkBestPosition(gEngine, gEngine.getPlayerID());
 				} catch (Throwable e) {
 					log.debug("BasicAI: thinkBestPosition Failed", e);
 				}

@@ -31,7 +31,7 @@ package org.zeromeaner.game.subsystem.mode;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
@@ -130,8 +130,8 @@ public class SquareMode extends AbstractMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		lastscore = 0;
 		scgettime = 0;
 		squares = 0;
@@ -180,7 +180,7 @@ public class SquareMode extends AbstractMode {
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
 		// Main menu
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 4);
 
@@ -257,7 +257,7 @@ public class SquareMode extends AbstractMode {
 		if(grayoutEnable == 0) grayoutStr = "OFF";
 		if(grayoutEnable == 1) grayoutStr = "SPIN ONLY";
 		if(grayoutEnable == 2) grayoutStr = "ALL";
-		drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_BLUE, 0,
+		drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
 				"GAME TYPE", GAMETYPE_NAME[gametype],
 				"OUTLINE", strOutline,
 				"AVALANCHE", strTSpinEnable,
@@ -308,7 +308,7 @@ public class SquareMode extends AbstractMode {
 	 */
 	@Override
 	public void renderLast(GameEngine engine, int playerID) {
-		receiver.drawScoreFont(engine, playerID, 0, 0, "SQUARE ("+GAMETYPE_NAME[gametype]+")", EventReceiver.COLOR_DARKBLUE);
+		receiver.drawScoreFont(engine, playerID, 0, 0, "SQUARE ("+GAMETYPE_NAME[gametype]+")", EventRenderer.COLOR_DARKBLUE);
 
 		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (engine.ai == null)) {
@@ -316,15 +316,15 @@ public class SquareMode extends AbstractMode {
 				int topY = ((receiver.getNextDisplayType() == 2) && (gametype == 0)) ? 6 : 4;
 
 				if (gametype == 0) {
-					receiver.drawScoreFont(engine, playerID, 3, topY-1, "SCORE SQUARE TIME", EventReceiver.COLOR_BLUE, scale);
+					receiver.drawScoreFont(engine, playerID, 3, topY-1, "SCORE SQUARE TIME", EventRenderer.COLOR_BLUE, scale);
 				} else if (gametype == 1) {
-					receiver.drawScoreFont(engine, playerID, 3, 3, "SCORE SQUARE", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, 3, 3, "SCORE SQUARE", EventRenderer.COLOR_BLUE);
 				} else if (gametype == 2) {
-					receiver.drawScoreFont(engine, playerID, 3, 3, "TIME     SQUARE", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, 3, 3, "TIME     SQUARE", EventRenderer.COLOR_BLUE);
 				}
 
 				for(int i = 0; i < RANKING_MAX; i++) {
-					receiver.drawScoreFont(engine, playerID, 0, topY+i, String.format("%2d", i + 1), EventReceiver.COLOR_YELLOW, scale);
+					receiver.drawScoreFont(engine, playerID, 0, topY+i, String.format("%2d", i + 1), EventRenderer.COLOR_YELLOW, scale);
 					if (gametype == 0) {
 						receiver.drawScoreFont(engine, playerID, 3, topY+i, String.valueOf(rankingScore[gametype][i]), (i == rankingRank), scale);
 						receiver.drawScoreFont(engine, playerID, 9, topY+i, String.valueOf(rankingSquares[gametype][i]), (i == rankingRank), scale);
@@ -339,7 +339,7 @@ public class SquareMode extends AbstractMode {
 				}
 			}
 		} else {
-			receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE", EventRenderer.COLOR_BLUE);
 			String strScore;
 			if((lastscore == 0) || (scgettime <= 0)) {
 				strScore = String.valueOf(engine.statistics.score);
@@ -348,21 +348,21 @@ public class SquareMode extends AbstractMode {
 			}
 			receiver.drawScoreFont(engine, playerID, 0, 4, strScore);
 
-			receiver.drawScoreFont(engine, playerID, 0, 6, "LINE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 6, "LINE", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 7, String.valueOf(engine.statistics.lines));
 
-			receiver.drawScoreFont(engine, playerID, 0, 9, "SQUARE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 9, "SQUARE", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 10, String.valueOf(squares));
 
-			receiver.drawScoreFont(engine, playerID, 0, 12, "TIME", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 12, "TIME", EventRenderer.COLOR_BLUE);
 			if(gametype == 1) {
 				// Ultra timer
 				int time = ULTRA_MAX_TIME - engine.statistics.time;
 				if(time < 0) time = 0;
-				int fontcolor = EventReceiver.COLOR_WHITE;
-				if((time < 30 * 60) && (time > 0)) fontcolor = EventReceiver.COLOR_YELLOW;
-				if((time < 20 * 60) && (time > 0)) fontcolor = EventReceiver.COLOR_ORANGE;
-				if((time < 10 * 60) && (time > 0)) fontcolor = EventReceiver.COLOR_RED;
+				int fontcolor = EventRenderer.COLOR_WHITE;
+				if((time < 30 * 60) && (time > 0)) fontcolor = EventRenderer.COLOR_YELLOW;
+				if((time < 20 * 60) && (time > 0)) fontcolor = EventRenderer.COLOR_ORANGE;
+				if((time < 10 * 60) && (time > 0)) fontcolor = EventRenderer.COLOR_RED;
 				receiver.drawScoreFont(engine, playerID, 0, 13, GeneralUtil.getTime(time), fontcolor);
 			} else {
 				// Normal timer
@@ -642,14 +642,14 @@ public class SquareMode extends AbstractMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		receiver.drawMenuFont(engine, playerID,  0, 1, "PLAY DATA", EventReceiver.COLOR_ORANGE);
+		receiver.drawMenuFont(engine, playerID,  0, 1, "PLAY DATA", EventRenderer.COLOR_ORANGE);
 
-		drawResult(engine, playerID, receiver, 3, EventReceiver.COLOR_BLUE,
+		drawResult(engine, playerID, receiver, 3, EventRenderer.COLOR_BLUE,
 				"SCORE", String.format("%10d", engine.statistics.score),
 				"LINE", String.format("%10d", engine.statistics.lines),
 				"SQUARE", String.format("%10d", squares),
 				"TIME", String.format("%10s", GeneralUtil.getTime(engine.statistics.time)));
-		drawResultRank(engine, playerID, receiver, 11, EventReceiver.COLOR_BLUE, rankingRank);
+		drawResultRank(engine, playerID, receiver, 11, EventRenderer.COLOR_BLUE, rankingRank);
 	}
 
 	/*

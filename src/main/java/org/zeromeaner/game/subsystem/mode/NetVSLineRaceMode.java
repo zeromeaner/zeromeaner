@@ -1,6 +1,6 @@
 package org.zeromeaner.game.subsystem.mode;
 
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.GeneralUtil;
@@ -165,16 +165,16 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 
 		int x = owner.receiver.getFieldDisplayPositionX(engine, playerID);
 		int y = owner.receiver.getFieldDisplayPositionY(engine, playerID);
-		int fontColor = EventReceiver.COLOR_WHITE;
+		int fontColor = EventRenderer.COLOR_WHITE;
 
 		if(netvsPlayerExist[playerID] && engine.isVisible) {
 			if( ((netvsIsGameActive) || ((netvsIsPractice) && (playerID == 0))) && (engine.stat != GameEngine.STAT_RESULT) ) {
 				// Lines left
 				int remainLines = Math.max(0, goalLines - engine.statistics.lines);
-				fontColor = EventReceiver.COLOR_WHITE;
-				if((remainLines <= 30) && (remainLines > 0)) fontColor = EventReceiver.COLOR_YELLOW;
-				if((remainLines <= 20) && (remainLines > 0)) fontColor = EventReceiver.COLOR_ORANGE;
-				if((remainLines <= 10) && (remainLines > 0)) fontColor = EventReceiver.COLOR_RED;
+				fontColor = EventRenderer.COLOR_WHITE;
+				if((remainLines <= 30) && (remainLines > 0)) fontColor = EventRenderer.COLOR_YELLOW;
+				if((remainLines <= 20) && (remainLines > 0)) fontColor = EventRenderer.COLOR_ORANGE;
+				if((remainLines <= 10) && (remainLines > 0)) fontColor = EventRenderer.COLOR_RED;
 
 				String strLines = String.valueOf(remainLines);
 
@@ -204,31 +204,31 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 
 				if(engine.displaysize != -1) {
 					if(place == 0) {
-						owner.receiver.drawMenuFont(engine, playerID, -2, 22, "1ST", EventReceiver.COLOR_ORANGE);
+						owner.receiver.drawMenuFont(engine, playerID, -2, 22, "1ST", EventRenderer.COLOR_ORANGE);
 					} else if(place == 1) {
-						owner.receiver.drawMenuFont(engine, playerID, -2, 22, "2ND", EventReceiver.COLOR_WHITE);
+						owner.receiver.drawMenuFont(engine, playerID, -2, 22, "2ND", EventRenderer.COLOR_WHITE);
 					} else if(place == 2) {
-						owner.receiver.drawMenuFont(engine, playerID, -2, 22, "3RD", EventReceiver.COLOR_RED);
+						owner.receiver.drawMenuFont(engine, playerID, -2, 22, "3RD", EventRenderer.COLOR_RED);
 					} else if(place == 3) {
-						owner.receiver.drawMenuFont(engine, playerID, -2, 22, "4TH", EventReceiver.COLOR_GREEN);
+						owner.receiver.drawMenuFont(engine, playerID, -2, 22, "4TH", EventRenderer.COLOR_GREEN);
 					} else if(place == 4) {
-						owner.receiver.drawMenuFont(engine, playerID, -2, 22, "5TH", EventReceiver.COLOR_BLUE);
+						owner.receiver.drawMenuFont(engine, playerID, -2, 22, "5TH", EventRenderer.COLOR_BLUE);
 					} else if(place == 5) {
-						owner.receiver.drawMenuFont(engine, playerID, -2, 22, "6TH", EventReceiver.COLOR_PURPLE);
+						owner.receiver.drawMenuFont(engine, playerID, -2, 22, "6TH", EventRenderer.COLOR_PURPLE);
 					}
 				} else {
 					if(place == 0) {
-						owner.receiver.drawDirectFont(engine, playerID, x, y + 168, "1ST", EventReceiver.COLOR_ORANGE, 0.5f);
+						owner.receiver.drawDirectFont(engine, playerID, x, y + 168, "1ST", EventRenderer.COLOR_ORANGE, 0.5f);
 					} else if(place == 1) {
-						owner.receiver.drawDirectFont(engine, playerID, x, y + 168, "2ND", EventReceiver.COLOR_WHITE, 0.5f);
+						owner.receiver.drawDirectFont(engine, playerID, x, y + 168, "2ND", EventRenderer.COLOR_WHITE, 0.5f);
 					} else if(place == 2) {
-						owner.receiver.drawDirectFont(engine, playerID, x, y + 168, "3RD", EventReceiver.COLOR_RED, 0.5f);
+						owner.receiver.drawDirectFont(engine, playerID, x, y + 168, "3RD", EventRenderer.COLOR_RED, 0.5f);
 					} else if(place == 3) {
-						owner.receiver.drawDirectFont(engine, playerID, x, y + 168, "4TH", EventReceiver.COLOR_GREEN, 0.5f);
+						owner.receiver.drawDirectFont(engine, playerID, x, y + 168, "4TH", EventRenderer.COLOR_GREEN, 0.5f);
 					} else if(place == 4) {
-						owner.receiver.drawDirectFont(engine, playerID, x, y + 168, "5TH", EventReceiver.COLOR_BLUE, 0.5f);
+						owner.receiver.drawDirectFont(engine, playerID, x, y + 168, "5TH", EventRenderer.COLOR_BLUE, 0.5f);
 					} else if(place == 5) {
-						owner.receiver.drawDirectFont(engine, playerID, x, y + 168, "6TH", EventReceiver.COLOR_PURPLE, 0.5f);
+						owner.receiver.drawDirectFont(engine, playerID, x, y + 168, "6TH", EventRenderer.COLOR_PURPLE, 0.5f);
 					}
 				}
 			}
@@ -239,9 +239,9 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 				if(engine.displaysize != -1) {
 					int y2 = 21;
 					if(engine.stat == GameEngine.STAT_RESULT) y2 = 22;
-					owner.receiver.drawMenuFont(engine, playerID, 0, y2, strTemp, EventReceiver.COLOR_WHITE);
+					owner.receiver.drawMenuFont(engine, playerID, 0, y2, strTemp, EventRenderer.COLOR_WHITE);
 				} else {
-					owner.receiver.drawDirectFont(engine, playerID, x + 4, y + 168, strTemp, EventReceiver.COLOR_WHITE, 0.5f);
+					owner.receiver.drawDirectFont(engine, playerID, x + 4, y + 168, strTemp, EventRenderer.COLOR_WHITE, 0.5f);
 				}
 			}
 		}
@@ -257,7 +257,7 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 		float scale = 1.0f;
 		if(engine.displaysize == -1) scale = 0.5f;
 
-		drawResultScale(engine, playerID, owner.receiver, 2, EventReceiver.COLOR_ORANGE, scale,
+		drawResultScale(engine, playerID, owner.receiver, 2, EventRenderer.COLOR_ORANGE, scale,
 				"LINE", String.format("%10d", engine.statistics.lines),
 				"PIECE", String.format("%10d", engine.statistics.totalPieceLocked),
 				"LINE/MIN", String.format("%10g", engine.statistics.lpm),
@@ -270,7 +270,7 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netSendStats(GameEngine engine) {
-		if((engine.playerID == 0) && !netvsIsPractice && !netvsIsWatch()) {
+		if((engine.getPlayerID() == 0) && !netvsIsPractice && !netvsIsWatch()) {
 			String strMsg = "game\tstats\t" + engine.statistics.lines + "\t" + engine.statistics.pps + "\t" + engine.statistics.lpm + "\n";
 			netLobby.netPlayerClient.send(strMsg);
 		}
@@ -292,7 +292,7 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		String msg = "gstat\t";
 		msg += netvsPlayerPlace[playerID] + "\t";
 		msg += 0 + "\t" + 0 + "\t" + 0 + "\t";

@@ -31,7 +31,7 @@ package org.zeromeaner.game.subsystem.mode;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.net.NetUtil;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
@@ -144,8 +144,8 @@ public class UltraMode extends AbstractNetMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		lastscore = 0;
 		scgettime = 0;
 		lastevent = EVENT_NONE;
@@ -165,17 +165,17 @@ public class UltraMode extends AbstractNetMode {
 
 		netPlayerInit(engine, playerID);
 
-		if(engine.owner.replayMode == false) {
-			presetNumber = engine.owner.modeConfig.getProperty("ultra.presetNumber", 0);
-			loadPreset(engine, engine.owner.modeConfig, -1);
+		if(engine.getOwner().replayMode == false) {
+			presetNumber = engine.getOwner().modeConfig.getProperty("ultra.presetNumber", 0);
+			loadPreset(engine, engine.getOwner().modeConfig, -1);
 			loadRanking(owner.modeConfig, engine.ruleopt.strRuleName);
 			version = CURRENT_VERSION;
 		} else {
 			presetNumber = 0;
-			loadPreset(engine, engine.owner.replayProp, -1);
-			version = engine.owner.replayProp.getProperty("ultra.version", 0);
+			loadPreset(engine, engine.getOwner().replayProp, -1);
+			version = engine.getOwner().replayProp.getProperty("ultra.version", 0);
 			// NET: Load name
-			netPlayerName = engine.owner.replayProp.getProperty(playerID + ".net.netPlayerName", "");
+			netPlayerName = engine.getOwner().replayProp.getProperty(playerID + ".net.netPlayerName", "");
 		}
 	}
 
@@ -241,7 +241,7 @@ public class UltraMode extends AbstractNetMode {
 			netOnUpdateNetPlayRanking(engine, goaltype);
 		}
 		// Menu
-		else if(engine.owner.replayMode == false) {
+		else if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 17);
 
@@ -397,7 +397,7 @@ public class UltraMode extends AbstractNetMode {
 			// NET: Netplay Ranking
 			netOnRenderNetPlayRanking(engine, playerID, receiver);
 		} else if(engine.statc[2] < 10) {
-			drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_BLUE, 0,
+			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
 					"GRAVITY", String.valueOf(engine.speed.gravity),
 					"G-MAX", String.valueOf(engine.speed.denominator),
 					"ARE", String.valueOf(engine.speed.are),
@@ -417,14 +417,14 @@ public class UltraMode extends AbstractNetMode {
 			} else {
 				strTSpinEnable = GeneralUtil.getONorOFF(enableTSpin);
 			}
-			drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_BLUE, 10,
+			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 10,
 					"SPIN BONUS", strTSpinEnable,
 					"EZ SPIN", GeneralUtil.getONorOFF(enableTSpinKick),
 					"SPIN TYPE", (spinCheckType == 0) ? "4POINT" : "IMMOBILE",
 					"EZIMMOBILE", GeneralUtil.getONorOFF(tspinEnableEZ),
 					"B2B", GeneralUtil.getONorOFF(enableB2B),
 					"COMBO",  GeneralUtil.getONorOFF(enableCombo));
-			drawMenu(engine, playerID, receiver, 12, EventReceiver.COLOR_GREEN, 16,
+			drawMenu(engine, playerID, receiver, 12, EventRenderer.COLOR_GREEN, 16,
 					"LOAD", String.valueOf(presetNumber),
 					"SAVE", String.valueOf(presetNumber));
 		}
@@ -474,31 +474,31 @@ public class UltraMode extends AbstractNetMode {
 	public void renderLast(GameEngine engine, int playerID) {
 		if(owner.menuOnly) return;
 
-		receiver.drawScoreFont(engine, playerID, 0, 0, "ULTRA", EventReceiver.COLOR_CYAN);
-		receiver.drawScoreFont(engine, playerID, 0, 1, "(" + (goaltype + 1) + " MINUTE GAME)", EventReceiver.COLOR_CYAN);
+		receiver.drawScoreFont(engine, playerID, 0, 0, "ULTRA", EventRenderer.COLOR_CYAN);
+		receiver.drawScoreFont(engine, playerID, 0, 1, "(" + (goaltype + 1) + " MINUTE GAME)", EventRenderer.COLOR_CYAN);
 
 		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (big == false) && (engine.ai == null)) {
-				receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE RANKING", EventReceiver.COLOR_GREEN);
-				receiver.drawScoreFont(engine, playerID, 3, 4, "SCORE  LINE", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE RANKING", EventRenderer.COLOR_GREEN);
+				receiver.drawScoreFont(engine, playerID, 3, 4, "SCORE  LINE", EventRenderer.COLOR_BLUE);
 
 				for(int i = 0; i < RANKING_MAX; i++) {
-					receiver.drawScoreFont(engine, playerID, 0, 5 + i, String.format("%2d", i + 1), EventReceiver.COLOR_YELLOW);
+					receiver.drawScoreFont(engine, playerID, 0, 5 + i, String.format("%2d", i + 1), EventRenderer.COLOR_YELLOW);
 					receiver.drawScoreFont(engine, playerID, 3, 5 + i, String.valueOf(rankingScore[goaltype][0][i]), (i == rankingRank[0]));
 					receiver.drawScoreFont(engine, playerID, 10, 5 + i, String.valueOf(rankingLines[goaltype][0][i]), (i == rankingRank[0]));
 				}
 
-				receiver.drawScoreFont(engine, playerID, 0, 11, "LINE RANKING", EventReceiver.COLOR_GREEN);
-				receiver.drawScoreFont(engine, playerID, 3, 12, "LINE SCORE", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 0, 11, "LINE RANKING", EventRenderer.COLOR_GREEN);
+				receiver.drawScoreFont(engine, playerID, 3, 12, "LINE SCORE", EventRenderer.COLOR_BLUE);
 
 				for(int i = 0; i < RANKING_MAX; i++) {
-					receiver.drawScoreFont(engine, playerID, 0, 13 + i, String.format("%2d", i + 1), EventReceiver.COLOR_YELLOW);
+					receiver.drawScoreFont(engine, playerID, 0, 13 + i, String.format("%2d", i + 1), EventRenderer.COLOR_YELLOW);
 					receiver.drawScoreFont(engine, playerID, 3, 13 + i, String.valueOf(rankingLines[goaltype][1][i]), (i == rankingRank[1]));
 					receiver.drawScoreFont(engine, playerID, 8, 13 + i, String.valueOf(rankingScore[goaltype][1][i]), (i == rankingRank[1]));
 				}
 			}
 		} else {
-			receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE", EventRenderer.COLOR_BLUE);
 			String strScore;
 			if((lastscore == 0) || (scgettime >= 120)) {
 				strScore = String.valueOf(engine.statistics.score);
@@ -507,22 +507,22 @@ public class UltraMode extends AbstractNetMode {
 			}
 			receiver.drawScoreFont(engine, playerID, 0, 4, strScore);
 
-			receiver.drawScoreFont(engine, playerID, 0, 6, "LINE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 6, "LINE", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 7, String.valueOf(engine.statistics.lines));
 
-			receiver.drawScoreFont(engine, playerID, 0, 9, "SCORE/MIN", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 9, "SCORE/MIN", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 10, String.format("%-10g", engine.statistics.spm));
 
-			receiver.drawScoreFont(engine, playerID, 0, 12, "LINE/MIN", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 12, "LINE/MIN", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 13, String.valueOf(engine.statistics.lpm));
 
-			receiver.drawScoreFont(engine, playerID, 0, 15, "TIME", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 15, "TIME", EventRenderer.COLOR_BLUE);
 			int time = ((goaltype + 1) * 3600) - engine.statistics.time;
 			if(time < 0) time = 0;
-			int fontcolor = EventReceiver.COLOR_WHITE;
-			if((time < 30 * 60) && (time > 0)) fontcolor = EventReceiver.COLOR_YELLOW;
-			if((time < 20 * 60) && (time > 0)) fontcolor = EventReceiver.COLOR_ORANGE;
-			if((time < 10 * 60) && (time > 0)) fontcolor = EventReceiver.COLOR_RED;
+			int fontcolor = EventRenderer.COLOR_WHITE;
+			if((time < 30 * 60) && (time > 0)) fontcolor = EventRenderer.COLOR_YELLOW;
+			if((time < 20 * 60) && (time > 0)) fontcolor = EventRenderer.COLOR_ORANGE;
+			if((time < 10 * 60) && (time > 0)) fontcolor = EventRenderer.COLOR_RED;
 			receiver.drawScoreFont(engine, playerID, 0, 16, GeneralUtil.getTime(time), fontcolor);
 
 			if((lastevent != EVENT_NONE) && (scgettime < 120)) {
@@ -530,52 +530,52 @@ public class UltraMode extends AbstractNetMode {
 
 				switch(lastevent) {
 				case EVENT_SINGLE:
-					receiver.drawMenuFont(engine, playerID, 2, 21, "SINGLE", EventReceiver.COLOR_DARKBLUE);
+					receiver.drawMenuFont(engine, playerID, 2, 21, "SINGLE", EventRenderer.COLOR_DARKBLUE);
 					break;
 				case EVENT_DOUBLE:
-					receiver.drawMenuFont(engine, playerID, 2, 21, "DOUBLE", EventReceiver.COLOR_BLUE);
+					receiver.drawMenuFont(engine, playerID, 2, 21, "DOUBLE", EventRenderer.COLOR_BLUE);
 					break;
 				case EVENT_TRIPLE:
-					receiver.drawMenuFont(engine, playerID, 2, 21, "TRIPLE", EventReceiver.COLOR_GREEN);
+					receiver.drawMenuFont(engine, playerID, 2, 21, "TRIPLE", EventRenderer.COLOR_GREEN);
 					break;
 				case EVENT_FOUR:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 3, 21, "FOUR", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 3, 21, "FOUR", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 3, 21, "FOUR", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 3, 21, "FOUR", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_ZERO_MINI:
-					receiver.drawMenuFont(engine, playerID, 2, 21, strPieceName + "-SPIN", EventReceiver.COLOR_PURPLE);
+					receiver.drawMenuFont(engine, playerID, 2, 21, strPieceName + "-SPIN", EventRenderer.COLOR_PURPLE);
 					break;
 				case EVENT_TSPIN_ZERO:
-					receiver.drawMenuFont(engine, playerID, 2, 21, strPieceName + "-SPIN", EventReceiver.COLOR_PINK);
+					receiver.drawMenuFont(engine, playerID, 2, 21, strPieceName + "-SPIN", EventRenderer.COLOR_PINK);
 					break;
 				case EVENT_TSPIN_SINGLE_MINI:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-S", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-S", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-S", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-S", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_SINGLE:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-SINGLE", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-SINGLE", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-SINGLE", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-SINGLE", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_DOUBLE_MINI:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-D", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-D", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-D", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-MINI-D", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_DOUBLE:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-DOUBLE", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-DOUBLE", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-DOUBLE", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-DOUBLE", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_TRIPLE:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-TRIPLE", EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-TRIPLE", EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-TRIPLE", EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 1, 21, strPieceName + "-TRIPLE", EventRenderer.COLOR_ORANGE);
 					break;
 				case EVENT_TSPIN_EZ:
-					if(lastb2b) receiver.drawMenuFont(engine, playerID, 3, 21, "EZ-" + strPieceName, EventReceiver.COLOR_RED);
-					else receiver.drawMenuFont(engine, playerID, 3, 21, "EZ-" + strPieceName, EventReceiver.COLOR_ORANGE);
+					if(lastb2b) receiver.drawMenuFont(engine, playerID, 3, 21, "EZ-" + strPieceName, EventRenderer.COLOR_RED);
+					else receiver.drawMenuFont(engine, playerID, 3, 21, "EZ-" + strPieceName, EventRenderer.COLOR_ORANGE);
 					break;
 				}
 
 				if((lastcombo >= 2) && (lastevent != EVENT_TSPIN_ZERO_MINI) && (lastevent != EVENT_TSPIN_ZERO))
-					receiver.drawMenuFont(engine, playerID, 2, 22, (lastcombo - 1) + "COMBO", EventReceiver.COLOR_CYAN);
+					receiver.drawMenuFont(engine, playerID, 2, 22, (lastcombo - 1) + "COMBO", EventRenderer.COLOR_CYAN);
 			}
 		}
 
@@ -779,32 +779,32 @@ public class UltraMode extends AbstractNetMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		drawResultStats(engine, playerID, receiver, 0, EventReceiver.COLOR_BLUE, STAT_SCORE);
+		drawResultStats(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, STAT_SCORE);
 		if(rankingRank[0] != -1) {
 			String strRank = String.format("RANK %d", rankingRank[0] + 1);
-			receiver.drawMenuFont(engine, playerID, 4, 2, strRank, EventReceiver.COLOR_ORANGE);
+			receiver.drawMenuFont(engine, playerID, 4, 2, strRank, EventRenderer.COLOR_ORANGE);
 		}
 
-		drawResultStats(engine, playerID, receiver, 3, EventReceiver.COLOR_BLUE, STAT_LINES);
+		drawResultStats(engine, playerID, receiver, 3, EventRenderer.COLOR_BLUE, STAT_LINES);
 		if(rankingRank[1] != -1) {
 			String strRank = String.format("RANK %d", rankingRank[1] + 1);
-			receiver.drawMenuFont(engine, playerID, 4, 5, strRank, EventReceiver.COLOR_ORANGE);
+			receiver.drawMenuFont(engine, playerID, 4, 5, strRank, EventRenderer.COLOR_ORANGE);
 		}
 
-		drawResultStats(engine, playerID, receiver, 6, EventReceiver.COLOR_BLUE,
+		drawResultStats(engine, playerID, receiver, 6, EventRenderer.COLOR_BLUE,
 				STAT_PIECE, STAT_SPL, STAT_SPM, STAT_LPM, STAT_PPS);
 
-		drawResultNetRank(engine, playerID, receiver, 16, EventReceiver.COLOR_BLUE, netRankingRank[0]);
-		drawResultNetRankDaily(engine, playerID, receiver, 18, EventReceiver.COLOR_BLUE, netRankingRank[1]);
+		drawResultNetRank(engine, playerID, receiver, 16, EventRenderer.COLOR_BLUE, netRankingRank[0]);
+		drawResultNetRankDaily(engine, playerID, receiver, 18, EventRenderer.COLOR_BLUE, netRankingRank[1]);
 
 		if(netIsPB) {
-			receiver.drawMenuFont(engine, playerID, 2, 21, "NEW PB", EventReceiver.COLOR_ORANGE);
+			receiver.drawMenuFont(engine, playerID, 2, 21, "NEW PB", EventRenderer.COLOR_ORANGE);
 		}
 
 		if(netIsNetPlay && (netReplaySendStatus == 1)) {
-			receiver.drawMenuFont(engine, playerID, 0, 22, "SENDING...", EventReceiver.COLOR_PINK);
+			receiver.drawMenuFont(engine, playerID, 0, 22, "SENDING...", EventRenderer.COLOR_PINK);
 		} else if(netIsNetPlay && !netIsWatch && (netReplaySendStatus == 2)) {
-			receiver.drawMenuFont(engine, playerID, 1, 22, "A: RETRY", EventReceiver.COLOR_RED);
+			receiver.drawMenuFont(engine, playerID, 1, 22, "A: RETRY", EventRenderer.COLOR_RED);
 		}
 	}
 
@@ -813,8 +813,8 @@ public class UltraMode extends AbstractNetMode {
 	 */
 	@Override
 	public void saveReplay(GameEngine engine, int playerID, CustomProperties prop) {
-		savePreset(engine, engine.owner.replayProp, -1);
-		engine.owner.replayProp.setProperty("ultra.version", version);
+		savePreset(engine, engine.getOwner().replayProp, -1);
+		engine.getOwner().replayProp.setProperty("ultra.version", version);
 
 		// NET: Save name
 		if((netPlayerName != null) && (netPlayerName.length() > 0)) {

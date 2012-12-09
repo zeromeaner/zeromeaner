@@ -89,7 +89,7 @@ public class Nohoho extends AbstractAI implements Runnable {
 	public void init(GameEngine engine, int playerID) {
 		delay = 0;
 		gEngine = engine;
-		gManager = engine.owner;
+		gManager = engine.getOwner();
 		thinkRequest = new ThinkRequestMutex();
 		thinking = false;
 		threadRunning = false;
@@ -678,7 +678,7 @@ public class Nohoho extends AbstractAI implements Runnable {
 				thinkRequest.active = false;
 				thinking = true;
 				try {
-					thinkBestPosition(gEngine, gEngine.playerID);
+					thinkBestPosition(gEngine, gEngine.getPlayerID());
 					thinkComplete = true;
 					log.debug("Nohoho: thinkBestPosition completed successfully");
 				} catch (Throwable e) {
