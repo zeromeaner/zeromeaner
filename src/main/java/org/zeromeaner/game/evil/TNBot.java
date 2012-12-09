@@ -135,10 +135,10 @@ public class TNBot extends AbstractAI {
 			if(pa.getStartX() - Field.BUFFER != engine.nowPieceX || pa.getStartY() - Field.BUFFER != engine.nowPieceY) {
 				boolean recompute = false;
 				if(pa.getStartX() - Field.BUFFER == engine.nowPieceX && pa.getStartY() - Field.BUFFER > engine.nowPieceY) {
-					// We expected the piece to be lower than it is.  Odd, but just put back the current move and do nothing.
+					// We expected the piece to be lower than it is.  Odd, but just put back the current move and make a soft drop.
 					// This can happen on the very first move.
 					actions.add(0, pa);
-					return;
+					pa = new PlayerAction(field, Type.DOWN_ONE);
 				} else if(pa.getStartX() - Field.BUFFER == engine.nowPieceX && pa.getStartY() - Field.BUFFER < engine.nowPieceY) {
 					// We expected the piece to be higher than it is.
 					// This can happen on the very first move, or because of gravity.
