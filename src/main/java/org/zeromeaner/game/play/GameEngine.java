@@ -2238,10 +2238,10 @@ public class GameEngine {
 			if(ending == 0) timerActive = true;
 
 			if((ai != null) && (!owner.replayMode || owner.replayRerecord)) ai.newPiece(this, playerID);
+		} else {
+			if(isSynchronousBlocked())
+				return;
 		}
-		
-		if(isSynchronousBlocked())
-			return;
 
 		checkDropContinuousUse();
 
