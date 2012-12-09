@@ -286,9 +286,8 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 		if((engine.ending == 0) && (netIsNetPlay) && (!netIsWatch) && ((netNumSpectators > 0) || (netForceSendMovements))) {
 			netSendField(engine);
 			netSendStats(engine);
+			netLobby.netPlayerClient.send("game\tsynchronous\tlocked\t" + netvsMySeatID + "\n");
 		}
-		
-		netLobby.netPlayerClient.send("game\tsynchronous\tlocked\t" + netvsMySeatID + "\n");
 	}
 
 	/**
