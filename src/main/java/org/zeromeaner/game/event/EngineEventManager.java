@@ -54,15 +54,9 @@ public class EngineEventManager implements EngineEventGenerator {
 				if(e == null)
 					e = newEvent(type, args);
 				EngineListener el = (EngineListener) ll[i+1];
-				try {
-					Object rval = type.getMethod().invoke(el, e);
-					if(rval instanceof Boolean)
-						ret = (ret || (Boolean) rval);
-				} catch(IllegalAccessException iae) {
-					throw new RuntimeException(iae);
-				} catch(InvocationTargetException ite) {
-					throw new RuntimeException(ite);
-				}
+				Object rval = e.invoke(el);
+				if(rval instanceof Boolean)
+					ret = (ret || (Boolean) rval);
 			}
 		}
 		return ret;

@@ -1,5 +1,6 @@
 package org.zeromeaner.game.event;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.EventObject;
 
@@ -118,6 +119,15 @@ public class EngineEvent extends EventObject {
 		}
 	}
 	
+	public Object invoke(EngineListener l) {
+		try {
+			return type.getMethod().invoke(l, this);
+		} catch(IllegalAccessException iae) {
+			throw new InternalError("Unable to access public interface method");
+		} catch (InvocationTargetException ite) {
+			throw new RuntimeException(ite);
+		}
+	}
 	
 	@Override
 	public GameEngine getSource() {
