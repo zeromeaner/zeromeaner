@@ -30,6 +30,8 @@ package org.zeromeaner.game.play;
 
 import java.util.Calendar;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.log4j.Logger;
 import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.MemorylessRandomizer;
 import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
@@ -664,6 +666,10 @@ public class GameEngine {
 
 	/** 0 = default, 1 = link by color, 2 = link by color but ignore links for cascade (Avalanche) */
 	public int sticky;
+	
+	public AtomicInteger synchronousSync = new AtomicInteger(0);
+	
+	public int synchronousIncrement = 0;
 
 	/**
 	 * Constructor
@@ -1926,11 +1932,15 @@ public class GameEngine {
 	 * Ready→Goのときの処理
 	 */
 	public void statReady() {
+		// Always initialize the sync
+		synchronousSync = new AtomicInteger(0);
+		
 		//  event 発生
 		if(owner.mode != null) {
 			if(owner.mode.onReady(this, playerID) == true) return;
 		}
 		owner.receiver.onReady(this, playerID);
+
 
 		// 横溜め
 		if(ruleopt.dasInReady && gameActive) padRepeat();
@@ -2046,6 +2056,10 @@ public class GameEngine {
 	 * Blockピースの移動処理
 	 */
 	public void statMove() {
+		// Check the sync
+		if(synchronousSync.get() > 0)
+			return;
+
 		dasRepeat = false;
 
 		//  event 発生
@@ -2053,7 +2067,7 @@ public class GameEngine {
 			if(owner.mode.onMove(this, playerID) == true) return;
 		}
 		owner.receiver.onMove(this, playerID);
-
+		
 		// 横溜めInitialization
 		int moveDirection = getMoveDirection();
 
@@ -2661,6 +2675,7 @@ public class GameEngine {
 
 				if(owner.mode != null) owner.mode.pieceLocked(this, playerID, lineClearing);
 				owner.receiver.pieceLocked(this, playerID, lineClearing);
+				synchronousSync.addAndGet(synchronousIncrement);
 
 				dasRepeat = false;
 				dasInstant = false;

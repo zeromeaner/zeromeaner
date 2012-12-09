@@ -133,6 +133,11 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	/** NET: Net Rankings' roll completed flag (Declared in NetDummyMode) */
 	protected LinkedList<Integer>[] netRankingRollclear;
 
+	/** NET-VS: Local player's seat ID (-1:Spectator) */
+	protected int netvsMySeatID;
+
+	protected boolean synchronousPlay;
+	
 	/*
 	 * NET: Mode name
 	 */
@@ -267,6 +272,11 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 		return false;
 	}
 
+	@Override
+	public boolean onReady(GameEngine engine, int playerID) {
+		return super.onReady(engine, playerID);
+	}
+	
 	/**
 	 * NET: When the piece locked. NetDummyMode will send field and stats.
 	 */
@@ -277,6 +287,8 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 			netSendField(engine);
 			netSendStats(engine);
 		}
+		
+		netLobby.netPlayerClient.send("game\tsynchronous\tlocked\t" + netvsMySeatID + "\n");
 	}
 
 	/**
@@ -601,6 +613,27 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 					engine.stat = GameEngine.STAT_RESULT;
 					engine.resetStatc();
 				}
+			}
+		}
+		
+		if(synchronousPlay) {
+			GameEngine e = owner.engine[0];
+			e.synchronousIncrement = netLobby.netPlayerClient.getPlayerCount() - 1;
+			if("game".equals(message[0])) {
+				if("synchronous".equals(message[3])) {
+					if("locked".equals(message[4])) {
+						e.synchronousSync.decrementAndGet();
+					}
+				}
+				if("resultsscreen".equals(message[3])) {
+					e.synchronousSync.set(0);
+				}
+			}
+			if("playerlogout".equals(message[0])) {
+				e.synchronousSync.decrementAndGet();
+			}
+			if("dead".equals(message[0])) {
+				e.synchronousSync.decrementAndGet();
 			}
 		}
 	}

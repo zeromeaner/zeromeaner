@@ -61,8 +61,6 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	protected static final int NETVS_PIECE_AUTO_LOCK_TIME = 30 * 60;
 
 	/* -------------------- Variables -------------------- */
-	/** NET-VS: Local player's seat ID (-1:Spectator) */
-	protected int netvsMySeatID;
 
 	/** NET-VS: Number of players */
 	protected int netvsNumPlayers;
@@ -1211,6 +1209,26 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	 */
 	@Override
 	public void netlobbyOnMessage(NetLobbyFrame lobby, NetPlayerClient client, String[] message) throws IOException {
+		if(synchronousPlay) {
+			GameEngine e = owner.engine[0];
+			e.synchronousIncrement = netLobby.netPlayerClient.getPlayerCount() - 1;
+			if("game".equals(message[0])) {
+				if("synchronous".equals(message[3])) {
+					if("locked".equals(message[4])) {
+						e.synchronousSync.decrementAndGet();
+					}
+				}
+				if("resultsscreen".equals(message[3])) {
+					e.synchronousSync.set(0);
+				}
+			}
+			if("playerlogout".equals(message[0])) {
+				e.synchronousSync.decrementAndGet();
+			}
+			if("dead".equals(message[0])) {
+				e.synchronousSync.decrementAndGet();
+			}
+		}
 		// Player status update
 		if(message[0].equals("playerupdate")) {
 			NetPlayerInfo pInfo = new NetPlayerInfo(message[1]);
