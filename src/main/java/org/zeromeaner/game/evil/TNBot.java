@@ -32,11 +32,13 @@ public class TNBot extends AbstractAI {
 		throw new InternalError("switch fallthrough when all cases covered");
 	}
 
+	private static int MAX_RECOMPUTES = 20;
+
 	private TNField field;
 	private List<PlayerAction> actions;
 	private boolean pressed = false;
 	
-	private int requiredY = -1;
+	private int recomputes = 0;
 	
 	@Override
 	public String getName() {
@@ -50,28 +52,39 @@ public class TNBot extends AbstractAI {
 	}
 	
 	protected void recompute(GameEngine engine) {
+		if(recomputes > MAX_RECOMPUTES)
+			return;
 		field.update();
 		Shape shape = TNPiece.fromNullpo(engine.nowPieceObject);
 
-
-		//		if(engine.nextPieceArraySize == 1) {
 		field.setShape(shape);
 		field.setShapeX(engine.nowPieceX + Field.BUFFER);
 		field.setShapeY(engine.nowPieceY + Field.BUFFER);
 
-		Decision best = AIKernel.getInstance().bestFor(field);
-		actions = best.bestPath;
-		//		} else {
-		//			Shape next = TNPiece.fromNullpo(engine.getNextObject(engine.nextPieceCount + 1));
-		//			QueueContext qc = new QueueContext(field, new ShapeType[] {shape.type(), next.type()});
-		//			Decision best = AIKernel.getInstance().bestFor(qc);
-		//			actions = best.bestPath;
-		//		}
-		requiredY = -1;
+		if(engine.nextPieceArraySize == 1) {
+
+			Decision best = AIKernel.getInstance().bestFor(field);
+			actions = best.bestPath;
+		} else {
+			Shape next = TNPiece.fromNullpo(engine.getNextObject(engine.nextPieceCount + 1));
+			QueueContext qc = new QueueContext(field, new ShapeType[] {shape.type(), next.type()});
+			Decision best = AIKernel.getInstance().bestFor(qc);
+			actions = best.bestPath;
+//		} else {
+//			Shape next = TNPiece.fromNullpo(engine.getNextObject(engine.nextPieceCount + 1));
+//			Shape third = TNPiece.fromNullpo(engine.getNextObject(engine.nextPieceCount + 2));
+//			QueueContext qc = new QueueContext(field, new ShapeType[] {shape.type(), next.type(), third.type()});
+//			Decision best = AIKernel.getInstance().bestFor(qc);
+//			actions = best.bestPath;
+		}
+		
+//		requiredY = -1;
+		recomputes++;
 	}
 
 	@Override
 	public void newPiece(GameEngine engine, int playerID) {
+		recomputes = 0;
 		recompute(engine);
 	}
 
@@ -102,20 +115,52 @@ public class TNBot extends AbstractAI {
 			if(engine.nowPieceY == -2)
 				return;
 			
-			if(requiredY != -1 && engine.nowPieceY < requiredY)
-				return;
-			if(requiredY != -1 && engine.nowPieceY > requiredY)
-				recompute(engine);
+//			if(requiredY != -1 && engine.nowPieceY > requiredY) {
+//				boolean recompute = false;
+//				for(int i = requiredY; i < engine.nowPieceY; i++) {
+//					if(actions.size() == 0 || actions.remove(0).getType() != Type.DOWN_ONE) {
+//						recompute = true;
+//						break;
+//					}
+//				}
+//				if(recompute)
+//					recompute(engine);
+//				
+//				if(actions.size() == 0)
+//					return;
+//			}
 			
 			PlayerAction pa = actions.remove(0);
 			
 			if(pa.getStartX() - Field.BUFFER != engine.nowPieceX || pa.getStartY() - Field.BUFFER != engine.nowPieceY) {
-				// FIXME: Why is this possible?  Strange inconsistencies in the kick tables I guess.
-				System.out.println("Strange inconsistency in actions.  Recomputing.");
-				recompute(engine);
-				if(actions.size() == 0)
+				boolean recompute = false;
+				if(pa.getStartX() - Field.BUFFER == engine.nowPieceX && pa.getStartY() - Field.BUFFER > engine.nowPieceY) {
+					// We expected the piece to be lower than it is.  Odd, but just put back the current move and do nothing.
+					// This can happen on the very first move.
+					actions.add(0, pa);
 					return;
-				pa = actions.remove(0);
+				} else if(pa.getStartX() - Field.BUFFER == engine.nowPieceX && pa.getStartY() - Field.BUFFER < engine.nowPieceY) {
+					// We expected the piece to be higher than it is.
+					// This can happen on the very first move, or because of gravity.
+					// Discard soft-drop moves until we either catch up or need to recompute
+					while(pa.getType() == Type.DOWN_ONE && pa.getStartY() - Field.BUFFER < engine.nowPieceY) {
+						pa = actions.remove(0);
+					}
+					if(pa.getStartY() - Field.BUFFER != engine.nowPieceY)
+						recompute = true;
+				} else
+					recompute = true;
+				if(recompute) {
+					// FIXME: Why is this possible?  Strange inconsistencies in the kick tables I guess.
+					if(recomputes > 1) // 1 recompute is the initial computation
+						System.out.println("Strange inconsistency in actions.  Recomputing.");
+					if(recomputes <= MAX_RECOMPUTES) {
+						recompute(engine);
+						if(actions.size() == 0)
+							return;
+						pa = actions.remove(0);
+					}
+				}
 			}
 			
 			int buttonId;
@@ -132,14 +177,14 @@ public class TNBot extends AbstractAI {
 			if(dropOnly)
 				buttonId = Controller.BUTTON_UP;
 			
-			if(buttonId == Controller.BUTTON_DOWN && !dropOnly) {
-				requiredY = engine.nowPieceY + 1;
-			} else {
-				requiredY = -1;
+			ctrl.setButtonPressed(buttonId);
+
+//			if(buttonId == Controller.BUTTON_DOWN && !dropOnly) {
+//				requiredY = engine.nowPieceY + 1;
+//			} else
+//				requiredY = -1;
 			
-				ctrl.setButtonPressed(buttonId);
-				pressed = true;
-			}
+			pressed = true;
 		} else {
 			ctrl.clearButtonState();
 			pressed = false;
