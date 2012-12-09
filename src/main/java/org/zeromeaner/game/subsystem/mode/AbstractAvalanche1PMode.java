@@ -37,7 +37,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * AVALANCHE DUMMY Mode
  */
-public abstract class Avalanche1PDummyMode extends AbstractMode {
+public abstract class AbstractAvalanche1PMode extends AbstractMode {
 	/** Enabled piece types */
 	public static final int[] PIECE_ENABLE = {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0};
 
@@ -132,7 +132,7 @@ public abstract class Avalanche1PDummyMode extends AbstractMode {
 	/** Index of current speed value in table */
 	protected int speedIndex;
 
-	public Avalanche1PDummyMode()
+	public AbstractAvalanche1PMode()
 	{
 		blocksPerLevel = 15;
 		maxLevel = 99;

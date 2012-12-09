@@ -40,7 +40,7 @@ import org.zeromeaner.game.play.GameManager;
 /**
  * 普通のAI
  */
-public class BasicAI extends DummyAI implements Runnable {
+public class BasicAI extends AbstractAI implements Runnable {
 	/** Log */
 	static Logger log = Logger.getLogger(BasicAI.class);
 

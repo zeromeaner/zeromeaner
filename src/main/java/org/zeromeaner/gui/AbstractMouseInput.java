@@ -1,11 +1,11 @@
 package org.zeromeaner.gui;
 
-public abstract class MouseInputDummy {
+public abstract class AbstractMouseInput {
 	protected int mouseX;
 	protected int mouseY;
 	protected int[] mousePressed;
 
-	protected MouseInputDummy() {
+	protected AbstractMouseInput() {
 		mousePressed = new int[3];
 	}
 

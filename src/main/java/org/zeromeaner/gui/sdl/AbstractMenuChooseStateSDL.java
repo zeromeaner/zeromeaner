@@ -34,7 +34,7 @@ import sdljava.video.SDLSurface;
 /**
  * Dummy class for menus where the player picks from a list of options
  */
-public abstract class DummyMenuChooseStateSDL extends BaseStateSDL {
+public abstract class AbstractMenuChooseStateSDL extends BaseStateSDL {
 	/** Cursor position */
 	protected int cursor = 0;
 
@@ -50,7 +50,7 @@ public abstract class DummyMenuChooseStateSDL extends BaseStateSDL {
 	/** Set to false to ignore mouse input */
 	protected boolean mouseEnabled;
 
-	public DummyMenuChooseStateSDL () {
+	public AbstractMenuChooseStateSDL () {
 		maxCursor = -1;
 		minChoiceY = 3;
 		mouseEnabled = true;

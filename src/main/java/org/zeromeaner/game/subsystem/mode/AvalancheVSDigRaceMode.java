@@ -43,7 +43,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * AVALANCHE VS DIG RACE mode (Release Candidate 1)
  */
-public class AvalancheVSDigRaceMode extends AvalancheVSDummyMode {
+public class AvalancheVSDigRaceMode extends AbstractAvalancheVSMode {
 	/** Current version */
 	private static final int CURRENT_VERSION = 0;
 

@@ -47,7 +47,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * リプレイ選択画面のステート
  */
-public class StateReplaySelect extends DummyMenuScrollState {
+public class StateReplaySelect extends AbstractMenuScrollState {
 	/** This state's ID */
 	public static final int ID = 4;
 

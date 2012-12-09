@@ -42,7 +42,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * DIG RACE Mode
  */
-public class DigRaceMode extends NetDummyMode {
+public class DigRaceMode extends AbstractNetMode {
 	/* ----- Main variables ----- */
 	/** Logger */
 	static Logger log = Logger.getLogger(DigRaceMode.class);

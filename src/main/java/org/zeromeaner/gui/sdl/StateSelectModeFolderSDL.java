@@ -16,7 +16,7 @@ import sdljava.video.SDLSurface;
 /**
  * Mode folder select (SDL)
  */
-public class StateSelectModeFolderSDL extends DummyMenuScrollStateSDL {
+public class StateSelectModeFolderSDL extends AbstractMenuScrollStateSDL {
 	/** Log */
 	static Logger log = Logger.getLogger(StateSelectModeFolderSDL.class);
 

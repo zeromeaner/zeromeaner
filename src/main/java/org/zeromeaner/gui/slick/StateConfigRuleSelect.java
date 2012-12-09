@@ -44,7 +44,7 @@ import org.zeromeaner.util.ResourceInputStream;
 /**
  * Rule selector state
  */
-public class StateConfigRuleSelect extends DummyMenuScrollState {
+public class StateConfigRuleSelect extends AbstractMenuScrollState {
 	/** This state's ID */
 	public static final int ID = 7;
 

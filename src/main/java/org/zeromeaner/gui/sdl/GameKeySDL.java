@@ -28,7 +28,7 @@
 */
 package org.zeromeaner.gui.sdl;
 
-import org.zeromeaner.gui.GameKeyDummy;
+import org.zeromeaner.gui.AbstractGameKey;
 import org.zeromeaner.util.CustomProperties;
 
 import sdljava.event.SDLKey;
@@ -37,7 +37,7 @@ import sdljava.joystick.HatState;
 /**
  * Key input state manager for SDL
  */
-public class GameKeySDL extends GameKeyDummy {
+public class GameKeySDL extends AbstractGameKey {
 	/** Key input state (Used by all game states) */
 	public static GameKeySDL gamekey[];
 

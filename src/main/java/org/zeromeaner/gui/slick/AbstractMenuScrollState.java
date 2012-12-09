@@ -10,7 +10,7 @@ import org.newdawn.slick.state.StateBasedGame;
 /**
  * Dummy class for menus with a scroll bar
  */
-public abstract class DummyMenuScrollState extends DummyMenuChooseState {
+public abstract class AbstractMenuScrollState extends AbstractMenuChooseState {
 	/** Scroll bar attributes */
 	protected static final int SB_TEXT_X = 38,
 		SB_TEXT_COLOR = NormalFontSlick.COLOR_BLUE,
@@ -40,7 +40,7 @@ public abstract class DummyMenuScrollState extends DummyMenuChooseState {
 	/** Y-coordinates of dark sections of scroll bar */
 	protected int pUpMinY, pUpMaxY, pDownMinY, pDownMaxY;
 
-	public DummyMenuScrollState () {
+	public AbstractMenuScrollState () {
 		minentry = 0;
 		nullError = "";
 		emptyError = "";

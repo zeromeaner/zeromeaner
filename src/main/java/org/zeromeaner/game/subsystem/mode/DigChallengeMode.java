@@ -14,7 +14,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * DIG CHALLENGE mode
  */
-public class DigChallengeMode extends NetDummyMode {
+public class DigChallengeMode extends AbstractNetMode {
 	/** Current version */
 	private static final int CURRENT_VERSION = 2;
 

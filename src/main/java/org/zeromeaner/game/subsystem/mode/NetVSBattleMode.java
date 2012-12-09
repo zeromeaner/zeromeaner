@@ -46,7 +46,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * NET-VS-BATTLE Mode
  */
-public class NetVSBattleMode extends NetDummyVSMode {
+public class NetVSBattleMode extends AbstractNetVSMode {
 	/** Most recent scoring event type constants */
 	protected static final int EVENT_NONE = 0,
 							 EVENT_SINGLE = 1,

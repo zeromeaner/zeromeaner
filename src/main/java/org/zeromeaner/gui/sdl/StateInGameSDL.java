@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.game.subsystem.ai.DummyAI;
+import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.util.CustomProperties;
@@ -170,7 +170,7 @@ public class StateInGameSDL extends BaseStateSDL {
 			// AI
 			String aiName = NullpoMinoSDL.propGlobal.getProperty(i + ".ai", "");
 			if(aiName.length() > 0) {
-				DummyAI aiObj = GeneralUtil.loadAIPlayer(aiName);
+				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
 				gameManager.engine[i].ai = aiObj;
 				gameManager.engine[i].aiMoveDelay = NullpoMinoSDL.propGlobal.getProperty(i + ".aiMoveDelay", 0);
 				gameManager.engine[i].aiThinkDelay = NullpoMinoSDL.propGlobal.getProperty(i + ".aiThinkDelay", 0);
@@ -237,7 +237,7 @@ public class StateInGameSDL extends BaseStateSDL {
 			// AI (リプレイ追記用）
 			String aiName = NullpoMinoSDL.propGlobal.getProperty(i + ".ai", "");
 			if(aiName.length() > 0) {
-				DummyAI aiObj = GeneralUtil.loadAIPlayer(aiName);
+				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
 				gameManager.engine[i].ai = aiObj;
 				gameManager.engine[i].aiMoveDelay = NullpoMinoSDL.propGlobal.getProperty(i + ".aiMoveDelay", 0);
 				gameManager.engine[i].aiThinkDelay = NullpoMinoSDL.propGlobal.getProperty(i + ".aiThinkDelay", 0);

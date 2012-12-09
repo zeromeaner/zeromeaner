@@ -20,7 +20,7 @@ import sdljava.video.SDLSurface;
 /**
  * Rule select (after mode selection)
  */
-public class StateSelectRuleFromListSDL extends DummyMenuScrollStateSDL {
+public class StateSelectRuleFromListSDL extends AbstractMenuScrollStateSDL {
 	/** Log */
 	static Logger log = Logger.getLogger(StateSelectRuleFromListSDL.class);
 

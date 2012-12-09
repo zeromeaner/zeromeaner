@@ -39,7 +39,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * TIME ATTACK mode (Original from NullpoUE build 010210 by Zircean. This mode is heavily modified from the original.)
  */
-public class TimeAttackMode extends NetDummyMode {
+public class TimeAttackMode extends AbstractNetMode {
 	/** Current version of this mode */
 	private static final int CURRENT_VERSION = 1;
 

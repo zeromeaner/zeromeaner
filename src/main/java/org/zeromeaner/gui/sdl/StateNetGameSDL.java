@@ -36,9 +36,9 @@ import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.net.NetPlayerClient;
 import org.zeromeaner.game.net.NetRoomInfo;
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.game.subsystem.ai.DummyAI;
+import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.mode.GameMode;
-import org.zeromeaner.game.subsystem.mode.NetDummyMode;
+import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.gui.net.NetLobbyFrame;
 import org.zeromeaner.gui.net.NetLobbyListener;
@@ -260,14 +260,14 @@ public class StateNetGameSDL extends BaseStateSDL implements NetLobbyListener {
 		NullpoMinoSDL.loadGlobalConfig();	// Reload global config file
 
 		GameMode previousMode = gameManager.mode;
-		GameMode newModeTemp = (newModeName == null) ? new NetDummyMode() : NullpoMinoSDL.modeManager.getMode(newModeName);
+		GameMode newModeTemp = (newModeName == null) ? new AbstractNetMode() : NullpoMinoSDL.modeManager.getMode(newModeName);
 
 		if(newModeTemp == null) {
 			log.error("Cannot find a mode:" + newModeName);
-		} else if(newModeTemp instanceof NetDummyMode) {
+		} else if(newModeTemp instanceof AbstractNetMode) {
 			log.info("Enter new mode:" + newModeTemp.getName());
 
-			NetDummyMode newMode = (NetDummyMode)newModeTemp;
+			AbstractNetMode newMode = (AbstractNetMode)newModeTemp;
 			modeName = newMode.getName();
 
 			if(previousMode != null) {
@@ -321,7 +321,7 @@ public class StateNetGameSDL extends BaseStateSDL implements NetLobbyListener {
 			// AI
 			String aiName = NullpoMinoSDL.propGlobal.getProperty(0 + ".ai", "");
 			if(aiName.length() > 0) {
-				DummyAI aiObj = GeneralUtil.loadAIPlayer(aiName);
+				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
 				gameManager.engine[0].ai = aiObj;
 				gameManager.engine[0].aiMoveDelay = NullpoMinoSDL.propGlobal.getProperty(0 + ".aiMoveDelay", 0);
 				gameManager.engine[0].aiThinkDelay = NullpoMinoSDL.propGlobal.getProperty(0 + ".aiThinkDelay", 0);

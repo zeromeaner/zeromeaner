@@ -40,7 +40,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * AVALANCHE-SPF VS-BATTLE mode (Release Candidate 1)
  */
-public class AvalancheVSSPFMode extends AvalancheVSDummyMode {
+public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 	/** Current version */
 	private static final int CURRENT_VERSION = 0;
 

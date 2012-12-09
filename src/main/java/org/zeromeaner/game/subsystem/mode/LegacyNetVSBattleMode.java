@@ -56,7 +56,7 @@ import org.zeromeaner.util.GeneralUtil;
  * The old version of NET-VS-BATTLE Mode
  * @deprecated Replaced with the current NetVSBattleMode which uses NetDummyVSMode.
  */
-public class LegacyNetVSBattleMode extends NetDummyMode {
+public class LegacyNetVSBattleMode extends AbstractNetMode {
 	/** Log */
 	static final Logger log = Logger.getLogger(LegacyNetVSBattleMode.class);
 

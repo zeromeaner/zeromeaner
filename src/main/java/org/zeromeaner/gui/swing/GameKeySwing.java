@@ -30,13 +30,13 @@ package org.zeromeaner.gui.swing;
 
 import java.awt.event.KeyEvent;
 
-import org.zeromeaner.gui.GameKeyDummy;
+import org.zeromeaner.gui.AbstractGameKey;
 
 
 /**
  *  Key input state manager (Only use with Swing. Don't use inside game modes!)
  */
-public class GameKeySwing extends GameKeyDummy {
+public class GameKeySwing extends AbstractGameKey {
 	/** Key input state (Used by all game states) */
 	public static GameKeySwing gamekey[];
 

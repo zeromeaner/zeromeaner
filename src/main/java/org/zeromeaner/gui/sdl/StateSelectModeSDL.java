@@ -38,7 +38,7 @@ import sdljava.video.SDLSurface;
 /**
  * Mode select screen (SDL)
  */
-public class StateSelectModeSDL extends DummyMenuScrollStateSDL {
+public class StateSelectModeSDL extends AbstractMenuScrollStateSDL {
 	/** Number of game modes in one page */
 	public static final int PAGE_HEIGHT = 24;
 

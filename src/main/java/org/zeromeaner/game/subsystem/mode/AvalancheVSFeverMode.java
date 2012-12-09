@@ -39,7 +39,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * AVALANCHE VS FEVER MARATHON mode (Release Candidate 1)
  */
-public class AvalancheVSFeverMode extends AvalancheVSDummyMode {
+public class AvalancheVSFeverMode extends AbstractAvalancheVSMode {
 	/** Current version */
 	private static final int CURRENT_VERSION = 1;
 

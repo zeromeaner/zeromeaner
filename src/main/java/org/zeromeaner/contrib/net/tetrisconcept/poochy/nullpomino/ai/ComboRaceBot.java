@@ -9,7 +9,7 @@ import org.zeromeaner.game.component.WallkickResult;
 import org.zeromeaner.game.event.EventReceiver;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.game.subsystem.ai.DummyAI;
+import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.util.GeneralUtil;
 
 /**
@@ -17,7 +17,7 @@ import org.zeromeaner.util.GeneralUtil;
  * @author Poochy.EXE
  *         Poochy.Spambucket@gmail.com
  */
-public class ComboRaceBot extends DummyAI implements Runnable {
+public class ComboRaceBot extends AbstractAI implements Runnable {
 	/** Log */
 	static Logger log = Logger.getLogger(ComboRaceBot.class);
 

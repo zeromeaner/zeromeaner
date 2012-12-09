@@ -48,7 +48,7 @@ import sdljava.video.SDLSurface;
 /**
  * リプレイ選択画面のステート
  */
-public class StateReplaySelectSDL extends DummyMenuScrollStateSDL {
+public class StateReplaySelectSDL extends AbstractMenuScrollStateSDL {
 	/** Log */
 	static Logger log = Logger.getLogger(StateReplaySelectSDL.class);
 

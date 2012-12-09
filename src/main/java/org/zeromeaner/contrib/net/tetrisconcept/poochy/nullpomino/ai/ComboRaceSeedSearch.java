@@ -7,10 +7,10 @@ import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.WallkickResult;
 import org.zeromeaner.game.play.GameEngine;
-import org.zeromeaner.game.subsystem.ai.DummyAI;
+import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.wallkick.StandardWallkick;
 
-public class ComboRaceSeedSearch extends DummyAI {
+public class ComboRaceSeedSearch extends AbstractAI {
 	/** Log (Apache log4j) */
 	static Logger log = Logger.getLogger(ComboRaceSeedSearch.class);
 

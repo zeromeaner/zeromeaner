@@ -37,7 +37,7 @@ import sdljava.video.SDLVideo;
 /**
  * キーボード設定画面のステート
  */
-public class StateConfigKeyboardNaviSDL extends DummyMenuChooseStateSDL {
+public class StateConfigKeyboardNaviSDL extends AbstractMenuChooseStateSDL {
 	/** This state's ID */
 	public static final int ID = 16;
 

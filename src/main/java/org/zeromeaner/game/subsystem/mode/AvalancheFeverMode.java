@@ -41,7 +41,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * AVALANCHE FEVER MARATHON mode (Release Candidate 2)
  */
-public class AvalancheFeverMode extends Avalanche1PDummyMode {
+public class AvalancheFeverMode extends AbstractAvalanche1PMode {
 	/** Current version */
 	private static final int CURRENT_VERSION = 0;
 

@@ -3,7 +3,7 @@ package org.zeromeaner.gui;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.util.CustomProperties;
 
-public class GameKeyDummy {
+public class AbstractGameKey {
 
 	/** Button number constants */
 	public static final int BUTTON_UP = 0, BUTTON_DOWN = 1, BUTTON_LEFT = 2, BUTTON_RIGHT = 3, BUTTON_A = 4, BUTTON_B = 5, BUTTON_C = 6,
@@ -37,7 +37,7 @@ public class GameKeyDummy {
 	/**
 	 * Default constructor
 	 */
-	protected GameKeyDummy() {
+	protected AbstractGameKey() {
 		this(0);
 	}
 
@@ -45,7 +45,7 @@ public class GameKeyDummy {
 	 * Player numberを指定できるConstructor
 	 * @param pl Player number
 	 */
-	protected GameKeyDummy(int pl) {
+	protected AbstractGameKey(int pl) {
 		keymap = new int[MAX_BUTTON];
 		keymapNav = new int[MAX_BUTTON];
 		buttonmap = new int[MAX_BUTTON];

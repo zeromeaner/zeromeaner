@@ -40,7 +40,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * ULTRA Mode
  */
-public class UltraMode extends NetDummyMode {
+public class UltraMode extends AbstractNetMode {
 	/** Current version */
 	private static final int CURRENT_VERSION = 1;
 

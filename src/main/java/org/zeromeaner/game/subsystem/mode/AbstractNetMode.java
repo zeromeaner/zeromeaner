@@ -33,9 +33,9 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * Special base class for netplay
  */
-public class NetDummyMode extends AbstractMode implements NetLobbyListener {
+public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	/** Log (Declared in NetDummyMode) */
-	static Logger log = Logger.getLogger(NetDummyMode.class);
+	static Logger log = Logger.getLogger(AbstractNetMode.class);
 
 	/** NET: Lobby (Declared in NetDummyMode) */
 	protected NetLobbyFrame netLobby;

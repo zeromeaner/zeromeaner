@@ -41,7 +41,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * COMBO RACE Mode
  */
-public class ComboRaceMode extends NetDummyMode {
+public class ComboRaceMode extends AbstractNetMode {
 	/** Current version */
 	private static final int CURRENT_VERSION = 1;
 

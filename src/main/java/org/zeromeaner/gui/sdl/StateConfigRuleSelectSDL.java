@@ -44,7 +44,7 @@ import sdljava.video.SDLSurface;
 /**
  * Rule selector state
  */
-public class StateConfigRuleSelectSDL extends DummyMenuScrollStateSDL {
+public class StateConfigRuleSelectSDL extends AbstractMenuScrollStateSDL {
 	/** Number of rules shown at a time */
 	public static final int PAGE_HEIGHT = 21;
 

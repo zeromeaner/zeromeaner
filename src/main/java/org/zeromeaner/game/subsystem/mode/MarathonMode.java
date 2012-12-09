@@ -40,7 +40,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * MARATHON Mode
  */
-public class MarathonMode extends NetDummyMode {
+public class MarathonMode extends AbstractNetMode {
 	/** Current version */
 	private static final int CURRENT_VERSION = 2;
 

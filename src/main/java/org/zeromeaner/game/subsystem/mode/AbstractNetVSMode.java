@@ -22,7 +22,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * Special base class for netplay VS modes. Up to 6 players supported.
  */
-public class NetDummyVSMode extends NetDummyMode {
+public class AbstractNetVSMode extends AbstractNetMode {
 	/* -------------------- Constants -------------------- */
 	/** NET-VS: Max number of players */
 	protected static final int NETVS_MAX_PLAYERS = 6;

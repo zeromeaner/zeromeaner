@@ -34,7 +34,7 @@ import sdljava.video.SDLSurface;
 /**
  * 設定画面のステート
  */
-public class StateConfigMainMenuSDL extends DummyMenuChooseStateSDL {
+public class StateConfigMainMenuSDL extends AbstractMenuChooseStateSDL {
 	/** UI Text identifier Strings */
 	private static final String[] UI_TEXT = {
 		"ConfigMainMenu_General",

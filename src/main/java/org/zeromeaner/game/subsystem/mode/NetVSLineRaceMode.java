@@ -8,7 +8,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * NET-VS-LINE RACE mode
  */
-public class NetVSLineRaceMode extends NetDummyVSMode {
+public class NetVSLineRaceMode extends AbstractNetVSMode {
 	/** Number of lines required to win */
 	private int goalLines;	// TODO: Add option to change this
 

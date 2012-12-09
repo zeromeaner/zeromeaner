@@ -40,7 +40,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * EXTREME Mode
  */
-public class ExtremeMode extends NetDummyMode {
+public class ExtremeMode extends AbstractNetMode {
 	/** Current version */
 	private static final int CURRENT_VERSION = 1;
 

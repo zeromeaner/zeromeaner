@@ -37,7 +37,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * AVALANCHE mode (Release Candidate 2)
  */
-public class AvalancheMode extends Avalanche1PDummyMode {
+public class AvalancheMode extends AbstractAvalanche1PMode {
 	/** Current version */
 	private static final int CURRENT_VERSION = 0;
 

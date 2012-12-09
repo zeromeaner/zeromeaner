@@ -40,7 +40,7 @@ import sdljava.video.SDLVideo;
 /**
  * Title screen state (SDL)
  */
-public class StateTitleSDL extends DummyMenuChooseStateSDL {
+public class StateTitleSDL extends AbstractMenuChooseStateSDL {
 	/** Strings for menu choices */
 	private static final String[] CHOICES = {"START", "REPLAY", "NETPLAY", "OPTIONS", "EXIT"};
 

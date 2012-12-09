@@ -45,7 +45,7 @@ import org.zeromeaner.tool.airankstool.Ranks;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceInputStream;
 
-public class RanksAI extends DummyAI implements Runnable {
+public class RanksAI extends AbstractAI implements Runnable {
 
 	static Logger log = Logger.getLogger(RanksAI.class);
 

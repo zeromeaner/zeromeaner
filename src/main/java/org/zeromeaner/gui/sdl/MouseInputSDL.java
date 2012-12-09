@@ -1,12 +1,12 @@
 package org.zeromeaner.gui.sdl;
 
-import org.zeromeaner.gui.MouseInputDummy;
+import org.zeromeaner.gui.AbstractMouseInput;
 
 import sdljava.SDLException;
 import sdljava.event.MouseState;
 import sdljava.event.SDLEvent;
 
-public class MouseInputSDL extends MouseInputDummy {
+public class MouseInputSDL extends AbstractMouseInput {
 	public static MouseInputSDL mouseInput;
 
 	private MouseInputSDL() {

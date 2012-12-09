@@ -7,14 +7,14 @@ import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.game.subsystem.ai.DummyAI;
+import org.zeromeaner.game.subsystem.ai.AbstractAI;
 
 /**
  * Nohoho AI
  * @author Poochy.EXE
  *         Poochy.Spambucket@gmail.com
  */
-public class Nohoho extends DummyAI implements Runnable {
+public class Nohoho extends AbstractAI implements Runnable {
 	/** Log */
 	static Logger log = Logger.getLogger(Nohoho.class);
 

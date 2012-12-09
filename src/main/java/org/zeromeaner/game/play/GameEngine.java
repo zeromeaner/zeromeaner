@@ -43,7 +43,7 @@ import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.component.WallkickResult;
-import org.zeromeaner.game.subsystem.ai.DummyAI;
+import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.util.GeneralUtil;
 
@@ -198,7 +198,7 @@ public class GameEngine {
 	public ReplayData replayData;
 
 	/** AIPlayer: AI for auto playing */
-	public DummyAI ai;
+	public AbstractAI ai;
 
 	/** AI move delay */
 	public int aiMoveDelay;

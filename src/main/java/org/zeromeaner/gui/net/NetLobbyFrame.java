@@ -118,7 +118,7 @@ import org.zeromeaner.game.net.NetRoomInfo;
 import org.zeromeaner.game.net.NetUtil;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.game.subsystem.mode.NetDummyMode;
+import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
@@ -210,7 +210,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	protected LinkedList<NetRoomInfo> presets = new LinkedList<NetRoomInfo>();
 
 	/** Current game mode (act as special NetLobbyListener) */
-	protected NetDummyMode netDummyMode;
+	protected AbstractNetMode netDummyMode;
 
 	/** Property file for lobby settings */
 	protected CustomProperties propConfig;
@@ -5007,7 +5007,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	 * Set new game mode
 	 * @param m Mode
 	 */
-	public void setNetDummyMode(NetDummyMode m) {
+	public void setNetDummyMode(AbstractNetMode m) {
 		netDummyMode = m;
 	}
 
@@ -5015,7 +5015,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	 * Get current game mode
 	 * @return Current game mode
 	 */
-	public NetDummyMode getNetDummyMode() {
+	public AbstractNetMode getNetDummyMode() {
 		return netDummyMode;
 	}
 

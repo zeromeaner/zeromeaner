@@ -40,7 +40,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * TECHNICIAN Mode
  */
-public class TechnicianMode extends NetDummyMode {
+public class TechnicianMode extends AbstractNetMode {
 	/** Current version */
 	private static final int CURRENT_VERSION = 2;
 

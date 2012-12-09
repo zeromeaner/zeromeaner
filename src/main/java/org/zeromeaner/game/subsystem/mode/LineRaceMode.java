@@ -41,7 +41,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * LINE RACE Mode
  */
-public class LineRaceMode extends NetDummyMode {
+public class LineRaceMode extends AbstractNetMode {
 	/* ----- Main variables ----- */
 	/** Logger */
 	static Logger log = Logger.getLogger(LineRaceMode.class);

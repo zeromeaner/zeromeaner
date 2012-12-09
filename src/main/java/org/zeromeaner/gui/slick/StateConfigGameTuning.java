@@ -40,7 +40,7 @@ import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomize
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.game.subsystem.ai.DummyAI;
+import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.mode.PreviewMode;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.util.CustomProperties;
@@ -237,7 +237,7 @@ public class StateConfigGameTuning extends BaseGameState {
 			// AI
 			String aiName = NullpoMinoSlick.propGlobal.getProperty(i + ".ai", "");
 			if(aiName.length() > 0) {
-				DummyAI aiObj = GeneralUtil.loadAIPlayer(aiName);
+				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
 				gameManager.engine[i].ai = aiObj;
 				gameManager.engine[i].aiMoveDelay = NullpoMinoSlick.propGlobal.getProperty(i + ".aiMoveDelay", 0);
 				gameManager.engine[i].aiThinkDelay = NullpoMinoSlick.propGlobal.getProperty(i + ".aiThinkDelay", 0);

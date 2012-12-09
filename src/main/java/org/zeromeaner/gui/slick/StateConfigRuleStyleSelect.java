@@ -10,7 +10,7 @@ import org.zeromeaner.game.play.GameEngine;
 /**
  * Style select menu
  */
-public class StateConfigRuleStyleSelect extends DummyMenuChooseState {
+public class StateConfigRuleStyleSelect extends AbstractMenuChooseState {
 	/** This state's ID */
 	public static final int ID = 15;
 

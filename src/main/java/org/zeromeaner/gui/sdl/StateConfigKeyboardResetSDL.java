@@ -6,7 +6,7 @@ import sdljava.video.SDLSurface;
 /**
  * Keyboard Reset menu (SDL)
  */
-public class StateConfigKeyboardResetSDL extends DummyMenuChooseStateSDL {
+public class StateConfigKeyboardResetSDL extends AbstractMenuChooseStateSDL {
 	/** Player number */
 	public int player = 0;
 

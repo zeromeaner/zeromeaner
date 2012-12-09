@@ -44,7 +44,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * AVALANCHE VS DUMMY Mode
  */
-public abstract class AvalancheVSDummyMode extends AbstractMode {
+public abstract class AbstractAvalancheVSMode extends AbstractMode {
 	/** Enabled piece types */
 	public static final int[] PIECE_ENABLE = {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0};
 

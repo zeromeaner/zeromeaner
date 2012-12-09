@@ -40,7 +40,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * AVALANCHE VS BOMB BATTLE mode (Release Candidate 1)
  */
-public class AvalancheVSBombBattleMode extends AvalancheVSDummyMode {
+public class AvalancheVSBombBattleMode extends AbstractAvalancheVSMode {
 	/** Current version */
 	private static final int CURRENT_VERSION = 0;
 

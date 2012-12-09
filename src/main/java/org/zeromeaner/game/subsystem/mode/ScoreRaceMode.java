@@ -42,7 +42,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * SCORE RACE Mode
  */
-public class ScoreRaceMode extends NetDummyMode {
+public class ScoreRaceMode extends AbstractNetMode {
 	/* ----- Main constants ----- */
 	/** Current version */
 	private static final int CURRENT_VERSION = 1;

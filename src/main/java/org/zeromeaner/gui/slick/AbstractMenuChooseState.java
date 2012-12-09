@@ -36,7 +36,7 @@ import org.newdawn.slick.state.StateBasedGame;
 /**
  * Dummy class for menus where the player picks from a list of options
  */
-public abstract class DummyMenuChooseState extends BaseGameState {
+public abstract class AbstractMenuChooseState extends BaseGameState {
 	/** Cursor position */
 	protected int cursor = 0;
 
@@ -49,7 +49,7 @@ public abstract class DummyMenuChooseState extends BaseGameState {
 	/** Set to false to ignore mouse input */
 	protected boolean mouseEnabled;
 
-	public DummyMenuChooseState () {
+	public AbstractMenuChooseState () {
 		maxCursor = -1;
 		minChoiceY = 3;
 		mouseEnabled = true;

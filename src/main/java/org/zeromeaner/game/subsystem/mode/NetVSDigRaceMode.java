@@ -9,7 +9,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * NET-VS-DIG RACE mode
  */
-public class NetVSDigRaceMode extends NetDummyVSMode {
+public class NetVSDigRaceMode extends AbstractNetVSMode {
 	/** Number of garbage lines to clear */
 	private int goalLines;	// TODO: Add option to change this
 
