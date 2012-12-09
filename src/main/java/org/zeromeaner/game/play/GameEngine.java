@@ -2056,9 +2056,6 @@ public class GameEngine {
 	 * Blockピースの移動処理
 	 */
 	public void statMove() {
-		// Check the sync
-		if(synchronousSync.get() > 0)
-			return;
 
 		dasRepeat = false;
 
@@ -2067,6 +2064,10 @@ public class GameEngine {
 			if(owner.mode.onMove(this, playerID) == true) return;
 		}
 		owner.receiver.onMove(this, playerID);
+
+		// Check the sync
+		if(synchronousSync.get() > 0)
+			return;
 		
 		// 横溜めInitialization
 		int moveDirection = getMoveDirection();
