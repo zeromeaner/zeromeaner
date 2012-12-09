@@ -196,7 +196,7 @@ public class AvalancheVSMode extends AbstractAvalancheVSMode {
 	 */
 	private void loadOtherSetting(GameEngine engine, CustomProperties prop) {
 		super.loadOtherSetting(engine, prop, "");
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		ojamaRate[playerID] = prop.getProperty("avalanchevs.ojamaRate.p" + playerID, 120);
 		ojamaHard[playerID] = prop.getProperty("avalanchevs.ojamaHard.p" + playerID, 0);
 		feverThreshold[playerID] = prop.getProperty("avalanchevs.feverThreshold.p" + playerID, 0);
@@ -221,7 +221,7 @@ public class AvalancheVSMode extends AbstractAvalancheVSMode {
 	 */
 	private void saveOtherSetting(GameEngine engine, CustomProperties prop) {
 		super.saveOtherSetting(engine, prop, "");
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		prop.setProperty("avalanchevs.feverThreshold.p" + playerID, feverThreshold[playerID]);
 		prop.setProperty("avalanchevs.feverTimeMin.p" + playerID, feverTimeMin[playerID]);
 		prop.setProperty("avalanchevs.feverTimeMax.p" + playerID, feverTimeMax[playerID]);

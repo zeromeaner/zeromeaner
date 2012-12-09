@@ -794,9 +794,9 @@ public class LegacyNetVSBattleMode extends AbstractNetMode {
 				isCompressed = true;
 			}
 
-			garbage[engine.playerID] = getTotalGarbageLines();
+			garbage[engine.getPlayerID()] = getTotalGarbageLines();
 
-			String msg = "game\tfieldattr\t" + garbage[engine.playerID] + "\t" + engine.getSkin() + "\t";
+			String msg = "game\tfieldattr\t" + garbage[engine.getPlayerID()] + "\t" + engine.getSkin() + "\t";
 			msg += strFieldData + "\t" + isCompressed + "\n";
 			netLobby.netPlayerClient.send(msg);
 		} else {
@@ -815,9 +815,9 @@ public class LegacyNetVSBattleMode extends AbstractNetMode {
 			}
 			//log.debug("nocompSize:" + nocompSize + " compSize:" + compSize + " isCompressed:" + isCompressed);
 
-			garbage[engine.playerID] = getTotalGarbageLines();
+			garbage[engine.getPlayerID()] = getTotalGarbageLines();
 
-			String msg = "game\tfield\t" + garbage[engine.playerID] + "\t" + engine.getSkin() + "\t" + engine.field.getHighestGarbageBlockY() + "\t";
+			String msg = "game\tfield\t" + garbage[engine.getPlayerID()] + "\t" + engine.getSkin() + "\t" + engine.field.getHighestGarbageBlockY() + "\t";
 			msg += engine.field.getHeightWithoutHurryupFloor() + "\t";
 			msg += strFieldData + "\t" + isCompressed + "\n";
 			netLobby.netPlayerClient.send(msg);

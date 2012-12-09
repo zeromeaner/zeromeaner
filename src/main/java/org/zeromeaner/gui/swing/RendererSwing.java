@@ -313,7 +313,7 @@ public class RendererSwing extends EventRenderer {
 	 */
 	@Override
 	public String getKeyNameByButtonID(GameEngine engine, int btnID) {
-		int[] keymap = engine.isInGame ? GameKeySwing.gamekey[engine.playerID].keymap : GameKeySwing.gamekey[engine.playerID].keymapNav;
+		int[] keymap = engine.isInGame ? GameKeySwing.gamekey[engine.getPlayerID()].keymap : GameKeySwing.gamekey[engine.getPlayerID()].keymapNav;
 
 		if((btnID >= 0) && (btnID < keymap.length)) {
 			int keycode = keymap[btnID];
@@ -1299,7 +1299,7 @@ public class RendererSwing extends EventRenderer {
 	public void renderFirst(GameEngine engine, int playerID) {
 		if(graphics == null) return;
 
-		if(engine.playerID == 0) {
+		if(engine.getPlayerID() == 0) {
 			// Background
 			if(!showbg || engine.getOwner().menuOnly) {
 				graphics.setColor(Color.black);

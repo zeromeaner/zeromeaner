@@ -299,7 +299,7 @@ public class RendererSDL extends EventRenderer {
 	 */
 	@Override
 	public String getKeyNameByButtonID(GameEngine engine, int btnID) {
-		int[] keymap = engine.isInGame ? GameKeySDL.gamekey[engine.playerID].keymap : GameKeySDL.gamekey[engine.playerID].keymapNav;
+		int[] keymap = engine.isInGame ? GameKeySDL.gamekey[engine.getPlayerID()].keymap : GameKeySDL.gamekey[engine.getPlayerID()].keymapNav;
 
 		if((btnID >= 0) && (btnID < keymap.length)) {
 			int keycode = keymap[btnID];

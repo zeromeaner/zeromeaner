@@ -221,7 +221,7 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 	 * @param engine GameEngine
 	 */
 	private void updateMeter(GameEngine engine) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		int remainLines = 0;
 
 		if((netCurrentRoomInfo == null) || !netCurrentRoomInfo.useMap) {
@@ -401,7 +401,7 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netSendStats(GameEngine engine) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 
 		if((playerID == 0) && !netvsIsPractice && !netvsIsWatch()) {
 			int remainLines = playerRemainLines[playerID];
@@ -415,7 +415,7 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netRecvStats(GameEngine engine, String[] message) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		if(message.length > 4) playerRemainLines[playerID] = Integer.parseInt(message[4]);
 		updateMeter(engine);
 	}
@@ -425,7 +425,7 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		String msg = "gstat\t";
 		msg += netvsPlayerPlace[playerID] + "\t";
 		msg += 0 + "\t" + 0 + "\t" + 0 + "\t";

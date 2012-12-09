@@ -764,14 +764,14 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	protected void netDrawSpectatorsCount(GameEngine engine, int x, int y) {
 		if(netIsNetPlay) {
 			int fontcolor = netIsWatch ? EventRenderer.COLOR_GREEN : EventRenderer.COLOR_RED;
-			owner.receiver.drawScoreFont(engine, engine.playerID, x, y+0, "SPECTATORS", fontcolor);
-			owner.receiver.drawScoreFont(engine, engine.playerID, x, y+1, "" + netNumSpectators, EventRenderer.COLOR_WHITE);
+			owner.receiver.drawScoreFont(engine, engine.getPlayerID(), x, y+0, "SPECTATORS", fontcolor);
+			owner.receiver.drawScoreFont(engine, engine.getPlayerID(), x, y+1, "" + netNumSpectators, EventRenderer.COLOR_WHITE);
 
 			if(engine.stat == GameEngine.STAT_SETTING && !netIsWatch && netIsNetRankingViewOK(engine)) {
 				int y2 = y + 2;
 				if(y2 > 24) y2 = 24;
 				String strBtnD = engine.getOwner().receiver.getKeyNameByButtonID(engine, Controller.BUTTON_D);
-				owner.receiver.drawScoreFont(engine, engine.playerID, x, y2, "D(" + strBtnD + " KEY):\n NET RANKING", EventRenderer.COLOR_GREEN);
+				owner.receiver.drawScoreFont(engine, engine.getPlayerID(), x, y2, "D(" + strBtnD + " KEY):\n NET RANKING", EventRenderer.COLOR_GREEN);
 			}
 		}
 	}
@@ -784,9 +784,9 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 		if((netPlayerName != null) && (netPlayerName.length() > 0)) {
 			String name = netPlayerName;
 			owner.receiver.drawTTFDirectFont(
-					engine, engine.playerID,
-					owner.receiver.getFieldDisplayPositionX(engine, engine.playerID),
-					owner.receiver.getFieldDisplayPositionY(engine, engine.playerID) - 20,
+					engine, engine.getPlayerID(),
+					owner.receiver.getFieldDisplayPositionX(engine, engine.getPlayerID()),
+					owner.receiver.getFieldDisplayPositionY(engine, engine.getPlayerID()) - 20,
 					name);
 		}
 	}

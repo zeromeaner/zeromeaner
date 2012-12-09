@@ -126,7 +126,7 @@ public class VSDigRaceMode extends AbstractMode {
 	 * @param prop Property file to read from
 	 */
 	private void loadOtherSetting(GameEngine engine, CustomProperties prop) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		goalLines[playerID] = prop.getProperty("vsdigrace.goalLines.p" + playerID, 18);
 		garbagePercent[playerID] = prop.getProperty("vsdigrace.garbagePercent.p" + playerID, 100);
 		bgmno = prop.getProperty("vsdigrace.bgmno", 0);
@@ -140,7 +140,7 @@ public class VSDigRaceMode extends AbstractMode {
 	 * @param prop Property file to save to
 	 */
 	private void saveOtherSetting(GameEngine engine, CustomProperties prop) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		prop.setProperty("vsdigrace.goalLines.p" + playerID, goalLines[playerID]);
 		prop.setProperty("vsdigrace.garbagePercent.p" + playerID, garbagePercent[playerID]);
 		prop.setProperty("vsdigrace.bgmno", bgmno);

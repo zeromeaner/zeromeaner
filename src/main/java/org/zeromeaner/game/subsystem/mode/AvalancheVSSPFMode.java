@@ -212,7 +212,7 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 	 */
 	private void loadOtherSetting(GameEngine engine, CustomProperties prop) {
 		super.loadOtherSetting(engine, prop, "spf");
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		ojamaHard[playerID] = 4;
 		ojamaRate[playerID] = prop.getProperty("avalanchevsspf.ojamaRate.p" + playerID, 120);
 		ojamaCountdown[playerID] = prop.getProperty("avalanchevsspf.ojamaCountdown.p" + playerID, 3);
@@ -227,7 +227,7 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 	 */
 	private void saveOtherSetting(GameEngine engine, CustomProperties prop) {
 		super.saveOtherSetting(engine, prop, "spf");
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		prop.setProperty("avalanchevsspf.ojamaCountdown.p" + playerID, ojamaCountdown[playerID]);
 		prop.setProperty("avalanchevsspf.dropSet.p" + playerID, dropSet[playerID]);
 		prop.setProperty("avalanchevsspf.dropMap.p" + playerID, dropMap[playerID]);

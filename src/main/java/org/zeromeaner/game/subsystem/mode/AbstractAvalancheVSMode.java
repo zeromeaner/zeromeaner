@@ -353,7 +353,7 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 	 * @param prop Property file to read from
 	 */
 	protected void loadOtherSetting(GameEngine engine, CustomProperties prop, String name) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		bgmno = prop.getProperty("avalanchevs" + name + ".bgmno", 0);
 		ojamaCounterMode[playerID] = prop.getProperty("avalanchevs" + name + ".ojamaCounterMode", OJAMA_COUNTER_ON);
 		big[playerID] = prop.getProperty("avalanchevs" + name + ".big.p" + playerID, false);
@@ -386,7 +386,7 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 	 * @param prop Property file to save to
 	 */
 	protected void saveOtherSetting(GameEngine engine, CustomProperties prop, String name) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		prop.setProperty("avalanchevs" + name + ".bgmno", bgmno);
 		prop.setProperty("avalanchevs" + name + ".ojamaCounterMode", ojamaCounterMode[playerID]);
 		prop.setProperty("avalanchevs" + name + ".big.p" + playerID, big[playerID]);

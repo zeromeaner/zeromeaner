@@ -366,7 +366,7 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netDrawPlayerName(GameEngine engine) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		int x = owner.receiver.getFieldDisplayPositionX(engine, playerID);
 		int y = owner.receiver.getFieldDisplayPositionY(engine, playerID);
 
@@ -394,7 +394,7 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendField(GameEngine engine) {
-		if(!netvsIsPractice && (engine.playerID == 0) && (!netIsWatch)) {
+		if(!netvsIsPractice && (engine.getPlayerID() == 0) && (!netIsWatch)) {
 			super.netSendField(engine);
 		}
 	}
@@ -404,7 +404,7 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendNextAndHold(GameEngine engine) {
-		if(!netvsIsPractice && (engine.playerID == 0) && (!netIsWatch)) {
+		if(!netvsIsPractice && (engine.getPlayerID() == 0) && (!netIsWatch)) {
 			super.netSendNextAndHold(engine);
 		}
 	}
@@ -414,7 +414,7 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	 */
 	@Override
 	protected boolean netSendPieceMovement(GameEngine engine, boolean forceSend) {
-		if(!netvsIsPractice && (engine.playerID == 0) && (!netIsWatch)) {
+		if(!netvsIsPractice && (engine.getPlayerID() == 0) && (!netIsWatch)) {
 			return super.netSendPieceMovement(engine, forceSend);
 		}
 		return false;
@@ -460,8 +460,8 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	 */
 	protected void netvsSetGameScreenLayout(GameEngine engine) {
 		// Set display size
-		if( ((engine.playerID == 0) && !netvsIsWatch()) ||
-			((netCurrentRoomInfo != null) && (netCurrentRoomInfo.maxPlayers == 2) && (engine.playerID <= 1)) )
+		if( ((engine.getPlayerID() == 0) && !netvsIsWatch()) ||
+			((netCurrentRoomInfo != null) && (netCurrentRoomInfo.maxPlayers == 2) && (engine.getPlayerID() <= 1)) )
 		{
 			engine.displaysize = 0;
 			engine.enableSE = true;
@@ -471,12 +471,12 @@ public class AbstractNetVSMode extends AbstractNetMode {
 		}
 
 		// Set visible flag
-		if((netCurrentRoomInfo != null) && (engine.playerID >= netCurrentRoomInfo.maxPlayers)) {
+		if((netCurrentRoomInfo != null) && (engine.getPlayerID() >= netCurrentRoomInfo.maxPlayers)) {
 			engine.isVisible = false;
 		}
 
 		// Set frame color
-		int seatID = netvsPlayerSeatID[engine.playerID];
+		int seatID = netvsPlayerSeatID[engine.getPlayerID()];
 		if((seatID >= 0) && (seatID < NETVS_PLAYER_COLOR_FRAME.length)) {
 			engine.framecolor = NETVS_PLAYER_COLOR_FRAME[seatID];
 		} else {

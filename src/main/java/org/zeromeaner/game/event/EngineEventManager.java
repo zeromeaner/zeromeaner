@@ -42,7 +42,7 @@ public class EngineEventManager implements EngineEventGenerator {
 	}
 	
 	private EngineEvent newEvent(Type type, Object... args) {
-		return new EngineEvent(source, type, source.playerID, args);
+		return new EngineEvent(source, type, source.getPlayerID(), args);
 	}
 	
 	private boolean fire(Type type, Object... args) {

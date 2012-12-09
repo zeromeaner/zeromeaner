@@ -125,7 +125,7 @@ public class VSLineRaceMode extends AbstractMode {
 	 * @param prop Property file to read from
 	 */
 	private void loadOtherSetting(GameEngine engine, CustomProperties prop) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		goalLines[playerID] = prop.getProperty("vslinerace.goalLines.p" + playerID, 40);
 		bgmno = prop.getProperty("vslinerace.bgmno", 0);
 		big[playerID] = prop.getProperty("vslinerace.big.p" + playerID, false);
@@ -139,7 +139,7 @@ public class VSLineRaceMode extends AbstractMode {
 	 * @param prop Property file to save to
 	 */
 	private void saveOtherSetting(GameEngine engine, CustomProperties prop) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		prop.setProperty("vslinerace.goalLines.p" + playerID, goalLines[playerID]);
 		prop.setProperty("vslinerace.bgmno", bgmno);
 		prop.setProperty("vslinerace.big.p" + playerID, big[playerID]);

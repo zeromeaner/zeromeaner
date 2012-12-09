@@ -671,7 +671,7 @@ public class ComboRaceBot extends AbstractAI implements Runnable {
 				thinkRequest.active = false;
 				thinking = true;
 				try {
-					thinkBestPosition(gEngine, gEngine.playerID);
+					thinkBestPosition(gEngine, gEngine.getPlayerID());
 					thinkComplete = true;
 					//log.debug("ComboRaceBot: thinkBestPosition completed successfully");
 				} catch (Throwable e) {

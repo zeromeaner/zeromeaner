@@ -170,7 +170,7 @@ public class GameEngine {
 	public EngineEventManager eventManager = new EngineEventManager(this);
 
 	/** Player ID (0=1P) */
-	public int playerID;
+	private int playerID;
 
 	/** RuleOptions: Most game settings are here */
 	public RuleOptions ruleopt;
@@ -3514,5 +3514,9 @@ public class GameEngine {
 
 	public GameManager getOwner() {
 		return owner;
+	}
+
+	public int getPlayerID() {
+		return playerID;
 	}
 }

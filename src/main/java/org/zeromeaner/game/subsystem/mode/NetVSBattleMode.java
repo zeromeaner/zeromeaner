@@ -892,8 +892,8 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netSendStats(GameEngine engine) {
-		if((engine.playerID == 0) && !netvsIsPractice && !netvsIsWatch()) {
-			netLobby.netPlayerClient.send("game\tstats\t" + garbage[engine.playerID] + "\n");
+		if((engine.getPlayerID() == 0) && !netvsIsPractice && !netvsIsWatch()) {
+			netLobby.netPlayerClient.send("game\tstats\t" + garbage[engine.getPlayerID()] + "\n");
 		}
 	}
 
@@ -903,7 +903,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	@Override
 	protected void netRecvStats(GameEngine engine, String[] message) {
 		if(message.length > 4) {
-			garbage[engine.playerID] = Integer.parseInt(message[4]);
+			garbage[engine.getPlayerID()] = Integer.parseInt(message[4]);
 		}
 	}
 
@@ -912,7 +912,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		String msg = "gstat\t";
 		msg += netvsPlayerPlace[playerID] + "\t";
 		msg += ((float)garbageSent[playerID] / GARBAGE_DENOMINATOR) + "\t" + playerAPL[playerID] + "\t" + playerAPM[playerID] + "\t";

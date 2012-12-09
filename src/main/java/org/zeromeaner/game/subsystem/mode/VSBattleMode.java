@@ -306,7 +306,7 @@ public class VSBattleMode extends AbstractMode {
 	 * @param prop Property file to read from
 	 */
 	private void loadOtherSetting(GameEngine engine, CustomProperties prop) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		bgmno = prop.getProperty("vsbattle.bgmno", 0);
 		if(version >= 5) {
 			garbageType[playerID] = prop.getProperty("vsbattle.garbageType.p" + playerID, GARBAGE_TYPE_NOCHANGE_ONE_ATTACK);
@@ -345,7 +345,7 @@ public class VSBattleMode extends AbstractMode {
 	 * @param prop Property file to save to
 	 */
 	private void saveOtherSetting(GameEngine engine, CustomProperties prop) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		prop.setProperty("vsbattle.bgmno", bgmno);
 		prop.setProperty("vsbattle.garbageType.p" + playerID, garbageType[playerID]);
 		prop.setProperty("vsbattle.garbagePercent.p" + playerID, garbagePercent[playerID]);

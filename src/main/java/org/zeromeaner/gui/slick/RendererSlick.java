@@ -255,7 +255,7 @@ public class RendererSlick extends EventRenderer {
 	 */
 	@Override
 	public String getKeyNameByButtonID(GameEngine engine, int btnID) {
-		int[] keymap = engine.isInGame ? GameKeySlick.gamekey[engine.playerID].keymap : GameKeySlick.gamekey[engine.playerID].keymapNav;
+		int[] keymap = engine.isInGame ? GameKeySlick.gamekey[engine.getPlayerID()].keymap : GameKeySlick.gamekey[engine.getPlayerID()].keymapNav;
 
 		if((btnID >= 0) && (btnID < keymap.length)) {
 			int keycode = keymap[btnID];
@@ -1301,7 +1301,7 @@ public class RendererSlick extends EventRenderer {
 	public void renderFirst(GameEngine engine, int playerID) {
 		if(graphics == null) return;
 
-		if(engine.playerID == 0) {
+		if(engine.getPlayerID() == 0) {
 			// Background
 			if(engine.getOwner().menuOnly) {
 				graphics.setColor(Color.white);

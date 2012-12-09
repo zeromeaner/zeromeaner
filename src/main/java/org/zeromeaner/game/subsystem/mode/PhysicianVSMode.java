@@ -265,7 +265,7 @@ public class PhysicianVSMode extends AbstractMode {
 	 * @param prop Property file to read from
 	 */
 	private void loadOtherSetting(GameEngine engine, CustomProperties prop) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		bgmno = prop.getProperty("physicianvs.bgmno", 0);
 		enableSE[playerID] = prop.getProperty("physicianvs.enableSE.p" + playerID, true);
 		useMap[playerID] = prop.getProperty("physicianvs.useMap.p" + playerID, false);
@@ -283,7 +283,7 @@ public class PhysicianVSMode extends AbstractMode {
 	 * @param prop Property file to save to
 	 */
 	private void saveOtherSetting(GameEngine engine, CustomProperties prop) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		prop.setProperty("physicianvs.bgmno", bgmno);
 		prop.setProperty("physicianvs.enableSE.p" + playerID, enableSE[playerID]);
 		prop.setProperty("physicianvs.useMap.p" + playerID, useMap[playerID]);

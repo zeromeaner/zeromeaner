@@ -270,7 +270,7 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netSendStats(GameEngine engine) {
-		if((engine.playerID == 0) && !netvsIsPractice && !netvsIsWatch()) {
+		if((engine.getPlayerID() == 0) && !netvsIsPractice && !netvsIsWatch()) {
 			String strMsg = "game\tstats\t" + engine.statistics.lines + "\t" + engine.statistics.pps + "\t" + engine.statistics.lpm + "\n";
 			netLobby.netPlayerClient.send(strMsg);
 		}
@@ -292,7 +292,7 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		String msg = "gstat\t";
 		msg += netvsPlayerPlace[playerID] + "\t";
 		msg += 0 + "\t" + 0 + "\t" + 0 + "\t";

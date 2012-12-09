@@ -402,7 +402,7 @@ public class SPFMode extends AbstractMode {
 	 * @param prop Property file to read from
 	 */
 	private void loadOtherSetting(GameEngine engine, CustomProperties prop) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		bgmno = prop.getProperty("spfvs.bgmno", 0);
 		//big[playerID] = prop.getProperty("spfvs.big.p" + playerID, false);
 		enableSE[playerID] = prop.getProperty("spfvs.enableSE.p" + playerID, true);
@@ -424,7 +424,7 @@ public class SPFMode extends AbstractMode {
 	 * @param prop Property file to save to
 	 */
 	private void saveOtherSetting(GameEngine engine, CustomProperties prop) {
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		prop.setProperty("spfvs.bgmno", bgmno);
 		//prop.setProperty("spfvs.big.p" + playerID, big[playerID]);
 		prop.setProperty("spfvs.enableSE.p" + playerID, enableSE[playerID]);
