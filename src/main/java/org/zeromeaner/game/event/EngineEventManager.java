@@ -8,6 +8,8 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.event.EngineEvent.Args;
 import org.zeromeaner.game.event.EngineEvent.Type;
 import org.zeromeaner.game.play.GameEngine;
+import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.util.CustomProperties;
 
 public class EngineEventManager implements EngineEventGenerator {
@@ -22,6 +24,16 @@ public class EngineEventManager implements EngineEventGenerator {
 	@Override
 	public void addEngineListener(EngineListener l) {
 		listeners.add(EngineListener.class, l);
+	}
+	
+	@Override
+	public void addGameMode(GameMode mode) {
+		addEngineListener(new EngineModeAdapter(mode));
+	}
+	
+	@Override
+	public void addReceiver(EventReceiver receiver) {
+		addEngineListener(new EngineReceiverAdapter(receiver));
 	}
 	
 	@Override
