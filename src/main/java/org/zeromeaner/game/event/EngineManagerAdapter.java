@@ -25,7 +25,7 @@ public class EngineManagerAdapter implements EngineListener {
 				ret = (ret || (Boolean) rval);
 		}
 		rend.setRenderer(manager.receiver);
-		if(rend.getRenderer() != null) {
+		if(rend.getRenderer() != null && !ret) {
 			Object rval = e.invoke(rend);
 			if(rval instanceof Boolean)
 				ret = (ret || (Boolean) rval);

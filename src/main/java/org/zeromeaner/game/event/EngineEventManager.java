@@ -49,7 +49,7 @@ public class EngineEventManager implements EngineEventGenerator {
 		boolean ret = false;
 		Object[] ll = listeners.getListenerList();
 		EngineEvent e = null;
-		for(int i = ll.length - 2; i >= 0; i -= 2) {
+		for(int i = ll.length - 2; i >= 0 && !ret; i -= 2) {
 			if(ll[i] == EngineListener.class) {
 				if(e == null)
 					e = newEvent(type, args);
