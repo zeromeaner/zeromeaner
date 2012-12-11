@@ -103,7 +103,7 @@ public class TNBot extends AbstractAI {
 					return new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
 				}
 				
-				if(engine.nextPieceArraySize == 1) {
+				if(engine.nextPieceArraySize == 1 || true) {
 					// best for the current shape
 					Decision best = AIKernel.getInstance().bestFor(field);
 					
