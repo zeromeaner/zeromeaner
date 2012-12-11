@@ -1,9 +1,12 @@
 package org.zeromeaner.game.evil;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Exchanger;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -42,8 +45,10 @@ public class TNBot extends AbstractAI {
 	private static ExecutorService POOL = Executors.newCachedThreadPool();
 
 	private TNField field;
-	private List<PlayerAction> actions;
+//	private List<PlayerAction> actions;
 	private boolean pressed = false;
+	
+	private Future<List<PlayerAction>> futureActions;
 	
 	private int recomputes = 0;
 	private String misdrop = null;
@@ -59,24 +64,49 @@ public class TNBot extends AbstractAI {
 		engine.aiShowHint = false;
 	}
 	
-	protected void recompute(GameEngine engine) {
+	private List<PlayerAction> actions() {
+		if(futureActions == null || futureActions.isCancelled() || !futureActions.isDone())
+			return null;
+		try {
+			return futureActions.get();
+		} catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
+	private void recompute(final GameEngine engine) {
 		if(recomputes > MAX_RECOMPUTES)
 			return;
-		field.update();
-		Shape shape = TNPiece.fromNullpo(engine.nowPieceObject);
 
+		field.update();
+		final Shape shape = TNPiece.fromNullpo(engine.nowPieceObject);
+		
 		field.setShape(shape);
 		field.setShapeX(engine.nowPieceX + Field.BUFFER);
 		field.setShapeY(engine.nowPieceY + Field.BUFFER);
-
-		if(engine.nextPieceArraySize == 1) {
-			Decision best = AIKernel.getInstance().bestFor(field);
-			actions = best.bestPath;
-		} else /* if(engine.nextPieceArraySize == 2) */ {
-			Shape next = TNPiece.fromNullpo(engine.getNextObject(engine.nextPieceCount + 1));
-			QueueContext qc = new QueueContext(field, new ShapeType[] {shape.type(), next.type()});
-			Decision best = AIKernel.getInstance().bestFor(qc);
-			actions = best.bestPath;
+		
+		Callable<List<PlayerAction>> task = new Callable<List<PlayerAction>>() {
+			@Override
+			public List<PlayerAction> call() throws Exception {
+				
+				if(engine.nextPieceArraySize == 1) {
+					Decision best = AIKernel.getInstance().bestFor(field);
+					return best.bestPath;
+				} else /* if(engine.nextPieceArraySize == 2) */ {
+					Shape next = TNPiece.fromNullpo(engine.getNextObject(engine.nextPieceCount + 1));
+					QueueContext qc = new QueueContext(field, new ShapeType[] {shape.type(), next.type()});
+					Decision best = AIKernel.getInstance().bestFor(qc);
+					return best.bestPath;
+				}
+			}
+		};
+		
+		if(engine.aiUseThread)
+			futureActions = POOL.submit(task);
+		else {
+			FutureTask<List<PlayerAction>> ft = new FutureTask<List<PlayerAction>>(task);
+			ft.run();
+			futureActions = ft;
 		}
 		
 		recomputes++;
@@ -104,37 +134,36 @@ public class TNBot extends AbstractAI {
 		else
 			return;
 		
-		if(actions == null)
+		if(actions() == null)
 			return;
-		if(actions.size() == 0) {
+		if(actions().size() == 0) {
 			recompute(engine);
-		}
-		if(actions.size() == 0)
 			return;
+		}
 
 		if(!pressed) {
 			if(engine.nowPieceY == -2)
 				return;
 			
-			PlayerAction pa = actions.remove(0);
+			PlayerAction pa = actions().remove(0);
 			
 			if(pa.getStartX() - Field.BUFFER != engine.nowPieceX || pa.getStartY() - Field.BUFFER != engine.nowPieceY) {
 				boolean recompute = false;
 				if(pa.getStartX() - Field.BUFFER == engine.nowPieceX && pa.getStartY() - Field.BUFFER > engine.nowPieceY) {
 					// We expected the piece to be lower than it is.  Odd, but just put back the current move and make a soft drop.
 					// This can happen on the very first move.
-					actions.add(0, pa);
+					actions().add(0, pa);
 					pa = new PlayerAction(field, Type.DOWN_ONE);
 				} else if(pa.getStartX() - Field.BUFFER == engine.nowPieceX && pa.getStartY() - Field.BUFFER < engine.nowPieceY) {
 					// We expected the piece to be higher than it is.
 					// This can happen on the very first move, or because of gravity.
 					// Discard soft-drop moves until we either catch up or need to recompute
 					while(pa.getType() == Type.DOWN_ONE && pa.getStartY() - Field.BUFFER < engine.nowPieceY) {
-						if(actions.size() == 0) {
+						if(actions().size() == 0) {
 							recompute = true;
 							break;
 						}
-						pa = actions.remove(0);
+						pa = actions().remove(0);
 					}
 					if(pa.getStartY() - Field.BUFFER != engine.nowPieceY)
 						recompute = true;
@@ -148,9 +177,7 @@ public class TNBot extends AbstractAI {
 					}
 					if(recomputes <= MAX_RECOMPUTES) {
 						recompute(engine);
-						if(actions.size() == 0)
-							return;
-						pa = actions.remove(0);
+						return;
 					} else
 						misdrop = "GIVE UP";
 				}
@@ -161,7 +188,7 @@ public class TNBot extends AbstractAI {
 			
 			boolean dropOnly = buttonId == Controller.BUTTON_DOWN;
 			if(dropOnly) {
-				for(PlayerAction npa : actions) {
+				for(PlayerAction npa : actions()) {
 					if(npa.getType() != Type.DOWN_ONE)
 						dropOnly = false;
 				}
