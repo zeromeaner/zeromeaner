@@ -107,7 +107,7 @@ public class TNBot extends AbstractAI {
 		}
 		 */
 		
-		actions.add(new PlayerAction(field, Type.DOWN_ONE));
+//		actions.add(new PlayerAction(field, Type.DOWN_ONE));
 		
 		if(recomputes != 0)
 			nextActions = null;
