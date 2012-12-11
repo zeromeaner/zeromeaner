@@ -43,10 +43,7 @@ public class TNBot extends AbstractAI {
 
 	private TNField field;
 	private List<PlayerAction> actions;
-	private Exchanger<Decision> nextActions;
 	private boolean pressed = false;
-	
-	private int nextY = -1;
 	
 	private int recomputes = 0;
 	private String misdrop = null;
@@ -80,82 +77,16 @@ public class TNBot extends AbstractAI {
 			QueueContext qc = new QueueContext(field, new ShapeType[] {shape.type(), next.type()});
 			Decision best = AIKernel.getInstance().bestFor(qc);
 			actions = best.bestPath;
-		} /*else {
-			Shape next = TNPiece.fromNullpo(engine.getNextObject(engine.nextPieceCount + 1));
-			final Shape third = TNPiece.fromNullpo(engine.getNextObject(engine.nextPieceCount + 2));
-			QueueContext qc = new QueueContext(field, new ShapeType[] {shape.type(), next.type()});
-			final Decision best = AIKernel.getInstance().bestFor(qc);
-			actions = best.bestPath;
-			final Exchanger<Decision> nextActions = new Exchanger<AIKernel.Decision>();
-			this.nextActions = nextActions;
-			Runnable task = new Runnable() {
-				@Override
-				public void run() {
-					Field f = best.field.copy();
-//					ShapeType type = best.deeper.type;
-					f.setShape(third.type().starter());
-					f.setShapeX(Field.WIDTH / 2 + Field.BUFFER - 2 + third.type().starterX());
-					f.setShapeY(third.type().starterY());
-					Decision nextBest = AIKernel.getInstance().bestFor(f);
-					try {
-						nextActions.exchange(nextBest, 3, TimeUnit.SECONDS);
-					} catch(InterruptedException ie) {
-					} catch(TimeoutException te) {
-					}
-				}
-			};
-			if(recomputes == 0)
-				POOL.execute(task);
 		}
-		 */
 		
-//		actions.add(new PlayerAction(field, Type.DOWN_ONE));
-		
-		if(recomputes != 0)
-			nextActions = null;
 		recomputes++;
 	}
 
 	@Override
 	public void newPiece(GameEngine engine, int playerID) {
-		nextY = -1;
 		recomputes = 0;
 		misdrop = null;
-		/*
-		if(nextActions != null) {
-			Decision d = null;
-			try {
-				d = nextActions.exchange(null, 250, TimeUnit.MILLISECONDS);
-			} catch(InterruptedException ie) {
-			} catch(TimeoutException te) {
-			}
-			nextActions = null;
-			if(d != null) {
-				final Decision best = d;
-				final Exchanger<Decision> nextActions = new Exchanger<AIKernel.Decision>();
-				this.nextActions = nextActions;
-				final ShapeType third = TNPiece.fromNullpo(engine.getNextObject(engine.nextPieceCount + 2)).type();
-				Runnable task = new Runnable() {
-					@Override
-					public void run() {
-						Field f = best.field.copy();
-//						ShapeType type = best.deeper.type;
-						f.setShape(third.starter());
-						f.setShapeX(Field.WIDTH / 2 + Field.BUFFER - 2 + third.starterX());
-						f.setShapeY(third.starterY());
-						Decision nextBest = AIKernel.getInstance().bestFor(f);
-						try {
-							nextActions.exchange(nextBest, 3, TimeUnit.SECONDS);
-						} catch(InterruptedException ie) {
-						} catch(TimeoutException te) {
-						}
-					}
-				};
-				POOL.execute(task);
-			}
-		} else
-		*/
-			recompute(engine);
+		recompute(engine);
 	}
 
 	@Override
@@ -184,21 +115,6 @@ public class TNBot extends AbstractAI {
 		if(!pressed) {
 			if(engine.nowPieceY == -2)
 				return;
-			
-//			if(requiredY != -1 && engine.nowPieceY > requiredY) {
-//				boolean recompute = false;
-//				for(int i = requiredY; i < engine.nowPieceY; i++) {
-//					if(actions.size() == 0 || actions.remove(0).getType() != Type.DOWN_ONE) {
-//						recompute = true;
-//						break;
-//					}
-//				}
-//				if(recompute)
-//					recompute(engine);
-//				
-//				if(actions.size() == 0)
-//					return;
-//			}
 			
 			PlayerAction pa = actions.remove(0);
 			
@@ -257,11 +173,6 @@ public class TNBot extends AbstractAI {
 			if(buttonId != Controller.BUTTON_DOWN)
 				ctrl.setButtonPressed(buttonId);
 
-//			if(buttonId == Controller.BUTTON_DOWN && !dropOnly) {
-//				requiredY = engine.nowPieceY + 1;
-//			} else
-//				requiredY = -1;
-			
 			pressed = true;
 		} else {
 			ctrl.clearButtonState();
