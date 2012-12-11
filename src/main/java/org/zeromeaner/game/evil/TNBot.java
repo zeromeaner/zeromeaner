@@ -46,6 +46,8 @@ public class TNBot extends AbstractAI {
 	private Exchanger<Decision> nextActions;
 	private boolean pressed = false;
 	
+	private int nextY = -1;
+	
 	private int recomputes = 0;
 	private String misdrop = null;
 	
@@ -116,6 +118,7 @@ public class TNBot extends AbstractAI {
 
 	@Override
 	public void newPiece(GameEngine engine, int playerID) {
+		nextY = -1;
 		recomputes = 0;
 		misdrop = null;
 		/*
@@ -251,7 +254,8 @@ public class TNBot extends AbstractAI {
 			if(dropOnly)
 				buttonId = Controller.BUTTON_UP;
 			
-			ctrl.setButtonPressed(buttonId);
+			if(buttonId != Controller.BUTTON_DOWN)
+				ctrl.setButtonPressed(buttonId);
 
 //			if(buttonId == Controller.BUTTON_DOWN && !dropOnly) {
 //				requiredY = engine.nowPieceY + 1;
