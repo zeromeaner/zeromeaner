@@ -15,7 +15,9 @@ import java.util.concurrent.TimeoutException;
 import org.eviline.AIKernel;
 import org.eviline.AIKernel.Decision;
 import org.eviline.AIKernel.QueueContext;
+import org.eviline.ElTetrisFitness;
 import org.eviline.Field;
+import org.eviline.Fitness;
 import org.eviline.PlayerAction;
 import org.eviline.PlayerAction.Type;
 import org.eviline.Shape;
@@ -40,6 +42,8 @@ public class TNBot extends AbstractAI {
 			return Controller.BUTTON_RIGHT;
 		case HOLD:
 			return Controller.BUTTON_D;
+		case HARD_DROP:
+			return Controller.BUTTON_UP;
 		}
 		throw new InternalError("switch fallthrough when all cases covered");
 	}
@@ -71,6 +75,7 @@ public class TNBot extends AbstractAI {
 		field = new TNField(engine);
 		engine.aiShowHint = false;
 		held = false;
+		swapping = false;
 	}
 	
 	private List<PlayerAction> actions() {
@@ -103,9 +108,14 @@ public class TNBot extends AbstractAI {
 					return new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
 				}
 				
-				if(engine.nextPieceArraySize == 1 || true) {
+				AIKernel kernel = new AIKernel();
+				kernel.setHighGravity(engine.statistics.level >= 10);
+				
+//				Fitness.setInstance(new ElTetrisFitness());
+				
+				if(engine.nextPieceArraySize == 1 /*|| kernel.isHighGravity()*/) {
 					// best for the current shape
-					Decision best = AIKernel.getInstance().bestFor(field);
+					Decision best = kernel.bestFor(field);
 					
 					// best for the hold shape
 					if(computeHold && !engine.holdDisable && engine.holdPieceObject != null && engine.isHoldOK()) {
@@ -115,7 +125,7 @@ public class TNBot extends AbstractAI {
 							Field f = field.copy();
 							f.setShape(null);
 							QueueContext qc = new QueueContext(f, new ShapeType[] {heldShape.type()});
-							Decision heldBest = AIKernel.getInstance().bestFor(qc);
+							Decision heldBest = kernel.bestFor(qc);
 							if(heldBest.score < best.score) {
 								List<PlayerAction> hp = new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
 								hp.addAll(heldBest.bestPath);
@@ -129,7 +139,7 @@ public class TNBot extends AbstractAI {
 					// best for the current shape
 					Shape next = TNPiece.fromNullpo(engine.getNextObject(engine.nextPieceCount + 1));
 					QueueContext qc = new QueueContext(field, new ShapeType[] {shape.type(), next.type()});
-					Decision best = AIKernel.getInstance().bestFor(qc);
+					Decision best = kernel.bestFor(qc);
 					
 					// best for the hold shape
 					if(computeHold && !engine.holdDisable && engine.holdPieceObject != null && engine.isHoldOK()) {
@@ -139,7 +149,7 @@ public class TNBot extends AbstractAI {
 							Field f = field.copy();
 							f.setShape(null);
 							qc = new QueueContext(f, new ShapeType[] {heldShape.type(), next.type()});
-							Decision heldBest = AIKernel.getInstance().bestFor(qc);
+							Decision heldBest = kernel.bestFor(qc);
 							if(heldBest.score < best.score) {
 								List<PlayerAction> hp = new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
 								hp.addAll(heldBest.bestPath);
@@ -167,9 +177,10 @@ public class TNBot extends AbstractAI {
 	@Override
 	public void newPiece(GameEngine engine, int playerID) {
 		misdrop = null;
-		if(!swapping) {
+		if(!swapping || pressed) {
 			recomputes = 0;
 			computeHold = true;
+			swapping = false;
 			recompute(engine);
 		}
 	}
@@ -191,19 +202,24 @@ public class TNBot extends AbstractAI {
 		
 		if(actions() == null)
 			return;
-		if(actions().size() == 0) {
-			recompute(engine);
-			return;
-		}
 
 		if(!pressed) {
-			if(engine.nowPieceY == -2)
+//			if(engine.nowPieceY == -2)
+//				return;
+			
+			swapping = false;
+			if(actions().size() == 0) {
+				recompute(engine);
 				return;
+			}
 			
 			PlayerAction pa = actions().remove(0);
 			
-			if(pa.getType() != Type.HOLD) {
-				swapping = false;
+			if(actions().size() == 0 && pa.getType() != Type.HARD_DROP) {
+				actions().add(new PlayerAction(field, Type.HARD_DROP));
+			}
+			
+			if(pa.getType() != Type.HOLD && pa.getType() != Type.HARD_DROP) {
 				if(pa.getStartX() - Field.BUFFER != engine.nowPieceX || pa.getStartY() - Field.BUFFER != engine.nowPieceY) {
 					boolean recompute = false;
 					if(pa.getStartX() - Field.BUFFER == engine.nowPieceX && pa.getStartY() - Field.BUFFER > engine.nowPieceY) {
@@ -263,6 +279,8 @@ public class TNBot extends AbstractAI {
 		} else {
 			ctrl.clearButtonState();
 			pressed = false;
+			if(actions().size() == 0)
+				recompute(engine);
 		}
 	}
 
