@@ -25,6 +25,7 @@ import org.eviline.ShapeType;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
+import org.zeromeaner.game.subsystem.mode.LineRaceMode;
 
 public class TNBot extends AbstractAI {
 	
@@ -48,23 +49,23 @@ public class TNBot extends AbstractAI {
 		throw new InternalError("switch fallthrough when all cases covered");
 	}
 
-	private static int MAX_RECOMPUTES = 20;
+	protected static int MAX_RECOMPUTES = 20;
 	
-	private static ExecutorService POOL = Executors.newCachedThreadPool();
+	protected static ExecutorService POOL = Executors.newCachedThreadPool();
 
-	private TNField field;
-//	private List<PlayerAction> actions;
-	private boolean pressed = false;
+	protected TNField field;
+	protected AIKernel kernel = new AIKernel();
+	protected boolean pressed = false;
 	
-	private Future<List<PlayerAction>> futureActions;
+	protected Future<List<PlayerAction>> futureActions;
 	
-	private int recomputes = 0;
-	private String misdrop = null;
+	protected int recomputes = 0;
+	protected String misdrop = null;
 	
-	private boolean held;
-	private boolean swapping;
-	private boolean computeHold;
-	private boolean highGravity = false;
+	protected boolean held;
+	protected boolean swapping;
+	protected boolean computeHold;
+	protected boolean highGravity = false;
 	
 	@Override
 	public String getName() {
@@ -73,6 +74,8 @@ public class TNBot extends AbstractAI {
 
 	@Override
 	public void init(GameEngine engine, int playerID) {
+		if(engine.getOwner().mode instanceof LineRaceMode)
+			kernel.setHardDropOnly(true);
 		field = new TNField(engine);
 		engine.aiShowHint = false;
 		held = false;
@@ -80,7 +83,7 @@ public class TNBot extends AbstractAI {
 		highGravity = false;
 	}
 	
-	private List<PlayerAction> actions() {
+	protected List<PlayerAction> actions() {
 		if(futureActions == null || futureActions.isCancelled() || !futureActions.isDone())
 			return null;
 		try {
@@ -90,7 +93,7 @@ public class TNBot extends AbstractAI {
 		}
 	}
 	
-	private void recompute(final GameEngine engine) {
+	protected void recompute(final GameEngine engine) {
 		if(recomputes > MAX_RECOMPUTES)
 			return;
 		
@@ -110,12 +113,12 @@ public class TNBot extends AbstractAI {
 					return new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
 				}
 				
-				AIKernel kernel = new AIKernel();
+//				AIKernel kernel = new AIKernel();
 				kernel.setHighGravity(engine.statistics.level >= 10 || highGravity);
 				
-				kernel.setFitness(new ElTetrisFitness());
+//				kernel.setHardDropOnly(true);
 				
-				if(engine.nextPieceArraySize == 1 /*|| kernel.isHighGravity()*/ ||true) {
+				if(engine.nextPieceArraySize == 1 /*|| kernel.isHighGravity()*/ ) {
 					// best for the current shape
 					Decision best = kernel.bestFor(field);
 					
