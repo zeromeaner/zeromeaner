@@ -49,7 +49,7 @@ public class TNBot extends AbstractAI {
 		throw new InternalError("switch fallthrough when all cases covered");
 	}
 
-	protected static int MAX_RECOMPUTES = 20;
+	protected static int MAX_RECOMPUTES = 5;
 	
 	protected static ExecutorService POOL = Executors.newCachedThreadPool();
 
