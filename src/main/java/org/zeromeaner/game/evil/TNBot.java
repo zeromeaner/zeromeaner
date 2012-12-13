@@ -64,6 +64,7 @@ public class TNBot extends AbstractAI {
 	private boolean held;
 	private boolean swapping;
 	private boolean computeHold;
+	private boolean highGravity = false;
 	
 	@Override
 	public String getName() {
@@ -76,6 +77,7 @@ public class TNBot extends AbstractAI {
 		engine.aiShowHint = false;
 		held = false;
 		swapping = false;
+		highGravity = false;
 	}
 	
 	private List<PlayerAction> actions() {
@@ -109,11 +111,11 @@ public class TNBot extends AbstractAI {
 				}
 				
 				AIKernel kernel = new AIKernel();
-				kernel.setHighGravity(engine.statistics.level >= 10);
+				kernel.setHighGravity(engine.statistics.level >= 10 || highGravity);
 				
 //				Fitness.setInstance(new ElTetrisFitness());
 				
-				if(engine.nextPieceArraySize == 1 /*|| kernel.isHighGravity()*/) {
+				if(engine.nextPieceArraySize == 1 /*|| kernel.isHighGravity()*/ || true) {
 					// best for the current shape
 					Decision best = kernel.bestFor(field);
 					
@@ -238,8 +240,10 @@ public class TNBot extends AbstractAI {
 							}
 							pa = actions().remove(0);
 						}
-						if(pa.getStartY() - Field.BUFFER != engine.nowPieceY)
+						if(pa.getStartY() - Field.BUFFER != engine.nowPieceY) {
 							recompute = true;
+							highGravity = true;
+						}
 					} else
 						recompute = true;
 					if(recompute) {
