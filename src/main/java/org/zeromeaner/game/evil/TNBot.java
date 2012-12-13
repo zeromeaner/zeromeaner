@@ -65,7 +65,10 @@ public class TNBot extends AbstractAI {
 	protected boolean held;
 	protected boolean swapping;
 	protected boolean computeHold;
+	
+	
 	protected boolean highGravity = false;
+	protected boolean skipLookahead = false;
 	
 	@Override
 	public String getName() {
@@ -118,7 +121,7 @@ public class TNBot extends AbstractAI {
 				
 //				kernel.setHardDropOnly(true);
 				
-				if(engine.nextPieceArraySize == 1 /*|| kernel.isHighGravity()*/ ) {
+				if(engine.nextPieceArraySize == 1 /*|| kernel.isHighGravity()*/ || skipLookahead) {
 					// best for the current shape
 					Decision best = kernel.bestFor(field);
 					
