@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.eviline.AIKernel;
 import org.eviline.Field;
 import org.eviline.Fitness;
 import org.eviline.Shape;
@@ -78,8 +79,8 @@ public class TNRandomizer extends Randomizer {
 		field.update();
 		Field f;
 		f = field.copyInto(new Field());
-		Fitness.getInstance().paintImpossibles(f);
-		double base = Fitness.getInstance().score(f);
+		AIKernel.getInstance().getFitness().paintImpossibles(f);
+		double base = AIKernel.getInstance().getFitness().score(f);
 
 		f = field.copyInto(new Field());
 		f.setShape(TNPiece.fromNullpo(engine.nowPieceObject));
@@ -87,8 +88,8 @@ public class TNRandomizer extends Randomizer {
 		f.setShapeY(engine.nowPieceBottomY + Field.BUFFER);
 		if(f.getShape() != null)
 			f.clockTick();
-		Fitness.getInstance().paintImpossibles(f);
-		double withMove = Fitness.getInstance().score(f);
+		AIKernel.getInstance().getFitness().paintImpossibles(f);
+		double withMove = AIKernel.getInstance().getFitness().score(f);
 		
 		return new double[] {base, withMove - base};
 //		return 0;

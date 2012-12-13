@@ -113,9 +113,9 @@ public class TNBot extends AbstractAI {
 				AIKernel kernel = new AIKernel();
 				kernel.setHighGravity(engine.statistics.level >= 10 || highGravity);
 				
-//				Fitness.setInstance(new ElTetrisFitness());
+				kernel.setFitness(new ElTetrisFitness());
 				
-				if(engine.nextPieceArraySize == 1 /*|| kernel.isHighGravity()*/ || true) {
+				if(engine.nextPieceArraySize == 1 /*|| kernel.isHighGravity()*/ ||true) {
 					// best for the current shape
 					Decision best = kernel.bestFor(field);
 					
@@ -126,7 +126,7 @@ public class TNBot extends AbstractAI {
 						if(heldShape.type() != shape.type()) {
 							Field f = field.copy();
 							f.setShape(null);
-							QueueContext qc = new QueueContext(f, new ShapeType[] {heldShape.type()});
+							QueueContext qc = kernel.new QueueContext(f, new ShapeType[] {heldShape.type()});
 							Decision heldBest = kernel.bestFor(qc);
 							if(heldBest.score < best.score) {
 								List<PlayerAction> hp = new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
@@ -140,7 +140,7 @@ public class TNBot extends AbstractAI {
 				} else {
 					// best for the current shape
 					Shape next = TNPiece.fromNullpo(engine.getNextObject(engine.nextPieceCount + 1));
-					QueueContext qc = new QueueContext(field, new ShapeType[] {shape.type(), next.type()});
+					QueueContext qc = kernel.new QueueContext(field, new ShapeType[] {shape.type(), next.type()});
 					Decision best = kernel.bestFor(qc);
 					
 					// best for the hold shape
@@ -150,7 +150,7 @@ public class TNBot extends AbstractAI {
 						if(heldShape.type() != shape.type()) {
 							Field f = field.copy();
 							f.setShape(null);
-							qc = new QueueContext(f, new ShapeType[] {heldShape.type(), next.type()});
+							qc = kernel.new QueueContext(f, new ShapeType[] {heldShape.type(), next.type()});
 							Decision heldBest = kernel.bestFor(qc);
 							if(heldBest.score < best.score) {
 								List<PlayerAction> hp = new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
@@ -205,7 +205,7 @@ public class TNBot extends AbstractAI {
 		if(actions() == null)
 			return;
 
-		if(!pressed) {
+		if(!pressed || ctrl.buttonPress[Controller.BUTTON_DOWN]) {
 //			if(engine.nowPieceY == -2)
 //				return;
 			
@@ -275,6 +275,9 @@ public class TNBot extends AbstractAI {
 			
 			if(dropOnly)
 				buttonId = Controller.BUTTON_UP;
+			
+			if(ctrl.buttonPress[Controller.BUTTON_DOWN] && buttonId != Controller.BUTTON_DOWN)
+				ctrl.clearButtonState();
 			
 			if(buttonId != Controller.BUTTON_DOWN || misdrop == null)
 				ctrl.setButtonPressed(buttonId);
