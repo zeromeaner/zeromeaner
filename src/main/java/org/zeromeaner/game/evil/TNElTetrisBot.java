@@ -13,6 +13,6 @@ public class TNElTetrisBot extends TNBot {
 	public void init(GameEngine engine, int playerID) {
 		super.init(engine, playerID);
 		kernel.setFitness(new ElTetrisFitness());
-		skipLookahead = true;
+		skipLookahead = false;
 	}
 }
