@@ -85,6 +85,19 @@ public class TNBot extends AbstractAI {
 		}
 	}
 	
+	public static class Clairevoyant extends TNBot {
+		@Override
+		public String getName() {
+			return super.getName() + " [Clairevoyant]";
+		}
+		
+		@Override
+		public void init(GameEngine engine, int playerID) {
+			super.init(engine, playerID);
+			lookahead = 2;
+		}
+	}
+	
 	protected static int MAX_RECOMPUTES = 5;
 
 	protected static ExecutorService POOL = Executors.newCachedThreadPool();
