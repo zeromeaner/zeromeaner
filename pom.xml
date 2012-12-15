@@ -236,4 +236,11 @@
 			</build>
 		</profile>
 	</profiles>
+	<parent>
+		<groupId>org.zeromeaner</groupId>
+		<artifactId>zeromeaner-parent</artifactId>
+		<version>8.0.3.11-SNAPSHOT</version>
+		<relativePath>modules</relativePath>
+	</parent>
+	<name>Zeromeaner Core</name>
 </project>
