@@ -50,10 +50,10 @@ public class LineRaceMode extends AbstractNetMode {
 	private static final int RANKING_MAX = 10;
 
 	/** Target line count type */
-	private static final int GOALTYPE_MAX = 3;
+	private static final int GOALTYPE_MAX = 4;
 
 	/** Target line count constants */
-	private static final int[] GOAL_TABLE = {20, 40, 100};
+	private static final int[] GOAL_TABLE = {20, 40, 100, Integer.MAX_VALUE};
 
 	/** BGM number */
 	private int bgmno;
@@ -229,8 +229,8 @@ public class LineRaceMode extends AbstractNetMode {
 					break;
 				case 9:
 					goaltype += change;
-					if(goaltype < 0) goaltype = 2;
-					if(goaltype > 2) goaltype = 0;
+					if(goaltype < 0) goaltype = GOALTYPE_MAX-1;
+					if(goaltype >= GOALTYPE_MAX) goaltype = 0;
 					break;
 				case 10:
 				case 11:
