@@ -147,7 +147,7 @@ public class TNBot extends AbstractAI {
 				kernel.setHighGravity(engine.statistics.level >= 10 || highGravity);
 
 				double currentScore = kernel.getFitness().score(field);
-				worst = Math.max(worst, currentScore);
+				worst = Math.max(worst * 0.9, currentScore);
 				
 				if(engine.nextPieceArraySize == 1 /*|| kernel.isHighGravity()*/ || skipLookahead) {
 					// best for the current shape
@@ -157,7 +157,7 @@ public class TNBot extends AbstractAI {
 					if(
 							!skipHold 
 							&& computeHold
-							&& best.score >= worst * 0.75
+							&& best.score >= worst * 0.8
 							&& !engine.holdDisable 
 							&& engine.holdPieceObject != null 
 							&& engine.isHoldOK()) {
@@ -193,7 +193,7 @@ public class TNBot extends AbstractAI {
 					if(
 							!skipHold 
 							&& computeHold 
-							&& best.score >= worst * 0.75
+							&& best.score >= worst * 0.8
 							&& !engine.holdDisable 
 							&& engine.holdPieceObject != null 
 							&& engine.isHoldOK()) {
