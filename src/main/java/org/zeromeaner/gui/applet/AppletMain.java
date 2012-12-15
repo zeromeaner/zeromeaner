@@ -167,8 +167,22 @@ public class AppletMain extends Applet {
 			String cmd = commands.next();
 			if("net".equals(cmd)) {
 				autoNetplay(commands);
+			} else if("replay".equals(cmd)) {
+				autoReplay(commands);
 			}
 		}
+	}
+	
+	private void autoReplay(Iterator<String> commands) {
+		String path = "replay";
+		while(commands.hasNext()) {
+			path = path + "/" + commands.next();
+		}
+		NullpoMinoInternalFrame.mainFrame.startReplayGame(path);
+		NullpoMinoInternalFrame.mainFrame.hideAllSubWindows();
+		NullpoMinoInternalFrame.mainFrame.setVisible(false);
+		NullpoMinoInternalFrame.gameFrame = new GameInternalFrame(NullpoMinoInternalFrame.mainFrame);
+		NullpoMinoInternalFrame.gameFrame.displayWindow();
 	}
 
 	private void autoNetplay(Iterator<String> commands) {
