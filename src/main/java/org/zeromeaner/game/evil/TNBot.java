@@ -52,6 +52,22 @@ public class TNBot extends AbstractAI {
 		throw new InternalError("switch fallthrough when all cases covered");
 	}
 
+	public static class Race extends TNBot {
+		@Override
+		public String getName() {
+			return super.getName() + " [Race]";
+		}
+		
+		@Override
+		public void init(GameEngine engine, int playerID) {
+			super.init(engine, playerID);
+			kernel.setHardDropOnly(false);
+			highGravity = false;
+			skipHold = false;
+			skipLookahead = true;
+		}
+	}
+	
 	protected static int MAX_RECOMPUTES = 5;
 
 	protected static ExecutorService POOL = Executors.newCachedThreadPool();
@@ -75,7 +91,8 @@ public class TNBot extends AbstractAI {
 	protected boolean skipHold = false;
 	protected int das = 0;
 	protected Integer buttonId;
-
+	protected double worst = 0;
+	
 	@Override
 	public String getName() {
 		return "Eviline AI";
@@ -83,27 +100,16 @@ public class TNBot extends AbstractAI {
 
 	@Override
 	public void init(GameEngine engine, int playerID) {
-		if(engine.getOwner().mode instanceof LineRaceMode) {
-			kernel.setHardDropOnly(false);
-			highGravity = false;
-			skipHold = true;
-			skipLookahead = true;
-		} else if(engine.getOwner().mode instanceof DigRaceMode) {
-			kernel.setHardDropOnly(false);
-			highGravity = true;
-			skipHold = false;
-			skipLookahead = false;
-		} else {
-			kernel.setHardDropOnly(false);
-			highGravity = false;
-			skipHold = false;
-			skipLookahead = false;
-		}
+		kernel.setHardDropOnly(false);
+		highGravity = false;
+		skipHold = false;
+		skipLookahead = false;
 		field = new TNField(engine);
 		engine.aiShowHint = false;
 		held = false;
 		swapping = false;
 		highGravity = false;
+		worst = 0;
 	}
 
 	protected List<PlayerAction> actions() {
@@ -125,14 +131,9 @@ public class TNBot extends AbstractAI {
 		final Shape shape;
 		final Field field;
 		this.field.update();
+		this.field.updateShape();
 		field = this.field;
-		shape = TNPiece.fromNullpo(engine.nowPieceObject);
-
-		field.setShape(shape);
-		field.setShapeX(engine.nowPieceX + Field.BUFFER);
-		field.setShapeY(engine.nowPieceY + Field.BUFFER);
-		
-		
+		shape = field.getShape();
 
 		Callable<List<PlayerAction>> task = new Callable<List<PlayerAction>>() {
 			@Override
@@ -145,18 +146,30 @@ public class TNBot extends AbstractAI {
 				//				AIKernel kernel = new AIKernel();
 				kernel.setHighGravity(engine.statistics.level >= 10 || highGravity);
 
+				double currentScore = kernel.getFitness().score(field);
+				worst = Math.max(worst, currentScore);
+				
 				if(engine.nextPieceArraySize == 1 /*|| kernel.isHighGravity()*/ || skipLookahead) {
 					// best for the current shape
 					Decision best = kernel.bestFor(field);
 
 					// best for the hold shape
-					if(!skipHold && computeHold && !engine.holdDisable && engine.holdPieceObject != null && engine.isHoldOK()) {
+					if(
+							!skipHold 
+							&& computeHold
+							&& best.score >= worst * 0.75
+							&& !engine.holdDisable 
+							&& engine.holdPieceObject != null 
+							&& engine.isHoldOK()) {
 						computeHold = false;
 						Shape heldShape = TNPiece.fromNullpo(engine.holdPieceObject);
 						if(heldShape.type() != shape.type()) {
 							Field f = field.copy();
 							f.setShape(heldShape);
-							f.setShapeX(Field.BUFFER + Field.WIDTH / 2 - 2 + heldShape.type().starterX());
+//							f.setShapeX(Field.BUFFER + Field.WIDTH / 2 - 2 + heldShape.type().starterX());
+//							f.setShapeX(Field.BUFFER + engine.getSpawnPosX(engine.field, engine.holdPieceObject));
+//							f.setShapeX(0 + (Field.WIDTH + Field.BUFFER * 2 - heldShape.width() + 0) / 2);
+							f.setShapeX(heldShape.type().starterX());
 							f.setShapeY(heldShape.type().starterY());
 							QueueContext qc = kernel.new QueueContext(f, new ShapeType[] {heldShape.type()});
 							Decision heldBest = kernel.bestFor(qc);
@@ -177,12 +190,23 @@ public class TNBot extends AbstractAI {
 					Decision best = kernel.bestFor(qc);
 
 					// best for the hold shape
-					if(!skipHold && computeHold && !engine.holdDisable && engine.holdPieceObject != null && engine.isHoldOK()) {
+					if(
+							!skipHold 
+							&& computeHold 
+							&& best.score >= worst * 0.75
+							&& !engine.holdDisable 
+							&& engine.holdPieceObject != null 
+							&& engine.isHoldOK()) {
 						computeHold = false;
 						Shape heldShape = TNPiece.fromNullpo(engine.holdPieceObject);
 						if(heldShape.type() != shape.type()) {
 							Field f = field.copy();
-							f.setShape(null);
+							f.setShape(heldShape);
+//							f.setShapeX(Field.BUFFER + Field.WIDTH / 2 - 2 + heldShape.type().starterX());
+//							f.setShapeX(Field.BUFFER + engine.getSpawnPosX(engine.field, engine.holdPieceObject));
+//							f.setShapeX(-0 + (Field.WIDTH + 2 * Field.BUFFER - heldShape.width() + 0) / 2);
+							f.setShapeX(heldShape.type().starterX());
+							f.setShapeY(heldShape.type().starterY());
 							qc = kernel.new QueueContext(f, new ShapeType[] {heldShape.type(), next.type()});
 							Decision heldBest = kernel.bestFor(qc);
 							if(heldBest.score < best.score) {
@@ -264,9 +288,9 @@ public class TNBot extends AbstractAI {
 
 		PlayerAction pa = actions().remove(0);
 
-		if(actions().size() == 0 && pa.getType() != Type.HARD_DROP) {
-			actions().add(new PlayerAction(pa.getEndField(), Type.HARD_DROP));
-		}
+//		if(actions().size() == 0 && pa.getType() != Type.HARD_DROP) {
+//			actions().add(new PlayerAction(pa.getEndField(), Type.HARD_DROP));
+//		}
 
 		if(pa.getType() != Type.HOLD && pa.getType() != Type.HARD_DROP) {
 			if(pa.getStartX() - Field.BUFFER != engine.nowPieceX || pa.getStartY() - Field.BUFFER != engine.nowPieceY) {
@@ -295,7 +319,8 @@ public class TNBot extends AbstractAI {
 					recompute = true;
 				if(recompute) {
 					// FIXME: Why is this possible?  Strange inconsistencies in the kick tables I guess.
-//					System.out.println("Misdrop");
+					System.out.println("Misdrop");
+					System.out.println("Expected shape at (" + (pa.getStartX() - Field.BUFFER) + "," + (pa.getStartY() - Field.BUFFER) + " but found at (" + engine.nowPieceX + "," + engine.nowPieceY + ")");
 					if(recomputes > 1) {// 1 recompute is the initial computation
 						//						System.out.println("Strange inconsistency in actions.  Recomputing.");
 						misdrop = "RECOMPUTE";
@@ -351,8 +376,8 @@ public class TNBot extends AbstractAI {
 		//		pressed = true;
 		//		buttonId = null;
 
-		if(actions().size() == 0)
-			recompute(engine);
+//		if(actions().size() == 0)
+//			recompute(engine);
 
 	}
 
