@@ -7,5 +7,6 @@ org.zeromeaner.contrib.net.tetrisconcept.poochy.nullpomino.ai.Nohoho
 org.zeromeaner.contrib.net.tetrisconcept.poochy.nullpomino.ai.ComboRaceBot
 org.zeromeaner.game.evil.TNBot
 org.zeromeaner.game.evil.TNBot$Race
+org.zeromeaner.game.evil.TNBot$Dig
 org.zeromeaner.game.evil.TNElTetrisBot
 org.zeromeaner.game.evil.TNElTetrisBot$Race

@@ -68,6 +68,22 @@ public class TNBot extends AbstractAI {
 		}
 	}
 	
+	public static class Dig extends TNBot {
+		@Override
+		public String getName() {
+			return super.getName() + " [Dig]";
+		}
+		
+		@Override
+		public void init(GameEngine engine, int playerID) {
+			super.init(engine, playerID);
+			double[] fp = kernel.getFitness().getParams();
+			fp[Fitness.Weights.TRANSITION_EXP] *= 2.5;
+			fp[Fitness.Weights.IMPOSSIBLE_POWER] *= 1.5;
+			fp[Fitness.Weights.BLOCK_HEIGHT] /= 1.5;
+		}
+	}
+	
 	protected static int MAX_RECOMPUTES = 5;
 
 	protected static ExecutorService POOL = Executors.newCachedThreadPool();
