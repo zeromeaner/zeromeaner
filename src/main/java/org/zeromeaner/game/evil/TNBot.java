@@ -25,6 +25,7 @@ import org.eviline.ShapeType;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
+import org.zeromeaner.game.subsystem.mode.DigRaceMode;
 import org.zeromeaner.game.subsystem.mode.LineRaceMode;
 
 public class TNBot extends AbstractAI {
@@ -84,9 +85,14 @@ public class TNBot extends AbstractAI {
 	public void init(GameEngine engine, int playerID) {
 		if(engine.getOwner().mode instanceof LineRaceMode) {
 			kernel.setHardDropOnly(false);
-			highGravity = true;
+			highGravity = false;
 			skipHold = true;
 			skipLookahead = true;
+		} else if(engine.getOwner().mode instanceof DigRaceMode) {
+			kernel.setHardDropOnly(false);
+			highGravity = true;
+			skipHold = false;
+			skipLookahead = false;
 		} else {
 			kernel.setHardDropOnly(false);
 			highGravity = false;
@@ -111,10 +117,10 @@ public class TNBot extends AbstractAI {
 			//			throw new RuntimeException(ex);
 		}
 	}
-
+	
 	protected void recompute(final GameEngine engine) {
-		if(recomputes > MAX_RECOMPUTES)
-			return;
+//		if(recomputes > MAX_RECOMPUTES)
+//			return;
 
 		final Shape shape;
 		final Field field;
@@ -125,6 +131,8 @@ public class TNBot extends AbstractAI {
 		field.setShape(shape);
 		field.setShapeX(engine.nowPieceX + Field.BUFFER);
 		field.setShapeY(engine.nowPieceY + Field.BUFFER);
+		
+		
 
 		Callable<List<PlayerAction>> task = new Callable<List<PlayerAction>>() {
 			@Override
@@ -133,11 +141,9 @@ public class TNBot extends AbstractAI {
 					held = true;
 					return new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
 				}
-
+				
 				//				AIKernel kernel = new AIKernel();
 				kernel.setHighGravity(engine.statistics.level >= 10 || highGravity);
-
-				//				kernel.setHardDropOnly(true);
 
 				if(engine.nextPieceArraySize == 1 /*|| kernel.isHighGravity()*/ || skipLookahead) {
 					// best for the current shape
@@ -157,11 +163,12 @@ public class TNBot extends AbstractAI {
 							if(heldBest.score < best.score) {
 								List<PlayerAction> hp = new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
 								hp.addAll(heldBest.bestPath);
+//								hp.add(new PlayerAction(hp.get(hp.size() - 1).getEndField(), Type.HARD_DROP));
 								return hp;
 							}
 						}
 					}
-
+//					best.bestPath.add(new PlayerAction(best.bestPath.get(best.bestPath.size() - 1).getEndField(), Type.HARD_DROP));
 					return best.bestPath;
 				} else {
 					// best for the current shape
@@ -181,11 +188,12 @@ public class TNBot extends AbstractAI {
 							if(heldBest.score < best.score) {
 								List<PlayerAction> hp = new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
 								hp.addAll(heldBest.bestPath);
+//								hp.add(new PlayerAction(hp.get(hp.size() - 1).getEndField(), Type.HARD_DROP));
 								return hp;
 							}
 						}
 					}
-
+//					best.bestPath.add(new PlayerAction(best.bestPath.get(best.bestPath.size() - 1).getEndField(), Type.HARD_DROP));
 					return best.bestPath;
 				}
 			}
@@ -257,7 +265,7 @@ public class TNBot extends AbstractAI {
 		PlayerAction pa = actions().remove(0);
 
 		if(actions().size() == 0 && pa.getType() != Type.HARD_DROP) {
-			actions().add(new PlayerAction(field, Type.HARD_DROP));
+			actions().add(new PlayerAction(pa.getEndField(), Type.HARD_DROP));
 		}
 
 		if(pa.getType() != Type.HOLD && pa.getType() != Type.HARD_DROP) {
@@ -281,12 +289,13 @@ public class TNBot extends AbstractAI {
 					}
 					if(pa.getStartY() - Field.BUFFER != engine.nowPieceY) {
 						recompute = true;
-						highGravity = true;
+//						highGravity = true;
 					}
 				} else
 					recompute = true;
 				if(recompute) {
 					// FIXME: Why is this possible?  Strange inconsistencies in the kick tables I guess.
+//					System.out.println("Misdrop");
 					if(recomputes > 1) {// 1 recompute is the initial computation
 						//						System.out.println("Strange inconsistency in actions.  Recomputing.");
 						misdrop = "RECOMPUTE";
@@ -301,13 +310,13 @@ public class TNBot extends AbstractAI {
 		} else
 			swapping = true;
 
-		if(pa.getType() == Type.ROTATE_LEFT && actions().size() >= 2) {
-			if(actions().get(0).getType() == Type.ROTATE_LEFT && actions().get(1).getType() == Type.ROTATE_LEFT) {
-				actions().remove(0);
-				actions().remove(0);
-				pa = new PlayerAction(field, Type.ROTATE_RIGHT);
-			}
-		}
+//		if(pa.getType() == Type.ROTATE_LEFT && actions().size() >= 2) {
+//			if(actions().get(0).getType() == Type.ROTATE_LEFT && actions().get(1).getType() == Type.ROTATE_LEFT) {
+//				actions().remove(0);
+//				actions().remove(0);
+//				pa = new PlayerAction(field, Type.ROTATE_RIGHT);
+//			}
+//		}
 
 		//		int buttonId;
 		buttonId = controllerButtonId(pa.getType());
@@ -318,7 +327,7 @@ public class TNBot extends AbstractAI {
 		boolean dropOnly = buttonId == Controller.BUTTON_DOWN;
 		if(dropOnly) {
 			for(PlayerAction npa : actions()) {
-				if(npa.getType() != Type.DOWN_ONE)
+				if(npa.getType() != Type.DOWN_ONE && npa.getType() != Type.HARD_DROP)
 					dropOnly = false;
 			}
 		}
@@ -327,7 +336,7 @@ public class TNBot extends AbstractAI {
 			buttonId = Controller.BUTTON_UP;
 
 		//		if(ctrl.getButtonBit() == 0) {
-		if(buttonId != Controller.BUTTON_DOWN || misdrop == null)
+//		if(buttonId != Controller.BUTTON_DOWN || misdrop == null)
 			ctrl.setButtonPressed(buttonId);
 		//		} else {
 		//			if(ctrl.isPress(buttonId)) {
