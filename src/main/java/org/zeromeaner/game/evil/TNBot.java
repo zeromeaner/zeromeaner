@@ -63,7 +63,7 @@ public class TNBot extends AbstractAI {
 			super.init(engine, playerID);
 			kernel.setHardDropOnly(false);
 			highGravity = false;
-			skipHold = false;
+			skipHold = true;
 			skipLookahead = true;
 		}
 	}
@@ -288,9 +288,9 @@ public class TNBot extends AbstractAI {
 
 		PlayerAction pa = actions().remove(0);
 
-//		if(actions().size() == 0 && pa.getType() != Type.HARD_DROP) {
-//			actions().add(new PlayerAction(pa.getEndField(), Type.HARD_DROP));
-//		}
+		if(actions().size() == 0 && pa.getType() != Type.HARD_DROP && pa.getType() != Type.HOLD) {
+			actions().add(new PlayerAction(pa.getEndField(), Type.HARD_DROP));
+		}
 
 		if(pa.getType() != Type.HOLD && pa.getType() != Type.HARD_DROP) {
 			if(pa.getStartX() - Field.BUFFER != engine.nowPieceX || pa.getStartY() - Field.BUFFER != engine.nowPieceY) {
