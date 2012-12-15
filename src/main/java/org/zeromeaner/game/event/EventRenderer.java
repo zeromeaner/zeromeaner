@@ -1245,7 +1245,7 @@ public class EventRenderer {
 			}
 
 			ResourceOutputStream out = new ResourceOutputStream(filename);
-			prop.store(new ResourceOutputStream(filename), "zeromeaner Replay");
+			prop.store(out, "zeromeaner Replay");
 			out.close();
 			log.info("Saved replay file: " + filename);
 		} catch(IOException e) {

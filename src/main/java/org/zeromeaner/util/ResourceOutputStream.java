@@ -50,20 +50,25 @@ public class ResourceOutputStream extends FilterOutputStream {
 				@Override
 				public void close() throws IOException {
 					super.close();
-					ResourceDownloadStream.getCache().put(resource, toByteArray());
-//					String dir = url.toString().substring(0, url.toString().lastIndexOf("/"));
-//					List<String> dirs = new ArrayList<String>();
-//					while(!dir.equals("http://www.zeromeaner.org/webdav")) {
-//						dirs.add(0, dir);
-//						dir = dir.substring(0, dir.lastIndexOf("/"));
-//					}
-//					for(String d : dirs) {
-//						try {
-//							s.createDirectory(d);
-//						} catch(SardineException se) {
-//						}
-//					}
-//					s.put(url.toString(), toByteArray());
+					if(resource.startsWith("config/")) {
+						ResourceDownloadStream.getCache().put(resource, toByteArray());
+						return;
+					}
+					String dir = url.toString().substring(0, url.toString().lastIndexOf("/"));
+					List<String> dirs = new ArrayList<String>();
+					while(!dir.equals("http://www.zeromeaner.org/webdav")) {
+						dirs.add(0, dir);
+						dir = dir.substring(0, dir.lastIndexOf("/"));
+					}
+					for(String d : dirs) {
+						try {
+							s.createDirectory(d);
+						} catch(SardineException se) {
+						}
+					}
+					byte[] buf = toByteArray();
+					System.out.println("Putting " + buf.length + " bytes to " + url);
+					s.put(url.toString(), buf);
 				}
 			};
 		}
