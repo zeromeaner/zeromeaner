@@ -77,10 +77,11 @@ public class TNBot extends AbstractAI {
 		@Override
 		public void init(GameEngine engine, int playerID) {
 			super.init(engine, playerID);
+			lookahead = 2;
 			double[] fp = kernel.getFitness().getParams();
-			fp[Fitness.Weights.TRANSITION_EXP] *= 2.5;
-			fp[Fitness.Weights.IMPOSSIBLE_POWER] *= 1.5;
-			fp[Fitness.Weights.BLOCK_HEIGHT] /= 1.5;
+			fp[Fitness.Weights.TRANSITION_EXP] += 2;
+			fp[Fitness.Weights.IMPOSSIBLE_POWER] += 2;
+			fp[Fitness.Weights.SMOOTHNESS_MULT] *= 3;
 		}
 	}
 	
@@ -103,6 +104,7 @@ public class TNBot extends AbstractAI {
 
 
 	protected boolean highGravity = false;
+	protected int lookahead = 1;
 	protected boolean skipLookahead = false;
 	protected boolean skipHold = false;
 	protected int das = 0;
@@ -165,7 +167,7 @@ public class TNBot extends AbstractAI {
 				double currentScore = kernel.getFitness().score(field);
 				worst = Math.max(worst * 0.9, currentScore);
 				
-				if(engine.nextPieceArraySize == 1 /*|| kernel.isHighGravity()*/ || skipLookahead) {
+				if(engine.nextPieceArraySize <= lookahead /*|| kernel.isHighGravity()*/ || skipLookahead) {
 					// best for the current shape
 					Decision best = kernel.bestFor(field);
 
@@ -201,8 +203,12 @@ public class TNBot extends AbstractAI {
 					return best.bestPath;
 				} else {
 					// best for the current shape
-					Shape next = TNPiece.fromNullpo(engine.getNextObject(engine.nextPieceCount + 1));
-					QueueContext qc = kernel.new QueueContext(field, new ShapeType[] {shape.type(), next.type()});
+					ShapeType[] types = new ShapeType[lookahead + 1];
+					types[0] = shape.type();
+					for(int i = 1; i < types.length; i++) {
+						types[i] = TNPiece.fromNullpo(engine.getNextID(engine.nextPieceCount + i));
+					}
+					QueueContext qc = kernel.new QueueContext(field, types);
 					Decision best = kernel.bestFor(qc);
 
 					// best for the hold shape
@@ -223,7 +229,9 @@ public class TNBot extends AbstractAI {
 //							f.setShapeX(-0 + (Field.WIDTH + 2 * Field.BUFFER - heldShape.width() + 0) / 2);
 							f.setShapeX(heldShape.type().starterX());
 							f.setShapeY(heldShape.type().starterY());
-							qc = kernel.new QueueContext(f, new ShapeType[] {heldShape.type(), next.type()});
+							types = Arrays.copyOf(types, types.length);
+							types[0] = heldShape.type();
+							qc = kernel.new QueueContext(f, types);
 							Decision heldBest = kernel.bestFor(qc);
 							if(heldBest.score < best.score) {
 								List<PlayerAction> hp = new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
