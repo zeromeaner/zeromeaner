@@ -96,15 +96,13 @@ public class TNBot extends AbstractAI {
 		@Override
 		public void init(GameEngine engine, int playerID) {
 			super.init(engine, playerID);
-			skipLookahead = true;
+			skipLookahead = false;
 			skipHold = false;
 //			kernel.setFitness(new HybridFitness());
 		}
 		
 		@Override
 		protected void recompute(GameEngine engine) {
-			double currentScore = kernel.getFitness().score(field);
-			skipLookahead = (currentScore < 0.8 * worst);
 			super.recompute(engine);
 		}
 	}
@@ -209,7 +207,6 @@ public class TNBot extends AbstractAI {
 					if(
 							!skipHold 
 							&& computeHold
-							&& best.score >= worst * 0.8
 							&& !engine.holdDisable 
 							&& engine.holdPieceObject != null 
 							&& engine.isHoldOK()) {
@@ -245,7 +242,6 @@ public class TNBot extends AbstractAI {
 					if(
 							!skipHold 
 							&& computeHold 
-							&& best.score >= worst * 0.8
 							&& !engine.holdDisable 
 							&& engine.holdPieceObject != null 
 							&& engine.isHoldOK()) {
