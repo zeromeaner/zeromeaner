@@ -4,9 +4,11 @@
         <title>zeromeaner</title>
         <vendor>zeromeaner</vendor>
     </information>
+	<!--
     <security>
         <all-permissions/>
    </security>
+   -->
     <resources>
         <!-- Application Resources -->
         <j2se version="1.6+"
