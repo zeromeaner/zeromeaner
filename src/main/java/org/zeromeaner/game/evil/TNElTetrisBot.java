@@ -1,6 +1,6 @@
 package org.zeromeaner.game.evil;
 
-import org.eviline.ElTetrisFitness;
+import org.eviline.fitness.ElTetrisFitness;
 import org.zeromeaner.game.play.GameEngine;
 
 public class TNElTetrisBot extends TNBot {

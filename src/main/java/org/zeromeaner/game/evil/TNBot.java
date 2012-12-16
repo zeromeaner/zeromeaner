@@ -15,11 +15,13 @@ import java.util.concurrent.TimeoutException;
 import org.eviline.AIKernel;
 import org.eviline.AIKernel.Decision;
 import org.eviline.AIKernel.QueueContext;
-import org.eviline.ElTetrisFitness;
 import org.eviline.Field;
-import org.eviline.Fitness;
 import org.eviline.PlayerAction;
 import org.eviline.PlayerAction.Type;
+import org.eviline.fitness.ElTetrisFitness;
+import org.eviline.fitness.EvilineFitness;
+import org.eviline.fitness.Fitness;
+import org.eviline.fitness.HybridFitness;
 import org.eviline.Shape;
 import org.eviline.ShapeType;
 import org.zeromeaner.game.component.Controller;
@@ -79,9 +81,9 @@ public class TNBot extends AbstractAI {
 			super.init(engine, playerID);
 			lookahead = 2;
 			double[] fp = kernel.getFitness().getParams();
-			fp[Fitness.Weights.TRANSITION_EXP] += 2;
-			fp[Fitness.Weights.IMPOSSIBLE_POWER] += 2;
-			fp[Fitness.Weights.SMOOTHNESS_MULT] *= 3;
+			fp[EvilineFitness.Weights.TRANSITION_EXP] += 2;
+			fp[EvilineFitness.Weights.IMPOSSIBLE_POWER] += 2;
+			fp[EvilineFitness.Weights.SMOOTHNESS_MULT] *= 3;
 		}
 	}
 	
@@ -94,7 +96,8 @@ public class TNBot extends AbstractAI {
 		@Override
 		public void init(GameEngine engine, int playerID) {
 			super.init(engine, playerID);
-			lookahead = 2;
+//			lookahead = 1;
+			kernel.setFitness(new HybridFitness());
 		}
 	}
 	
