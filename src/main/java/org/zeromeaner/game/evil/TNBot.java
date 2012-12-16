@@ -96,8 +96,8 @@ public class TNBot extends AbstractAI {
 		@Override
 		public void init(GameEngine engine, int playerID) {
 			super.init(engine, playerID);
-//			lookahead = 1;
-			kernel.setFitness(new HybridFitness());
+			lookahead = 2;
+//			kernel.setFitness(new HybridFitness());
 		}
 	}
 	
@@ -110,6 +110,7 @@ public class TNBot extends AbstractAI {
 	protected boolean pressed = false;
 
 	protected Future<List<PlayerAction>> futureActions;
+	protected List<List<PlayerAction>> pipeline = new ArrayList<List<PlayerAction>>();
 
 	protected int recomputes = 0;
 	protected String misdrop = null;
@@ -177,15 +178,24 @@ public class TNBot extends AbstractAI {
 					return new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
 				}
 				
-				//				AIKernel kernel = new AIKernel();
+//				synchronized(pipeline) {
+//					if(pipeline.size() > 0) {
+//						List<PlayerAction> pla = pipeline.remove(0);
+////						System.out.println("Returning pipelined computation " + pla);
+//						return pla;
+//					}
+//				}
+				
 				kernel.setHighGravity(engine.statistics.level >= 10 || highGravity);
 
 				double currentScore = kernel.getFitness().score(field);
 				worst = Math.max(worst * 0.9, currentScore);
 				
+				Decision best;
+				
 				if(engine.nextPieceArraySize <= lookahead /*|| kernel.isHighGravity()*/ || skipLookahead) {
 					// best for the current shape
-					Decision best = kernel.bestFor(field);
+					best = kernel.bestFor(field);
 
 					// best for the hold shape
 					if(
@@ -200,9 +210,6 @@ public class TNBot extends AbstractAI {
 						if(heldShape.type() != shape.type()) {
 							Field f = field.copy();
 							f.setShape(heldShape);
-//							f.setShapeX(Field.BUFFER + Field.WIDTH / 2 - 2 + heldShape.type().starterX());
-//							f.setShapeX(Field.BUFFER + engine.getSpawnPosX(engine.field, engine.holdPieceObject));
-//							f.setShapeX(0 + (Field.WIDTH + Field.BUFFER * 2 - heldShape.width() + 0) / 2);
 							f.setShapeX(heldShape.type().starterX());
 							f.setShapeY(heldShape.type().starterY());
 							QueueContext qc = kernel.new QueueContext(f, new ShapeType[] {heldShape.type()});
@@ -210,13 +217,12 @@ public class TNBot extends AbstractAI {
 							if(heldBest.score < best.score) {
 								List<PlayerAction> hp = new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
 								hp.addAll(heldBest.bestPath);
-//								hp.add(new PlayerAction(hp.get(hp.size() - 1).getEndField(), Type.HARD_DROP));
-								return hp;
+								heldBest.bestPath = hp;
+								best = heldBest;
 							}
 						}
 					}
-//					best.bestPath.add(new PlayerAction(best.bestPath.get(best.bestPath.size() - 1).getEndField(), Type.HARD_DROP));
-					return best.bestPath;
+					
 				} else {
 					// best for the current shape
 					ShapeType[] types = new ShapeType[lookahead + 1];
@@ -225,7 +231,7 @@ public class TNBot extends AbstractAI {
 						types[i] = TNPiece.fromNullpo(engine.getNextID(engine.nextPieceCount + i));
 					}
 					QueueContext qc = kernel.new QueueContext(field, types);
-					Decision best = kernel.bestFor(qc);
+					best = kernel.bestFor(qc);
 
 					// best for the hold shape
 					if(
@@ -240,9 +246,6 @@ public class TNBot extends AbstractAI {
 						if(heldShape.type() != shape.type()) {
 							Field f = field.copy();
 							f.setShape(heldShape);
-//							f.setShapeX(Field.BUFFER + Field.WIDTH / 2 - 2 + heldShape.type().starterX());
-//							f.setShapeX(Field.BUFFER + engine.getSpawnPosX(engine.field, engine.holdPieceObject));
-//							f.setShapeX(-0 + (Field.WIDTH + 2 * Field.BUFFER - heldShape.width() + 0) / 2);
 							f.setShapeX(heldShape.type().starterX());
 							f.setShapeY(heldShape.type().starterY());
 							types = Arrays.copyOf(types, types.length);
@@ -252,14 +255,27 @@ public class TNBot extends AbstractAI {
 							if(heldBest.score < best.score) {
 								List<PlayerAction> hp = new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
 								hp.addAll(heldBest.bestPath);
-//								hp.add(new PlayerAction(hp.get(hp.size() - 1).getEndField(), Type.HARD_DROP));
-								return hp;
+//								return hp;
+								heldBest.bestPath = hp;
+								best = heldBest;
 							}
 						}
 					}
-//					best.bestPath.add(new PlayerAction(best.bestPath.get(best.bestPath.size() - 1).getEndField(), Type.HARD_DROP));
-					return best.bestPath;
 				}
+				
+//				synchronized(pipeline) {
+//					pipeline.clear();
+//					Decision d = best.deeper;
+//					while(d.bestPath != null) {
+////						System.out.println("Pipelining computation " + d.bestPath);
+//						pipeline.add(d.bestPath);
+//						if(d.deeper == null || d.deeper == d)
+//							break;
+//						d = d.deeper;
+//					}
+//				}
+				
+				return best.bestPath;
 			}
 		};
 
@@ -327,6 +343,14 @@ public class TNBot extends AbstractAI {
 		}
 
 		PlayerAction pa = actions().remove(0);
+		
+//		if(pa.getStartShape().type() != TNPiece.fromNullpo(engine.nowPieceObject.id)) {
+//			synchronized(pipeline) {
+//				pipeline.clear();
+//				recompute(engine);
+//				return;
+//			}
+//		}
 
 		if(actions().size() == 0 && pa.getType() != Type.HARD_DROP && pa.getType() != Type.HOLD) {
 			actions().add(new PlayerAction(pa.getEndField(), Type.HARD_DROP));
@@ -364,6 +388,9 @@ public class TNBot extends AbstractAI {
 					if(recomputes > 1) {// 1 recompute is the initial computation
 						//						System.out.println("Strange inconsistency in actions.  Recomputing.");
 						misdrop = "RECOMPUTE";
+						synchronized(pipeline) {
+							pipeline.clear();
+						}
 					}
 					if(recomputes <= MAX_RECOMPUTES) {
 						recompute(engine);
