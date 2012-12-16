@@ -53,7 +53,7 @@ public class LineRaceMode extends AbstractNetMode {
 	private static final int GOALTYPE_MAX = 4;
 
 	/** Target line count constants */
-	private static final int[] GOAL_TABLE = {20, 40, 100, Integer.MAX_VALUE};
+	private static final int[] GOAL_TABLE = {20, 40, 100, 10000};
 
 	/** BGM number */
 	private int bgmno;

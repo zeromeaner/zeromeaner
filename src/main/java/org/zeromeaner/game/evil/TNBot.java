@@ -96,8 +96,16 @@ public class TNBot extends AbstractAI {
 		@Override
 		public void init(GameEngine engine, int playerID) {
 			super.init(engine, playerID);
-			lookahead = 2;
+			skipLookahead = true;
+			skipHold = false;
 //			kernel.setFitness(new HybridFitness());
+		}
+		
+		@Override
+		protected void recompute(GameEngine engine) {
+			double currentScore = kernel.getFitness().score(field);
+			skipLookahead = (currentScore < 0.8 * worst);
+			super.recompute(engine);
 		}
 	}
 	
@@ -169,6 +177,8 @@ public class TNBot extends AbstractAI {
 		this.field.updateShape();
 		field = this.field;
 		shape = field.getShape();
+		double currentScore = kernel.getFitness().score(field);
+		worst = Math.max(worst * 0.9, currentScore);
 
 		Callable<List<PlayerAction>> task = new Callable<List<PlayerAction>>() {
 			@Override
@@ -188,8 +198,6 @@ public class TNBot extends AbstractAI {
 				
 				kernel.setHighGravity(engine.statistics.level >= 10 || highGravity);
 
-				double currentScore = kernel.getFitness().score(field);
-				worst = Math.max(worst * 0.9, currentScore);
 				
 				Decision best;
 				
