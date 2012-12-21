@@ -118,7 +118,7 @@ import org.zeromeaner.game.net.NetRoomInfo;
 import org.zeromeaner.game.net.NetUtil;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.game.subsystem.mode.NetDummyMode;
+import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
@@ -210,7 +210,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	protected LinkedList<NetRoomInfo> presets = new LinkedList<NetRoomInfo>();
 
 	/** Current game mode (act as special NetLobbyListener) */
-	protected NetDummyMode netDummyMode;
+	protected AbstractNetMode netDummyMode;
 
 	/** Property file for lobby settings */
 	protected CustomProperties propConfig;
@@ -462,6 +462,8 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 
 	/** ARE(Create room screen) */
 	protected JSpinner spinnerCreateRoomARE;
+	
+	protected JCheckBox chkboxSynchronousPlay;
 
 	/** ARE after line clear(Create room screen) */
 	protected JSpinner spinnerCreateRoomARELine;
@@ -1752,6 +1754,13 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		spinnerCreateRoomDAS.setPreferredSize(new Dimension(200, 20));
 		subpanelDAS.add(spinnerCreateRoomDAS, BorderLayout.EAST);
 
+		boolean defaultSyncPlay = propConfig.getProperty("createroom.defaultSyncPlay", false);
+		chkboxSynchronousPlay = new JCheckBox(getUIText("CreateRoom_SyncPlay"));
+		chkboxSynchronousPlay.setToolTipText(getUIText("CreateRoom_SyncPlay_Tip"));
+		chkboxSynchronousPlay.setSelected(defaultSyncPlay);
+		containerpanelCreateRoomSpeed.add(chkboxSynchronousPlay);
+
+		
 		// bonus tab
 
 		// bonus panel
@@ -3593,6 +3602,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 			boolean b2bChunk = chkboxCreateRoomB2BChunk.isSelected();
 			boolean isTarget = chkboxCreateRoomIsTarget.isSelected();
 			Integer integerTargetTimer = (Integer)spinnerCreateRoomTargetTimer.getValue();
+			boolean syncPlay = chkboxSynchronousPlay.isSelected();
 
 			roomInfo.strName = roomName;
 			roomInfo.strMode = modeName;
@@ -3627,6 +3637,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 			roomInfo.b2bChunk = b2bChunk;
 			roomInfo.isTarget = isTarget;
 			roomInfo.targetTimer = integerTargetTimer;
+			roomInfo.syncPlay = syncPlay;
 
 			return roomInfo;
 		} catch (Exception e) {
@@ -4055,9 +4066,12 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 		// Create rated - go to custom settings
 		if(e.getActionCommand() == "CreateRated_Custom") {
 			// Load preset into field
-			NetRoomInfo r = presets.get(comboboxCreateRatedPresets.getSelectedIndex());
-			setCreateRoomUIType(false, null);
-			importRoomInfoToCreateRoomScreen(r);
+			if(comboboxCreateRatedPresets.getSelectedIndex() != -1) {
+				NetRoomInfo r = presets.get(comboboxCreateRatedPresets.getSelectedIndex());
+				setCreateRoomUIType(false, null);
+				importRoomInfoToCreateRoomScreen(r);
+			} else
+				setCreateRoomUIType(false, null);
 			// Copy name and number of players
 			txtfldCreateRoomName.setText(txtfldCreateRatedName.getText());
 			spinnerCreateRoomMaxPlayers.setValue(spinnerCreateRatedMaxPlayers.getValue());
@@ -5007,7 +5021,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	 * Set new game mode
 	 * @param m Mode
 	 */
-	public void setNetDummyMode(NetDummyMode m) {
+	public void setNetDummyMode(AbstractNetMode m) {
 		netDummyMode = m;
 	}
 
@@ -5015,7 +5029,7 @@ public class NetLobbyFrame extends JFrame implements ActionListener, NetMessageL
 	 * Get current game mode
 	 * @return Current game mode
 	 */
-	public NetDummyMode getNetDummyMode() {
+	public AbstractNetMode getNetDummyMode() {
 		return netDummyMode;
 	}
 

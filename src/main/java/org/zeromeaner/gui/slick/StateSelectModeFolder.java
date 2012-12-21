@@ -17,7 +17,7 @@ import java.io.InputStreamReader;
 /**
  * Mode folder select
  */
-public class StateSelectModeFolder extends DummyMenuScrollState {
+public class StateSelectModeFolder extends AbstractMenuScrollState {
 	/** Log */
 	static Logger log = Logger.getLogger(StateSelectModeFolder.class);
 

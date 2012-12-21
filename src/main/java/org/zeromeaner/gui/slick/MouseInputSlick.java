@@ -2,9 +2,9 @@ package org.zeromeaner.gui.slick;
 
 
 import org.newdawn.slick.Input;
-import org.zeromeaner.gui.MouseInputDummy;
+import org.zeromeaner.gui.AbstractMouseInput;
 
-public class MouseInputSlick extends MouseInputDummy {
+public class MouseInputSlick extends AbstractMouseInput {
 	public static MouseInputSlick mouseInput;
 
 	private MouseInputSlick() {

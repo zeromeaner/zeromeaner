@@ -85,9 +85,9 @@ import org.zeromeaner.game.net.NetPlayerClient;
 import org.zeromeaner.game.net.NetRoomInfo;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.game.subsystem.ai.DummyAI;
+import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.mode.GameMode;
-import org.zeromeaner.game.subsystem.mode.NetDummyMode;
+import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.gui.net.NetLobbyFrame;
 import org.zeromeaner.gui.net.NetLobbyListener;
@@ -1074,7 +1074,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			// AI
 			String aiName = propGlobal.getProperty(i + ".ai", "");
 			if(aiName.length() > 0) {
-				DummyAI aiObj = GeneralUtil.loadAIPlayer(aiName);
+				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
 				gameManager.engine[i].ai = aiObj;
 				gameManager.engine[i].aiMoveDelay = propGlobal.getProperty(i + ".aiMoveDelay", 0);
 				gameManager.engine[i].aiThinkDelay = propGlobal.getProperty(i + ".aiThinkDelay", 0);
@@ -1145,7 +1145,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			// AI (リプレイ追記用）
 			String aiName = propGlobal.getProperty(i + ".ai", "");
 			if(aiName.length() > 0) {
-				DummyAI aiObj = GeneralUtil.loadAIPlayer(aiName);
+				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
 				gameManager.engine[i].ai = aiObj;
 				gameManager.engine[i].aiMoveDelay = propGlobal.getProperty(i + ".aiMoveDelay", 0);
 				gameManager.engine[i].aiThinkDelay = propGlobal.getProperty(i + ".aiThinkDelay", 0);
@@ -1189,14 +1189,14 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		loadGlobalConfig();	// Reload global config file
 
 		GameMode previousMode = gameManager.mode;
-		GameMode newModeTemp = (modeName == null) ? new NetDummyMode() : NullpoMinoInternalFrame.modeManager.getMode(modeName);
+		GameMode newModeTemp = (modeName == null) ? new AbstractNetMode() : NullpoMinoInternalFrame.modeManager.getMode(modeName);
 
 		if(newModeTemp == null) {
 			log.error("Cannot find a mode:" + modeName);
-		} else if(newModeTemp instanceof NetDummyMode) {
+		} else if(newModeTemp instanceof AbstractNetMode) {
 			log.info("Enter new mode:" + newModeTemp.getName());
 
-			NetDummyMode newMode = (NetDummyMode)newModeTemp;
+			AbstractNetMode newMode = (AbstractNetMode)newModeTemp;
 
 			if(previousMode != null) {
 				if(gameManager.engine[0].ai != null) {
@@ -1249,7 +1249,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			// AI
 			String aiName = NullpoMinoInternalFrame.propGlobal.getProperty(0 + ".ai", "");
 			if(aiName.length() > 0) {
-				DummyAI aiObj = GeneralUtil.loadAIPlayer(aiName);
+				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
 				gameManager.engine[0].ai = aiObj;
 				gameManager.engine[0].aiMoveDelay = NullpoMinoInternalFrame.propGlobal.getProperty(0 + ".aiMoveDelay", 0);
 				gameManager.engine[0].aiThinkDelay = NullpoMinoInternalFrame.propGlobal.getProperty(0 + ".aiThinkDelay", 0);

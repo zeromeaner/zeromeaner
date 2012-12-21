@@ -45,7 +45,7 @@ import org.zeromeaner.tool.airankstool.Ranks;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceInputStream;
 
-public class RanksAI extends DummyAI implements Runnable {
+public class RanksAI extends AbstractAI implements Runnable {
 
 	static Logger log = Logger.getLogger(RanksAI.class);
 
@@ -242,7 +242,7 @@ public class RanksAI extends DummyAI implements Runnable {
 	@Override
 	public void init(GameEngine engine, int playerID) {
 		gEngine = engine;
-		gManager = engine.owner;
+		gManager = engine.getOwner();
 
 		// Inits the ranks
 		initRanks();
@@ -869,7 +869,7 @@ public class RanksAI extends DummyAI implements Runnable {
 				 thinkRequest = false;
 				 thinking = true;
 				 try {
-					 thinkBestPosition(gEngine, gEngine.playerID);
+					 thinkBestPosition(gEngine, gEngine.getPlayerID());
 
 				 } catch (Throwable e) {
 					 log.debug("RanksAI: thinkBestPosition Failed", e);

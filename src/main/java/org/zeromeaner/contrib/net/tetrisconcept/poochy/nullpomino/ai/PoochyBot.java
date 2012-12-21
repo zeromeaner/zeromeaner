@@ -7,10 +7,10 @@ import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.WallkickResult;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.game.subsystem.ai.DummyAI;
+import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.util.GeneralUtil;
 
 /**
@@ -18,7 +18,7 @@ import org.zeromeaner.util.GeneralUtil;
  * @author Poochy.EXE
  *         Poochy.Spambucket@gmail.com
  */
-public class PoochyBot extends DummyAI implements Runnable {
+public class PoochyBot extends AbstractAI implements Runnable {
 	/** Log */
 	static Logger log = Logger.getLogger(PoochyBot.class);
 
@@ -97,7 +97,7 @@ public class PoochyBot extends DummyAI implements Runnable {
 	public void init(GameEngine engine, int playerID) {
 		delay = 0;
 		gEngine = engine;
-		gManager = engine.owner;
+		gManager = engine.getOwner();
 		thinkRequest = new ThinkRequestMutex();
 		thinking = false;
 		threadRunning = false;
@@ -1909,20 +1909,20 @@ public class PoochyBot extends DummyAI implements Runnable {
 	 * @param playerID Player ID
 	 */
 	public void renderState(GameEngine engine, int playerID){
-		EventReceiver r = engine.owner.receiver;
-		r.drawScoreFont(engine, playerID, 19, 39, getName().toUpperCase(), EventReceiver.COLOR_GREEN, 0.5f);
-		r.drawScoreFont(engine, playerID, 24, 40, "X", EventReceiver.COLOR_BLUE, 0.5f);
-		r.drawScoreFont(engine, playerID, 27, 40, "Y", EventReceiver.COLOR_BLUE, 0.5f);
-		r.drawScoreFont(engine, playerID, 30, 40, "RT", EventReceiver.COLOR_BLUE, 0.5f);
-		r.drawScoreFont(engine, playerID, 19, 41, "BEST:", EventReceiver.COLOR_BLUE, 0.5f);
+		EventRenderer r = engine.getOwner().receiver;
+		r.drawScoreFont(engine, playerID, 19, 39, getName().toUpperCase(), EventRenderer.COLOR_GREEN, 0.5f);
+		r.drawScoreFont(engine, playerID, 24, 40, "X", EventRenderer.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 27, 40, "Y", EventRenderer.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 30, 40, "RT", EventRenderer.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 19, 41, "BEST:", EventRenderer.COLOR_BLUE, 0.5f);
 		r.drawScoreFont(engine, playerID, 24, 41, String.valueOf(bestX), 0.5f);
 		r.drawScoreFont(engine, playerID, 27, 41, String.valueOf(bestY), 0.5f);
 		r.drawScoreFont(engine, playerID, 30, 41, String.valueOf(bestRt), 0.5f);
-		r.drawScoreFont(engine, playerID, 19, 42, "SUB:", EventReceiver.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 19, 42, "SUB:", EventRenderer.COLOR_BLUE, 0.5f);
 		r.drawScoreFont(engine, playerID, 24, 42, String.valueOf(bestXSub), 0.5f);
 		r.drawScoreFont(engine, playerID, 27, 42, String.valueOf(bestYSub), 0.5f);
 		r.drawScoreFont(engine, playerID, 30, 42, String.valueOf(bestRtSub), 0.5f);
-		r.drawScoreFont(engine, playerID, 19, 43, "NOW:", EventReceiver.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 19, 43, "NOW:", EventRenderer.COLOR_BLUE, 0.5f);
 		if (engine.nowPieceObject == null)
 			r.drawScoreFont(engine, playerID, 24, 43, "-- -- --", 0.5f);
 		else
@@ -1931,11 +1931,11 @@ public class PoochyBot extends DummyAI implements Runnable {
 			r.drawScoreFont(engine, playerID, 27, 43, String.valueOf(engine.nowPieceY), 0.5f);
 			r.drawScoreFont(engine, playerID, 30, 43, String.valueOf(engine.nowPieceObject.direction), 0.5f);
 		}
-		r.drawScoreFont(engine, playerID, 19, 44, "MOVE SCORE:", EventReceiver.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 19, 44, "MOVE SCORE:", EventRenderer.COLOR_BLUE, 0.5f);
 		r.drawScoreFont(engine, playerID, 31, 44, String.valueOf(bestPts), bestPts <= 0, 0.5f);
-		r.drawScoreFont(engine, playerID, 19, 45, "THINK ACTIVE:", EventReceiver.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 19, 45, "THINK ACTIVE:", EventRenderer.COLOR_BLUE, 0.5f);
 		r.drawScoreFont(engine, playerID, 32, 45, GeneralUtil.getOorX(thinking), 0.5f);
-		r.drawScoreFont(engine, playerID, 19, 46, "IN ARE:", EventReceiver.COLOR_BLUE, 0.5f);
+		r.drawScoreFont(engine, playerID, 19, 46, "IN ARE:", EventRenderer.COLOR_BLUE, 0.5f);
 		r.drawScoreFont(engine, playerID, 26, 46, GeneralUtil.getOorX(inARE), 0.5f);
 	}
 
@@ -1960,7 +1960,7 @@ public class PoochyBot extends DummyAI implements Runnable {
 				thinkRequest.active = false;
 				thinking = true;
 				try {
-					thinkBestPosition(gEngine, gEngine.playerID);
+					thinkBestPosition(gEngine, gEngine.getPlayerID());
 					thinkComplete = true;
 					log.debug("PoochyBot: thinkBestPosition completed successfully");
 				} catch (Throwable e) {

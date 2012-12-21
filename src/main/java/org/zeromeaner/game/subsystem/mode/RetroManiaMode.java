@@ -29,7 +29,7 @@
 package org.zeromeaner.game.subsystem.mode;
 
 import org.zeromeaner.game.component.Controller;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
@@ -141,8 +141,8 @@ public class RetroManiaMode extends AbstractMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		lastscore = 0;
 		scgettime = 0;
 		levelTimer = 0;
@@ -173,8 +173,8 @@ public class RetroManiaMode extends AbstractMode {
 			loadSetting(owner.replayProp);
 		}
 
-		engine.owner.backgroundStatus.bg = startlevel/2;
-		if(engine.owner.backgroundStatus.bg > 19) engine.owner.backgroundStatus.bg = 19;
+		engine.getOwner().backgroundStatus.bg = startlevel/2;
+		if(engine.getOwner().backgroundStatus.bg > 19) engine.getOwner().backgroundStatus.bg = 19;
 		engine.framecolor = GameEngine.FRAME_COLOR_GRAY;
 	}
 
@@ -197,7 +197,7 @@ public class RetroManiaMode extends AbstractMode {
 	 */
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 3);
 
@@ -214,7 +214,7 @@ public class RetroManiaMode extends AbstractMode {
 					startlevel += change;
 					if (startlevel < 0) startlevel = 15;
 					if (startlevel > 15) startlevel = 0;
-					engine.owner.backgroundStatus.bg = startlevel/2;
+					engine.getOwner().backgroundStatus.bg = startlevel/2;
 					break;
 				case 2:
 					big = !big;
@@ -256,7 +256,7 @@ public class RetroManiaMode extends AbstractMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_BLUE, 0,
+		drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
 				"DIFFICULTY", GAMETYPE_NAME[gametype],
 				"LEVEL", String.valueOf(startlevel),
 				"BIG", GeneralUtil.getONorOFF(big),
@@ -295,18 +295,18 @@ public class RetroManiaMode extends AbstractMode {
 	 */
 	@Override
 	public void renderLast(GameEngine engine, int playerID) {
-		receiver.drawScoreFont(engine, playerID, 0, 0, "RETRO MANIA", EventReceiver.COLOR_GREEN);
-		receiver.drawScoreFont(engine, playerID, 0, 1, "("+GAMETYPE_NAME[gametype]+" SPEED)", EventReceiver.COLOR_GREEN);
+		receiver.drawScoreFont(engine, playerID, 0, 0, "RETRO MANIA", EventRenderer.COLOR_GREEN);
+		receiver.drawScoreFont(engine, playerID, 0, 1, "("+GAMETYPE_NAME[gametype]+" SPEED)", EventRenderer.COLOR_GREEN);
 
 		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
 			// Leaderboard
 			if((owner.replayMode == false) && (big == false) && (startlevel == 0) && (engine.ai == null)) {
 				float scale = (receiver.getNextDisplayType() == 2) ? 0.5f : 1.0f;
 				int topY = (receiver.getNextDisplayType() == 2) ? 6 : 4;
-				receiver.drawScoreFont(engine, playerID, 3, topY-1, "SCORE  LINE TIME", EventReceiver.COLOR_BLUE, scale);
+				receiver.drawScoreFont(engine, playerID, 3, topY-1, "SCORE  LINE TIME", EventRenderer.COLOR_BLUE, scale);
 
 				for(int i = 0; i < RANKING_MAX; i++) {
-					receiver.drawScoreFont(engine, playerID, 0, topY+i, String.format("%2d", i + 1), EventReceiver.COLOR_YELLOW, scale);
+					receiver.drawScoreFont(engine, playerID, 0, topY+i, String.format("%2d", i + 1), EventRenderer.COLOR_YELLOW, scale);
 					receiver.drawScoreFont(engine, playerID, 3, topY+i, String.valueOf(rankingScore[gametype][i]), (i == rankingRank), scale);
 					receiver.drawScoreFont(engine, playerID, 10, topY+i, String.valueOf(rankingLines[gametype][i]), (i == rankingRank), scale);
 					receiver.drawScoreFont(engine, playerID, 15, topY+i, GeneralUtil.getTime(rankingTime[gametype][i]), (i == rankingRank), scale);
@@ -314,7 +314,7 @@ public class RetroManiaMode extends AbstractMode {
 			}
 		} else {
 			// Game statistics
-			receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE", EventRenderer.COLOR_BLUE);
 			String strScore;
 			if((lastscore == 0) || (scgettime >= 120)) {
 				strScore = String.valueOf(engine.statistics.score);
@@ -323,13 +323,13 @@ public class RetroManiaMode extends AbstractMode {
 			}
 			receiver.drawScoreFont(engine, playerID, 0, 4, strScore);
 
-			receiver.drawScoreFont(engine, playerID, 0, 6, "LINE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 6, "LINE", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 7, String.valueOf(engine.statistics.lines));
 
-			receiver.drawScoreFont(engine, playerID, 0, 9, "LEVEL", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 9, "LEVEL", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 10, String.valueOf(engine.statistics.level));
 
-			receiver.drawScoreFont(engine, playerID, 0, 12, "TIME", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 12, "TIME", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 13, GeneralUtil.getTime(engine.statistics.time));
 
 			//receiver.drawScoreFont(engine, playerID, 0, 15, String.valueOf(linesAfterLastLevelUp));
@@ -442,11 +442,11 @@ public class RetroManiaMode extends AbstractMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		receiver.drawMenuFont(engine, playerID,  0, 1, "PLAY DATA", EventReceiver.COLOR_ORANGE);
+		receiver.drawMenuFont(engine, playerID,  0, 1, "PLAY DATA", EventRenderer.COLOR_ORANGE);
 
-		drawResultStats(engine, playerID, receiver, 3, EventReceiver.COLOR_BLUE,
+		drawResultStats(engine, playerID, receiver, 3, EventRenderer.COLOR_BLUE,
 				STAT_SCORE, STAT_LINES, STAT_LEVEL, STAT_TIME);
-		drawResultRank(engine, playerID, receiver, 11, EventReceiver.COLOR_BLUE, rankingRank);
+		drawResultRank(engine, playerID, receiver, 11, EventRenderer.COLOR_BLUE, rankingRank);
 	}
 
 	/**

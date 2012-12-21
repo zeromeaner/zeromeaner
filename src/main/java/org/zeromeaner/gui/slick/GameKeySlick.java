@@ -30,13 +30,13 @@ package org.zeromeaner.gui.slick;
 
 
 import org.newdawn.slick.Input;
-import org.zeromeaner.gui.GameKeyDummy;
+import org.zeromeaner.gui.AbstractGameKey;
 import org.zeromeaner.util.CustomProperties;
 
 /**
  * Key input state manager (Only use with Slick. Don't use inside game modes!)
  */
-public class GameKeySlick extends GameKeyDummy {
+public class GameKeySlick extends AbstractGameKey {
 	/** Key input state (Used by all game states) */
 	public static GameKeySlick[] gamekey;
 

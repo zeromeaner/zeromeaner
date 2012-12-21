@@ -39,7 +39,7 @@ import org.newdawn.slick.state.StateBasedGame;
 /**
  * Mode select screen
  */
-public class StateSelectMode extends DummyMenuScrollState {
+public class StateSelectMode extends AbstractMenuScrollState {
 	/** Logger */
 	static Logger log = Logger.getLogger(StateSelectMode.class);
 

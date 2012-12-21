@@ -7,7 +7,7 @@ import sdljava.video.SDLSurface;
 /**
  * Dummy class for menus with a scroll bar
  */
-public abstract class DummyMenuScrollStateSDL extends DummyMenuChooseStateSDL {
+public abstract class AbstractMenuScrollStateSDL extends AbstractMenuChooseStateSDL {
 	/** Scroll bar attributes */
 	protected static final int SB_TEXT_X = 38,
 		SB_TEXT_COLOR = NormalFontSDL.COLOR_BLUE,
@@ -37,7 +37,7 @@ public abstract class DummyMenuScrollStateSDL extends DummyMenuChooseStateSDL {
 	/** Y-coordinates of dark sections of scroll bar */
 	protected int pUpMinY, pUpMaxY, pDownMinY, pDownMaxY;
 
-	public DummyMenuScrollStateSDL () {
+	public AbstractMenuScrollStateSDL () {
 		minentry = 0;
 		nullError = "";
 		emptyError = "";

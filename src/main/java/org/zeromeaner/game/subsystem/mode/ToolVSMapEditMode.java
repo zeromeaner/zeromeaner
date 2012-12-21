@@ -34,7 +34,7 @@ import java.util.Random;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.CustomProperties;
@@ -257,36 +257,36 @@ public class ToolVSMapEditMode extends AbstractMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		receiver.drawMenuFont(engine, playerID, 0, 1, "FIELD EDIT", EventReceiver.COLOR_DARKBLUE);
+		receiver.drawMenuFont(engine, playerID, 0, 1, "FIELD EDIT", EventRenderer.COLOR_DARKBLUE);
 		if((engine.statc[2] >= 0) && (engine.statc[2] <= 2)) {
-			receiver.drawMenuFont(engine, playerID, 0, 2 + engine.statc[2], "b", EventReceiver.COLOR_RED);
+			receiver.drawMenuFont(engine, playerID, 0, 2 + engine.statc[2], "b", EventRenderer.COLOR_RED);
 		}
 		receiver.drawMenuFont(engine, playerID, 1, 2, "[EDIT]", (engine.statc[2] == 0));
 		receiver.drawMenuFont(engine, playerID, 1, 3, "[GRAY->?]", (engine.statc[2] == 1));
 		receiver.drawMenuFont(engine, playerID, 1, 4, "[CLEAR]", (engine.statc[2] == 2));
 
-		receiver.drawMenuFont(engine, playerID, 0, 6, "MAP DATA", EventReceiver.COLOR_DARKBLUE);
+		receiver.drawMenuFont(engine, playerID, 0, 6, "MAP DATA", EventRenderer.COLOR_DARKBLUE);
 		if(listFields.size() > 0) {
 			receiver.drawMenuFont(engine, playerID, 0, 7, nowMapID + "/" + (listFields.size() - 1), (engine.statc[2] >= 3) && (engine.statc[2] <= 5));
 		} else {
 			receiver.drawMenuFont(engine, playerID, 0, 7, "NO MAPS", (engine.statc[2] >= 3) && (engine.statc[2] <= 5));
 		}
 		if((engine.statc[2] >= 3) && (engine.statc[2] <= 5)) {
-			receiver.drawMenuFont(engine, playerID, 0, 8 + engine.statc[2] - 3, "b", EventReceiver.COLOR_RED);
+			receiver.drawMenuFont(engine, playerID, 0, 8 + engine.statc[2] - 3, "b", EventRenderer.COLOR_RED);
 		}
 		receiver.drawMenuFont(engine, playerID, 1, 8, "[SAVE]", (engine.statc[2] == 3));
 		receiver.drawMenuFont(engine, playerID, 1, 9, "[LOAD]", (engine.statc[2] == 4));
 		receiver.drawMenuFont(engine, playerID, 1, 10, "[DELETE]", (engine.statc[2] == 5));
 
-		receiver.drawMenuFont(engine, playerID, 0, 12, "MAP FILE", EventReceiver.COLOR_DARKBLUE);
+		receiver.drawMenuFont(engine, playerID, 0, 12, "MAP FILE", EventRenderer.COLOR_DARKBLUE);
 		receiver.drawMenuFont(engine, playerID, 0, 13, nowMapSetID + "/99", (engine.statc[2] >= 6) && (engine.statc[2] <= 7));
 		if((engine.statc[2] >= 6) && (engine.statc[2] <= 7)) {
-			receiver.drawMenuFont(engine, playerID, 0, 14 + engine.statc[2] - 6, "b", EventReceiver.COLOR_RED);
+			receiver.drawMenuFont(engine, playerID, 0, 14 + engine.statc[2] - 6, "b", EventRenderer.COLOR_RED);
 		}
 		receiver.drawMenuFont(engine, playerID, 1, 14, "[WRITE]", (engine.statc[2] == 6));
 		receiver.drawMenuFont(engine, playerID, 1, 15, "[READ]", (engine.statc[2] == 7));
 
-		receiver.drawMenuFont(engine, playerID, 0, 19, "EXIT-> D+E", EventReceiver.COLOR_ORANGE);
+		receiver.drawMenuFont(engine, playerID, 0, 19, "EXIT-> D+E", EventRenderer.COLOR_ORANGE);
 	}
 
 	/*
@@ -294,9 +294,9 @@ public class ToolVSMapEditMode extends AbstractMode {
 	 */
 	@Override
 	public void renderFieldEdit(GameEngine engine, int playerID) {
-		receiver.drawScoreFont(engine, playerID, 0, 2, "X POS", EventReceiver.COLOR_BLUE);
+		receiver.drawScoreFont(engine, playerID, 0, 2, "X POS", EventRenderer.COLOR_BLUE);
 		receiver.drawScoreFont(engine, playerID, 0, 3, "" + engine.fldeditX);
-		receiver.drawScoreFont(engine, playerID, 0, 4, "Y POS", EventReceiver.COLOR_BLUE);
+		receiver.drawScoreFont(engine, playerID, 0, 4, "Y POS", EventRenderer.COLOR_BLUE);
 		receiver.drawScoreFont(engine, playerID, 0, 5, "" + engine.fldeditY);
 	}
 }

@@ -38,7 +38,7 @@ import org.apache.log4j.Logger;
 import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
-import org.zeromeaner.game.subsystem.ai.DummyAI;
+import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 
 
@@ -321,13 +321,13 @@ public class GeneralUtil {
 	 * @param filename Classpath of the AI
 	 * @return The instance of AI (null if something fails)
 	 */
-	public static DummyAI loadAIPlayer(String filename) {
+	public static AbstractAI loadAIPlayer(String filename) {
 		Class<?> aiClass = null;
-		DummyAI aiObject = null;
+		AbstractAI aiObject = null;
 
 		try {
 			aiClass = Class.forName(filename);
-			aiObject = (DummyAI) aiClass.newInstance();
+			aiObject = (AbstractAI) aiClass.newInstance();
 		} catch (Exception e) {
 			log.warn("Failed to load AIPlayer from " + filename, e);
 		}

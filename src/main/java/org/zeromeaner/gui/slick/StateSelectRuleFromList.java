@@ -21,7 +21,7 @@ import java.io.InputStreamReader;
 /**
  * Rule select (after mode selection)
  */
-public class StateSelectRuleFromList extends DummyMenuScrollState {
+public class StateSelectRuleFromList extends AbstractMenuScrollState {
 	/** Log */
 	static Logger log = Logger.getLogger(StateSelectRuleFromList.class);
 

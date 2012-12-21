@@ -7,14 +7,14 @@ import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.game.subsystem.ai.DummyAI;
+import org.zeromeaner.game.subsystem.ai.AbstractAI;
 
 /**
  * Nohoho AI
  * @author Poochy.EXE
  *         Poochy.Spambucket@gmail.com
  */
-public class Nohoho extends DummyAI implements Runnable {
+public class Nohoho extends AbstractAI implements Runnable {
 	/** Log */
 	static Logger log = Logger.getLogger(Nohoho.class);
 
@@ -89,7 +89,7 @@ public class Nohoho extends DummyAI implements Runnable {
 	public void init(GameEngine engine, int playerID) {
 		delay = 0;
 		gEngine = engine;
-		gManager = engine.owner;
+		gManager = engine.getOwner();
 		thinkRequest = new ThinkRequestMutex();
 		thinking = false;
 		threadRunning = false;
@@ -678,7 +678,7 @@ public class Nohoho extends DummyAI implements Runnable {
 				thinkRequest.active = false;
 				thinking = true;
 				try {
-					thinkBestPosition(gEngine, gEngine.playerID);
+					thinkBestPosition(gEngine, gEngine.getPlayerID());
 					thinkComplete = true;
 					log.debug("Nohoho: thinkBestPosition completed successfully");
 				} catch (Throwable e) {

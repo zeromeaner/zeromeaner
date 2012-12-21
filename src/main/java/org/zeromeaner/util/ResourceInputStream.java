@@ -44,7 +44,7 @@ public class ResourceInputStream extends FilterInputStream {
 		InputStream in = null;
 		if(
 				AppletMain.isApplet() 
-				&& resource.startsWith("config/setting/")
+				&& (resource.startsWith("config/setting/") || resource.startsWith("replay/"))
 				&& !dontDownload.contains(resource))
 			try {
 				in = new ResourceDownloadStream(resource);
@@ -61,7 +61,8 @@ public class ResourceInputStream extends FilterInputStream {
 		in = ResourceInputStream.class.getClassLoader().getResourceAsStream("org/zeromeaner/" + resource);
 		if(in != null)
 			return in;
-		throw new IOException("Resource not found:" + resource);
+//		throw new IOException("Resource not found:" + resource);
+		return new FileInputStream(resource);
 	}
 	
 	public static class ResourceDownloadStream extends FilterInputStream {

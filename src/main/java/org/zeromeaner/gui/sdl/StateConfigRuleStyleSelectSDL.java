@@ -8,7 +8,7 @@ import sdljava.video.SDLSurface;
 /**
  * Style select menu (SDL)
  */
-public class StateConfigRuleStyleSelectSDL extends DummyMenuChooseStateSDL {
+public class StateConfigRuleStyleSelectSDL extends AbstractMenuChooseStateSDL {
 	/** Player ID */
 	public int player = 0;
 

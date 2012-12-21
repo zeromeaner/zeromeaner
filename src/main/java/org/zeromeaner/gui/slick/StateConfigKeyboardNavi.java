@@ -36,7 +36,7 @@ import org.newdawn.slick.state.StateBasedGame;
 /**
  * キーボード設定画面のステート
  */
-public class StateConfigKeyboardNavi extends DummyMenuChooseState {
+public class StateConfigKeyboardNavi extends AbstractMenuChooseState {
 	/** This state's ID */
 	public static final int ID = 16;
 

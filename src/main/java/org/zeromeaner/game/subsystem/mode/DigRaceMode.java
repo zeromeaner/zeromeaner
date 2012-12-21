@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.net.NetUtil;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
@@ -42,7 +42,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * DIG RACE Mode
  */
-public class DigRaceMode extends NetDummyMode {
+public class DigRaceMode extends AbstractNetMode {
 	/* ----- Main variables ----- */
 	/** Logger */
 	static Logger log = Logger.getLogger(DigRaceMode.class);
@@ -99,8 +99,8 @@ public class DigRaceMode extends NetDummyMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 
 		bgmno = 0;
 		big = false;
@@ -116,18 +116,18 @@ public class DigRaceMode extends NetDummyMode {
 
 		netPlayerInit(engine, playerID);
 
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			version = CURRENT_VERSION;
-			presetNumber = engine.owner.modeConfig.getProperty("digrace.presetNumber", 0);
-			loadPreset(engine, engine.owner.modeConfig, -1);
+			presetNumber = engine.getOwner().modeConfig.getProperty("digrace.presetNumber", 0);
+			loadPreset(engine, engine.getOwner().modeConfig, -1);
 			loadRanking(owner.modeConfig, engine.ruleopt.strRuleName);
 		} else {
-			version = engine.owner.replayProp.getProperty("digrace.version", 0);
+			version = engine.getOwner().replayProp.getProperty("digrace.version", 0);
 			presetNumber = 0;
-			loadPreset(engine, engine.owner.replayProp, -1);
+			loadPreset(engine, engine.getOwner().replayProp, -1);
 
 			// NET: Load name
-			netPlayerName = engine.owner.replayProp.getProperty(playerID + ".net.netPlayerName", "");
+			netPlayerName = engine.getOwner().replayProp.getProperty(playerID + ".net.netPlayerName", "");
 		}
 	}
 
@@ -179,7 +179,7 @@ public class DigRaceMode extends NetDummyMode {
 			netOnUpdateNetPlayRanking(engine, goaltype);
 		}
 		// Menu
-		else if(engine.owner.replayMode == false) {
+		else if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 10, playerID);
 
@@ -314,7 +314,7 @@ public class DigRaceMode extends NetDummyMode {
 			// NET: Netplay Ranking
 			netOnRenderNetPlayRanking(engine, playerID, receiver);
 		} else {
-			drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_BLUE, 0,
+			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
 					"GRAVITY", String.valueOf(engine.speed.gravity),
 					"G-MAX", String.valueOf(engine.speed.denominator),
 					"ARE", String.valueOf(engine.speed.are),
@@ -324,9 +324,9 @@ public class DigRaceMode extends NetDummyMode {
 					"DAS", String.valueOf(engine.speed.das),
 					"BGM", String.valueOf(bgmno),
 					"GOAL", String.valueOf(GOAL_TABLE[goaltype]));
-			if (!engine.owner.replayMode)
+			if (!engine.getOwner().replayMode)
 			{
-				menuColor = EventReceiver.COLOR_GREEN;
+				menuColor = EventRenderer.COLOR_GREEN;
 				drawMenuCompact(engine, playerID, receiver,
 					"LOAD", String.valueOf(presetNumber),
 					"SAVE", String.valueOf(presetNumber));
@@ -449,16 +449,16 @@ public class DigRaceMode extends NetDummyMode {
 	public void renderLast(GameEngine engine, int playerID) {
 		if(owner.menuOnly) return;
 
-		receiver.drawScoreFont(engine, playerID, 0, 0, "DIG RACE", EventReceiver.COLOR_GREEN);
-		receiver.drawScoreFont(engine, playerID, 0, 1, "(" + GOAL_TABLE[goaltype] + " GARBAGE GAME)", EventReceiver.COLOR_GREEN);
+		receiver.drawScoreFont(engine, playerID, 0, 0, "DIG RACE", EventRenderer.COLOR_GREEN);
+		receiver.drawScoreFont(engine, playerID, 0, 1, "(" + GOAL_TABLE[goaltype] + " GARBAGE GAME)", EventRenderer.COLOR_GREEN);
 
 		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
 			if(!owner.replayMode && (engine.ai == null) && !netIsWatch) {
 				String strPieceTemp = (owner.receiver.getNextDisplayType() == 2) ? "P." : "PIECE";
-				receiver.drawScoreFont(engine, playerID, 3, 3, "TIME     LINE " + strPieceTemp, EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 3, 3, "TIME     LINE " + strPieceTemp, EventRenderer.COLOR_BLUE);
 
 				for(int i = 0; i < RANKING_MAX; i++) {
-					receiver.drawScoreFont(engine, playerID, 0, 4 + i, String.format("%2d", i + 1), EventReceiver.COLOR_YELLOW);
+					receiver.drawScoreFont(engine, playerID, 0, 4 + i, String.format("%2d", i + 1), EventRenderer.COLOR_YELLOW);
 					receiver.drawScoreFont(engine, playerID, 3, 4 + i, GeneralUtil.getTime(rankingTime[goaltype][i]), (rankingRank == i));
 					receiver.drawScoreFont(engine, playerID, 12, 4 + i, String.valueOf(rankingLines[goaltype][i]), (rankingRank == i));
 					receiver.drawScoreFont(engine, playerID, 17, 4 + i, String.valueOf(rankingPiece[goaltype][i]), (rankingRank == i));
@@ -468,10 +468,10 @@ public class DigRaceMode extends NetDummyMode {
 			int remainLines = getRemainGarbageLines(engine, goaltype);
 			String strLines = String.valueOf(remainLines);
 			if(remainLines < 0) strLines = "0";
-			int fontcolor = EventReceiver.COLOR_WHITE;
-			if((remainLines <= 14) && (remainLines > 0)) fontcolor = EventReceiver.COLOR_YELLOW;
-			if((remainLines <=  8) && (remainLines > 0)) fontcolor = EventReceiver.COLOR_ORANGE;
-			if((remainLines <=  4) && (remainLines > 0)) fontcolor = EventReceiver.COLOR_RED;
+			int fontcolor = EventRenderer.COLOR_WHITE;
+			if((remainLines <= 14) && (remainLines > 0)) fontcolor = EventRenderer.COLOR_YELLOW;
+			if((remainLines <=  8) && (remainLines > 0)) fontcolor = EventRenderer.COLOR_ORANGE;
+			if((remainLines <=  4) && (remainLines > 0)) fontcolor = EventRenderer.COLOR_RED;
 
 			if(remainLines > 0) {
 				if(strLines.length() == 1) {
@@ -483,19 +483,19 @@ public class DigRaceMode extends NetDummyMode {
 				}
 			}
 
-			receiver.drawScoreFont(engine, playerID, 0, 3, "LINE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 3, "LINE", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 4, String.valueOf(engine.statistics.lines));
 
-			receiver.drawScoreFont(engine, playerID, 0, 6, "PIECE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 6, "PIECE", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 7, String.valueOf(engine.statistics.totalPieceLocked));
 
-			receiver.drawScoreFont(engine, playerID, 0, 9, "LINE/MIN", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 9, "LINE/MIN", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 10, String.valueOf(engine.statistics.lpm));
 
-			receiver.drawScoreFont(engine, playerID, 0, 12, "PIECE/SEC", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 12, "PIECE/SEC", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 13, String.valueOf(engine.statistics.pps));
 
-			receiver.drawScoreFont(engine, playerID, 0, 15, "TIME", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 15, "TIME", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 16, GeneralUtil.getTime(engine.statistics.time));
 		}
 
@@ -535,20 +535,20 @@ public class DigRaceMode extends NetDummyMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		drawResultStats(engine, playerID, receiver, 1, EventReceiver.COLOR_BLUE,
+		drawResultStats(engine, playerID, receiver, 1, EventRenderer.COLOR_BLUE,
 				STAT_LINES, STAT_PIECE, STAT_TIME, STAT_LPM, STAT_PPS);
-		drawResultRank(engine, playerID, receiver, 11, EventReceiver.COLOR_BLUE, rankingRank);
-		drawResultNetRank(engine, playerID, receiver, 13, EventReceiver.COLOR_BLUE, netRankingRank[0]);
-		drawResultNetRankDaily(engine, playerID, receiver, 15, EventReceiver.COLOR_BLUE, netRankingRank[1]);
+		drawResultRank(engine, playerID, receiver, 11, EventRenderer.COLOR_BLUE, rankingRank);
+		drawResultNetRank(engine, playerID, receiver, 13, EventRenderer.COLOR_BLUE, netRankingRank[0]);
+		drawResultNetRankDaily(engine, playerID, receiver, 15, EventRenderer.COLOR_BLUE, netRankingRank[1]);
 
 		if(netIsPB) {
-			receiver.drawMenuFont(engine, playerID, 2, 18, "NEW PB", EventReceiver.COLOR_ORANGE);
+			receiver.drawMenuFont(engine, playerID, 2, 18, "NEW PB", EventRenderer.COLOR_ORANGE);
 		}
 
 		if(netIsNetPlay && (netReplaySendStatus == 1)) {
-			receiver.drawMenuFont(engine, playerID, 0, 19, "SENDING...", EventReceiver.COLOR_PINK);
+			receiver.drawMenuFont(engine, playerID, 0, 19, "SENDING...", EventRenderer.COLOR_PINK);
 		} else if(netIsNetPlay && !netIsWatch && (netReplaySendStatus == 2)) {
-			receiver.drawMenuFont(engine, playerID, 1, 19, "A: RETRY", EventReceiver.COLOR_RED);
+			receiver.drawMenuFont(engine, playerID, 1, 19, "A: RETRY", EventRenderer.COLOR_RED);
 		}
 	}
 
@@ -557,8 +557,8 @@ public class DigRaceMode extends NetDummyMode {
 	 */
 	@Override
 	public void saveReplay(GameEngine engine, int playerID, CustomProperties prop) {
-		engine.owner.replayProp.setProperty("digrace.version", version);
-		savePreset(engine, engine.owner.replayProp, -1);
+		engine.getOwner().replayProp.setProperty("digrace.version", version);
+		savePreset(engine, engine.getOwner().replayProp, -1);
 
 		// NET: Save name
 		if((netPlayerName != null) && (netPlayerName.length() > 0)) {

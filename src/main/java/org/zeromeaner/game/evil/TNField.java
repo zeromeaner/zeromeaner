@@ -5,6 +5,7 @@ import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.play.GameEngine;
 
 import org.eviline.Field;
+import org.eviline.Shape;
 import org.eviline.randomizer.MaliciousRandomizer.MaliciousRandomizerProperties;
 import org.eviline.randomizer.Randomizer;
 import org.eviline.randomizer.RandomizerFactory;
@@ -53,6 +54,22 @@ public class TNField extends Field {
 				field[y + BUFFER][x + BUFFER] = b;
 			}
 		}
+	}
+	
+	public void updateShape() {
+		shape = TNPiece.fromNullpo(engine.nowPieceObject);
+		shapeX = BUFFER + engine.nowPieceX;
+		shapeY = BUFFER + engine.nowPieceY;
+		
+//		switch(shape) {
+//		case S_LEFT: shapeX--; break;
+//		case S_RIGHT: shapeX--; break;
+//		case J_LEFT: shapeX--; break;
+//		case L_DOWN: shapeX--; break;
+//		case O_UP: shapeX--; break;
+//		case Z_LEFT: shapeX--; break;
+//		}
+		
 	}
 	
 	public Object writeReplace() {

@@ -31,7 +31,7 @@ package org.zeromeaner.game.subsystem.mode;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
@@ -71,9 +71,9 @@ public class PhysicianMode extends AbstractMode {
 	/** Colors for speed settings */
 	private static final int[] SPEED_COLOR =
 	{
-		EventReceiver.COLOR_BLUE,
-		EventReceiver.COLOR_YELLOW,
-		EventReceiver.COLOR_RED
+		EventRenderer.COLOR_BLUE,
+		EventRenderer.COLOR_YELLOW,
+		EventRenderer.COLOR_RED
 	};
 
 	/** GameManager object (Manages entire game status) */
@@ -128,8 +128,8 @@ public class PhysicianMode extends AbstractMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		lastscore = 0;
 		scgettime = 0;
 		gemsClearedChainTotal = 0;
@@ -175,7 +175,7 @@ public class PhysicianMode extends AbstractMode {
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
 		// Menu
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 1);
 
@@ -232,7 +232,7 @@ public class PhysicianMode extends AbstractMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_BLUE, 0,
+		drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
 				"GEMS", String.valueOf(hoverBlocks),
 				"SPEED", SPEED_NAME[speed]);
 	}
@@ -254,19 +254,19 @@ public class PhysicianMode extends AbstractMode {
 
 	@Override
 	public void renderLast(GameEngine engine, int playerID) {
-		receiver.drawScoreFont(engine, playerID, 0, 0, "PHYSICIAN", EventReceiver.COLOR_DARKBLUE);
+		receiver.drawScoreFont(engine, playerID, 0, 0, "PHYSICIAN", EventRenderer.COLOR_DARKBLUE);
 
 		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (engine.ai == null)) {
-				receiver.drawScoreFont(engine, playerID, 3, 3, "SCORE  TIME", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 3, 3, "SCORE  TIME", EventRenderer.COLOR_BLUE);
 				for(int i = 0; i < RANKING_MAX; i++) {
-					receiver.drawScoreFont(engine, playerID, 0, 4 + i, String.format("%2d", i + 1), EventReceiver.COLOR_YELLOW);
+					receiver.drawScoreFont(engine, playerID, 0, 4 + i, String.format("%2d", i + 1), EventRenderer.COLOR_YELLOW);
 					receiver.drawScoreFont(engine, playerID, 3, 4 + i, String.valueOf(rankingScore[i]), (i == rankingRank));
 					receiver.drawScoreFont(engine, playerID, 10, 4 + i, GeneralUtil.getTime(rankingTime[i]), (i == rankingRank));
 				}
 			}
 		} else {
-			receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE", EventRenderer.COLOR_BLUE);
 			String strScore;
 			if((lastscore == 0) || (scgettime <= 0)) {
 				strScore = String.valueOf(engine.statistics.score);
@@ -275,7 +275,7 @@ public class PhysicianMode extends AbstractMode {
 			}
 			receiver.drawScoreFont(engine, playerID, 0, 4, strScore);
 
-			receiver.drawScoreFont(engine, playerID, 0, 6, "REST", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 6, "REST", EventRenderer.COLOR_BLUE);
 			if (engine.field != null)
 			{
 				receiver.drawScoreFont(engine, playerID, 0, 7, String.valueOf(engine.field.getHowManyGems()));
@@ -292,16 +292,16 @@ public class PhysicianMode extends AbstractMode {
 							yellow++;
 					}
 				receiver.drawScoreFont(engine, playerID, 0, 8, "(");
-				receiver.drawScoreFont(engine, playerID, 1, 8, String.format("%2d", red), EventReceiver.COLOR_RED);
-				receiver.drawScoreFont(engine, playerID, 4, 8, String.format("%2d", yellow), EventReceiver.COLOR_YELLOW);
-				receiver.drawScoreFont(engine, playerID, 7, 8, String.format("%2d", blue), EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 1, 8, String.format("%2d", red), EventRenderer.COLOR_RED);
+				receiver.drawScoreFont(engine, playerID, 4, 8, String.format("%2d", yellow), EventRenderer.COLOR_YELLOW);
+				receiver.drawScoreFont(engine, playerID, 7, 8, String.format("%2d", blue), EventRenderer.COLOR_BLUE);
 				receiver.drawScoreFont(engine, playerID, 9, 8, ")");
 			}
 
-			receiver.drawScoreFont(engine, playerID, 0, 10, "SPEED", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 10, "SPEED", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 11, SPEED_NAME[speed], SPEED_COLOR[speed]);
 
-			receiver.drawScoreFont(engine, playerID, 0, 13, "TIME", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 13, "TIME", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 14, GeneralUtil.getTime(engine.statistics.time));
 		}
 	}
@@ -387,13 +387,13 @@ public class PhysicianMode extends AbstractMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		receiver.drawMenuFont(engine, playerID,  0, 1, "PLAY DATA", EventReceiver.COLOR_ORANGE);
+		receiver.drawMenuFont(engine, playerID,  0, 1, "PLAY DATA", EventRenderer.COLOR_ORANGE);
 
-		drawResult(engine, playerID, receiver, 3, EventReceiver.COLOR_BLUE,
+		drawResult(engine, playerID, receiver, 3, EventRenderer.COLOR_BLUE,
 				"SCORE", String.format("%10d", engine.statistics.score),
 				"CLEARED", String.format("%10d", engine.statistics.lines),
 				"TIME", String.format("%10s", GeneralUtil.getTime(engine.statistics.time)));
-		drawResultRank(engine, playerID, receiver, 9, EventReceiver.COLOR_BLUE, rankingRank);
+		drawResultRank(engine, playerID, receiver, 9, EventRenderer.COLOR_BLUE, rankingRank);
 	}
 
 	/*

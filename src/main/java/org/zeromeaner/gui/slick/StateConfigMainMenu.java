@@ -36,7 +36,7 @@ import org.newdawn.slick.state.StateBasedGame;
 /**
  * Options screen
  */
-public class StateConfigMainMenu extends DummyMenuChooseState {
+public class StateConfigMainMenu extends AbstractMenuChooseState {
 	/** This state's ID */
 	public static final int ID = 5;
 

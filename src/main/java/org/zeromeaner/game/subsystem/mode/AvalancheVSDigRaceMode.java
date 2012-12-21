@@ -33,7 +33,7 @@ import java.util.Random;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.CustomProperties;
@@ -43,7 +43,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * AVALANCHE VS DIG RACE mode (Release Candidate 1)
  */
-public class AvalancheVSDigRaceMode extends AvalancheVSDummyMode {
+public class AvalancheVSDigRaceMode extends AbstractAvalancheVSMode {
 	/** Current version */
 	private static final int CURRENT_VERSION = 0;
 
@@ -77,7 +77,7 @@ public class AvalancheVSDigRaceMode extends AvalancheVSDummyMode {
 	 */
 	private void loadOtherSetting(GameEngine engine, CustomProperties prop) {
 		super.loadOtherSetting(engine, prop, "digrace");
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		ojamaRate[playerID] = prop.getProperty("avalanchevsdigrace.ojamaRate.p" + playerID, 420);
 		ojamaHard[playerID] = prop.getProperty("avalanchevsdigrace.ojamaHard.p" + playerID, 0);
 		handicapRows[playerID] = prop.getProperty("avalanchevsdigrace.ojamaHandicap.p" + playerID, 6);
@@ -90,7 +90,7 @@ public class AvalancheVSDigRaceMode extends AvalancheVSDummyMode {
 	 */
 	private void saveOtherSetting(GameEngine engine, CustomProperties prop) {
 		super.saveOtherSetting(engine, prop, "digrace");
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		prop.setProperty("avalanchevsdigrace.ojamaHandicap.p" + playerID, handicapRows[playerID]);
 	}
 
@@ -99,18 +99,18 @@ public class AvalancheVSDigRaceMode extends AvalancheVSDummyMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		useMap[playerID] = false;
 		feverMapSet[playerID] = -1;
 
-		if(engine.owner.replayMode == false) {
-			loadOtherSetting(engine, engine.owner.modeConfig);
-			loadPreset(engine, engine.owner.modeConfig, -1 - playerID, "digrace");
+		if(engine.getOwner().replayMode == false) {
+			loadOtherSetting(engine, engine.getOwner().modeConfig);
+			loadPreset(engine, engine.getOwner().modeConfig, -1 - playerID, "digrace");
 			version = CURRENT_VERSION;
 		} else {
-			loadOtherSetting(engine, engine.owner.replayProp);
-			loadPreset(engine, engine.owner.replayProp, -1 - playerID, "digrace");
+			loadOtherSetting(engine, engine.getOwner().replayProp);
+			loadPreset(engine, engine.getOwner().replayProp, -1 - playerID, "digrace");
 			version = owner.replayProp.getProperty("avalanchevsdigrace.version", 0);
 		}
 	}
@@ -121,7 +121,7 @@ public class AvalancheVSDigRaceMode extends AvalancheVSDummyMode {
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
 		// Menu
-		if((engine.owner.replayMode == false) && (engine.statc[4] == 0)) {
+		if((engine.getOwner().replayMode == false) && (engine.statc[4] == 0)) {
 			// Configuration changes
 			int change = updateCursor(engine, 28);
 
@@ -325,7 +325,7 @@ public class AvalancheVSDigRaceMode extends AvalancheVSDummyMode {
 	public void renderSetting(GameEngine engine, int playerID) {
 		if(engine.statc[4] == 0) {
 			if(engine.statc[2] < 9) {
-				drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_ORANGE, 0,
+				drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_ORANGE, 0,
 						"GRAVITY", String.valueOf(engine.speed.gravity),
 						"G-MAX", String.valueOf(engine.speed.denominator),
 						"ARE", String.valueOf(engine.speed.are),
@@ -336,9 +336,9 @@ public class AvalancheVSDigRaceMode extends AvalancheVSDummyMode {
 						"FALL DELAY", String.valueOf(engine.cascadeDelay),
 						"CLEAR DELAY", String.valueOf(engine.cascadeClearDelay));
 
-				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 1/3", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 1/3", EventRenderer.COLOR_YELLOW);
 			} else if(engine.statc[2] < 18) {
-				drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_CYAN, 9,
+				drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_CYAN, 9,
 						"COUNTER", OJAMA_COUNTER_STRING[ojamaCounterMode[playerID]],
 						"MAX ATTACK", String.valueOf(maxAttack[playerID]),
 						"COLORS", String.valueOf(numColors[playerID]),
@@ -349,34 +349,34 @@ public class AvalancheVSDigRaceMode extends AvalancheVSDummyMode {
 						"X COLUMN", dangerColumnDouble[playerID] ? "3 AND 4" : "3 ONLY",
 						"X SHOW", GeneralUtil.getONorOFF(dangerColumnShowX[playerID]));
 
-				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 2/3", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 2/3", EventRenderer.COLOR_YELLOW);
 			} else {
-				initMenu(EventReceiver.COLOR_PURPLE, 18);
+				initMenu(EventRenderer.COLOR_PURPLE, 18);
 				drawMenu(engine, playerID, receiver, "ROWS", String.valueOf(handicapRows[playerID]));
-				menuColor = EventReceiver.COLOR_CYAN;
+				menuColor = EventRenderer.COLOR_CYAN;
 				drawMenu(engine, playerID, receiver,
 						"CHAINPOWER", newChainPower[playerID] ? "FEVER" : "CLASSIC",
 						"CLEAR SIZE", String.valueOf(engine.colorClearSize));
-				menuColor = EventReceiver.COLOR_DARKBLUE;
+				menuColor = EventRenderer.COLOR_DARKBLUE;
 				drawMenu(engine, playerID, receiver,
 						"OUTLINE", OUTLINE_TYPE_NAMES[outlineType[playerID]],
 						"SHOW CHAIN", CHAIN_DISPLAY_NAMES[chainDisplayType[playerID]],
 						"FALL ANIM", cascadeSlow[playerID] ? "FEVER" : "CLASSIC");
-				menuColor = EventReceiver.COLOR_PINK;
+				menuColor = EventRenderer.COLOR_PINK;
 				drawMenuCompact(engine, playerID, receiver, "BGM", String.valueOf(bgmno));
-				menuColor = EventReceiver.COLOR_YELLOW;
+				menuColor = EventRenderer.COLOR_YELLOW;
 				drawMenuCompact(engine, playerID, receiver, "SE", GeneralUtil.getONorOFF(enableSE[playerID]));
-				menuColor = EventReceiver.COLOR_PINK;
+				menuColor = EventRenderer.COLOR_PINK;
 				drawMenu(engine, playerID, receiver, "BIG DISP", GeneralUtil.getONorOFF(bigDisplay));
-				menuColor = EventReceiver.COLOR_GREEN;
+				menuColor = EventRenderer.COLOR_GREEN;
 				drawMenuCompact(engine, playerID, receiver,
 						"LOAD", String.valueOf(presetNumber[playerID]),
 						"SAVE", String.valueOf(presetNumber[playerID]));
 				
-				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 3/3", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 3/3", EventRenderer.COLOR_YELLOW);
 			}
 		} else {
-			receiver.drawMenuFont(engine, playerID, 3, 10, "WAIT", EventReceiver.COLOR_YELLOW);
+			receiver.drawMenuFont(engine, playerID, 3, 10, "WAIT", EventRenderer.COLOR_YELLOW);
 		}
 	}
 
@@ -454,8 +454,8 @@ public class AvalancheVSDigRaceMode extends AvalancheVSDummyMode {
 	public void renderLast(GameEngine engine, int playerID) {
 		int fldPosX = receiver.getFieldDisplayPositionX(engine, playerID);
 		int fldPosY = receiver.getFieldDisplayPositionY(engine, playerID);
-		int playerColor = (playerID == 0) ? EventReceiver.COLOR_RED : EventReceiver.COLOR_BLUE;
-		int fontColor = EventReceiver.COLOR_WHITE;
+		int playerColor = (playerID == 0) ? EventRenderer.COLOR_RED : EventRenderer.COLOR_BLUE;
+		int fontColor = EventRenderer.COLOR_WHITE;
 
 		// Timer
 		if(playerID == 0) {
@@ -463,10 +463,10 @@ public class AvalancheVSDigRaceMode extends AvalancheVSDummyMode {
 		}
 
 		// Ojama Counter
-		fontColor = EventReceiver.COLOR_WHITE;
-		if(ojama[playerID] >= 1) fontColor = EventReceiver.COLOR_YELLOW;
-		if(ojama[playerID] >= 6) fontColor = EventReceiver.COLOR_ORANGE;
-		if(ojama[playerID] >= 12) fontColor = EventReceiver.COLOR_RED;
+		fontColor = EventRenderer.COLOR_WHITE;
+		if(ojama[playerID] >= 1) fontColor = EventRenderer.COLOR_YELLOW;
+		if(ojama[playerID] >= 6) fontColor = EventRenderer.COLOR_ORANGE;
+		if(ojama[playerID] >= 12) fontColor = EventRenderer.COLOR_RED;
 
 		String strOjama = String.valueOf(ojama[playerID]);
 		if(ojamaAdd[playerID] > 0)

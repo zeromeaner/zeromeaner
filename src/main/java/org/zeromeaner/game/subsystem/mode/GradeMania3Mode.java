@@ -34,7 +34,7 @@ import java.util.Random;
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Controller;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
@@ -388,8 +388,8 @@ public class GradeMania3Mode extends AbstractMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 
 		gravityindex = 0;
 		nextseclv = 0;
@@ -629,9 +629,9 @@ public class GradeMania3Mode extends AbstractMode {
 	 * @return  medal の文字色
 	 */
 	private int getMedalFontColor(int medalColor) {
-		if(medalColor == 1) return EventReceiver.COLOR_RED;
-		if(medalColor == 2) return EventReceiver.COLOR_WHITE;
-		if(medalColor == 3) return EventReceiver.COLOR_YELLOW;
+		if(medalColor == 1) return EventRenderer.COLOR_RED;
+		if(medalColor == 2) return EventRenderer.COLOR_WHITE;
+		if(medalColor == 3) return EventRenderer.COLOR_YELLOW;
 		return -1;
 	}
 
@@ -714,7 +714,7 @@ public class GradeMania3Mode extends AbstractMode {
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
 		// Menu
-		if(engine.owner.replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 10);
 
@@ -862,7 +862,7 @@ public class GradeMania3Mode extends AbstractMode {
 		String speedlevel;
 		if (internalStartLevel >= 1200) speedlevel = "MAX";
 		else speedlevel = String.valueOf(internalStartLevel);
-		drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_BLUE, 0,
+		drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
 				"LEVEL", level,
 				"SPEED", speedlevel,
 				"FULL GHOST", GeneralUtil.getONorOFF(alwaysghost),
@@ -924,7 +924,7 @@ public class GradeMania3Mode extends AbstractMode {
 	 */
 	@Override
 	public void renderLast(GameEngine engine, int playerID) {
-		receiver.drawScoreFont(engine, playerID, 0, 0, "GRADE MANIA 3" + (enableexam ? "(+EXAM)" : ""), EventReceiver.COLOR_CYAN);
+		receiver.drawScoreFont(engine, playerID, 0, 0, "GRADE MANIA 3" + (enableexam ? "(+EXAM)" : ""), EventRenderer.COLOR_CYAN);
 
 		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (!owner.replayMode)) ) {
 			if((startlevel == 0) && (!big) && (!always20g) && (!owner.replayMode) && (engine.ai == null)) {
@@ -932,29 +932,29 @@ public class GradeMania3Mode extends AbstractMode {
 					// Rankings
 					float scale = (receiver.getNextDisplayType() == 2) ? 0.5f : 1.0f;
 					int topY = (receiver.getNextDisplayType() == 2) ? 5 : 3;
-					receiver.drawScoreFont(engine, playerID, 3, topY-1, "GRADE LEVEL TIME", EventReceiver.COLOR_BLUE, scale);
+					receiver.drawScoreFont(engine, playerID, 3, topY-1, "GRADE LEVEL TIME", EventRenderer.COLOR_BLUE, scale);
 
 					for(int i = 0; i < RANKING_MAX; i++) {
 						int type = enableexam ? 1 : 0;
-						int gcolor = EventReceiver.COLOR_WHITE;
-						if((rankingRollclear[i][type] == 1) || (rankingRollclear[i][type] == 3)) gcolor = EventReceiver.COLOR_GREEN;
-						if((rankingRollclear[i][type] == 2) || (rankingRollclear[i][type] == 4)) gcolor = EventReceiver.COLOR_ORANGE;
+						int gcolor = EventRenderer.COLOR_WHITE;
+						if((rankingRollclear[i][type] == 1) || (rankingRollclear[i][type] == 3)) gcolor = EventRenderer.COLOR_GREEN;
+						if((rankingRollclear[i][type] == 2) || (rankingRollclear[i][type] == 4)) gcolor = EventRenderer.COLOR_ORANGE;
 
-						receiver.drawScoreFont(engine, playerID, 0, topY+i, String.format("%2d", i + 1), EventReceiver.COLOR_YELLOW, scale);
+						receiver.drawScoreFont(engine, playerID, 0, topY+i, String.format("%2d", i + 1), EventRenderer.COLOR_YELLOW, scale);
 						receiver.drawScoreFont(engine, playerID, 3, topY+i, getGradeName(rankingGrade[i][type]), gcolor, scale);
 						receiver.drawScoreFont(engine, playerID, 9, topY+i, String.valueOf(rankingLevel[i][type]), (i == rankingRank), scale);
 						receiver.drawScoreFont(engine, playerID, 15, topY+i, GeneralUtil.getTime(rankingTime[i][type]), (i == rankingRank), scale);
 					}
 
 					if(enableexam) {
-						receiver.drawScoreFont(engine, playerID, 0, 14, "QUALIFIED GRADE", EventReceiver.COLOR_YELLOW);
+						receiver.drawScoreFont(engine, playerID, 0, 14, "QUALIFIED GRADE", EventRenderer.COLOR_YELLOW);
 						receiver.drawScoreFont(engine, playerID, 0, 15, getGradeName(qualifiedGrade));
 					}
 
-					receiver.drawScoreFont(engine, playerID, 0, 17, "F:VIEW SECTION TIME", EventReceiver.COLOR_GREEN);
+					receiver.drawScoreFont(engine, playerID, 0, 17, "F:VIEW SECTION TIME", EventRenderer.COLOR_GREEN);
 				} else {
 					// Section Time
-					receiver.drawScoreFont(engine, playerID, 0, 2, "SECTION TIME", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, 0, 2, "SECTION TIME", EventRenderer.COLOR_BLUE);
 
 					int totalTime = 0;
 					for(int i = 0; i < SECTION_MAX; i++) {
@@ -971,18 +971,18 @@ public class GradeMania3Mode extends AbstractMode {
 						totalTime += bestSectionTime[i][type];
 					}
 
-					receiver.drawScoreFont(engine, playerID, 0, 14, "TOTAL", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, 0, 14, "TOTAL", EventRenderer.COLOR_BLUE);
 					receiver.drawScoreFont(engine, playerID, 0, 15, GeneralUtil.getTime(totalTime));
-					receiver.drawScoreFont(engine, playerID, 9, 14, "AVERAGE", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, 9, 14, "AVERAGE", EventRenderer.COLOR_BLUE);
 					receiver.drawScoreFont(engine, playerID, 9, 15, GeneralUtil.getTime(totalTime / SECTION_MAX));
 
-					receiver.drawScoreFont(engine, playerID, 0, 17, "F:VIEW RANKING", EventReceiver.COLOR_GREEN);
+					receiver.drawScoreFont(engine, playerID, 0, 17, "F:VIEW RANKING", EventRenderer.COLOR_GREEN);
 				}
 			}
 		} else {
 			if(promotionFlag) {
 				// 試験段位
-				receiver.drawScoreFont(engine, playerID, 0, 5, "QUALIFY", EventReceiver.COLOR_YELLOW);
+				receiver.drawScoreFont(engine, playerID, 0, 5, "QUALIFY", EventRenderer.COLOR_YELLOW);
 				receiver.drawScoreFont(engine, playerID, 0, 6, getGradeName(promotionalExam));
 			}
 
@@ -991,12 +991,12 @@ public class GradeMania3Mode extends AbstractMode {
 				int rgrade = grade;
 				if(enableexam && (rgrade >= 32) && (qualifiedGrade < 32)) rgrade = 31;
 
-				receiver.drawScoreFont(engine, playerID, 0, 2, "GRADE", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 0, 2, "GRADE", EventRenderer.COLOR_BLUE);
 				receiver.drawScoreFont(engine, playerID, 0, 3, getGradeName(rgrade), ((gradeflash > 0) && (gradeflash % 4 == 0)));
 
 				if(!promotionFlag) {
 					// Score
-					receiver.drawScoreFont(engine, playerID, 0, 5, "SCORE", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, 0, 5, "SCORE", EventRenderer.COLOR_BLUE);
 					String strScore;
 					if((lastscore == 0) || (scgettime <= 0)) {
 						strScore = String.valueOf(engine.statistics.score);
@@ -1008,7 +1008,7 @@ public class GradeMania3Mode extends AbstractMode {
 			}
 
 			//  level
-			receiver.drawScoreFont(engine, playerID, 0, 9, "LEVEL", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 9, "LEVEL", EventRenderer.COLOR_BLUE);
 			int tempLevel = engine.statistics.level;
 			if(tempLevel < 0) tempLevel = 0;
 			String strLevel = String.format("%3d", tempLevel);
@@ -1021,23 +1021,23 @@ public class GradeMania3Mode extends AbstractMode {
 			receiver.drawScoreFont(engine, playerID, 0, 12, String.format("%3d", nextseclv));
 
 			// Time
-			receiver.drawScoreFont(engine, playerID, 0, 14, "TIME", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, 0, 14, "TIME", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 15, GeneralUtil.getTime(engine.statistics.time));
 
 			// Roll 残り time
 			if((engine.gameActive) && (engine.ending == 2)) {
 				int time = ROLLTIMELIMIT - rolltime;
 				if(time < 0) time = 0;
-				receiver.drawScoreFont(engine, playerID, 0, 17, "ROLL TIME", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, 0, 17, "ROLL TIME", EventRenderer.COLOR_BLUE);
 				receiver.drawScoreFont(engine, playerID, 0, 18, GeneralUtil.getTime(time), ((time > 0) && (time < 10 * 60)));
 			}
 
 			if(regretdispframe > 0) {
 				// REGRET表示
-				receiver.drawMenuFont(engine,playerID,2,21,"REGRET",(regretdispframe % 4 == 0),EventReceiver.COLOR_WHITE,EventReceiver.COLOR_ORANGE);
+				receiver.drawMenuFont(engine,playerID,2,21,"REGRET",(regretdispframe % 4 == 0),EventRenderer.COLOR_WHITE,EventRenderer.COLOR_ORANGE);
 			} else if(cooldispframe > 0) {
 				// COOL表示
-				receiver.drawMenuFont(engine,playerID,2,21,"COOL!!",(cooldispframe % 4 == 0),EventReceiver.COLOR_WHITE,EventReceiver.COLOR_ORANGE);
+				receiver.drawMenuFont(engine,playerID,2,21,"COOL!!",(cooldispframe % 4 == 0),EventRenderer.COLOR_WHITE,EventRenderer.COLOR_ORANGE);
 			}
 
 			//  medal
@@ -1050,7 +1050,7 @@ public class GradeMania3Mode extends AbstractMode {
 			if((showsectiontime == true) && (sectiontime != null)) {
 				int x = (receiver.getNextDisplayType() == 2) ? 8 : 12;
 				int x2 = (receiver.getNextDisplayType() == 2) ? 9 : 12;
-				receiver.drawScoreFont(engine, playerID, x, 2, "SECTION TIME", EventReceiver.COLOR_BLUE);
+				receiver.drawScoreFont(engine, playerID, x, 2, "SECTION TIME", EventRenderer.COLOR_BLUE);
 
 				for(int i = 0; i < sectiontime.length; i++) {
 					if(sectiontime[i] > 0) {
@@ -1060,15 +1060,15 @@ public class GradeMania3Mode extends AbstractMode {
 						int section = engine.statistics.level / 100;
 						String strSeparator = " ";
 
-						int color = EventReceiver.COLOR_WHITE;
+						int color = EventRenderer.COLOR_WHITE;
 						if((i == section) && (engine.ending == 0)) {
 							strSeparator = "b";
 						} else {
 							if (stcolor == 1 && sectionIsNewRecord[i]) {
-								color = EventReceiver.COLOR_RED;
+								color = EventRenderer.COLOR_RED;
 							} else if (stcolor == 2) {
-								if (regretsection[i]) color = EventReceiver.COLOR_RED;
-								else if (coolsection[i])  color = EventReceiver.COLOR_GREEN;
+								if (regretsection[i]) color = EventRenderer.COLOR_RED;
+								else if (coolsection[i])  color = EventRenderer.COLOR_GREEN;
 							}
 						}
 
@@ -1080,7 +1080,7 @@ public class GradeMania3Mode extends AbstractMode {
 				}
 
 				if(sectionavgtime > 0) {
-					receiver.drawScoreFont(engine, playerID, x2, 14, "AVERAGE", EventReceiver.COLOR_BLUE);
+					receiver.drawScoreFont(engine, playerID, x2, 14, "AVERAGE", EventRenderer.COLOR_BLUE);
 					receiver.drawScoreFont(engine, playerID, x2, 15, GeneralUtil.getTime(sectionavgtime));
 				}
 			}
@@ -1118,10 +1118,10 @@ public class GradeMania3Mode extends AbstractMode {
 	@Override
 	public void renderReady(GameEngine engine, int playerID) {
 		if(promotionFlag && readyframe > 0) {
-			receiver.drawMenuFont(engine, playerID, 0, 2, "PROMOTION", EventReceiver.COLOR_YELLOW);
-			receiver.drawMenuFont(engine, playerID, 6, 3, "EXAM", EventReceiver.COLOR_YELLOW);
+			receiver.drawMenuFont(engine, playerID, 0, 2, "PROMOTION", EventRenderer.COLOR_YELLOW);
+			receiver.drawMenuFont(engine, playerID, 6, 3, "EXAM", EventRenderer.COLOR_YELLOW);
 			receiver.drawMenuFont(engine, playerID, 4, 6, getGradeName(promotionalExam), (readyframe % 4 ==0),
-				EventReceiver.COLOR_WHITE, EventReceiver.COLOR_ORANGE);
+				EventRenderer.COLOR_WHITE, EventRenderer.COLOR_ORANGE);
 		}
 	}
 
@@ -1610,85 +1610,85 @@ public class GradeMania3Mode extends AbstractMode {
 	public void renderResult(GameEngine engine, int playerID) {
 		if(passframe > 0) {
 			if (promotionFlag) {
-				receiver.drawMenuFont(engine, playerID, 0, 2, "PROMOTION", EventReceiver.COLOR_YELLOW);
-				receiver.drawMenuFont(engine, playerID, 6, 3, "EXAM", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 0, 2, "PROMOTION", EventRenderer.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 6, 3, "EXAM", EventRenderer.COLOR_YELLOW);
 				receiver.drawMenuFont(engine, playerID, 4, 6, getGradeName(promotionalExam), (passframe % 4 == 0),
-						EventReceiver.COLOR_WHITE, EventReceiver.COLOR_ORANGE);
+						EventRenderer.COLOR_WHITE, EventRenderer.COLOR_ORANGE);
 
 				if(passframe < 420) {
 					if(grade < promotionalExam) {
-						receiver.drawMenuFont(engine,playerID,3,11,"FAIL",(passframe % 4 == 0),EventReceiver.COLOR_WHITE,EventReceiver.COLOR_RED);
+						receiver.drawMenuFont(engine,playerID,3,11,"FAIL",(passframe % 4 == 0),EventRenderer.COLOR_WHITE,EventRenderer.COLOR_RED);
 					} else {
-						receiver.drawMenuFont(engine,playerID,2,11,"PASS!!",(passframe % 4 == 0),EventReceiver.COLOR_ORANGE,EventReceiver.COLOR_YELLOW);
+						receiver.drawMenuFont(engine,playerID,2,11,"PASS!!",(passframe % 4 == 0),EventRenderer.COLOR_ORANGE,EventRenderer.COLOR_YELLOW);
 					}
 				}
 			} else if (demotionFlag) {
-				receiver.drawMenuFont(engine, playerID, 0, 2, "DEMOTION", EventReceiver.COLOR_RED);
-				receiver.drawMenuFont(engine, playerID, 6, 3, "EXAM", EventReceiver.COLOR_RED);
+				receiver.drawMenuFont(engine, playerID, 0, 2, "DEMOTION", EventRenderer.COLOR_RED);
+				receiver.drawMenuFont(engine, playerID, 6, 3, "EXAM", EventRenderer.COLOR_RED);
 
 				if(passframe < 420) {
 					if(grade < demotionExamGrade) {
-						receiver.drawMenuFont(engine,playerID,3,11,"FAIL",(passframe % 4 == 0),EventReceiver.COLOR_WHITE,EventReceiver.COLOR_RED);
+						receiver.drawMenuFont(engine,playerID,3,11,"FAIL",(passframe % 4 == 0),EventRenderer.COLOR_WHITE,EventRenderer.COLOR_RED);
 					} else {
-						receiver.drawMenuFont(engine,playerID,3,11,"PASS",(passframe % 4 == 0),EventReceiver.COLOR_WHITE,EventReceiver.COLOR_YELLOW);
+						receiver.drawMenuFont(engine,playerID,3,11,"PASS",(passframe % 4 == 0),EventRenderer.COLOR_WHITE,EventRenderer.COLOR_YELLOW);
 					}
 				}
 			}
 		} else {
-			receiver.drawMenuFont(engine, playerID, 0, 0, "kn PAGE" + (engine.statc[1] + 1) + "/3", EventReceiver.COLOR_RED);
+			receiver.drawMenuFont(engine, playerID, 0, 0, "kn PAGE" + (engine.statc[1] + 1) + "/3", EventRenderer.COLOR_RED);
 
 			if(engine.statc[1] == 0) {
 				int rgrade = grade;
 				if(enableexam && (rgrade >= 32) && (qualifiedGrade < 32)) rgrade = 31;
-				int gcolor = EventReceiver.COLOR_WHITE;
-				if((rollclear == 1) || (rollclear == 3)) gcolor = EventReceiver.COLOR_GREEN;
-				if((rollclear == 2) || (rollclear == 4)) gcolor = EventReceiver.COLOR_ORANGE;
-				if((grade >= 32) && (engine.statc[2] % 2 == 0)) gcolor = EventReceiver.COLOR_YELLOW;
-				receiver.drawMenuFont(engine, playerID, 0, 2, "GRADE", EventReceiver.COLOR_BLUE);
+				int gcolor = EventRenderer.COLOR_WHITE;
+				if((rollclear == 1) || (rollclear == 3)) gcolor = EventRenderer.COLOR_GREEN;
+				if((rollclear == 2) || (rollclear == 4)) gcolor = EventRenderer.COLOR_ORANGE;
+				if((grade >= 32) && (engine.statc[2] % 2 == 0)) gcolor = EventRenderer.COLOR_YELLOW;
+				receiver.drawMenuFont(engine, playerID, 0, 2, "GRADE", EventRenderer.COLOR_BLUE);
 				String strGrade = String.format("%10s", getGradeName(rgrade));
 				receiver.drawMenuFont(engine, playerID, 0, 3, strGrade, gcolor);
 
-				drawResultStats(engine, playerID, receiver, 4, EventReceiver.COLOR_BLUE,
+				drawResultStats(engine, playerID, receiver, 4, EventRenderer.COLOR_BLUE,
 						STAT_SCORE, STAT_LINES, STAT_LEVEL_MANIA, STAT_TIME);
-				drawResultRank(engine, playerID, receiver, 12, EventReceiver.COLOR_BLUE, rankingRank);
+				drawResultRank(engine, playerID, receiver, 12, EventRenderer.COLOR_BLUE, rankingRank);
 				if(secretGrade > 4) {
-					drawResult(engine, playerID, receiver, 14, EventReceiver.COLOR_BLUE,
+					drawResult(engine, playerID, receiver, 14, EventRenderer.COLOR_BLUE,
 							"S. GRADE", String.format("%10s", tableSecretGradeName[secretGrade-1]));
 				}
 			} else if(engine.statc[1] == 1) {
-				receiver.drawMenuFont(engine, playerID, 0, 2, "SECTION", EventReceiver.COLOR_BLUE);
+				receiver.drawMenuFont(engine, playerID, 0, 2, "SECTION", EventRenderer.COLOR_BLUE);
 
 				for(int i = 0; i < sectiontime.length; i++) {
 					if(sectiontime[i] > 0) {
-						int color = EventReceiver.COLOR_WHITE;
+						int color = EventRenderer.COLOR_WHITE;
 						if (stcolor == 1 && sectionIsNewRecord[i]) {
-							color = EventReceiver.COLOR_RED;
+							color = EventRenderer.COLOR_RED;
 						} else if (stcolor == 2) {
-							if (regretsection[i]) color = EventReceiver.COLOR_RED;
-							else if (coolsection[i])  color = EventReceiver.COLOR_GREEN;
+							if (regretsection[i]) color = EventRenderer.COLOR_RED;
+							else if (coolsection[i])  color = EventRenderer.COLOR_GREEN;
 						}
 						receiver.drawMenuFont(engine, playerID, 2, 3 + i, GeneralUtil.getTime(sectiontime[i]), color);
 					}
 				}
 
 				if(sectionavgtime > 0) {
-					receiver.drawMenuFont(engine, playerID, 0, 14, "AVERAGE", EventReceiver.COLOR_BLUE);
+					receiver.drawMenuFont(engine, playerID, 0, 14, "AVERAGE", EventRenderer.COLOR_BLUE);
 					receiver.drawMenuFont(engine, playerID, 2, 15, GeneralUtil.getTime(sectionavgtime));
 				}
 			} else if(engine.statc[1] == 2) {
-				receiver.drawMenuFont(engine, playerID, 0, 2, "MEDAL", EventReceiver.COLOR_BLUE);
+				receiver.drawMenuFont(engine, playerID, 0, 2, "MEDAL", EventRenderer.COLOR_BLUE);
 				if(medalAC >= 1) receiver.drawMenuFont(engine, playerID, 5, 3, "AC", getMedalFontColor(medalAC));
 				if(medalST >= 1) receiver.drawMenuFont(engine, playerID, 8, 3, "ST", getMedalFontColor(medalST));
 				if(medalSK >= 1) receiver.drawMenuFont(engine, playerID, 5, 4, "SK", getMedalFontColor(medalSK));
 				if(medalCO >= 1) receiver.drawMenuFont(engine, playerID, 8, 4, "CO", getMedalFontColor(medalCO));
 
 				if(rollPointsTotal > 0) {
-					receiver.drawMenuFont(engine, playerID, 0, 6, "ROLL POINT", EventReceiver.COLOR_BLUE);
+					receiver.drawMenuFont(engine, playerID, 0, 6, "ROLL POINT", EventRenderer.COLOR_BLUE);
 					String strRollPointsTotal = String.format("%10g", rollPointsTotal);
 					receiver.drawMenuFont(engine, playerID, 0, 7, strRollPointsTotal);
 				}
 
-				drawResultStats(engine, playerID, receiver, 8, EventReceiver.COLOR_BLUE,
+				drawResultStats(engine, playerID, receiver, 8, EventRenderer.COLOR_BLUE,
 						STAT_LPM, STAT_SPM, STAT_PIECE, STAT_PPS);
 			}
 		}

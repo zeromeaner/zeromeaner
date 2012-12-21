@@ -40,7 +40,7 @@ import org.zeromeaner.game.play.GameManager;
 /**
  * 普通のAI
  */
-public class BasicAI extends DummyAI implements Runnable {
+public class BasicAI extends AbstractAI implements Runnable {
 	/** Log */
 	static Logger log = Logger.getLogger(BasicAI.class);
 
@@ -95,7 +95,7 @@ public class BasicAI extends DummyAI implements Runnable {
 	public void init(GameEngine engine, int playerID) {
 		delay = 0;
 		gEngine = engine;
-		gManager = engine.owner;
+		gManager = engine.getOwner();
 		thinkRequest = false;
 		thinking = false;
 		threadRunning = false;
@@ -650,7 +650,7 @@ public class BasicAI extends DummyAI implements Runnable {
 				thinkRequest = false;
 				thinking = true;
 				try {
-					thinkBestPosition(gEngine, gEngine.playerID);
+					thinkBestPosition(gEngine, gEngine.getPlayerID());
 				} catch (Throwable e) {
 					log.debug("BasicAI: thinkBestPosition Failed", e);
 				}

@@ -31,7 +31,7 @@ package org.zeromeaner.game.subsystem.mode;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.CustomProperties;
@@ -40,7 +40,7 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * AVALANCHE-SPF VS-BATTLE mode (Release Candidate 1)
  */
-public class AvalancheVSSPFMode extends AvalancheVSDummyMode {
+public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 	/** Current version */
 	private static final int CURRENT_VERSION = 0;
 
@@ -212,7 +212,7 @@ public class AvalancheVSSPFMode extends AvalancheVSDummyMode {
 	 */
 	private void loadOtherSetting(GameEngine engine, CustomProperties prop) {
 		super.loadOtherSetting(engine, prop, "spf");
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		ojamaHard[playerID] = 4;
 		ojamaRate[playerID] = prop.getProperty("avalanchevsspf.ojamaRate.p" + playerID, 120);
 		ojamaCountdown[playerID] = prop.getProperty("avalanchevsspf.ojamaCountdown.p" + playerID, 3);
@@ -227,7 +227,7 @@ public class AvalancheVSSPFMode extends AvalancheVSDummyMode {
 	 */
 	private void saveOtherSetting(GameEngine engine, CustomProperties prop) {
 		super.saveOtherSetting(engine, prop, "spf");
-		int playerID = engine.playerID;
+		int playerID = engine.getPlayerID();
 		prop.setProperty("avalanchevsspf.ojamaCountdown.p" + playerID, ojamaCountdown[playerID]);
 		prop.setProperty("avalanchevsspf.dropSet.p" + playerID, dropSet[playerID]);
 		prop.setProperty("avalanchevsspf.dropMap.p" + playerID, dropMap[playerID]);
@@ -263,20 +263,20 @@ public class AvalancheVSSPFMode extends AvalancheVSDummyMode {
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		owner = engine.owner;
-		receiver = engine.owner.receiver;
+		owner = engine.getOwner();
+		receiver = engine.getOwner().receiver;
 		numColors[playerID] = 4;
 		ojamaHard[playerID] = 4;
 		countdownDecremented[playerID] = true;
 		ojamaChecked[playerID] = false;
 
-		if(engine.owner.replayMode == false) {
-			loadOtherSetting(engine, engine.owner.modeConfig);
-			loadPreset(engine, engine.owner.modeConfig, -1 - playerID, "spf");
+		if(engine.getOwner().replayMode == false) {
+			loadOtherSetting(engine, engine.getOwner().modeConfig);
+			loadPreset(engine, engine.getOwner().modeConfig, -1 - playerID, "spf");
 			version = CURRENT_VERSION;
 		} else {
-			loadOtherSetting(engine, engine.owner.replayProp);
-			loadPreset(engine, engine.owner.replayProp, -1 - playerID, "spf");
+			loadOtherSetting(engine, engine.getOwner().replayProp);
+			loadPreset(engine, engine.getOwner().replayProp, -1 - playerID, "spf");
 			version = owner.replayProp.getProperty("avalanchevs.version", 0);
 		}
 	}
@@ -287,7 +287,7 @@ public class AvalancheVSSPFMode extends AvalancheVSDummyMode {
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
 		// Menu
-		if((engine.owner.replayMode == false) && (engine.statc[4] == 0)) {
+		if((engine.getOwner().replayMode == false) && (engine.statc[4] == 0)) {
 			// Configuration changes
 			// Up
 			if(engine.ctrl.isMenuRepeatKey(Controller.BUTTON_UP)) {
@@ -592,7 +592,7 @@ public class AvalancheVSSPFMode extends AvalancheVSDummyMode {
 	public void renderSetting(GameEngine engine, int playerID) {
 		if(engine.statc[4] == 0) {
 			if(engine.statc[2] < 9) {
-				drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_ORANGE, 0,
+				drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_ORANGE, 0,
 						"GRAVITY", String.valueOf(engine.speed.gravity),
 						"G-MAX", String.valueOf(engine.speed.denominator),
 						"ARE", String.valueOf(engine.speed.are),
@@ -603,9 +603,9 @@ public class AvalancheVSSPFMode extends AvalancheVSDummyMode {
 						"FALL DELAY", String.valueOf(engine.cascadeDelay),
 						"CLEAR DELAY", String.valueOf(engine.cascadeClearDelay));
 
-				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 1/5", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 1/5", EventRenderer.COLOR_YELLOW);
 			} else if(engine.statc[2] < 17) {
-				drawMenu(engine, playerID, receiver, 0, EventReceiver.COLOR_CYAN, 9,
+				drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_CYAN, 9,
 						"COUNTER", OJAMA_COUNTER_STRING[ojamaCounterMode[playerID]],
 						"MAX ATTACK", String.valueOf(maxAttack[playerID]),
 						"MIN CHAIN", String.valueOf(rensaShibari[playerID]),
@@ -615,67 +615,67 @@ public class AvalancheVSSPFMode extends AvalancheVSDummyMode {
 						"X COLUMN", dangerColumnDouble[playerID] ? "3 AND 4" : "3 ONLY",
 						"X SHOW", GeneralUtil.getONorOFF(dangerColumnShowX[playerID]));
 
-				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 2/5", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 2/5", EventRenderer.COLOR_YELLOW);
 			} else if(engine.statc[2] < 24) {
-				initMenu(EventReceiver.COLOR_CYAN, 17);
+				initMenu(EventRenderer.COLOR_CYAN, 17);
 				drawMenu(engine, playerID, receiver,
 						"COUNTDOWN", (ojamaCountdown[playerID] == 10) ? "NONE" :
 							String.valueOf(ojamaCountdown[playerID]),
 						"ZENKESHI", ZENKESHI_TYPE_NAMES[zenKeshiType[playerID]]);
 				menuColor = (zenKeshiType[playerID] == ZENKESHI_MODE_FEVER) ?
-						EventReceiver.COLOR_PURPLE : EventReceiver.COLOR_WHITE;
+						EventRenderer.COLOR_PURPLE : EventRenderer.COLOR_WHITE;
 				drawMenu(engine, playerID, receiver, "F-MAP SET", FEVER_MAPS[feverMapSet[playerID]].toUpperCase());
-				menuColor = EventReceiver.COLOR_DARKBLUE;
+				menuColor = EventRenderer.COLOR_DARKBLUE;
 				drawMenu(engine, playerID, receiver,
 						"OUTLINE", OUTLINE_TYPE_NAMES[outlineType[playerID]],
 						"SHOW CHAIN", CHAIN_DISPLAY_NAMES[chainDisplayType[playerID]],
 						"FALL ANIM", cascadeSlow[playerID] ? "FEVER" : "CLASSIC");
-				menuColor = EventReceiver.COLOR_CYAN;
+				menuColor = EventRenderer.COLOR_CYAN;
 				drawMenu(engine, playerID, receiver, "CHAINPOWER", newChainPower[playerID] ? "FEVER" : "CLASSIC");
 
-				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 3/5", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 3/5", EventRenderer.COLOR_YELLOW);
 			} else if(engine.statc[2] < 32) {
-				initMenu(EventReceiver.COLOR_PINK, 24);
+				initMenu(EventRenderer.COLOR_PINK, 24);
 				drawMenu(engine, playerID, receiver,
 						"USE MAP", GeneralUtil.getONorOFF(useMap[playerID]),
 						"MAP SET", String.valueOf(mapSet[playerID]),
 						"MAP NO.", (mapNumber[playerID] < 0) ? "RANDOM" : mapNumber[playerID]+"/"+(mapMaxNo[playerID]-1),
 						"BIG DISP", GeneralUtil.getONorOFF(bigDisplay));
-				menuColor = EventReceiver.COLOR_DARKBLUE;
+				menuColor = EventRenderer.COLOR_DARKBLUE;
 				drawMenu(engine, playerID, receiver,
 						"BGM", String.valueOf(bgmno),
 						"SE", GeneralUtil.getONorOFF(enableSE[playerID]));
-				menuColor = EventReceiver.COLOR_GREEN;
+				menuColor = EventRenderer.COLOR_GREEN;
 				drawMenu(engine, playerID, receiver,
 						"LOAD", String.valueOf(presetNumber[playerID]),
 						"SAVE", String.valueOf(presetNumber[playerID]));
 
-				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 4/5", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 4/5", EventRenderer.COLOR_YELLOW);
 			} else {
-				receiver.drawMenuFont(engine, playerID, 0,  0, "ATTACK", EventReceiver.COLOR_CYAN);
+				receiver.drawMenuFont(engine, playerID, 0,  0, "ATTACK", EventRenderer.COLOR_CYAN);
 				int multiplier = (int) (100 * getAttackMultiplier(dropSet[playerID], dropMap[playerID]));
 				if (multiplier >= 100)
 					receiver.drawMenuFont(engine, playerID, 2,  1, multiplier + "%",
-							multiplier == 100 ? EventReceiver.COLOR_YELLOW : EventReceiver.COLOR_GREEN);
+							multiplier == 100 ? EventRenderer.COLOR_YELLOW : EventRenderer.COLOR_GREEN);
 				else
-					receiver.drawMenuFont(engine, playerID, 3,  1, multiplier + "%", EventReceiver.COLOR_RED);
-				receiver.drawMenuFont(engine, playerID, 0,  2, "DEFEND", EventReceiver.COLOR_CYAN);
+					receiver.drawMenuFont(engine, playerID, 3,  1, multiplier + "%", EventRenderer.COLOR_RED);
+				receiver.drawMenuFont(engine, playerID, 0,  2, "DEFEND", EventRenderer.COLOR_CYAN);
 				multiplier = (int) (100 * getDefendMultiplier(dropSet[playerID], dropMap[playerID]));
 				if (multiplier >= 100)
 					receiver.drawMenuFont(engine, playerID, 2,  3, multiplier + "%",
-							multiplier == 100 ? EventReceiver.COLOR_YELLOW : EventReceiver.COLOR_RED);
+							multiplier == 100 ? EventRenderer.COLOR_YELLOW : EventRenderer.COLOR_RED);
 				else
-					receiver.drawMenuFont(engine, playerID, 3,  3, multiplier + "%", EventReceiver.COLOR_GREEN);
+					receiver.drawMenuFont(engine, playerID, 3,  3, multiplier + "%", EventRenderer.COLOR_GREEN);
 
-				drawMenu(engine, playerID, receiver, 14, EventReceiver.COLOR_CYAN, 32,
+				drawMenu(engine, playerID, receiver, 14, EventRenderer.COLOR_CYAN, 32,
 						"DROP SET", DROP_SET_NAMES[dropSet[playerID]],
 						"DROP MAP", String.format("%2d", dropMap[playerID]+1) + "/" +
 									String.format("%2d", DROP_PATTERNS[dropSet[playerID]].length));
 
-				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 5/5", EventReceiver.COLOR_YELLOW);
+				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 5/5", EventRenderer.COLOR_YELLOW);
 			}
 		} else {
-			receiver.drawMenuFont(engine, playerID, 3, 10, "WAIT", EventReceiver.COLOR_YELLOW);
+			receiver.drawMenuFont(engine, playerID, 3, 10, "WAIT", EventRenderer.COLOR_YELLOW);
 		}
 	}
 
@@ -726,8 +726,8 @@ public class AvalancheVSSPFMode extends AvalancheVSDummyMode {
 	public void renderLast(GameEngine engine, int playerID) {
 		int fldPosX = receiver.getFieldDisplayPositionX(engine, playerID);
 		int fldPosY = receiver.getFieldDisplayPositionY(engine, playerID);
-		int playerColor = (playerID == 0) ? EventReceiver.COLOR_RED : EventReceiver.COLOR_BLUE;
-		int fontColor = EventReceiver.COLOR_WHITE;
+		int playerColor = (playerID == 0) ? EventRenderer.COLOR_RED : EventRenderer.COLOR_BLUE;
+		int fontColor = EventRenderer.COLOR_WHITE;
 
 		// Timer
 		if(playerID == 0) {
@@ -735,10 +735,10 @@ public class AvalancheVSSPFMode extends AvalancheVSDummyMode {
 		}
 
 		// Ojama Counter
-		fontColor = EventReceiver.COLOR_WHITE;
-		if(ojama[playerID] >= 1) fontColor = EventReceiver.COLOR_YELLOW;
-		if(ojama[playerID] >= 6) fontColor = EventReceiver.COLOR_ORANGE;
-		if(ojama[playerID] >= 12) fontColor = EventReceiver.COLOR_RED;
+		fontColor = EventRenderer.COLOR_WHITE;
+		if(ojama[playerID] >= 1) fontColor = EventRenderer.COLOR_YELLOW;
+		if(ojama[playerID] >= 6) fontColor = EventRenderer.COLOR_ORANGE;
+		if(ojama[playerID] >= 12) fontColor = EventRenderer.COLOR_RED;
 
 		String strOjama = String.valueOf(ojama[playerID]);
 		if(ojamaAdd[playerID] > 0)
@@ -780,15 +780,15 @@ public class AvalancheVSSPFMode extends AvalancheVSDummyMode {
 					if (!b.isEmpty() && b.countdown > 0)
 					{
 						blockColor = b.secondaryColor;
-						textColor = EventReceiver.COLOR_WHITE;
+						textColor = EventRenderer.COLOR_WHITE;
 						if (blockColor == Block.BLOCK_COLOR_BLUE)
-							textColor = EventReceiver.COLOR_BLUE;
+							textColor = EventRenderer.COLOR_BLUE;
 						else if (blockColor == Block.BLOCK_COLOR_GREEN)
-							textColor = EventReceiver.COLOR_GREEN;
+							textColor = EventRenderer.COLOR_GREEN;
 						else if (blockColor == Block.BLOCK_COLOR_RED)
-							textColor = EventReceiver.COLOR_RED;
+							textColor = EventRenderer.COLOR_RED;
 						else if (blockColor == Block.BLOCK_COLOR_YELLOW)
-							textColor = EventReceiver.COLOR_YELLOW;
+							textColor = EventRenderer.COLOR_YELLOW;
 
 						str = (b.countdown >= 10) ? "d" : String.valueOf(b.countdown);
 						receiver.drawMenuFont(engine, playerID, x * d, y * d, str, textColor, 1.0f * d);

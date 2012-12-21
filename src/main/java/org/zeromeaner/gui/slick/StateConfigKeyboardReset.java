@@ -8,7 +8,7 @@ import org.newdawn.slick.state.StateBasedGame;
 /**
  * Keyboard Reset menu
  */
-public class StateConfigKeyboardReset extends DummyMenuChooseState {
+public class StateConfigKeyboardReset extends AbstractMenuChooseState {
 	/** This state's ID */
 	public static final int ID = 17;
 

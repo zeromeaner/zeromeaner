@@ -50,6 +50,8 @@ public class NetRoomInfo implements Serializable {
 	/** 参加可能なMaximum人count */
 	public int maxPlayers = 6;
 
+	public boolean syncPlay = false;
+	
 	/** 自動開始までの待機 time */
 	public int autoStartSeconds = 0;
 
@@ -380,6 +382,8 @@ public class NetRoomInfo implements Serializable {
 		if(rdata.length > 41) isTarget = Boolean.parseBoolean(rdata[41]);
 		if(rdata.length > 42) targetTimer = Integer.parseInt(rdata[42]);
 		//useTankMode = Boolean.parseBoolean(rdata[43]);
+		if(rdata.length >= 44)
+			syncPlay = Boolean.parseBoolean(rdata[43]);
 	}
 
 	/**
@@ -398,7 +402,7 @@ public class NetRoomInfo implements Serializable {
 	 * @return Stringの配列(String[43])
 	 */
 	public String[] exportStringArray() {
-		String[] rdata = new String[43];
+		String[] rdata = new String[44];
 		rdata[0] = Integer.toString(roomID);
 		rdata[1] = NetUtil.urlEncode(strName);
 		rdata[2] = Integer.toString(maxPlayers);
@@ -444,6 +448,8 @@ public class NetRoomInfo implements Serializable {
 		rdata[42] = Integer.toString(targetTimer);
 		//rdata[43] = Boolean.toString(useTankMode);
 
+		rdata[43] = Boolean.toString(syncPlay);
+		
 		return rdata;
 	}
 

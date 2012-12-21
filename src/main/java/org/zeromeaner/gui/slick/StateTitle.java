@@ -41,7 +41,7 @@ import org.zeromeaner.gui.net.UpdateChecker;
 /**
  * Title screen state
  */
-public class StateTitle extends DummyMenuChooseState {
+public class StateTitle extends AbstractMenuChooseState {
 	/** This state's ID */
 	public static final int ID = 1;
 

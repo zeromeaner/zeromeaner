@@ -34,7 +34,7 @@ import org.zeromeaner.game.play.GameEngine;
 /**
  * DummyAI - Base class for AI players
  */
-public class DummyAI implements AIPlayer {
+public class AbstractAI implements AIPlayer {
 	/** ホールド使用予定 */
 	public boolean bestHold;
 

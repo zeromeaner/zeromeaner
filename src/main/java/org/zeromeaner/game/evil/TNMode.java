@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.event.EventReceiver;
+import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.MarathonMode;
@@ -17,7 +17,7 @@ public class TNMode extends MarathonMode {
 
 	protected boolean waiting = false;
 	
-	protected EventReceiver receiver;
+	protected EventRenderer receiver;
 	
 	protected Integer lastScoreX;
 	protected double[] lastScore;
@@ -30,7 +30,7 @@ public class TNMode extends MarathonMode {
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
 		super.playerInit(engine, playerID);
-		receiver = engine.owner.receiver;
+		receiver = engine.getOwner().receiver;
 		engine.ruleopt = new TNRuleOptions(engine.ruleopt);
 		engine.randomizer = GeneralUtil.loadRandomizer(engine.ruleopt.strRandomizer);
 		if(!(engine.randomizer instanceof TNRandomizer))
@@ -186,9 +186,9 @@ public class TNMode extends MarathonMode {
 		super.renderLast(engine, playerID);
 		if(lastScore == null)
 			lastScore = ((TNRandomizer) engine.randomizer).score();
-		receiver.drawScoreFont(engine, playerID, 0, 17, ((TNRandomizer) engine.randomizer).getName(), EventReceiver.COLOR_BLUE);
+		receiver.drawScoreFont(engine, playerID, 0, 17, ((TNRandomizer) engine.randomizer).getName(), EventRenderer.COLOR_BLUE);
 		String score = String.format("%1.0f(%s%1.0f)", lastScore[0], lastScore[1] > 0 ? "+" : "", lastScore[1]).toUpperCase();
-		receiver.drawScoreFont(engine, playerID, 0, 18, score, EventReceiver.COLOR_WHITE);
+		receiver.drawScoreFont(engine, playerID, 0, 18, score, EventRenderer.COLOR_WHITE);
 	}
 
 	@Override
