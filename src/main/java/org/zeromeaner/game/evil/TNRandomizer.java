@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.eviline.AIKernel;
 import org.eviline.Field;
 import org.eviline.Shape;
+import org.eviline.ai.AIKernel;
 import org.eviline.fitness.Fitness;
 
 import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;

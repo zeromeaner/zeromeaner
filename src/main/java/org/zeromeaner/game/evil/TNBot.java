@@ -12,12 +12,12 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eviline.AIKernel;
-import org.eviline.AIKernel.Decision;
-import org.eviline.AIKernel.QueueContext;
 import org.eviline.Field;
 import org.eviline.PlayerAction;
 import org.eviline.PlayerAction.Type;
+import org.eviline.ai.AIKernel;
+import org.eviline.ai.AIKernel.Decision;
+import org.eviline.ai.AIKernel.QueueContext;
 import org.eviline.fitness.ElTetrisFitness;
 import org.eviline.fitness.EvilineFitness;
 import org.eviline.fitness.Fitness;
