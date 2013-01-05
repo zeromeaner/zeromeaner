@@ -60,8 +60,7 @@
 			<groupId>sun.plugin</groupId>
 			<artifactId>plugin</artifactId>
 			<version>1.6</version>
-			<scope>system</scope>
-			<systemPath>${java.home}/lib/plugin.jar</systemPath>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eviline</groupId>
