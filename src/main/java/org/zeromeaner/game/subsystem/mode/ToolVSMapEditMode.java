@@ -45,13 +45,13 @@ import org.zeromeaner.util.CustomProperties;
  */
 public class ToolVSMapEditMode extends AbstractMode {
 
-	/** Map dataの入ったProperty file */
+	/** Map dataI went into theProperty file */
 	private CustomProperties propMap;
 
-	/** Current Mapファイルに入っている全field data */
+	/** Current MapAll contained in the filefield data */
 	private LinkedList<Field> listFields;
 
-	/** Current MapセットID */
+	/** Current MapSetID */
 	private int nowMapSetID;
 
 	/** Current MapID */
@@ -79,10 +79,10 @@ public class ToolVSMapEditMode extends AbstractMode {
 	}
 
 	/**
-	 * Map読み込み
+	 * MapRead
 	 * @param field field
 	 * @param prop Property file to read from
-	 * @param preset 任意のID
+	 * @param preset AnyID
 	 */
 	private void loadMap(Field field, CustomProperties prop, int id) {
 		field.reset();
@@ -94,10 +94,10 @@ public class ToolVSMapEditMode extends AbstractMode {
 	}
 
 	/**
-	 * Map保存
+	 * MapSave
 	 * @param field field
 	 * @param prop Property file to save to
-	 * @param id 任意のID
+	 * @param id AnyID
 	 */
 	private void saveMap(Field field, CustomProperties prop, int id) {
 		//field.writeProperty(prop, id);
@@ -105,8 +105,8 @@ public class ToolVSMapEditMode extends AbstractMode {
 	}
 
 	/**
-	 * 全Map読み込み
-	 * @param setID MapセットID
+	 * AllMapRead
+	 * @param setID MapSetID
 	 */
 	private void loadAllMaps(int setID) {
 		propMap = receiver.loadProperties("config/map/vsbattle/" + setID + ".map");
@@ -123,8 +123,8 @@ public class ToolVSMapEditMode extends AbstractMode {
 	}
 
 	/**
-	 * 全Map保存
-	 * @param setID MapセットID
+	 * AllMapSave
+	 * @param setID MapSetID
 	 */
 	private void saveAllMaps(int setID) {
 		propMap = new CustomProperties();
@@ -198,7 +198,7 @@ public class ToolVSMapEditMode extends AbstractMode {
 			}
 		}
 
-		// 決定
+		// Decision
 		if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
 			engine.playSE("decide");
 
@@ -243,7 +243,7 @@ public class ToolVSMapEditMode extends AbstractMode {
 			}
 		}
 
-		// 終了
+		// End
 		if(engine.ctrl.isPress(Controller.BUTTON_D) && engine.ctrl.isPress(Controller.BUTTON_E) && (engine.statc[3] >= 5)) {
 			engine.quitflag = true;
 		}
@@ -253,7 +253,7 @@ public class ToolVSMapEditMode extends AbstractMode {
 	}
 
 	/*
-	 * 設定画面の描画
+	 * Setting screen drawing
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
@@ -290,7 +290,7 @@ public class ToolVSMapEditMode extends AbstractMode {
 	}
 
 	/*
-	 * fieldエディット画面
+	 * fieldEdit screen
 	 */
 	@Override
 	public void renderFieldEdit(GameEngine engine, int playerID) {

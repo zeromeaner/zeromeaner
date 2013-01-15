@@ -58,7 +58,7 @@ import org.zeromeaner.game.net.NetObserverClient;
 import org.zeromeaner.game.play.GameManager;
 
 /**
- * ゲーム画面の frame
+ * Game screen frame
  */
 public class GameInternalFrame extends JInternalFrame implements Runnable {
 	/** Serial version ID */
@@ -67,43 +67,43 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	/** Log */
 	static Logger log = Logger.getLogger(GameInternalFrame.class);
 
-	/** 親ウィンドウ */
+	/** Parent window */
 	protected NullpoMinoInternalFrame owner = null;
 
-	/** タイトルバーやボーダーのサイズ */
+	/** The size of the border and title bar */
 	protected Insets insets = null;
 
 //	/** BufferStrategy */
 //	protected BufferStrategy bufferStrategy = null;
 
-	/** ゲームループスレッド */
+	/** Game loop thread */
 	protected Thread thread = null;
 
-	/** trueの間スレッドが動く */
+	/** trueThread moves between */
 	public volatile boolean running = false;
 
-	/** FPS計算用 */
+	/** FPSFor calculation */
 	protected long calcInterval = 0;
 
-	/** FPS計算用 */
+	/** FPSFor calculation */
 	protected long prevCalcTime = 0;
 
 	/**  frame count */
 	protected long frameCount = 0;
 
-	/** MaximumFPS (設定値) */
+	/** MaximumFPS (Setting) */
 	public int maxfps;
 
 	/** Current MaximumFPS */
 	protected int maxfpsCurrent = 0;
 
-	/** Current 休止 time */
+	/** Current Pause time */
 	protected long periodCurrent = 0;
 
-	/** 実際のFPS */
+	/** ActualFPS */
 	public double actualFPS = 0.0;
 
-	/** FPS表示用DecimalFormat */
+	/** FPSDisplayDecimalFormat */
 	public DecimalFormat df = new DecimalFormat("0.0");
 
 	/** Used by perfect fps mode */
@@ -124,37 +124,37 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	/** Screen height */
 	protected int screenHeight = 480;
 
-	/** ポーズ状態 */
+	/** Pause state */
 	protected boolean pause = false;
 
-	/** ポーズメッセージ非表示 */
+	/** Pose hidden message */
 	protected boolean pauseMessageHide = false;
 
-	/** Pause menuのCursor position */
+	/** Pause menuOfCursor position */
 	protected int cursor = 0;
 
 	/** Number of frames remaining until pause key can be used */
 	protected int pauseFrame = 0;
 
-	/** 倍速Mode */
+	/** Double speedMode */
 	protected int fastforward = 0;
 
-	/** Screenshot作成 flag */
+	/** ScreenshotCreating flag */
 	protected boolean ssflag = false;
 
-	/** Screenshot用Image */
+	/** ScreenshotUseImage */
 	protected Image ssImage = null;
 
-	/**  frame ステップ is enabled flag */
+	/**  frame Step is enabled flag */
 	protected boolean enableframestep = false;
 
-	/** FPS表示 */
+	/** FPSDisplay */
 	protected boolean showfps = true;
 
 	/** Ingame flag */
 	public boolean[] isInGame;
 
-	/** ネットプレイならtrue */
+	/** If net playtrue */
 	public boolean isNetPlay = false;
 
 	/** Mode name to enter (null=Exit) */
@@ -168,8 +168,8 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 	/**
 	 * Constructor
-	 * @param owner 親ウィンドウ
-	 * @throws HeadlessException キーボード, マウス, ディスプレイなどが存在しない場合の例外
+	 * @param owner Parent window
+	 * @throws HeadlessException Keyboard, Mouse, Exceptions such as the display if there is no
 	 */
 	public GameInternalFrame(NullpoMinoInternalFrame owner) throws HeadlessException {
 		super();
@@ -201,7 +201,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	}
 
 	/**
-	 * ゲームウィンドウを表示
+	 * Display the game window
 	 */
 	public void displayWindow() {
 		setVisible(true);
@@ -220,7 +220,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	}
 
 	/**
-	 * 終了処理
+	 * End processing
 	 */
 	public void shutdown() {
 		if(ssImage != null) {
@@ -244,12 +244,12 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		owner.setVisible(true);
 		setVisible(false);
 
-		// GC呼び出し
+		// GCCall
 		System.gc();
 	}
 
 	/**
-	 * スレッドの処理
+	 * Processing of the thread
 	 */
 	public void run() {
 		boolean sleepFlag;
@@ -272,17 +272,17 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		GameKeyApplet.gamekey[1].clear();
 		updateTitleBarCaption();
 
-		// 設定を反映させる
+		// Settings to take effect
 		enableframestep = NullpoMinoInternalFrame.propConfig.getProperty("option.enableframestep", false);
 		showfps = NullpoMinoInternalFrame.propConfig.getProperty("option.showfps", true);
 		perfectFPSMode = NullpoMinoInternalFrame.propConfig.getProperty("option.perfectFPSMode", false);
 		perfectYield = NullpoMinoInternalFrame.propConfig.getProperty("option.perfectYield", true);
 		syncDisplay = NullpoMinoInternalFrame.propConfig.getProperty("option.syncDisplay", true);
 
-		// Observer開始
+		// ObserverStart
 		if(!isNetPlay) NullpoMinoInternalFrame.startObserverClient();
 
-		// メインループ
+		// Main loop
 		log.debug("Game thread start");
 		running = true;
 		perfectFPSDelay = System.nanoTime();
@@ -440,16 +440,16 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 			if(GameKeyApplet.gamekey[0].isPushKey(GameKeyApplet.BUTTON_A)) {
 				ResourceHolderApplet.soundManager.play("decide");
 				if(cursor == 0) {
-					// 再開
+					// Resumption
 					pause = false;
 					pauseFrame = 0;
 					GameKeyApplet.gamekey[0].clear();
 				} else if(cursor == 1) {
-					// リトライ
+					// Retry
 					pause = false;
 					NullpoMinoInternalFrame.gameManager.reset();
 				} else if(cursor == 2) {
-					// 終了
+					// End
 					shutdown();
 					return;
 				} else if(cursor == 3) {
@@ -638,12 +638,12 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	}
 
 	/**
-	 * レンダリング
+	 * Rendering
 	 */
 	protected void gameRender() {
 		if(NullpoMinoInternalFrame.gameManager == null) return;
 
-		// 画面の準備
+		// Prepare the screen
 		if(ssImage == null) {
 			ssImage = createImage(640, 480);
 		}
@@ -664,7 +664,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 //			if(insets != null) g.translate(insets.left, insets.top);
 //		}
 
-		// ゲーム画面
+		// Game screen
 		NormalFontApplet.graphics = (Graphics2D) g;
 		NullpoMinoInternalFrame.gameManager.receiver.setGraphics(g);
 		NullpoMinoInternalFrame.gameManager.renderAll();
@@ -691,7 +691,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 				NormalFontApplet.printFont(offsetX, offsetY + 392, "SHOW INVIS", NormalFontApplet.COLOR_ORANGE);
 		}
 
-		// FPS表示
+		// FPSDisplay
 		if(showfps) {
 			if(perfectFPSMode)
 				NormalFontApplet.printFont(0, 480-16, df.format(actualFPS), NormalFontApplet.COLOR_BLUE, 1.0f);
@@ -699,7 +699,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 				NormalFontApplet.printFont(0, 480-16, df.format(actualFPS) + "/" + maxfpsCurrent, NormalFontApplet.COLOR_BLUE, 1.0f);
 		}
 
-		// Observer情報
+		// ObserverInformation
 		NetObserverClient obClient = NullpoMinoInternalFrame.getObserverClient();
 		if((obClient != null) && obClient.isConnected()) {
 			int observerCount = obClient.getObserverCount();
@@ -712,7 +712,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 			NormalFontApplet.printFont(0, 480 - 16, strObserverString, fontcolor);
 		}
 
-		// 画面に表示／Screenshot作成
+		// Displayed on the screen /ScreenshotCreating
 		g.dispose();
 //		if(ssflag || (screenWidth != 640) || (screenHeight != 480)) {
 			if(ssflag) saveScreenShot();
@@ -736,12 +736,12 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	}
 
 	/**
-	 * レンダリング(ネットプレイ用)
+	 * Rendering(For net play)
 	 */
 	protected void gameRenderNet() {
 		if(NullpoMinoInternalFrame.gameManager == null) return;
 
-		// 画面の準備
+		// Prepare the screen
 		if(ssImage == null) {
 			ssImage = createImage(640, 480);
 		}
@@ -762,7 +762,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 //			if(insets != null) g.translate(insets.left, insets.top);
 //		}
 
-		// ゲーム画面
+		// Game screen
 		try {
 			NormalFontApplet.graphics = (Graphics2D) g;
 			NullpoMinoInternalFrame.gameManager.receiver.setGraphics(g);
@@ -781,12 +781,12 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 			} catch (Throwable e2) {}
 		}
 
-		// FPS表示
+		// FPSDisplay
 		if(showfps) {
 			NormalFontApplet.printFont(0, 480-16, df.format(actualFPS) + "/" + maxfpsCurrent, NormalFontApplet.COLOR_BLUE, 1.0f);
 		}
 
-		// 画面に表示／Screenshot作成
+		// Displayed on the screen /ScreenshotCreating
 		g.dispose();
 //		if(ssflag || (screenWidth != 640) || (screenHeight != 480)) {
 			if(ssflag) saveScreenShot();
@@ -810,22 +810,22 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	}
 
 	/**
-	 * FPSの計算
-	 * @param period FPSを計算する間隔
+	 * FPSCalculation of
+	 * @param period FPSInterval to calculate the
 	 */
 	protected void calcFPS(long period) {
 		frameCount++;
 		calcInterval += period;
 
-		// 1秒おきにFPSを再計算する
+		// 1Second intervalsFPSRecalculate the
 		if(calcInterval >= 1000000000L) {
 			long timeNow = System.nanoTime();
 
-			// 実際の経過 timeを測定
-			long realElapsedTime = timeNow - prevCalcTime; // 単位: ns
+			// Actual elapsed timeMeasure
+			long realElapsedTime = timeNow - prevCalcTime; // Unit: ns
 
-			// FPSを計算
-			// realElapsedTimeの単位はnsなのでsに変換する
+			// FPSCalculate the
+			// realElapsedTimeThe unit ofnsSosConverted to
 			actualFPS = ((double) frameCount / realElapsedTime) * 1000000000L;
 
 			frameCount = 0L;
@@ -914,7 +914,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	}
 
 	/**
-	 * ウィンドウ event の処理
+	 * Window event Processing
 	 */
 	protected class GameFrameWindowEvent extends InternalFrameAdapter {
 		@Override
@@ -924,7 +924,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	}
 
 	/**
-	 * キーボード event の処理
+	 * Keyboard event Processing
 	 */
 	protected class GameFrameKeyEvent extends KeyAdapter {
 		@Override

@@ -41,10 +41,10 @@ import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
 
 /**
- * 画像や音声の管理をするクラス
+ * Class to the management of image and sound
  */
 public class ResourceHolderApplet {
-	/** Backgroundのcount */
+	/** BackgroundOfcount */
 	public static final int BACKGROUND_MAX = 20;
 
 	/** Number of images for block spatter animation during line clears */
@@ -80,14 +80,14 @@ public class ResourceHolderApplet {
 	/** Effects for clearing gem blocks */
 	public static Image[] imgPErase;
 
-	/** プレイ中のBackground */
+	/** In playBackground */
 	public static Image[] imgPlayBG;
 
-	/** 音声ファイル管理 */
+	/** Audio file management */
 	public static WaveEngine soundManager;
 
 	/**
-	 * 画像や音声を読み込み
+	 * Loading images and sound files
 	 */
 	public static void load() {
 		String skindir = NullpoMinoInternalFrame.propConfig.getProperty("custom.skin.directory", "res");
@@ -256,9 +256,9 @@ public class ResourceHolderApplet {
 	}
 
 	/**
-	 * 画像を読み込み
-	 * @param url 画像ファイルのURL
-	 * @return 画像ファイル (失敗するとnull）
+	 * Load an image
+	 * @param url Image filesURL
+	 * @return Image file (Failurenull)
 	 */
 	public static BufferedImage loadImage(URL url) {
 		BufferedImage img = null;
@@ -275,9 +275,9 @@ public class ResourceHolderApplet {
 	}
 
 	/**
-	 * リソースファイルのURLを返す
+	 * Resource FilesURLReturns
 	 * @param str Filename
-	 * @return リソースファイルのURL
+	 * @return Resource FilesURL
 	 */
 	public static URL getURL(String str) {
 		
@@ -290,7 +290,7 @@ public class ResourceHolderApplet {
 //			char sep = File.separator.charAt(0);
 //			String file = str.replace(sep, '/');
 //
-//			// 参考(消滅)：http://www.asahi-net.or.jp/~DP8T-ASM/java/tips/HowToMakeURL.html
+//			// Reference(Annihilation):http://www.asahi-net.or.jp/~DP8T-ASM/java/tips/HowToMakeURL.html
 //			if(file.charAt(0) != '/') {
 //				String dir = System.getProperty("user.dir");
 //				dir = dir.replace(sep, '/') + '/';

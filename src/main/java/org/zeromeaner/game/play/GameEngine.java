@@ -55,7 +55,7 @@ import org.zeromeaner.util.GeneralUtil;
 
 
 /**
- * Each player's ゲームの処理
+ * Each player's Game processing
  */
 public class GameEngine {
 	/** Log (Apache log4j) */
@@ -679,8 +679,8 @@ public class GameEngine {
 
 	/**
 	 * Constructor
-	 * @param owner このゲームエンジンを所有するGameOwnerクラス
-	 * @param playerID Playerの number
+	 * @param owner Own the game engineGameOwnerClass
+	 * @param playerID PlayerOf number
 	 */
 	public GameEngine(GameManager owner, int playerID) {
 		this.owner = owner;
@@ -708,12 +708,12 @@ public class GameEngine {
 	}
 
 	/**
-	 * ルール設定などのパラメータ付きのConstructor
-	 * @param owner このゲームエンジンを所有するGameOwnerクラス
-	 * @param playerID Playerの number
-	 * @param ruleopt ルール設定
-	 * @param wallkick Wallkickシステム
-	 * @param randomizer Blockピースの出現順の生成アルゴリズム
+	 * With parameters such as the rule setConstructor
+	 * @param owner Own the game engineGameOwnerClass
+	 * @param playerID PlayerOf number
+	 * @param ruleopt Rule Set
+	 * @param wallkick WallkickSystem
+	 * @param randomizer BlockGeneration algorithm of the order of appearance of the piece
 	 */
 	public GameEngine(GameManager owner, int playerID, RuleOptions ruleopt, Wallkick wallkick, Randomizer randomizer) {
 		this(owner,playerID);
@@ -723,7 +723,7 @@ public class GameEngine {
 	}
 
 	/**
-	 * READY前のInitialization
+	 * READYPreviousInitialization
 	 */
 	public void init() {
 		//log.debug("GameEngine init() playerID:" + playerID);
@@ -953,7 +953,7 @@ public class GameEngine {
 		startTime = 0;
 		endTime = 0;
 
-		//  event 発生
+		//  event Occurrence
 //		if(owner.mode != null) {
 //			owner.mode.playerInit(this, playerID);
 //			if(owner.replayMode) owner.mode.loadReplay(this, playerID, owner.replayProp);
@@ -971,7 +971,7 @@ public class GameEngine {
 	}
 
 	/**
-	 * 終了処理
+	 * End processing
 	 */
 	public void shutdown() {
 		//log.debug("GameEngine shutdown() playerID:" + playerID);
@@ -990,24 +990,24 @@ public class GameEngine {
 	}
 
 	/**
-	 * ステータス counterInitialization
+	 * Status counterInitialization
 	 */
 	public void resetStatc() {
 		for(int i = 0; i < statc.length; i++) statc[i] = 0;
 	}
 
 	/**
-	 * Sound effectsを再生する (enableSEがtrueのときだけ）
-	 * @param name Sound effectsのName
+	 * Sound effectsPlay (enableSEThetrueOnly when)
+	 * @param name Sound effectsOfName
 	 */
 	public void playSE(String name) {
 		if(enableSE) owner.receiver.playSE(name);
 	}
 
 	/**
-	 * NEXTピースのIDを取得
-	 * @param c 取得したいNEXTの位置
-	 * @return NEXTピースのID
+	 * NEXTOf PeaceIDGet the
+	 * @param c Want to getNEXTThe position of the
+	 * @return NEXTOf PeaceID
 	 */
 	public int getNextID(int c) {
 		if(nextPieceArrayID == null) return Piece.PIECE_NONE;
@@ -1017,9 +1017,9 @@ public class GameEngine {
 	}
 
 	/**
-	 * NEXTピースのオブジェクトを取得
-	 * @param c 取得したいNEXTの位置
-	 * @return NEXTピースのオブジェクト
+	 * NEXTGets an object of Peace
+	 * @param c Want to getNEXTThe position of the
+	 * @return NEXTObject of Peace
 	 */
 	public Piece getNextObject(int c) {
 		if(nextPieceArrayObject == null) return null;
@@ -1029,9 +1029,9 @@ public class GameEngine {
 	}
 
 	/**
-	 * NEXTピースのオブジェクトのコピーを取得
-	 * @param c 取得したいNEXTの位置
-	 * @return NEXTピースのオブジェクトのコピー
+	 * NEXTObtain a copy of the object of the piece
+	 * @param c Want to getNEXTThe position of the
+	 * @return NEXTCopy of the object of the piece
 	 */
 	public Piece getNextObjectCopy(int c) {
 		Piece p = getNextObject(c);
@@ -1041,7 +1041,7 @@ public class GameEngine {
 	}
 
 	/**
-	 * Current AREの値を取得 (ルール設定も考慮）
+	 * Current AREGets the value of the (Also consider setting rules)
 	 * @return Current ARE
 	 */
 	public int getARE() {
@@ -1051,7 +1051,7 @@ public class GameEngine {
 	}
 
 	/**
-	 * Current ARE after line clearの値を取得 (ルール設定も考慮）
+	 * Current ARE after line clearGets the value of the (Also consider setting rules)
 	 * @return Current ARE after line clear
 	 */
 	public int getARELine() {
@@ -1061,7 +1061,7 @@ public class GameEngine {
 	}
 
 	/**
-	 * Current Line clear timeの値を取得 (ルール設定も考慮）
+	 * Current Line clear timeGets the value of the (Also consider setting rules)
 	 * @return Current Line clear time
 	 */
 	public int getLineDelay() {
@@ -1071,8 +1071,8 @@ public class GameEngine {
 	}
 
 	/**
-	 * Current 固定 timeの値を取得 (ルール設定も考慮）
-	 * @return Current 固定 time
+	 * Current Fixation timeGets the value of the (Also consider setting rules)
+	 * @return Current Fixation time
 	 */
 	public int getLockDelay() {
 		if((speed.lockDelay < ruleopt.minLockDelay) && (ruleopt.minLockDelay >= 0)) return ruleopt.minLockDelay;
@@ -1081,7 +1081,7 @@ public class GameEngine {
 	}
 
 	/**
-	 * Current DASの値を取得 (ルール設定も考慮）
+	 * Current DASGets the value of the (Also consider setting rules)
 	 * @return Current DAS
 	 */
 	public int getDAS() {
@@ -1107,8 +1107,8 @@ public class GameEngine {
 	}
 
 	/**
-	 * Current 横移動速度を取得
-	 * @return 横移動速度
+	 * Current Gets the horizontal movement speed
+	 * @return Lateral movement speed
 	 */
 	public int getDASDelay() {
 		if((ruleopt == null) || (owDasDelay >= 0)) {
@@ -1118,8 +1118,8 @@ public class GameEngine {
 	}
 
 	/**
-	 * 現在使用中のBlockスキン numberを取得
-	 * @return Blockスキン number
+	 * In current useBlockSkin numberGet the
+	 * @return BlockSkin number
 	 */
 	public int getSkin() {
 		if((ruleopt == null) || (owSkin >= 0)) {
@@ -1129,7 +1129,7 @@ public class GameEngine {
 	}
 
 	/**
-	 * @return A buttonを押したときに左rotationするならfalse, 右rotationするならtrue
+	 * @return A buttonI left when pressedrotationIf thefalse, RightrotationIf thetrue
 	 */
 	public boolean isRotateButtonDefaultRight() {
 		if((ruleopt == null) || (owRotateButtonDefaultRight >= 0)) {
@@ -1151,7 +1151,7 @@ public class GameEngine {
 	}
 
 	/**
-	 * 見え／消えRoll 状態のfieldを通常状態に戻す
+	 * Visible / disappearRoll Of the statefieldReturned to the normal state
 	 */
 	public void resetFieldVisible() {
 		if(field != null) {
@@ -1171,7 +1171,7 @@ public class GameEngine {
 	}
 
 	/**
-	 * ソフト・Hard drop・先行ホールド・先行rotationの使用制限解除
+	 * SoftHard drop· Hold preceding precedingrotationRestrictions on the use of release
 	 */
 	public void checkDropContinuousUse() {
 		if(gameActive) {
@@ -1197,8 +1197,8 @@ public class GameEngine {
 	}
 
 	/**
-	 * 横移動 input のDirectionを取得
-	 * @return -1:左 0:なし 1:右
+	 * Lateral motion input OfDirectionGet the
+	 * @return -1:Left 0:No 1:Right
 	 */
 	public int getMoveDirection() {
 		if(ctrl.isPress(Controller.BUTTON_LEFT) && ctrl.isPress(Controller.BUTTON_RIGHT)) {
@@ -1218,7 +1218,7 @@ public class GameEngine {
 	}
 
 	/**
-	 * 横溜め処理
+	 * Processing horizontal reservoir
 	 */
 	public void padRepeat() {
 		int moveDirection = getMoveDirection();
@@ -1239,8 +1239,8 @@ public class GameEngine {
 	}
 
 	/**
-	 * 移動 count制限を超過しているか判定
-	 * @return 移動 count制限を超過したらtrue
+	 * Move countDetermines whether or not to exceed the limit
+	 * @return Move countI have exceeded the limittrue
 	 */
 	public boolean isMoveCountExceed() {
 		if(ruleopt.lockresetLimitShareCount == true) {
@@ -1255,8 +1255,8 @@ public class GameEngine {
 	}
 
 	/**
-	 * rotation count制限を超過しているか判定
-	 * @return rotation count制限を超過したらtrue
+	 * rotation countDetermines whether or not to exceed the limit
+	 * @return rotation countI have exceeded the limittrue
 	 */
 	public boolean isRotateCountExceed() {
 		if(ruleopt.lockresetLimitShareCount == true) {
@@ -1354,10 +1354,10 @@ public class GameEngine {
 	}
 
 	/**
-	 * Spin判定(全スピンルールのとき用)
+	 * SpinJudgment(When all rules for spin)
 	 * @param x X-coordinate
 	 * @param y Y-coordinate
-	 * @param piece Current Blockピース
+	 * @param piece Current BlockPeace
 	 * @param fld field
 	 */
 	public void setAllSpin(int x, int y, Piece piece, Field fld) {
@@ -1434,8 +1434,8 @@ public class GameEngine {
 	}
 
 	/**
-	 * ホールド可能かどうか判定
-	 * @return ホールド可能ならtrue
+	 * Determines whether the hold
+	 * @return If you can holdtrue
 	 */
 	public boolean isHoldOK() {
 		if( (!ruleopt.holdEnable) || (holdDisable) || ((holdUsedCount >= ruleopt.holdLimit) && (ruleopt.holdLimit >= 0)) || (initialHoldContinuousUse) )
@@ -1445,10 +1445,10 @@ public class GameEngine {
 	}
 
 	/**
-	 * ピースが出現するX-coordinateを取得
+	 * Peace appearsX-coordinateGet the
 	 * @param fld field
 	 * @param piece Piece
-	 * @return 出現位置のX-coordinate
+	 * @return Appearance position ofX-coordinate
 	 */
 	public int getSpawnPosX(Field fld, Piece piece) {
 		int x = -1 + (fld.getWidth() - piece.getWidth() + 1) / 2;
@@ -1466,9 +1466,9 @@ public class GameEngine {
 	}
 
 	/**
-	 * ピースが出現するY-coordinateを取得
+	 * Peace appearsY-coordinateGet the
 	 * @param piece Piece
-	 * @return 出現位置のY-coordinate
+	 * @return Appearance position ofY-coordinate
 	 */
 	public int getSpawnPosY(Piece piece) {
 		int y = 0;
@@ -1490,9 +1490,9 @@ public class GameEngine {
 	}
 
 	/**
-	 * rotation buttonを押したあとのピースのDirectionを取得
-	 * @param move rotationDirection (-1:左 1:右 2:180度）
-	 * @return rotation buttonを押したあとのピースのDirection
+	 * rotation buttonPiece after pressing theDirectionGet the
+	 * @param move rotationDirection (-1:Left 1:Right 2:180Degrees)
+	 * @return rotation buttonPiece after pressing theDirection
 	 */
 	public int getRotateDirection(int move) {
 		int rt = 0 + move;
@@ -1510,7 +1510,7 @@ public class GameEngine {
 	}
 
 	/**
-	 * 先行rotationと先行ホールドの処理
+	 * PrecedingrotationHold processing and precedence
 	 */
 	public void initialRotate() {
 		initialRotateDirection = 0;
@@ -1532,7 +1532,7 @@ public class GameEngine {
 	}
 
 	/**
-	 * fieldのBlock stateを更新
+	 * fieldOfBlock stateUpdate
 	 */
 	public void fieldUpdate() {
 		boolean outlineOnly = blockShowOutlineOnly;	// Show outline only flag
@@ -1626,7 +1626,7 @@ public class GameEngine {
 			itemColorCount = 0;
 		}
 
-		// ヘボHIDDEN
+		// BunglerHIDDEN
 		if(heboHiddenEnable && gameActive) {
 			heboHiddenTimerNow++;
 
@@ -1686,7 +1686,7 @@ public class GameEngine {
 	}
 
 	/**
-	 * fieldエディット画面に入る処理
+	 * fieldProcessing to enter the edit screen
 	 */
 	public void enterFieldEdit() {
 		fldeditPreviousStat = stat;
@@ -1700,7 +1700,7 @@ public class GameEngine {
 	}
 
 	/**
-	 * fieldをInitialization (まだ存在しない場合）
+	 * fieldAInitialization (If I do not exist yet)
 	 */
 	public void createFieldIfNeeded() {
 		if(fieldWidth < 0) fieldWidth = ruleopt.fieldWidth;
@@ -1724,13 +1724,13 @@ public class GameEngine {
 	}
 
 	/**
-	 * ゲーム stateの更新
+	 * Game stateUpdates
 	 */
 	public void update() {
 		if(gameActive) {
-			// リプレイ関連の処理
+			// Related processing replay
 			if(!owner.replayMode || owner.replayRerecord) {
-				// AIの button処理
+				// AIOf buttonProcessing
 				if (ai != null) {
 					if (aiShowHint == false) {
 						ai.setControl(this, playerID, ctrl);
@@ -1757,25 +1757,25 @@ public class GameEngine {
 					}
 				}
 
-				//  input 状態をリプレイに記録
+				//  input Replay recorded in the state
 				replayData.setInputData(ctrl.getButtonBit(), replayTimer);
 			} else {
-				//  input 状態をリプレイから読み込み
+				//  input Replay the state read from
 				ctrl.setButtonBit(replayData.getInputData(replayTimer));
 			}
 			replayTimer++;
 		}
 
-		//  button input timeの更新
+		//  button input timeUpdates
 		ctrl.updateButtonTime();
 
-		// 最初の処理
+		// The first step in
 //		if(owner.mode != null) owner.mode.onFirst(this, playerID);
 //		owner.receiver.onFirst(this, playerID);
 		eventManager.engineFrameFirst();
 		if((ai != null) && (!owner.replayMode || owner.replayRerecord)) ai.onFirst(this, playerID);
 
-		// 各ステータスの処理
+		// Processing status of each
 		if(!lagStop) {
 			switch(stat) {
 			case STAT_NOTHING:
@@ -1826,17 +1826,17 @@ public class GameEngine {
 			}
 		}
 
-		// fieldのBlock stateや統計情報を更新
+		// fieldOfBlock stateUpdate and statistics
 		fieldUpdate();
 		if((ending == 0) || (staffrollEnableStatistics)) statistics.update();
 
-		// 最後の処理
+		// Last treatment
 //		if(owner.mode != null) owner.mode.onLast(this, playerID);
 //		owner.receiver.onLast(this, playerID);
 		eventManager.engineFrameLast();
 		if((ai != null) && (!owner.replayMode || owner.replayRerecord)) ai.onLast(this, playerID);
 
-		// Timer増加
+		// TimerIncrease
 		if(gameActive && timerActive) {
 			statistics.time++;
 		}
@@ -1850,10 +1850,10 @@ public class GameEngine {
 
 	/**
 	 * Draw the screen
-	 *  (各Mode や event 処理クラスの event を呼び出すだけで, それ以外にGameEngine自身は何もしません）
+	 *  (EachMode Ya event Processing classes event Just call, OtherwiseGameEngineItself does not do anything)
 	 */
 	public void render() {
-		// 最初の処理
+		// The first step in
 //		owner.receiver.renderFirst(this, playerID);
 //		if(owner.mode != null) owner.mode.renderFirst(this, playerID);
 		eventManager.engineRenderFirst();
@@ -1861,7 +1861,7 @@ public class GameEngine {
 		if (rainbowAnimate)
 			Block.updateRainbowPhase(this);
 
-		// 各ステータスの処理
+		// Processing status of each
 		switch(stat) {
 		case STAT_NOTHING:
 			break;
@@ -1943,17 +1943,17 @@ public class GameEngine {
 				ai.renderHint(this, playerID);
 		}
 
-		// 最後の処理
+		// Last treatment
 //		if(owner.mode != null) owner.mode.renderLast(this, playerID);
 //		owner.receiver.renderLast(this, playerID);
 		eventManager.engineRenderLast();
 	}
 
 	/**
-	 * 開始前の設定画面のときの処理
+	 * Processing when the setup screen before the start of
 	 */
 	public void statSetting() {
-		//  event 発生
+		//  event Occurrence
 //		if(owner.mode != null) {
 //			if(owner.mode.onSetting(this, playerID) == true) return;
 //		}
@@ -1961,19 +1961,19 @@ public class GameEngine {
 		if(eventManager.engineSettings())
 			return;
 
-		// Mode側が何もしない場合はReady画面へ移動
+		// ModeIf the side is not doing anythingReadyGo to the screen
 		stat = STAT_READY;
 		resetStatc();
 	}
 
 	/**
-	 * Ready→Goのときの処理
+	 * Ready→GoProcessing time
 	 */
 	public void statReady() {
 		// Always initialize the sync
 		synchronousSync = new AtomicInteger(0);
 		
-		//  event 発生
+		//  event Occurrence
 //		if(owner.mode != null) {
 //			if(owner.mode.onReady(this, playerID) == true) return;
 //		}
@@ -1982,7 +1982,7 @@ public class GameEngine {
 			return;
 
 
-		// 横溜め
+		// Horizontal reservoir
 		if(ruleopt.dasInReady && gameActive) padRepeat();
 		else if(ruleopt.dasRedirectInDelay) { dasRedirect(); }
 
@@ -1991,9 +1991,9 @@ public class GameEngine {
 			// fieldInitialization
 			createFieldIfNeeded();
 
-			// NEXTピース作成
+			// NEXTCreating Peace
 			if(nextPieceArrayID == null) {
-				// 出現可能なピースが1つもない場合は全て出現できるようにする
+				// Peace is possible emergence1If no one is to be able to all appearance
 				boolean allDisable = true;
 				for(int i = 0; i < nextPieceEnable.length; i++) {
 					if(nextPieceEnable[i] == true) {
@@ -2005,7 +2005,7 @@ public class GameEngine {
 					for(int i = 0; i < nextPieceEnable.length; i++) nextPieceEnable[i] = true;
 				}
 
-				// NEXTピースの出現順を作成
+				// NEXTCreate the order of appearance of the piece
 				if(randomizer == null) {
 					randomizer = new MemorylessRandomizer(nextPieceEnable, randSeed);
 				} else {
@@ -2016,7 +2016,7 @@ public class GameEngine {
 					nextPieceArrayID[i] = randomizer.next();
 				}
 			}
-			// NEXTピースのオブジェクトを作成
+			// NEXTCreate an object of Peace
 			if(nextPieceArrayObject == null) {
 				nextPieceArrayObject = new Piece[nextPieceArrayID.length];
 
@@ -2049,22 +2049,22 @@ public class GameEngine {
 			}
 
 			if(!readyDone) {
-				//  button input状態リセット
+				//  button inputReset state
 				ctrl.reset();
-				// ゲーム中 flagON
+				// Game flagON
 				gameActive = true;
 				gameStarted = true;
 				isInGame = true;
 			}
 		}
 
-		// READY音
+		// READYSound
 		if(statc[0] == readyStart) playSE("ready");
 
-		// GO音
+		// GOSound
 		if(statc[0] == goStart) playSE("go");
 
-		// NEXTスキップ
+		// NEXTSkip
 		if((statc[0] > 0) && (statc[0] < goEnd) && (holdButtonNextSkip) && (isHoldOK()) && (ctrl.isPush(Controller.BUTTON_D))) {
 			playSE("initialhold");
 			holdPieceObject = getNextObjectCopy(nextPieceCount);
@@ -2073,7 +2073,7 @@ public class GameEngine {
 			if(nextPieceCount < 0) nextPieceCount = 0;
 		}
 
-		// 開始
+		// Start
 		if(statc[0] >= goEnd) {
 			if(!readyDone) owner.bgmStatus.bgm = 0;
 //			if(owner.mode != null) owner.mode.startGame(this, playerID);
@@ -2094,13 +2094,13 @@ public class GameEngine {
 	}
 
 	/**
-	 * Blockピースの移動処理
+	 * BlockProcess of moving the pieces
 	 */
 	public void statMove() {
 
 		dasRepeat = false;
 
-		//  event 発生
+		//  event Occurrence
 //		if(owner.mode != null) {
 //			if(owner.mode.onMove(this, playerID) == true) return;
 //		}
@@ -2108,7 +2108,7 @@ public class GameEngine {
 		if(eventManager.engineMove())
 			return;
 
-		// 横溜めInitialization
+		// Horizontal reservoirInitialization
 		int moveDirection = getMoveDirection();
 
 		if((statc[0] > 0) || (ruleopt.dasInMoveFirstFrame)) {
@@ -2120,20 +2120,20 @@ public class GameEngine {
 			}
 		}
 
-		// 出現時の処理
+		// Processing at the time of emergence
 		if(statc[0] == 0) {
 			if((statc[1] == 0) && (initialHoldFlag == false)) {
-				// 通常出現
+				// Normal appearance
 				nowPieceObject = getNextObjectCopy(nextPieceCount);
 				nextPieceCount++;
 				if(nextPieceCount < 0) nextPieceCount = 0;
 				holdDisable = false;
 			} else {
-				// ホールド出現
+				// Hold appearance
 				if(initialHoldFlag) {
-					// 先行ホールド
+					// Hold preceding
 					if(holdPieceObject == null) {
-						// 1回目
+						// 1Th
 						holdPieceObject = getNextObjectCopy(nextPieceCount);
 						holdPieceObject.applyOffsetArray(ruleopt.pieceOffsetX[holdPieceObject.id], ruleopt.pieceOffsetY[holdPieceObject.id]);
 						nextPieceCount++;
@@ -2145,7 +2145,7 @@ public class GameEngine {
 						nextPieceCount++;
 						if(nextPieceCount < 0) nextPieceCount = 0;
 					} else {
-						// 2回目以降
+						// 2Subsequent
 						Piece pieceTemp = holdPieceObject;
 						holdPieceObject = getNextObjectCopy(nextPieceCount);
 						holdPieceObject.applyOffsetArray(ruleopt.pieceOffsetX[holdPieceObject.id], ruleopt.pieceOffsetY[holdPieceObject.id]);
@@ -2154,16 +2154,16 @@ public class GameEngine {
 						if(nextPieceCount < 0) nextPieceCount = 0;
 					}
 				} else {
-					// 通常ホールド
+					// Usually hold
 					if(holdPieceObject == null) {
-						// 1回目
+						// 1Th
 						nowPieceObject.big = false;
 						holdPieceObject = nowPieceObject;
 						nowPieceObject = getNextObjectCopy(nextPieceCount);
 						nextPieceCount++;
 						if(nextPieceCount < 0) nextPieceCount = 0;
 					} else {
-						// 2回目以降
+						// 2Subsequent
 						nowPieceObject.big = false;
 						Piece pieceTemp = holdPieceObject;
 						holdPieceObject = nowPieceObject;
@@ -2171,17 +2171,17 @@ public class GameEngine {
 					}
 				}
 
-				// Directionを戻す
+				// DirectionReturn
 				if((ruleopt.holdResetDirection) && (ruleopt.pieceDefaultDirection[holdPieceObject.id] < Piece.DIRECTION_COUNT)) {
 					holdPieceObject.direction = ruleopt.pieceDefaultDirection[holdPieceObject.id];
 					holdPieceObject.updateConnectData();
 				}
 
-				// 使用した count+1
+				// Was used count+1
 				holdUsedCount++;
 				statistics.totalHoldUsed++;
 
-				// ホールド無効化
+				// Disabling Hold
 				initialHoldFlag = false;
 				holdDisable = true;
 			}
@@ -2192,10 +2192,10 @@ public class GameEngine {
 
 			nowPieceObject.big = big;
 
-			// 出現位置 (横）
+			// Appearance position (Horizontal)
 			nowPieceX = getSpawnPosX(field, nowPieceObject);
 
-			// 出現位置 (縦）
+			// Appearance position (Vertical)
 			nowPieceY = getSpawnPosY(nowPieceObject);
 
 			nowPieceBottomY = nowPieceObject.getBottom(nowPieceX, nowPieceY, field);
@@ -2203,7 +2203,7 @@ public class GameEngine {
 
 			if(itemRollRollEnable) nowPieceColorOverride = Block.BLOCK_COLOR_GRAY;
 
-			// 先行rotation
+			// Precedingrotation
 			if(versionMajor < 7.5f) initialRotate(); //XXX: Weird active time IRS
 			//if( (getARE() != 0) && ((getARELine() != 0) || (version < 6.3f)) ) initialRotate();
 
@@ -2245,15 +2245,15 @@ public class GameEngine {
 
 		checkDropContinuousUse();
 
-		boolean softdropUsed = false; // この frame にSoft dropを使ったらtrue
-		int softdropFallNow = 0; // この frame のSoft dropで落下した段count
+		boolean softdropUsed = false; // This frame ToSoft dropI usedtrue
+		int softdropFallNow = 0; // This frame OfSoft dropStage which has fallen incount
 
-		boolean updown = false; // Up下同時押し flag
+		boolean updown = false; // UpUnder simultaneous press flag
 		if(ctrl.isPress(getUp()) && ctrl.isPress(getDown())) updown = true;
 
 		if(!dasInstant) {
 
-			// ホールド
+			// Hold
 			if(ctrl.isPush(Controller.BUTTON_D) || initialHoldFlag) {
 				if(isHoldOK()) {
 					statc[0] = 0;
@@ -2299,13 +2299,13 @@ public class GameEngine {
 			if(isRotateButtonDefaultRight() && (move != 2)) move = move * -1;
 
 			if(move != 0) {
-				// Direction after rotationを決める
+				// Direction after rotationI decided to
 				int rt = getRotateDirection(move);
 
-				// rotationできるか判定
+				// rotationYou can determine whether the
 				if(nowPieceObject.checkCollision(nowPieceX, nowPieceY, rt, field) == false)
 				{
-					// Wallkickなしでrotationできるとき
+					// WallkickWithoutrotationwhen you can
 					rotated = true;
 					kickused = false;
 					nowPieceObject.direction = rt;
@@ -2315,7 +2315,7 @@ public class GameEngine {
 						   ((initialRotateDirection == 0) || (ruleopt.rotateInitialWallkick == true)) &&
 						   ((ruleopt.lockresetLimitOver != RuleOptions.LOCKRESET_LIMIT_OVER_NOWALLKICK) || (isRotateCountExceed() == false)) )
 				{
-					// Wallkickを試みる
+					// WallkickAttempt to
 					boolean allowUpward = (ruleopt.rotateMaxUpwardWallkick < 0) || (nowUpwardWallkickCount < ruleopt.rotateMaxUpwardWallkick);
 					WallkickResult kick = wallkick.executeWallkick(nowPieceX, nowPieceY, move, nowPieceObject.direction, rt,
 										  allowUpward, nowPieceObject, field, ctrl);
@@ -2353,7 +2353,7 @@ public class GameEngine {
 				}
 
 				if(rotated == true) {
-					// rotation成功
+					// rotationSuccess
 					nowPieceBottomY = nowPieceObject.getBottom(nowPieceX, nowPieceY, field);
 
 					if((ruleopt.lockresetRotate == true) && (isRotateCountExceed() == false)) {
@@ -2375,7 +2375,7 @@ public class GameEngine {
 					nowPieceRotateCount++;
 					if((ending == 0) || (staffrollEnableStatistics)) statistics.totalPieceRotate++;
 				} else {
-					// rotation失敗
+					// rotationFailure
 					playSE("rotfail");
 					nowPieceRotateFailCount++;
 				}
@@ -2384,7 +2384,7 @@ public class GameEngine {
 
 			// game over check
 			if((statc[0] == 0) && (nowPieceObject.checkCollision(nowPieceX, nowPieceY, field) == true)) {
-				// Blockの出現位置を上にずらすことができる場合はそうする
+				// BlockSo if you can shift on the position of the emergence of
 				for(int i = 0; i < ruleopt.pieceEnterMaxDistanceY; i++) {
 					if(nowPieceObject.big) nowPieceY -= 2;
 					else nowPieceY--;
@@ -2395,7 +2395,7 @@ public class GameEngine {
 					}
 				}
 
-				// 死亡
+				// Death
 				if(nowPieceObject.checkCollision(nowPieceX, nowPieceY, field) == true) {
 					nowPieceObject.placeToField(nowPieceX, nowPieceY, field);
 					nowPieceObject = null;
@@ -2409,10 +2409,10 @@ public class GameEngine {
 		}
 
 		int move = 0;
-		boolean sidemoveflag = false;	// この frame に横移動したらtrue
+		boolean sidemoveflag = false;	// This frame I moved next totrue
 
 		if((statc[0] > 0) || (ruleopt.moveFirstFrame == true)) {
-			// 横移動
+			// Lateral motion
 			boolean onGroundBeforeMove = nowPieceObject.checkCollision(nowPieceX, nowPieceY + 1, field);
 
 			move = moveDirection;
@@ -2542,7 +2542,7 @@ public class GameEngine {
 	
 						softdropUsed = true;
 					} else {
-						// 落下
+						// Fall
 						// This prevents soft drop from adding to the gravity speed.
 						gcount += speed.gravity;
 					}
@@ -2589,7 +2589,7 @@ public class GameEngine {
 			eventManager.engineAfterSoftDropFall(softdropFallNow);
 		}
 
-		// 接地と固定
+		// And fixed ground
 		if( (nowPieceObject.checkCollision(nowPieceX, nowPieceY + 1, field) == true) &&
 			((statc[0] > 0) || (ruleopt.moveFirstFrame == true)) )
 		{
@@ -2612,10 +2612,10 @@ public class GameEngine {
 			if(getLockDelay() != 0)
 				gcount = speed.gravity;
 
-			// trueになると即固定
+			// trueI fixed immediately becomes
 			boolean instantlock = false;
 
-			// Hard drop固定
+			// Hard dropFixation
 			if( (ctrl.isPress(getUp()) == true) &&
 				(harddropContinuousUse == false) &&
 				(ruleopt.harddropEnable == true) &&
@@ -2628,7 +2628,7 @@ public class GameEngine {
 				instantlock = true;
 			}
 
-			// Soft drop固定
+			// Soft dropFixation
 			if( (ctrl.isPress(getDown()) == true) &&
 				(softdropContinuousUse == false) &&
 				(ruleopt.softdropEnable == true) &&
@@ -2641,7 +2641,7 @@ public class GameEngine {
 				instantlock = true;
 			}
 
-			// 接地状態でソフドドロップ固定
+			// Soft-drop fixed in the ground state
 			if( (ctrl.isPush(getDown()) == true) &&
 				(ruleopt.softdropEnable == true) &&
 				((isDiagonalMoveEnabled() == true) || (sidemoveflag == false)) &&
@@ -2658,21 +2658,21 @@ public class GameEngine {
 				shiftLock = ctrl.getButtonBit() & 3;
 			}
 
-			// 移動＆rotationcount制限超過
+			// &amp; MobilerotationcountLimit exceeded
 			if( (ruleopt.lockresetLimitOver == RuleOptions.LOCKRESET_LIMIT_OVER_INSTANT) && (isMoveCountExceed() || isRotateCountExceed()) ) {
 				instantlock = true;
 			}
 
-			// 接地即固定
+			// Immediately fixed ground
 			if( (getLockDelay() == 0) && ((gcount >= speed.denominator) || (speed.gravity < 0)) ) {
 				instantlock = true;
 			}
 
-			// 固定
+			// Fixation
 			if( ((lockDelayNow >= getLockDelay()) && (getLockDelay() > 0)) || (instantlock == true) ) {
 				if(ruleopt.lockflash > 0) nowPieceObject.setDarkness(-0.8f);
 
-				// T-Spin判定
+				// T-SpinJudgment
 				if(((lastmove == LASTMOVE_ROTATE_GROUND) || (lastmove == LASTMOVE_ROTATE_AIR)) && (tspinEnable == true)) {
 					if(useAllSpinBonus)
 						setAllSpin(nowPieceX, nowPieceY, nowPieceObject, field);
@@ -2726,7 +2726,7 @@ public class GameEngine {
 				dasRepeat = false;
 				dasInstant = false;
 
-				// Next 処理を決める(Mode 側でステータスを弄っている場合は何もしない)
+				// Next Determine the processing(Mode If you are toying a status on the side, I do not do anything)
 				if((stat == STAT_MOVE) || (versionMajor <= 6.3f)) {
 					resetStatc();
 
@@ -2734,7 +2734,7 @@ public class GameEngine {
 						// Ending
 						stat = STAT_ENDINGSTART;
 					} else if( (!put && ruleopt.fieldLockoutDeath) || (partialLockOut && ruleopt.fieldPartialLockoutDeath) ) {
-						// 画面外に置いて死亡
+						// Put to death outside the screen
 						stat = STAT_GAMEOVER;
 						if((ending == 2) && (staffrollNoDeath)) stat = STAT_NOTHING;
 					} else if ((lineGravityType == LINE_GRAVITY_CASCADE || lineGravityType == LINE_GRAVITY_CASCADE_SLOW)
@@ -2749,19 +2749,19 @@ public class GameEngine {
 					} else if( ((getARE() > 0) || (lagARE) || (ruleopt.lockflashBeforeLineClear)) &&
 							    (ruleopt.lockflash > 0) && (ruleopt.lockflashOnlyFrame) )
 					{
-						// AREあり (光あり）
+						// ARESome (Light is)
 						stat = STAT_LOCKFLASH;
 					} else if((getARE() > 0) || (lagARE)) {
-						// AREあり (光なし）
+						// ARESome (No light)
 						statc[1] = getARE();
 						stat = STAT_ARE;
 					} else if(interruptItemNumber != INTERRUPTITEM_NONE) {
-						// 中断効果のあるアイテム処理
+						// Effective treatment interruption item
 						nowPieceObject = null;
 						interruptItemPreviousStat = STAT_MOVE;
 						stat = STAT_INTERRUPTITEM;
 					} else {
-						// AREなし
+						// ARENo
 						stat = STAT_MOVE;
 						if(ruleopt.moveFirstFrame == false) statMove();
 					}
@@ -2770,7 +2770,7 @@ public class GameEngine {
 			}
 		}
 
-		// 横溜め
+		// Horizontal reservoir
 		if((statc[0] > 0) || (ruleopt.dasInMoveFirstFrame)) {
 			if( (moveDirection != 0) && (moveDirection == dasDirection) && ((dasCount < getDAS()) || (getDAS() <= 0)) ) {
 				dasCount++;
@@ -2781,10 +2781,10 @@ public class GameEngine {
 	}
 
 	/**
-	 * Block固定直後の光っているときの処理
+	 * BlockSparkling happens when fixed immediately after
 	 */
 	public void statLockFlash() {
-		//  event 発生
+		//  event Occurrence
 //		if(owner.mode != null) {
 //			if(owner.mode.onLockFlash(this, playerID) == true) return;
 //		}
@@ -2796,11 +2796,11 @@ public class GameEngine {
 
 		checkDropContinuousUse();
 
-		// 横溜め
+		// Horizontal reservoir
 		if(ruleopt.dasInLockFlash) padRepeat();
 		else if(ruleopt.dasRedirectInDelay) { dasRedirect(); }
 
-		// Next ステータス
+		// Next Status
 		if(statc[0] >= ruleopt.lockflash) {
 			resetStatc();
 
@@ -2818,10 +2818,10 @@ public class GameEngine {
 	}
 
 	/**
-	 * Line clear処理
+	 * Line clearProcessing
 	 */
 	public void statLineClear() {
-		//  event 発生
+		//  event Occurrence
 //		if(owner.mode != null) {
 //			if(owner.mode.onLineClear(this, playerID) == true) return;
 //		}
@@ -2831,17 +2831,17 @@ public class GameEngine {
 
 		checkDropContinuousUse();
 
-		// 横溜め
+		// Horizontal reservoir
 		if(ruleopt.dasInLineClear) padRepeat();
 		else if(ruleopt.dasRedirectInDelay) { dasRedirect(); }
 
-		// 最初の frame
+		// First frame
 		if(statc[0] == 0) {
 			if (sticky > 0)
 				field.setBlockLinkByColor();
 			if (sticky == 2)
 				field.setAllAttribute(Block.BLOCK_ATTRIBUTE_IGNORE_BLOCKLINK, true);
-			// Line clear flagを設定
+			// Line clear flagSet the
 			if (clearMode == CLEAR_LINE)
 				lineClearing = field.checkLine();
 			// Set color clear flags
@@ -2853,7 +2853,7 @@ public class GameEngine {
 			else if (clearMode == CLEAR_GEM_COLOR)
 				lineClearing = field.gemColorCheck(colorClearSize, true, garbageColorClear, ignoreHidden);
 
-			// Linescountを決める
+			// LinescountI decided to
 			int li = lineClearing;
 			if(big && bighalf)
 				li >>= 1;
@@ -2931,7 +2931,7 @@ public class GameEngine {
 //			owner.receiver.calcScore(this, playerID, li);
 			eventManager.engineCalcScore(li);
 
-			// Blockを消す演出を出す (まだ実際には消えていない）
+			// BlockOut the production to erase the (I have not actually gone yet)
 			if (clearMode == CLEAR_LINE) {
 				for(int i = 0; i < field.getHeight(); i++) {
 					if(field.getLineFlag(i)) {
@@ -2968,7 +2968,7 @@ public class GameEngine {
 					}
 				}
 
-			// Blockを消す
+			// BlockDisappear
 			if (clearMode == CLEAR_LINE)
 				field.clearLine();
 			else if (clearMode == CLEAR_COLOR)
@@ -2979,7 +2979,7 @@ public class GameEngine {
 				lineClearing = field.gemClearColor(colorClearSize, garbageColorClear, ignoreHidden);
 		}
 
-		// Linesを1段落とす
+		// LinesA1Step down
 		if((lineGravityType == LINE_GRAVITY_NATIVE) &&
 		   (getLineDelay() >= (lineClearing - 1)) && (statc[0] >= getLineDelay() - (lineClearing - 1)) && (ruleopt.lineFallAnim))
 		{
@@ -3003,7 +3003,7 @@ public class GameEngine {
 			statc[0] = getLineDelay();
 		}
 
-		// Next ステータス
+		// Next Status
 		if(statc[0] >= getLineDelay()) {
 			// Cascade
 			if((lineGravityType == LINE_GRAVITY_CASCADE || lineGravityType == LINE_GRAVITY_CASCADE_SLOW)) {
@@ -3053,18 +3053,18 @@ public class GameEngine {
 						// Ending
 						stat = STAT_ENDINGSTART;
 					} else if((getARELine() > 0) || (lagARE)) {
-						// AREあり
+						// ARESome
 						statc[0] = 0;
 						statc[1] = getARELine();
 						statc[2] = 1;
 						stat = STAT_ARE;
 					} else if(interruptItemNumber != INTERRUPTITEM_NONE) {
-						// 中断効果のあるアイテム処理
+						// Effective treatment interruption item
 						nowPieceObject = null;
 						interruptItemPreviousStat = STAT_MOVE;
 						stat = STAT_INTERRUPTITEM;
 					} else {
-						// AREなし
+						// ARENo
 						nowPieceObject = null;
 						if(versionMajor < 7.5f) initialRotate(); //XXX: Weird IRS thing on lines cleared but no ARE
 						stat = STAT_MOVE;
@@ -3087,10 +3087,10 @@ public class GameEngine {
 	}
 
 	/**
-	 * ARE中の処理
+	 * AREProcessing during
 	 */
 	public void statARE() {
-		//  event 発生
+		//  event Occurrence
 //		if(owner.mode != null) {
 //			if(owner.mode.onARE(this, playerID) == true) return;
 //		}
@@ -3119,22 +3119,22 @@ public class GameEngine {
 			statc[0] = statc[1];
 		}
 
-		// 横溜め
+		// Horizontal reservoir
 		if( (ruleopt.dasInARE) && ((statc[0] < statc[1] - 1) || (ruleopt.dasInARELastFrame)) )
 			padRepeat();
 		else if(ruleopt.dasRedirectInDelay) { dasRedirect(); }
 
-		// Next ステータス
+		// Next Status
 		if((statc[0] >= statc[1]) && (!lagARE)) {
 			nowPieceObject = null;
 			resetStatc();
 
 			if(interruptItemNumber != INTERRUPTITEM_NONE) {
-				// 中断効果のあるアイテム処理
+				// Effective treatment interruption item
 				interruptItemPreviousStat = STAT_MOVE;
 				stat = STAT_INTERRUPTITEM;
 			} else {
-				// Blockピース移動処理
+				// BlockPeace movement process
 				initialRotate();
 				stat = STAT_MOVE;
 			}
@@ -3142,10 +3142,10 @@ public class GameEngine {
 	}
 
 	/**
-	 * Ending突入処理
+	 * EndingRush processing
 	 */
 	public void statEndingStart() {
-		//  event 発生
+		//  event Occurrence
 //		if(owner.mode != null) {
 //			if(owner.mode.onEndingStart(this, playerID) == true) return;
 //		}
@@ -3155,7 +3155,7 @@ public class GameEngine {
 
 		checkDropContinuousUse();
 
-		// 横溜め
+		// Horizontal reservoir
 		if(ruleopt.dasInEndingStart) padRepeat();
 		else if(ruleopt.dasRedirectInDelay) { dasRedirect(); }
 
@@ -3203,10 +3203,10 @@ public class GameEngine {
 	}
 
 	/**
-	 * 各ゲームMode が自由に使えるステータスの処理
+	 * Each gameMode Treatment of status that can be freely used
 	 */
 	public void statCustom() {
-		//  event 発生
+		//  event Occurrence
 //		if(owner.mode != null) {
 //			if(owner.mode.onCustom(this, playerID) == true) return;
 //		}
@@ -3216,10 +3216,10 @@ public class GameEngine {
 	}
 
 	/**
-	 * Ending画面
+	 * EndingScreen
 	 */
 	public void statExcellent() {
-		//  event 発生
+		//  event Occurrence
 //		if(owner.mode != null) {
 //			if(owner.mode.onExcellent(this, playerID) == true) return;
 //		}
@@ -3249,10 +3249,10 @@ public class GameEngine {
 	}
 
 	/**
-	 * game overの処理
+	 * game overProcessing
 	 */
 	public void statGameOver() {
-		//  event 発生
+		//  event Occurrence
 //		if(owner.mode != null) {
 //			if(owner.mode.onGameOver(this, playerID) == true) return;
 //		}
@@ -3261,7 +3261,7 @@ public class GameEngine {
 			return;
 
 		if(lives <= 0) {
-			// もう復活できないとき
+			// When I can not be recovered anymore
 			if(statc[0] == 0) {
 				gameEnded();
 				blockShowOutlineOnly = false;
@@ -3315,7 +3315,7 @@ public class GameEngine {
 				}
 			}
 		} else {
-			// 復活できるとき
+			// When it can be revived
 			if(statc[0] == 0) {
 				blockShowOutlineOnly = false;
 				playSE("died");
@@ -3382,10 +3382,10 @@ public class GameEngine {
 	}
 
 	/**
-	 * fieldエディット画面
+	 * fieldEdit screen
 	 */
 	public void statFieldEdit() {
-		//  event 発生
+		//  event Occurrence
 //		if(owner.mode != null) {
 //			if(owner.mode.onFieldEdit(this, playerID) == true) return;
 //		}
@@ -3417,7 +3417,7 @@ public class GameEngine {
 			if(fldeditY > fieldHeight - 1) fldeditY = 0;
 		}
 
-		// 色選択
+		// Color selection
 		if(ctrl.isMenuRepeatKey(Controller.BUTTON_LEFT, false) && ctrl.isPress(Controller.BUTTON_C)) {
 			playSE("cursor");
 			fldeditColor--;
@@ -3429,7 +3429,7 @@ public class GameEngine {
 			if(fldeditColor > Block.BLOCK_COLOR_GEM_PURPLE) fldeditColor = Block.BLOCK_COLOR_GRAY;
 		}
 
-		// 配置
+		// Placement
 		if(ctrl.isPress(Controller.BUTTON_A) && (fldeditFrames > 10)) {
 			try {
 				if(field.getBlockColorE(fldeditX, fldeditY) != fldeditColor) {
@@ -3440,7 +3440,7 @@ public class GameEngine {
 			} catch (Exception e) {}
 		}
 
-		// 消去
+		// Elimination
 		if(ctrl.isPress(Controller.BUTTON_D) && (fldeditFrames > 10)) {
 			try {
 				if(!field.getBlockEmptyE(fldeditX, fldeditY)) {
@@ -3450,7 +3450,7 @@ public class GameEngine {
 			} catch (Exception e) {}
 		}
 
-		// 終了
+		// End
 		if(ctrl.isPush(Controller.BUTTON_B) && (fldeditFrames > 10)) {
 			stat = fldeditPreviousStat;
 //			if(owner.mode != null) owner.mode.fieldEditExit(this, playerID);
@@ -3460,13 +3460,13 @@ public class GameEngine {
 	}
 
 	/**
-	 * プレイ中断効果のあるアイテム処理
+	 * Effective treatment interruption Play items
 	 */
 	public void statInterruptItem() {
-		boolean contFlag = false;	// 続行 flag
+		boolean contFlag = false;	// Continue flag
 
 		switch(interruptItemNumber) {
-		case INTERRUPTITEM_MIRROR:	// ミラー
+		case INTERRUPTITEM_MIRROR:	// Miller
 			contFlag = interruptItemMirrorProc();
 			break;
 		}
@@ -3479,26 +3479,26 @@ public class GameEngine {
 	}
 
 	/**
-	 * ミラー処理
-	 * @return When true,ミラー処理続行
+	 * Mirror operation
+	 * @return When true,Process continues Miller
 	 */
 	public boolean interruptItemMirrorProc() {
 		if(statc[0] == 0) {
-			// fieldをバックアップにコピー
+			// fieldCopy the backup
 			interruptItemMirrorField = new Field(field);
-			// fieldのBlockを全部消す
+			// fieldOfBlockTurn off all the
 			field.reset();
 		} else if((statc[0] >= 21) && (statc[0] < 21 + (field.getWidth() * 2)) && (statc[0] % 2 == 0)) {
-			// 反転
+			// Inversion
 			int x = ((statc[0] - 20) / 2) - 1;
 
 			for(int y = (field.getHiddenHeight() * -1); y < field.getHeight(); y++) {
 				field.setBlock(field.getWidth() - x - 1, y, interruptItemMirrorField.getBlock(x, y));
 			}
 		} else if(statc[0] < 21 + (field.getWidth() * 2) + 5) {
-			// 待ち time
+			// Wait time
 		} else {
-			// 終了
+			// End
 			statc[0] = 0;
 			interruptItemMirrorField = null;
 			return false;

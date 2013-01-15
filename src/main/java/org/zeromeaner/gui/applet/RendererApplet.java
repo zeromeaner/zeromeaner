@@ -49,13 +49,13 @@ import org.zeromeaner.util.CustomProperties;
 //import org.apache.log4j.Logger;
 
 /**
- * ゲームの event 処理と描画処理 (Swing版）
+ * Game event Processing and rendering process (SwingVersion)
  */
 public class RendererApplet extends EventRenderer {
 	/** Log */
 	//static Logger log = Logger.getLogger(RendererSwing.class);
 
-	/** 描画先サーフェイス */
+	/** Surface to draw */
 	protected Graphics2D graphics;
 
 	/** Effect objects */
@@ -64,10 +64,10 @@ public class RendererApplet extends EventRenderer {
 	/** Line clear effect enabled flag */
 	protected boolean showlineeffect;
 
-	/** fieldのBlockを表示 (falseなら枠線だけ表示) */
+	/** fieldOfBlockShow (falseBorder appears only if) */
 	protected boolean showfieldblockgraphics;
 
-	/** 操作Blockの絵柄をシンプルにする */
+	/** OperationBlockTo simplify the design of */
 	protected boolean simpleblock;
 
 	/** Show field BG grid */
@@ -76,7 +76,7 @@ public class RendererApplet extends EventRenderer {
 	/** Dark piece preview area */
 	protected boolean darknextarea;
 
-	/** ghost ピースの上にNEXT表示 */
+	/** ghost On top of the pieceNEXTDisplay */
 	protected boolean nextshadow;
 
 	/** Line clear effect speed */
@@ -100,9 +100,9 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/**
-	 * 指定した font 色をAWT用Colorとして取得
-	 * @param fontColor  font 色
-	 * @return  font 色のColor
+	 * Specified font ColorAWTUseColorObtained as
+	 * @param fontColor  font Color
+	 * @return  font ColorColor
 	 */
 	public static Color getFontColorAsColor(int fontColor) {
 		switch(fontColor) {
@@ -121,9 +121,9 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/**
-	 * Block colorIDに応じてAWT用Colorオブジェクトを作成・取得
+	 * Block colorIDDepending onAWTUseColorObjects created or received
 	 * @param colorID Block colorID
-	 * @return AWT用Colorオブジェクト
+	 * @return AWTUseColorObject
 	 */
 	public static Color getColorByID(int colorID) {
 		switch(colorID) {
@@ -175,7 +175,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * 描画先のGraphicsを設定
+	 * Which to drawGraphicsSet the
 	 */
 	@Override
 	public void setGraphics(Object g) {
@@ -185,7 +185,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * Sound effects再生
+	 * Sound effectsPlayback
 	 */
 	@Override
 	public void playSE(String name) {
@@ -193,7 +193,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * Menu 用の文字列を描画
+	 * Menu Drawing a string for
 	 */
 	@Override
 	public void drawMenuFont(GameEngine engine, int playerID, int x, int y, String str, int color, float scale) {
@@ -211,7 +211,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * Menu 用の文字列をTTF font で描画
+	 * Menu A string forTTF font Drawing on
 	 */
 	@Override
 	public void drawTTFMenuFont(GameEngine engine, int playerID, int x, int y, String str, int color) {
@@ -231,7 +231,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * Render score用の font を描画
+	 * Render scoreFor font Draw a
 	 */
 	@Override
 	public void drawScoreFont(GameEngine engine, int playerID, int x, int y, String str, int color, float scale) {
@@ -242,7 +242,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * Render score用の font をTTF font で描画
+	 * Render scoreFor font ATTF font Drawing on
 	 */
 	@Override
 	public void drawTTFScoreFont(GameEngine engine, int playerID, int x, int y, String str, int color) {
@@ -256,7 +256,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * 直接指定した座標へ文字列を描画
+	 * Draws the string to the specified coordinates I direct
 	 */
 	@Override
 	public void drawDirectFont(GameEngine engine, int playerID, int x, int y, String str, int color, float scale) {
@@ -264,7 +264,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * 直接指定した座標へ描画できるTTF font を描画
+	 * I can draw directly to the specified coordinatesTTF font Draw a
 	 */
 	@Override
 	public void drawTTFDirectFont(GameEngine engine, int playerID, int x, int y, String str, int color) {
@@ -274,7 +274,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * スピードMeterを描画
+	 * SpeedMeterDraw a
 	 */
 	@Override
 	public void drawSpeedMeter(GameEngine engine, int playerID, int x, int y, int s) {
@@ -301,7 +301,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * TTF使用可能
+	 * TTFAvailable
 	 */
 	@Override
 	public boolean isTTFSupport() {
@@ -335,7 +335,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * リプレイを保存
+	 * Save the replay
 	 */
 	@Override
 	public void saveReplay(GameManager owner, CustomProperties prop) {
@@ -345,7 +345,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * 1マスBlockを描画
+	 * 1MassBlockDraw a
 	 */
 	@Override
 	public void drawSingleBlock(GameEngine engine, int playerID, int x, int y, int color, int skin, boolean bone, float darkness, float alpha, float scale) {
@@ -490,48 +490,48 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/**
-	 * Blockを描画
+	 * BlockDraw a
 	 * @param x X-coordinate
 	 * @param y Y-coordinate
-	 * @param color 色
-	 * @param skin 模様
-	 * @param bone 骨Block
-	 * @param darkness 暗さもしくは明るさ
-	 * @param alpha 透明度
-	 * @param scale 拡大率
+	 * @param color Color
+	 * @param skin Pattern
+	 * @param bone BoneBlock
+	 * @param darkness Lightness or darkness
+	 * @param alpha Transparency
+	 * @param scale Enlargement factor
 	 */
 	protected void drawBlock(int x, int y, int color, int skin, boolean bone, float darkness, float alpha, float scale) {
 		drawBlock(x, y, color, skin, bone, darkness, alpha, scale, 0);
 	}
 
 	/**
-	 * Blockクラスのインスタンスを使用してBlockを描画
+	 * BlockUsing an instance of the classBlockDraw a
 	 * @param x X-coordinate
 	 * @param y Y-coordinate
-	 * @param blk Blockクラスのインスタンス
+	 * @param blk BlockInstance of a class
 	 */
 	protected void drawBlock(int x, int y, Block blk) {
 		drawBlock(x, y, blk.getDrawColor(), blk.skin, blk.getAttribute(Block.BLOCK_ATTRIBUTE_BONE), blk.darkness, blk.alpha, 1.0f, blk.attribute);
 	}
 
 	/**
-	 * Blockクラスのインスタンスを使用してBlockを描画 (拡大率指定可能）
+	 * BlockUsing an instance of the classBlockDraw a (You can specify the magnification)
 	 * @param x X-coordinate
 	 * @param y Y-coordinate
-	 * @param blk Blockクラスのインスタンス
-	 * @param scale 拡大率
+	 * @param blk BlockInstance of a class
+	 * @param scale Enlargement factor
 	 */
 	protected void drawBlock(int x, int y, Block blk, float scale) {
 		drawBlock(x, y, blk.getDrawColor(), blk.skin, blk.getAttribute(Block.BLOCK_ATTRIBUTE_BONE), blk.darkness, blk.alpha, scale, blk.attribute);
 	}
 
 	/**
-	 * Blockクラスのインスタンスを使用してBlockを描画 (拡大率と暗さ指定可能）
+	 * BlockUsing an instance of the classBlockDraw a (You can specify the magnification and dark)
 	 * @param x X-coordinate
 	 * @param y Y-coordinate
-	 * @param blk Blockクラスのインスタンス
-	 * @param scale 拡大率
-	 * @param darkness 暗さもしくは明るさ
+	 * @param blk BlockInstance of a class
+	 * @param scale Enlargement factor
+	 * @param darkness Lightness or darkness
 	 */
 	protected void drawBlock(int x, int y, Block blk, float scale, float darkness) {
 		drawBlock(x, y, blk.getDrawColor(), blk.skin, blk.getAttribute(Block.BLOCK_ATTRIBUTE_BONE), darkness, blk.alpha, scale, blk.attribute);
@@ -543,33 +543,33 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/**
-	 * Blockピースを描画
+	 * BlockDraw a piece
 	 * @param x X-coordinate
 	 * @param y Y-coordinate
-	 * @param piece 描画するピース
+	 * @param piece Peace to draw
 	 */
 	protected void drawPiece(int x, int y, Piece piece) {
 		drawPiece(x, y, piece, 1.0f);
 	}
 
 	/**
-	 * Blockピースを描画 (拡大率指定可能）
+	 * BlockDraw a piece (You can specify the magnification)
 	 * @param x X-coordinate
 	 * @param y Y-coordinate
-	 * @param piece 描画するピース
-	 * @param scale 拡大率
+	 * @param piece Peace to draw
+	 * @param scale Enlargement factor
 	 */
 	protected void drawPiece(int x, int y, Piece piece, float scale) {
 		drawPiece(x, y, piece, scale, 0f);
 	}
 
 	/**
-	 * Blockピースを描画 (暗さもしくは明るさの指定可能）
+	 * BlockDraw a piece (You can specify the brightness or darkness)
 	 * @param x X-coordinate
 	 * @param y Y-coordinate
-	 * @param piece 描画するピース
-	 * @param scale 拡大率
-	 * @param darkness 暗さもしくは明るさ
+	 * @param piece Peace to draw
+	 * @param scale Enlargement factor
+	 * @param darkness Lightness or darkness
 	 */
 	protected void drawPiece(int x, int y, Piece piece, float scale, float darkness) {
 		for(int i = 0; i < piece.getMaxBlock(); i++) {
@@ -584,10 +584,10 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/**
-	 * 現在操作中のBlockピースを描画 (Y-coordinateが0以上のBlockだけ表示）
+	 * Currently working onBlockDraw a piece (Y-coordinateThe0MoreBlockDisplay only)
 	 * @param x X-coordinate
 	 * @param y Y-coordinate
-	 * @param engine GameEngineのインスタンス
+	 * @param engine GameEngineInstance of
 	 */
 	protected void drawCurrentPiece(int x, int y, GameEngine engine, float scale) {
 		Piece piece = engine.nowPieceObject;
@@ -623,10 +623,10 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/**
-	 * 現在操作中のBlockピースのghost を描画
+	 * Currently working onBlockOf Peaceghost Draw a
 	 * @param x X-coordinate
 	 * @param y Y-coordinate
-	 * @param engine GameEngineのインスタンス
+	 * @param engine GameEngineInstance of
 	 */
 	protected void drawGhostPiece(int x, int y, GameEngine engine, float scale) {
 		Piece piece = engine.nowPieceObject;
@@ -840,10 +840,10 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/**
-	 * fieldのBlockを描画
+	 * fieldOfBlockDraw a
 	 * @param x X-coordinate
 	 * @param y Y-coordinate
-	 * @param engine GameEngineのインスタンス
+	 * @param engine GameEngineInstance of
 	 */
 	protected void drawField(int x, int y, GameEngine engine, int size) {
 		if(graphics == null) return;
@@ -922,7 +922,7 @@ public class RendererApplet extends EventRenderer {
 			}
 		}
 
-		// ヘボHIDDEN
+		// BunglerHIDDEN
 		if((engine.heboHiddenEnable) && (engine.gameActive) && (field != null)) {
 			int maxY = engine.heboHiddenYNow;
 			if(maxY > height) maxY = height;
@@ -935,10 +935,10 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/**
-	 * Field frameを描画
+	 * Field frameDraw a
 	 * @param x X-coordinate
 	 * @param y Y-coordinate
-	 * @param engine GameEngineのインスタンス
+	 * @param engine GameEngineInstance of
 	 */
 	protected void drawFrame(int x, int y, GameEngine engine, int displaysize) {
 		if(graphics == null) return;
@@ -969,7 +969,7 @@ public class RendererApplet extends EventRenderer {
 			graphics.drawImage(img, x + 4, y + 4, (x + 4)+(width*size*4), (y + 4)+(height*size*4), 0, 0, width*size*4, height*size*4, null);
 		}
 
-		// Upと下
+		// UpAnd the lower
 		int maxWidth = (width * size * 4);
 		if(showmeter) maxWidth = (width * size * 4) + (2 * 4);
 
@@ -982,7 +982,7 @@ public class RendererApplet extends EventRenderer {
 		tmpY = y + (height * size * 4) + 4;
 		graphics.drawImage(ResourceHolderApplet.imgFrame, tmpX, tmpY, tmpX + maxWidth, tmpY + 4, offsetX + 4, 8, (offsetX + 4) + 4, 8 + 4, null);
 
-		// 左と右
+		// Left and Right
 		tmpX = x;
 		tmpY = y + 4;
 		graphics.drawImage(ResourceHolderApplet.imgFrame, tmpX, tmpY, tmpX + 4, tmpY + (height * size*4), offsetX, 4, offsetX + 4, 4 + 4, null);
@@ -994,28 +994,28 @@ public class RendererApplet extends EventRenderer {
 		}
 		graphics.drawImage(ResourceHolderApplet.imgFrame, tmpX, tmpY, tmpX + 4, tmpY + (height * size*4), offsetX + 8, 4, offsetX + 8 + 4, 4 + 4, null);
 
-		// 左上
+		// Upper left
 		tmpX = x;
 		tmpY = y;
 		graphics.drawImage(ResourceHolderApplet.imgFrame, tmpX, tmpY, tmpX + 4, tmpY + 4, offsetX, 0, offsetX + 4, 4, null);
 
-		// 左下
+		// Lower left
 		tmpX = x;
 		tmpY = y + (height * size * 4) + 4;
 		graphics.drawImage(ResourceHolderApplet.imgFrame, tmpX, tmpY, tmpX + 4, tmpY + 4, offsetX, 8, offsetX + 4, 8 + 4, null);
 
 		if(showmeter) {
-			// MeterONのときの右上
+			// MeterONWhen the upper right corner of the
 			tmpX = x + (width * size * 4) + 12;
 			tmpY = y;
 			graphics.drawImage(ResourceHolderApplet.imgFrame, tmpX, tmpY, tmpX + 4, tmpY + 4, offsetX + 8, 0, (offsetX + 8) + 4, 4, null);
 
-			// MeterONのときの右下
+			// MeterONWhen the lower-right corner of
 			tmpX = x + (width * size * 4) + 12;
 			tmpY = y + (height * size * 4) + 4;
 			graphics.drawImage(ResourceHolderApplet.imgFrame, tmpX, tmpY, tmpX + 4, tmpY + 4, offsetX + 8, 8, (offsetX + 8) + 4, 8 + 4, null);
 
-			// 右Meterの枠
+			// RightMeterFrame
 			tmpX = x + (width * size * 4) + 4;
 			tmpY = y + 4;
 			graphics.drawImage(ResourceHolderApplet.imgFrame, tmpX, tmpY, tmpX + 4, tmpY + (height * size * 4), offsetX + 12, 4, (offsetX + 12) + 4, 4 + 4,
@@ -1029,7 +1029,7 @@ public class RendererApplet extends EventRenderer {
 			tmpY = y + (height * size * 4) + 4;
 			graphics.drawImage(ResourceHolderApplet.imgFrame, tmpX, tmpY, tmpX + 4, tmpY + 4, offsetX + 12, 8, (offsetX + 12) + 4, 8 + 4, null);
 
-			// 右Meter
+			// RightMeter
 			int maxHeight = height * size * 4;
 			if((engine != null) && (engine.meterValueSub > 0 || engine.meterValue > 0))
 				maxHeight -= Math.max(engine.meterValue, engine.meterValueSub);
@@ -1072,12 +1072,12 @@ public class RendererApplet extends EventRenderer {
 				}
 			}
 		} else {
-			// MeterOFFのときの右上
+			// MeterOFFWhen the upper right corner of the
 			tmpX = x + (width * size * 4) + 4;
 			tmpY = y;
 			graphics.drawImage(ResourceHolderApplet.imgFrame, tmpX, tmpY, tmpX + 4, tmpY + 4, offsetX + 8, 0, (offsetX + 8) + 4, 4, null);
 
-			// MeterOFFのときの右下
+			// MeterOFFWhen the lower-right corner of
 			tmpX = x + (width * size * 4) + 4;
 			tmpY = y + (height * size * 4) + 4;
 			graphics.drawImage(ResourceHolderApplet.imgFrame, tmpX, tmpY, tmpX + 4, tmpY + 4, offsetX + 8, 8, (offsetX + 8) + 4, 8 + 4, null);
@@ -1085,10 +1085,10 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/**
-	 * NEXTを描画
+	 * NEXTDraw a
 	 * @param x X-coordinate
 	 * @param y Y-coordinate
-	 * @param engine GameEngineのインスタンス
+	 * @param engine GameEngineInstance of
 	 */
 	protected void drawNext(int x, int y, GameEngine engine) {
 		if(graphics == null) return;
@@ -1183,7 +1183,7 @@ public class RendererApplet extends EventRenderer {
 					}
 				}
 
-				// NEXT2・3
+				// NEXT2·3
 				for(int i = 0; i < engine.ruleopt.nextDisplay - 1; i++) {
 					if(i >= 2) break;
 
@@ -1194,7 +1194,7 @@ public class RendererApplet extends EventRenderer {
 					}
 				}
 
-				// NEXT4～
+				// NEXT4~
 				for(int i = 0; i < engine.ruleopt.nextDisplay - 3; i++) {
 					Piece piece = engine.getNextObject(engine.nextPieceCount + i + 3);
 
@@ -1291,7 +1291,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/**
-	 * 各 frame 最初の描画処理
+	 * Each frame Drawing process of the first
 	 * @param engine GameEngine
 	 * @param playerID Player ID
 	 */
@@ -1314,7 +1314,7 @@ public class RendererApplet extends EventRenderer {
 			}
 		}
 
-		// NEXTなど
+		// NEXTSuch as
 		if(!engine.getOwner().menuOnly && engine.isVisible) {
 			int offsetX = getFieldDisplayPositionX(engine, playerID);
 			int offsetY = getFieldDisplayPositionY(engine, playerID);
@@ -1331,7 +1331,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * Ready画面の描画処理
+	 * ReadyProcess of drawing the screen
 	 */
 	@Override
 	public void renderReady(GameEngine engine, int playerID) {
@@ -1360,7 +1360,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * Blockピース移動時の処理
+	 * BlockHandling when moving piece
 	 */
 	@Override
 	public void renderMove(GameEngine engine, int playerID) {
@@ -1415,7 +1415,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * EXCELLENT画面の描画処理
+	 * EXCELLENTProcess of drawing the screen
 	 */
 	@Override
 	public void renderExcellent(GameEngine engine, int playerID) {
@@ -1444,7 +1444,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * game over画面の描画処理
+	 * game overProcess of drawing the screen
 	 */
 	@Override
 	public void renderGameOver(GameEngine engine, int playerID) {
@@ -1475,7 +1475,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * Render results screen処理
+	 * Render results screenProcessing
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
@@ -1501,7 +1501,7 @@ public class RendererApplet extends EventRenderer {
 	}
 
 	/*
-	 * fieldエディット画面の描画処理
+	 * fieldDrawing process of edit screen
 	 */
 	@Override
 	public void renderFieldEdit(GameEngine engine, int playerID) {

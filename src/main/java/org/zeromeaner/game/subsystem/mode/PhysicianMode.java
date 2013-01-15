@@ -201,7 +201,7 @@ public class PhysicianMode extends AbstractMode {
 				}
 			}
 
-			// 決定
+			// Decision
 			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
 				engine.playSE("decide");
 				saveSetting(owner.modeConfig);
@@ -307,7 +307,7 @@ public class PhysicianMode extends AbstractMode {
 	}
 
 	/*
-	 * Ready画面の処理
+	 * ReadyScreen processing
 	 */
 	@Override
 	public boolean onReady(GameEngine engine, int playerID) {

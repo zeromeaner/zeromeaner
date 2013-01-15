@@ -34,7 +34,7 @@ import org.zeromeaner.util.CustomProperties;
 
 
 /**
- * Scoreなどの情報
+ * ScoreInformation such as the
  */
 public class Statistics implements Serializable {
 	/** Serial version ID */
@@ -52,31 +52,31 @@ public class Statistics implements Serializable {
 	/** Hard drop score */
 	public int scoreFromHardDrop;
 
-	/** その他の方法で手に入れたScore */
+	/** I got in some other wayScore */
 	public int scoreFromOtherBonus;
 
 	/** Total line count */
 	public int lines;
 
-	/** 経過 time */
+	/** Course time */
 	public int time;
 
 	/** Level */
 	public int level;
 
-	/** Levelの表示に加算するcount (表示 levelが内部の値と異なる場合に使用) */
+	/** LevelAdded to the display ofcount (Display levelUse if it is different from the value of the internal) */
 	public int levelDispAdd;
 
-	/** 置いたピースのcount */
+	/** I put the piececount */
 	public int totalPieceLocked;
 
-	/** ピースを操作していた合計 time */
+	/** The total operating pieces are time */
 	public int totalPieceActiveTime;
 
-	/** ピースを移動させた合計 count */
+	/** The total move the piece count */
 	public int totalPieceMove;
 
-	/** ピースをrotationさせた合計 count */
+	/** A piecerotationTotal to count */
 	public int totalPieceRotate;
 
 	/** 1-line clear count */
@@ -124,25 +124,25 @@ public class Statistics implements Serializable {
 	/** Largest combo */
 	public int maxCombo;
 
-	/** 1Linesあたりの得点 (Score Per Line) */
+	/** 1LinesScore per (Score Per Line) */
 	public double spl;
 
-	/** 1分間あたりの得点 (Score Per Minute) */
+	/** 1Score per minute (Score Per Minute) */
 	public double spm;
 
-	/** 1秒間あたりの得点 (Score Per Second) */
+	/** 1Scores per second (Score Per Second) */
 	public double sps;
 
-	/** 1分間あたりのLinescount (Lines Per Minute) */
+	/** 1Per minuteLinescount (Lines Per Minute) */
 	public float lpm;
 
-	/** 1秒間あたりのLinescount (Lines Per Second) */
+	/** 1Per secondLinescount (Lines Per Second) */
 	public float lps;
 
-	/** 1分間あたりのピースcount (Pieces Per Minute) */
+	/** 1Pieces per minutecount (Pieces Per Minute) */
 	public float ppm;
 
-	/** 1秒間あたりのピースcount (Pieces Per Second) */
+	/** 1Per second piece ofcount (Pieces Per Second) */
 	public float pps;
 
 	/** TAS detection: slowdown rate */
@@ -230,7 +230,7 @@ public class Statistics implements Serializable {
 	}
 
 	/**
-	 * 他のStatisticsの値をコピー
+	 * OtherStatisticsCopy the value of the
 	 * @param s Copy source
 	 */
 	public void copy(Statistics s) {
@@ -274,7 +274,7 @@ public class Statistics implements Serializable {
 	}
 
 	/**
-	 * SPMやLPMの更新
+	 * SPMYaLPMUpdates
 	 */
 	public void update() {
 		if(lines > 0) {
@@ -291,9 +291,9 @@ public class Statistics implements Serializable {
 	}
 
 	/**
-	 * プロパティセットに保存
-	 * @param p プロパティセット
-	 * @param id 任意のID (Player IDなど）
+	 * Stored in the property set
+	 * @param p Property Set
+	 * @param id AnyID (Player IDEtc.)
 	 */
 	public void writeProperty(CustomProperties p, int id) {
 		p.setProperty(id + ".statistics.score", score);
@@ -335,7 +335,7 @@ public class Statistics implements Serializable {
 		p.setProperty(id + ".statistics.maxChain", maxChain);
 		p.setProperty(id + ".statistics.rollclear", rollclear);
 
-		// 旧Versionとの互換用
+		// OldVersionFor compatibility with
 		if(id == 0) {
 			p.setProperty("result.score", score);
 			p.setProperty("result.totallines", lines);
@@ -345,9 +345,9 @@ public class Statistics implements Serializable {
 	}
 
 	/**
-	 * プロパティセットから読み込み
-	 * @param p プロパティセット
-	 * @param id 任意のID (Player IDなど）
+	 * Read from the property set
+	 * @param p Property Set
+	 * @param id AnyID (Player IDEtc.)
 	 */
 	public void readProperty(CustomProperties p, int id) {
 		score = p.getProperty(id + ".statistics.score", 0);

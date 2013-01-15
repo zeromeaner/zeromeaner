@@ -58,7 +58,7 @@ import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceInputStream;
 
 /**
- * ルール選択画面の frame
+ * Rules of selection screen frame
  */
 public class RuleSelectInternalFrame extends JInternalFrame implements ActionListener {
 	/** Serial version ID */
@@ -76,7 +76,7 @@ public class RuleSelectInternalFrame extends JInternalFrame implements ActionLis
 	/** Filename */
 	private String[] strFileNameList;
 
-	/** Current ルールファイル */
+	/** Current Rules file */
 	private String[] strCurrentFileName;
 
 	/** Current Rule name */
@@ -153,7 +153,7 @@ public class RuleSelectInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * GUIをInitialization
+	 * GUIAInitialization
 	 */
 	protected void initUI() {
 		this.getContentPane().setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
@@ -173,7 +173,7 @@ public class RuleSelectInternalFrame extends JInternalFrame implements ActionLis
 			tabPane.addTab(GameEngine.GAMESTYLE_NAMES[i], scpaneRule);
 		}
 
-		//  default に戻す button
+		//  default Back to button
 		JButton btnUseDefault = new JButton(NullpoMinoInternalFrame.getUIText("RuleSelect_UseDefault"));
 		btnUseDefault.setMnemonic('D');
 		btnUseDefault.addActionListener(this);
@@ -183,7 +183,7 @@ public class RuleSelectInternalFrame extends JInternalFrame implements ActionLis
 		btnUseDefault.setVisible(false);
 		this.add(btnUseDefault);
 
-		//  button類
+		//  buttonKind
 		JPanel pButtons = new JPanel();
 		pButtons.setLayout(new BoxLayout(pButtons, BoxLayout.X_AXIS));
 		pButtons.setAlignmentX(LEFT_ALIGNMENT);
@@ -305,7 +305,7 @@ public class RuleSelectInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/*
-	 * Menu 実行時の処理
+	 * Menu What Happens at Runtime
 	 */
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand() == "RuleSelect_OK") {
