@@ -53,7 +53,7 @@ import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 
 /**
- * チューニング設定画面の frame
+ * Tuning Settings screen frame
  */
 public class GameTuningInternalFrame extends JInternalFrame implements ActionListener {
 	/** Serial version ID */
@@ -65,33 +65,33 @@ public class GameTuningInternalFrame extends JInternalFrame implements ActionLis
 		"GameTuning_OutlineType_Connect", "GameTuning_OutlineType_SameColor"
 	};
 
-	/** 親ウィンドウ */
+	/** Parent window */
 	protected NullpoMinoInternalFrame owner;
 
 	/** Player number */
 	protected int playerID;
 
-	/** A buttonでのrotationDirectionはルールに従う */
+	/** A buttonInrotationDirectionFollow the rules */
 	protected JRadioButton radioRotateButtonDefaultRightAuto;
-	/** A buttonでのrotationDirectionを左rotationに固定 */
+	/** A buttonInrotationDirectionLeftrotationFixed on */
 	protected JRadioButton radioRotateButtonDefaultRightLeft;
-	/** A buttonでのrotationDirectionを右rotationに固定 */
+	/** A buttonInrotationDirectionRightrotationFixed on */
 	protected JRadioButton radioRotateButtonDefaultRightRight;
 
-	/** 絵柄のComboボックス */
+	/** Of pictureComboBox */
 	protected JComboBox comboboxSkin;
-	/** Block画像 */
+	/** BlockImage */
 	protected BufferedImage[] imgBlockSkins;
 
 	/** Outline type combobox */
 	protected JComboBox comboboxBlockOutlineType;
 
-	/** 最小DAS */
+	/** MinimumDAS */
 	protected JTextField txtfldMinDAS;
 	/** MaximumDAS */
 	protected JTextField txtfldMaxDAS;
 
-	/** 横移動速度 */
+	/** Lateral movement speed */
 	protected JTextField txtfldDasDelay;
 
 	/** Checkbox to enable swapping the roles of up/down buttons in-game */
@@ -113,17 +113,17 @@ public class GameTuningInternalFrame extends JInternalFrame implements ActionLis
 
 	/**
 	 * Constructor
-	 * @param owner 親ウィンドウ
-	 * @throws HeadlessException キーボード, マウス, ディスプレイなどが存在しない場合の例外
+	 * @param owner Parent window
+	 * @throws HeadlessException Keyboard, Mouse, Exceptions such as the display if there is no
 	 */
 	public GameTuningInternalFrame(NullpoMinoInternalFrame owner) throws HeadlessException {
 		super();
 		this.owner = owner;
 
-		// Block画像の読み込み
+		// BlockLoading Images
 		loadBlockSkins();
 
-		// GUIのInitialization
+		// GUIOfInitialization
 		setTitle(NullpoMinoInternalFrame.getUIText("Title_GameTuning"));
 		setDefaultCloseOperation(JInternalFrame.HIDE_ON_CLOSE);
 		setResizable(false);
@@ -133,12 +133,12 @@ public class GameTuningInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * GUIのInitialization
+	 * GUIOfInitialization
 	 */
 	protected void initUI() {
 		this.getContentPane().setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
 
-		// ---------- A buttonでのrotationDirection ----------
+		// ---------- A buttonInrotationDirection ----------
 		JPanel pRotateButtonDefaultRight = new JPanel();
 		pRotateButtonDefaultRight.setLayout(new BoxLayout(pRotateButtonDefaultRight, BoxLayout.Y_AXIS));
 		pRotateButtonDefaultRight.setAlignmentX(LEFT_ALIGNMENT);
@@ -207,7 +207,7 @@ public class GameTuningInternalFrame extends JInternalFrame implements ActionLis
 		pBlockShowOutlineOnly.add(radioBlockShowOutlineOnlyEnable);
 		gBlockShowOutlineOnly.add(radioBlockShowOutlineOnlyEnable);
 
-		// ---------- 絵柄 ----------
+		// ---------- Picture ----------
 		JPanel pSkin = new JPanel();
 		pSkin.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pSkin);
@@ -243,7 +243,7 @@ public class GameTuningInternalFrame extends JInternalFrame implements ActionLis
 		comboboxBlockOutlineType.setPreferredSize(new Dimension(190, 30));
 		pOutlineType.add(comboboxBlockOutlineType);
 
-		// ---------- 最低DAS ----------
+		// ---------- LowestDAS ----------
 		JPanel pMinDAS = new JPanel();
 		pMinDAS.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pMinDAS);
@@ -265,7 +265,7 @@ public class GameTuningInternalFrame extends JInternalFrame implements ActionLis
 		txtfldMaxDAS = new JTextField(5);
 		pMaxDAS.add(txtfldMaxDAS);
 
-		// ---------- 横移動速度 ----------
+		// ---------- Lateral movement speed ----------
 		JPanel pDasDelay = new JPanel();
 		pDasDelay.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pDasDelay);
@@ -287,7 +287,7 @@ public class GameTuningInternalFrame extends JInternalFrame implements ActionLis
 		chkboxReverseUpDown = new JCheckBox();
 		pReverseUpDown.add(chkboxReverseUpDown);
 
-		// ---------- 画面下の button ----------
+		// ---------- The bottom of the screen button ----------
 		JPanel pButtons = new JPanel();
 		pButtons.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pButtons);
@@ -306,7 +306,7 @@ public class GameTuningInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * Block画像を読み込み
+	 * BlockLoad an image
 	 */
 	protected void loadBlockSkins() {
 		int numSkins = ResourceHolderApplet.imgNormalBlockList.size();
@@ -329,7 +329,7 @@ public class GameTuningInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * この frame を表示するときに実行する処理
+	 * This frame Action to take when you view the
 	 * @param pl Player number
 	 */
 	public void load(int pl) {
@@ -365,7 +365,7 @@ public class GameTuningInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * 保存
+	 * Save
 	 */
 	protected void save() {
 		int owRotateButtonDefaultRight = -1;
@@ -420,8 +420,8 @@ public class GameTuningInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * 画像表示Comboボックスの項目<br>
-	 * <a href="http://www.javadrive.jp/tutorial/jcombobox/index20.html">出典</a>
+	 * Image displayComboItems in box<br>
+	 * <a href="http://www.javadrive.jp/tutorial/jcombobox/index20.html">Source</a>
 	 */
 	protected class ComboLabel {
 		private String text = "";
@@ -461,8 +461,8 @@ public class GameTuningInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * 画像表示ComboボックスのListCellRenderer<br>
-	 * <a href="http://www.javadrive.jp/tutorial/jcombobox/index20.html">出典</a>
+	 * Image displayComboOf the boxListCellRenderer<br>
+	 * <a href="http://www.javadrive.jp/tutorial/jcombobox/index20.html">Source</a>
 	 */
 	protected class ComboLabelCellRenderer extends JLabel implements ListCellRenderer {
 		private static final long serialVersionUID = 1L;

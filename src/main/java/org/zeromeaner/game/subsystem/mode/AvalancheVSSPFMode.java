@@ -501,7 +501,7 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 				}
 			}
 
-			// 決定
+			// Decision
 			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
 				engine.playSE("decide");
 
@@ -523,7 +523,7 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 				engine.quitflag = true;
 			}
 
-			// プレビュー用Map読み込み
+			// For previewMapRead
 			if(useMap[playerID] && (engine.statc[3] == 0)) {
 				loadMapPreview(engine, playerID, (mapNumber[playerID] < 0) ? 0 : mapNumber[playerID], true);
 			}
@@ -556,7 +556,7 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 			else if(engine.statc[3] >= 60)
 				engine.statc[2] = 9;
 		} else {
-			// 開始
+			// Start
 			if((owner.engine[0].statc[4] == 1) && (owner.engine[1].statc[4] == 1) && (playerID == 1)) {
 				owner.engine[0].stat = GameEngine.STAT_READY;
 				owner.engine[1].stat = GameEngine.STAT_READY;
@@ -586,7 +586,7 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 	}
 
 	/*
-	 * 設定画面の描画
+	 * Setting screen drawing
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {

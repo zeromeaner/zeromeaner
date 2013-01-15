@@ -228,7 +228,7 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 				}
 			}
 
-			// 決定
+			// Decision
 			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
 				engine.playSE("decide");
 				saveSetting(owner.modeConfig);
@@ -440,7 +440,7 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 			if(remainScore <= 30) engine.meterColor = GameEngine.METER_COLOR_ORANGE;
 			if(remainScore <= 10) engine.meterColor = GameEngine.METER_COLOR_RED;
 
-			// ゴール
+			// Goal
 			if((engine.statistics.score >= SPRINT_MAX_SCORE[sprintTarget]) && (engine.timerActive == true)) {
 				engine.gameEnded();
 				engine.resetStatc();

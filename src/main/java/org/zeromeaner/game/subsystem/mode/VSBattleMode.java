@@ -69,16 +69,16 @@ public class VSBattleMode extends AbstractMode {
 	/** Combo attack table */
 	private final int[] COMBO_ATTACK_TABLE = {0,0,1,1,2,2,3,3,4,4,4,5};
 
-	/** garbage blockの穴の位置が普通にランダムに変わる */
+	/** garbage blockChanges to the position of the holes in the normally random */
 	private final int GARBAGE_TYPE_NORMAL = 0;
 
-	/** garbage blockの穴の位置が1回のせり上がりで変わらない */
+	/** garbage blockThe position of the holes in the1I would not change my time at the rising auction */
 	private final int GARBAGE_TYPE_NOCHANGE_ONE_RISE = 1;
 
-	/** garbage blockの穴の位置が1回の Attack で変わらない(2回以上なら変わる) */
+	/** garbage blockThe position of the holes in the1Of times Attack I will not change(2If you change more than once) */
 	private final int GARBAGE_TYPE_NOCHANGE_ONE_ATTACK = 2;
 
-	/** garbage blockタイプの表示名 */
+	/** garbage blockThe display name of the type */
 	private final String[] GARBAGE_TYPE_STRING = {"NORMAL", "ONE RISE", "1-ATTACK"};
 
 	/** Each player's garbage block color */
@@ -87,7 +87,7 @@ public class VSBattleMode extends AbstractMode {
 	/** Each player's frame color */
 	private final int[] PLAYER_COLOR_FRAME = {GameEngine.FRAME_COLOR_RED, GameEngine.FRAME_COLOR_BLUE};
 
-	/** garbage blockのタイプ */
+	/** garbage blockType of */
 	private int[] garbageType;
 
 	/** Rate of change of garbage holes */
@@ -99,10 +99,10 @@ public class VSBattleMode extends AbstractMode {
 	/** Allow garbage blocking */
 	private boolean[] garbageBlocking;
 
-	/** 溜まっているgarbage blockのcount */
+	/** Has accumulatedgarbage blockOfcount */
 	private int[] garbage;
 
-	/** 送ったgarbage blockのcount */
+	/** Had sentgarbage blockOfcount */
 	private int[] garbageSent;
 
 	/** Last garbage hole position */
@@ -114,16 +114,16 @@ public class VSBattleMode extends AbstractMode {
 	/** Most recent scoring event type */
 	private int[] lastevent;
 
-	/** Most recent scoring eventでB2Bだったらtrue */
+	/** Most recent scoring eventInB2BIf it&#39;s the casetrue */
 	private boolean[] lastb2b;
 
-	/** Most recent scoring eventでのCombocount */
+	/** Most recent scoring eventInCombocount */
 	private int[] lastcombo;
 
-	/** Most recent scoring eventでのピースID */
+	/** Most recent scoring eventPeace inID */
 	private int[] lastpiece;
 
-	/** 使用するBGM */
+	/** UseBGM */
 	private int bgmno;
 
 	/** Flag for types of T-Spins allowed (0=none, 1=normal, 2=all spin) */
@@ -153,19 +153,19 @@ public class VSBattleMode extends AbstractMode {
 	/** Sound effectsON/OFF */
 	private boolean[] enableSE;
 
-	/** Hurryup開始までの秒count(-1でHurryupなし) */
+	/** HurryupSeconds before the startcount(-1InHurryupNo) */
 	private int[] hurryupSeconds;
 
-	/** Hurryup後に何回Blockを置くたびに床をせり上げるか */
+	/** HurryupTimes afterBlockDo you run up the floor every time you put the */
 	private int[] hurryupInterval;
 
-	/** Map使用 flag */
+	/** MapUse flag */
 	private boolean[] useMap;
 
-	/** 使用するMapセット number */
+	/** UseMapSet number */
 	private int[] mapSet;
 
-	/** Map number(-1でランダム) */
+	/** Map number(-1Random in) */
 	private int[] mapNumber;
 
 	/** Last preset number used */
@@ -174,25 +174,25 @@ public class VSBattleMode extends AbstractMode {
 	/** True if display detailed stats */
 	private boolean showStats;
 
-	/** 勝者 */
+	/** Winner */
 	private int winnerID;
 
-	/** 敵から送られてきたgarbage blockのリスト */
+	/** I was sent from the enemygarbage blockA list of */
 	private LinkedList<GarbageEntry>[] garbageEntries;
 
-	/** Hurryup後にBlockを置いた count */
+	/** HurryupAfterBlockI put count */
 	private int[] hurryupCount;
 
-	/** MapセットのProperty file */
+	/** MapSets ofProperty file */
 	private CustomProperties[] propMap;
 
 	/** MaximumMap number */
 	private int[] mapMaxNo;
 
-	/** バックアップ用field (Mapをリプレイに保存するときに使用) */
+	/** For backupfield (MapUsed to save the replay) */
 	private Field[] fldBackup;
 
-	/** Map選択用乱count */
+	/** MapRan for selectioncount */
 	private Random randMap;
 
 	/** Win count for each player */
@@ -370,10 +370,10 @@ public class VSBattleMode extends AbstractMode {
 	}
 
 	/**
-	 * Map読み込み
+	 * MapRead
 	 * @param field field
 	 * @param prop Property file to read from
-	 * @param preset 任意のID
+	 * @param preset AnyID
 	 */
 	private void loadMap(Field field, CustomProperties prop, int id) {
 		field.reset();
@@ -385,10 +385,10 @@ public class VSBattleMode extends AbstractMode {
 	}
 
 	/**
-	 * Map保存
+	 * MapSave
 	 * @param field field
 	 * @param prop Property file to save to
-	 * @param id 任意のID
+	 * @param id AnyID
 	 */
 	private void saveMap(Field field, CustomProperties prop, int id) {
 		//field.writeProperty(prop, id);
@@ -396,9 +396,9 @@ public class VSBattleMode extends AbstractMode {
 	}
 
 	/**
-	 * 今溜まっているgarbage blockのcountを返す
+	 * I have now accumulatedgarbage blockOfcountReturns
 	 * @param playerID Player ID
-	 * @return 今溜まっているgarbage blockのcount
+	 * @return I have now accumulatedgarbage blockOfcount
 	 */
 	private int getTotalGarbageLines(int playerID) {
 		int count = 0;
@@ -409,11 +409,11 @@ public class VSBattleMode extends AbstractMode {
 	}
 
 	/**
-	 * プレビュー用にMapを読み込み
+	 * For previewMapRead
 	 * @param engine GameEngine
 	 * @param playerID Player number
 	 * @param id MapID
-	 * @param forceReload trueにするとMapファイルを強制再読み込み
+	 * @param forceReload trueWhen youMapForce Reload the file
 	 */
 	private void loadMapPreview(GameEngine engine, int playerID, int id, boolean forceReload) {
 		if((propMap[playerID] == null) || (forceReload)) {
@@ -621,7 +621,7 @@ public class VSBattleMode extends AbstractMode {
 				}
 			}
 
-			// 決定
+			// Decision
 			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
 				engine.playSE("decide");
 
@@ -643,7 +643,7 @@ public class VSBattleMode extends AbstractMode {
 				engine.quitflag = true;
 			}
 
-			// プレビュー用Map読み込み
+			// For previewMapRead
 			if(useMap[playerID] && (engine.statc[3] == 0)) {
 				loadMapPreview(engine, playerID, (mapNumber[playerID] < 0) ? 0 : mapNumber[playerID], true);
 			}
@@ -669,7 +669,7 @@ public class VSBattleMode extends AbstractMode {
 				engine.statc[4] = 1;
 			}
 		} else {
-			// 開始
+			// Start
 			if((owner.engine[0].statc[4] == 1) && (owner.engine[1].statc[4] == 1) && (playerID == 1)) {
 				owner.engine[0].stat = GameEngine.STAT_READY;
 				owner.engine[1].stat = GameEngine.STAT_READY;
@@ -686,7 +686,7 @@ public class VSBattleMode extends AbstractMode {
 	}
 
 	/*
-	 * 設定画面の描画
+	 * Setting screen drawing
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
@@ -752,7 +752,7 @@ public class VSBattleMode extends AbstractMode {
 	@Override
 	public boolean onReady(GameEngine engine, int playerID) {
 		if(engine.statc[0] == 0) {
-			// Map読み込み・リプレイ保存用にバックアップ
+			// MapFor storing backup Replay read
 			if(version >= 3) {
 				if(useMap[playerID]) {
 					if(owner.replayMode) {
@@ -890,7 +890,7 @@ public class VSBattleMode extends AbstractMode {
 			}
 		}
 
-		// Line clear event 表示
+		// Line clear event Display
 		if((lastevent[playerID] != EVENT_NONE) && (scgettime[playerID] < 120)) {
 			String strPieceName = Piece.getPieceName(lastpiece[playerID]);
 
@@ -994,13 +994,13 @@ public class VSBattleMode extends AbstractMode {
 				}
 			} else {
 				if(lines == 1) {
-					// 1列
+					// 1Column
 					lastevent[playerID] = EVENT_SINGLE;
 				} else if(lines == 2) {
-					pts += 1; // 2列
+					pts += 1; // 2Column
 					lastevent[playerID] = EVENT_DOUBLE;
 				} else if(lines == 3) {
-					pts += 2; // 3列
+					pts += 2; // 3Column
 					lastevent[playerID] = EVENT_TRIPLE;
 				} else if(lines >= 4) {
 					pts += 4; // 4 lines
@@ -1050,10 +1050,10 @@ public class VSBattleMode extends AbstractMode {
 				garbageSent[playerID] += pts;
 
 				if(garbage[playerID] > 0) {
-					// 相殺
+					// Offset
 					garbage[playerID] -= pts;
 					if(garbage[playerID] < 0) {
-						// おじゃま返し
+						// Ojama return
 						garbage[enemyID] += Math.abs(garbage[playerID]);
 						garbage[playerID] = 0;
 					}
@@ -1068,7 +1068,7 @@ public class VSBattleMode extends AbstractMode {
 			garbageSent[playerID] += pts;
 			if(b2bType[playerID] == 2) garbageSent[playerID] += ptsB2B;
 
-			// 相殺
+			// Offset
 			garbage[playerID] = getTotalGarbageLines(playerID);
 			if((pts > 0) && (garbage[playerID] > 0) && (garbageCounter[playerID])) {
 				while(!garbageEntries[playerID].isEmpty() && (pts > 0)) {
@@ -1101,7 +1101,7 @@ public class VSBattleMode extends AbstractMode {
 			}
 		}
 
-		// せり上がり
+		// Rising auction
 		garbage[playerID] = getTotalGarbageLines(playerID);
 		if( ((lines == 0) || (!garbageBlocking[playerID])) && (garbage[playerID] > 0) ) {
 			engine.playSE("garbage");
@@ -1117,7 +1117,7 @@ public class VSBattleMode extends AbstractMode {
 					}
 
 					if(garbageType[playerID] == GARBAGE_TYPE_NORMAL) {
-						// ノーマルな穴位置変更
+						// Change the normal hole position
 						while(garbageEntry.lines > 0) {
 							engine.field.addSingleHoleGarbage(hole, garbageColor, engine.getSkin(), 1);
 
@@ -1134,7 +1134,7 @@ public class VSBattleMode extends AbstractMode {
 							garbageEntry.lines--;
 						}
 					} else if(garbageType[playerID] == GARBAGE_TYPE_NOCHANGE_ONE_RISE) {
-						// 1回のせり上がりで穴位置が変わらない
+						// 1Hole position does not change at the rising times of auction
 						if(version >= 5) {
 							if(engine.random.nextInt(100) < garbagePercent[playerID]) {
 								int newHole = engine.random.nextInt(engine.field.getWidth() - 1);
@@ -1151,7 +1151,7 @@ public class VSBattleMode extends AbstractMode {
 						garbageEntries[playerID].clear();
 						break;
 					} else if(garbageType[playerID] == GARBAGE_TYPE_NOCHANGE_ONE_ATTACK) {
-						// garbage blockの穴の位置が1回の Attack で変わらない(2回以上なら変わる)
+						// garbage blockThe position of the holes in the1Of times Attack I will not change(2If you change more than once)
 						if(version >= 5) {
 							if(engine.random.nextInt(100) < garbagePercent[playerID]) {
 								int newHole = engine.random.nextInt(engine.field.getWidth() - 1);
@@ -1210,7 +1210,7 @@ public class VSBattleMode extends AbstractMode {
 			owner.receiver.playSE("hurryup");
 		}
 
-		// せり上がりMeter
+		// Rising auctionMeter
 		if(garbage[playerID] * receiver.getBlockGraphicsHeight(engine, playerID) > engine.meterValue) {
 			engine.meterValue += receiver.getBlockGraphicsHeight(engine, playerID) / 2;
 		} else if(garbage[playerID] * receiver.getBlockGraphicsHeight(engine, playerID) < engine.meterValue) {
@@ -1221,7 +1221,7 @@ public class VSBattleMode extends AbstractMode {
 		else if(garbage[playerID] >= 1) engine.meterColor = GameEngine.METER_COLOR_YELLOW;
 		else engine.meterColor = GameEngine.METER_COLOR_GREEN;
 
-		// 決着
+		// Settlement
 		if((playerID == 1) && (owner.engine[0].gameActive)) {
 			if((owner.engine[0].stat == GameEngine.STAT_GAMEOVER) && (owner.engine[1].stat == GameEngine.STAT_GAMEOVER)) {
 				// Draw
@@ -1299,13 +1299,13 @@ public class VSBattleMode extends AbstractMode {
 	}
 
 	/**
-	 * 敵から送られてきたgarbage blockの data
+	 * I was sent from the enemygarbage blockOf data
 	 */
 	private class GarbageEntry {
 		/** garbage blockcount */
 		public int lines = 0;
 
-		/** 送信元 */
+		/** Source */
 		public int playerID = 0;
 
 		/**
@@ -1316,7 +1316,7 @@ public class VSBattleMode extends AbstractMode {
 		}
 
 		/**
-		 * パラメータ付きConstructor
+		 * With parametersConstructor
 		 * @param g garbage blockcount
 		 */
 		@SuppressWarnings("unused")
@@ -1325,9 +1325,9 @@ public class VSBattleMode extends AbstractMode {
 		}
 
 		/**
-		 * パラメータ付きConstructor
+		 * With parametersConstructor
 		 * @param g garbage blockcount
-		 * @param p 送信元
+		 * @param p Source
 		 */
 		public GarbageEntry(int g, int p) {
 			lines = g;

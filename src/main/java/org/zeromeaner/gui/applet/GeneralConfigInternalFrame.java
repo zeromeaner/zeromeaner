@@ -45,7 +45,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
 /**
- * 設定画面の frame
+ * Setting screen frame
  */
 public class GeneralConfigInternalFrame extends JInternalFrame implements ActionListener {
 	/** Serial version ID */
@@ -57,7 +57,7 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 		{320,240}, {400,300}, {480,360}, {512,384}, {640,480}, {800,600}, {1024,768}, {1152,864}, {1280,960}
 	};
 
-	/** 親ウィンドウ */
+	/** Parent window */
 	protected NullpoMinoInternalFrame owner;
 
 	/** Model of screen size combobox */
@@ -69,40 +69,40 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 	/** MaximumFPS */
 	protected JTextField txtfldMaxFPS;
 
-	/** Sound effectsの音量 */
+	/** Sound effectsVolume of */
 	protected JTextField txtfldSEVolume;
 
 	/** Line clear effect speed */
 	protected JTextField txtfldLineClearEffectSpeed;
 
-	/** FPS表示 */
+	/** FPSDisplay */
 	protected JCheckBox chkboxShowFPS;
 
-	/** Background表示 */
+	/** BackgroundDisplay */
 	protected JCheckBox chkboxShowBackground;
 
-	/** Meter表示 */
+	/** MeterDisplay */
 	protected JCheckBox chkboxShowMeter;
 
-	/** fieldのBlockの絵を表示 ( check なしの場合は枠線だけ) */
+	/** fieldOfBlockDisplay a picture of a ( check Only if there is no border) */
 	protected JCheckBox chkboxShowFieldBlockGraphics;
 
-	/** シンプルな絵柄のBlockを使う */
+	/** Simple picture ofBlockI use */
 	protected JCheckBox chkboxSimpleBlock;
 
 	/** Sound effects */
 	protected JCheckBox chkboxSE;
 
-	/** ネイティブのLook and Feelを使う */
+	/** NativeLook and FeelI use */
 	protected JCheckBox chkboxUseNativeLookAndFeel;
 
-	/**  frame ステップ */
+	/**  frame Step */
 	protected JCheckBox chkboxEnableFrameStep;
 
-	/** ghost ピースの上にNEXT表示 */
+	/** ghost On top of the pieceNEXTDisplay */
 	protected JCheckBox chkboxNextShadow;
 
-	/** 枠線型ghost ピース */
+	/** Linear frameghost Peace */
 	protected JCheckBox chkboxOutlineGhost;
 
 	/** Side piece preview */
@@ -134,14 +134,14 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 
 	/**
 	 * Constructor
-	 * @param owner 親ウィンドウ
-	 * @throws HeadlessException キーボード, マウス, ディスプレイなどが存在しない場合の例外
+	 * @param owner Parent window
+	 * @throws HeadlessException Keyboard, Mouse, Exceptions such as the display if there is no
 	 */
 	public GeneralConfigInternalFrame(NullpoMinoInternalFrame owner) throws HeadlessException {
 		super();
 		this.owner = owner;
 
-		// GUIのInitialization
+		// GUIOfInitialization
 		setTitle(NullpoMinoInternalFrame.getUIText("Title_GeneralConfig"));
 		setDefaultCloseOperation(JInternalFrame.HIDE_ON_CLOSE);
 		setResizable(false);
@@ -151,7 +151,7 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 	}
 
 	/**
-	 * GUIのInitialization
+	 * GUIOfInitialization
 	 */
 	protected void initUI() {
 		this.getContentPane().setLayout(new BorderLayout());
@@ -165,7 +165,7 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 		pBasicTab.setLayout(new BoxLayout(pBasicTab, BoxLayout.Y_AXIS));
 		tabPane.addTab(NullpoMinoInternalFrame.getUIText("GeneralConfig_TabName_Basic"), pBasicTab);
 
-		// ---------- Sound effectsの音量 ----------
+		// ---------- Sound effectsVolume of ----------
 		JPanel pSEVolume = new JPanel();
 		pSEVolume.setAlignmentX(LEFT_ALIGNMENT);
 		pBasicTab.add(pSEVolume);
@@ -176,7 +176,7 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 		txtfldSEVolume = new JTextField(5);
 		pSEVolume.add(txtfldSEVolume);
 
-		// ---------- checkボックス ----------
+		// ---------- checkBox ----------
 		chkboxShowBackground = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_ShowBackground"));
 		chkboxShowBackground.setAlignmentX(LEFT_ALIGNMENT);
 		pBasicTab.add(chkboxShowBackground);
@@ -297,7 +297,7 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 		chkboxShowLineClearEffect.setAlignmentX(LEFT_ALIGNMENT);
 		pAdvancedTab.add(chkboxShowLineClearEffect);
 
-		// ---------- 画面下の button ----------
+		// ---------- The bottom of the screen button ----------
 		JPanel pButtons = new JPanel();
 		pButtons.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pButtons, BorderLayout.SOUTH);
@@ -316,7 +316,7 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 	}
 
 	/**
-	 * Current 設定をGUIに反映させる
+	 * Current SettingsGUIBe reflected in the
 	 */
 	public void load() {
 		int sWidth = NullpoMinoInternalFrame.propConfig.getProperty("option.screenwidth", 640);

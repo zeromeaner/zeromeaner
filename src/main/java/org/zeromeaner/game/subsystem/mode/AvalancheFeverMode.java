@@ -287,7 +287,7 @@ public class AvalancheFeverMode extends AbstractAvalanche1PMode {
 					xyzzy = 573;
 					loadMapSetFever(engine, playerID, mapSet, true);
 				} else if (engine.statc[3] >= 5) {
-					// 決定
+					// Decision
 					engine.playSE("decide");
 					saveSetting(owner.modeConfig);
 					receiver.saveModeConfig(owner.modeConfig);

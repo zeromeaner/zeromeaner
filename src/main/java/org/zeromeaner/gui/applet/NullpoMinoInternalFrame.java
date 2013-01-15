@@ -110,46 +110,46 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	/** Log */
 	static Logger log = Logger.getLogger(NullpoMinoInternalFrame.class);
 
-	/** メインウィンドウの frame */
+	/** Of the main window frame */
 	public static NullpoMinoInternalFrame mainFrame;
 
-	/** ゲームウィンドウの frame */
+	/** Of the game window frame */
 	public static GameInternalFrame gameFrame;
 
-	/** キーコンフィグ画面の frame */
+	/** Key Configuration screen frame */
 	public static KeyConfigInternalFrame keyConfigFrame;
 
-	/** ルール選択画面の frame */
+	/** Rules of selection screen frame */
 	public static RuleSelectInternalFrame ruleSelectFrame;
 
-	/** AI選択画面の frame */
+	/** AISelection screen frame */
 	public static AISelectInternalFrame aiSelectFrame;
 
-	/** その他の設定画面の frame */
+	/** Other Settings screen frame */
 	public static GeneralConfigInternalFrame generalConfigFrame;
 
-	/** チューニング設定画面の frame */
+	/** Tuning Settings screen frame */
 	public static GameTuningInternalFrame gameTuningFrame;
 
-	/** 更新 check 設定画面の frame */
+	/** Update check Setting screen frame */
 	public static UpdateCheckInternalFrame updateCheckFrame;
 
-	/** プログラムに渡されたコマンドLines引count */
+	/** Command that was passed to the programLinesArgumentcount */
 	public static String[] programArgs;
 
-	/** Save settings用Property file */
+	/** Save settingsUseProperty file */
 	public static CustomProperties propConfig;
 
-	/** Save settings用Property file (全Version共通) */
+	/** Save settingsUseProperty file (AllVersionCommon) */
 	public static CustomProperties propGlobal;
 
-	/** Observer機能用Property file */
+	/** ObserverFor the functionProperty file */
 	public static CustomProperties propObserver;
 
 	/** Default language file */
 	public static CustomProperties propLangDefault;
 
-	/** 言語ファイル */
+	/** Language file */
 	public static CustomProperties propLang;
 
 	/** Default game mode description file */
@@ -158,22 +158,22 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	/** Game mode description file */
 	public static CustomProperties propModeDesc;
 
-	/** Mode 管理 */
+	/** Mode Management */
 	public static ModeManager modeManager;
 
-	/** メイン画面のレイアウトマネージャ */
+	/** Layout manager of the main screen */
 	public static CardLayout mainLayout;
 
-	/** ゲームのメインクラス */
+	/** The main class of the game */
 	public static GameManager gameManager;
 
-	/** ゲームの event 処理と描画処理 */
+	/** Game event Processing and rendering process */
 	public static RendererApplet rendererSwing;
 
-	/** ゲームMode nameの配列 */
+	/** GameMode nameAn array of */
 	public static String[] modeList;
 
-	/** Mode 選択リストボックス */
+	/** Mode Selection list box */
 	public static JList listboxMode;
 
 	/** Rule select listmodel */
@@ -182,24 +182,24 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	/** Rule select listbox */
 	public static JList listboxRule;
 
-	/** リプレイファイル選択ダイアログ */
+	/** Replay file selection dialog */
 	public static JFileChooser replayFileChooser;
 
-	/** ロビー画面 */
+	/** Lobby screen */
 	public static NetLobbyInternalFrame netLobby;
 
-	/** Observerクライアント */
+	/** ObserverClient */
 	public static NetObserverClient netObserverClient;
 
-	/** Mode セレクト画面のラベル(新Versionがある場合は切り替わる) */
+	/** Mode Select the on-screen label(NewVersionIf there is it switches) */
 	public static JLabel lModeSelect;
 
 	/** HashMap of rules (ModeName->RuleEntry) */
 	protected HashMap<String, RuleEntry> mapRuleEntries;
 
 	/**
-	 * メイン関count
-	 * @param args プログラムに渡されたコマンドLines引count
+	 * Main functioncount
+	 * @param args Command that was passed to the programLinesArgumentcount
 	 */
 	public static void main(String[] args) {
 		programArgs = args;
@@ -210,7 +210,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		}
 		log.debug("NullpoMinoSwing Start");
 
-		// 設定ファイル読み込み
+		// Read configuration file
 		propConfig = new CustomProperties();
 		try {
 			ResourceInputStream in = new ResourceInputStream("config/setting/swing.cfg");
@@ -221,7 +221,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		propGlobal = new CustomProperties();
 		loadGlobalConfig();
 
-		// Mode読み込み
+		// ModeRead
 		modeManager = new ModeManager();
 		try {
 			BufferedReader txtMode = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/list/mode.lst")));
@@ -235,7 +235,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			JOptionPane.showMessageDialog(null, sw);
 		}
 
-		// 言語ファイル読み込み
+		// Read language file
 		propLangDefault = new CustomProperties();
 		try {
 			ResourceInputStream in = new ResourceInputStream("config/lang/swing_default.properties");
@@ -349,9 +349,9 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * 翻訳後のUIの文字列を取得
-	 * @param str 文字列
-	 * @return 翻訳後のUIの文字列 (無いならそのままstrを返す）
+	 * PosttranslationalUIGets a string of
+	 * @param str String
+	 * @return PosttranslationalUIString (If you do not acceptstrReturns)
 	 */
 	public static String getUIText(String str) {
 		String result = propLang.getProperty(str);
@@ -362,7 +362,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * 設定ファイルを保存
+	 * Save the configuration file
 	 */
 	public static void saveConfig() {
 		try {
@@ -401,10 +401,10 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * テキストfieldからint型の値を取得
-	 * @param value テキストfieldから値の取得に失敗したときの値
-	 * @param txtfld テキストfield
-	 * @return テキストfieldから値を取得できた場合はその値, 失敗したらvalueをそのまま返す
+	 * TextfieldFromintGets the value of the type
+	 * @param value TextfieldValue when Failed to get the value from
+	 * @param txtfld Textfield
+	 * @return TextfieldIf you can get the value from its value, FailedvalueReturns the raw
 	 */
 	public static int getIntTextField(int value, JTextField txtfld) {
 		int v = value;
@@ -417,10 +417,10 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * テキストfieldからdouble型の値を取得
-	 * @param value テキストfieldから値の取得に失敗したときの値
-	 * @param txtfld テキストfield
-	 * @return テキストfieldから値を取得できた場合はその値, 失敗したらvalueをそのまま返す
+	 * TextfieldFromdoubleGets the value of the type
+	 * @param value TextfieldValue when Failed to get the value from
+	 * @param txtfld Textfield
+	 * @return TextfieldIf you can get the value from its value, FailedvalueReturns the raw
 	 */
 	public static double getDoubleTextField(double value, JTextField txtfld) {
 		double v = value;
@@ -433,10 +433,10 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * テキストfieldからfloat型の値を取得
-	 * @param value テキストfieldから値の取得に失敗したときの値
-	 * @param txtfld テキストfield
-	 * @return テキストfieldから値を取得できた場合はその値, 失敗したらvalueをそのまま返す
+	 * TextfieldFromfloatGets the value of the type
+	 * @param value TextfieldValue when Failed to get the value from
+	 * @param txtfld Textfield
+	 * @return TextfieldIf you can get the value from its value, FailedvalueReturns the raw
 	 */
 	public static float getFloatTextField(float value, JTextField txtfld) {
 		float v = value;
@@ -466,7 +466,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 	/**
 	 * Constructor
-	 * @throws HeadlessException キーボード, マウス, ディスプレイなどが存在しない場合の例外
+	 * @throws HeadlessException Keyboard, Mouse, Exceptions such as the display if there is no
 	 */
 	public NullpoMinoInternalFrame() throws HeadlessException {
 		super();
@@ -492,7 +492,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 		setVisible(true);
 
-		// 新Version check
+		// NewVersion check
 		if(propGlobal.getProperty("updatechecker.enable", true)) {
 			int startupCount = propGlobal.getProperty("updatechecker.startupCount", 0);
 			int startupMax = propGlobal.getProperty("updatechecker.startupMax", 20);
@@ -512,7 +512,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			}
 		}
 
-		// コマンドLinesからリプレイ再生
+		// CommandLinesReplay from reproduction
 		if((programArgs != null) && (programArgs.length > 0)) {
 			startReplayGame(programArgs[0]);
 		}
@@ -520,7 +520,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * GUIのInitialization
+	 * GUIOfInitialization
 	 */
 	protected void initUI() {
 		mainLayout = new CardLayout();
@@ -591,7 +591,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * Menu のInitialization
+	 * Menu OfInitialization
 	 */
 	protected void initMenu() {
 		JMenuBar menubar = new JMenuBar();
@@ -623,101 +623,101 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		configMenu.add(saveConfig);
 		menubar.add(configMenu);
 		
-		// ファイルMenu
+		// FileMenu
 		JMenu menuFile = new JMenu(getUIText("Menu_File"));
 		menuFile.setMnemonic('F');
 		menubar.add(menuFile);
 
-		// リプレイを開く
+		// Open the replay
 		JMenuItem miOpen = new JMenuItem(getUIText("Menu_Open"));
 		miOpen.setMnemonic('O');
 		miOpen.addActionListener(this);
 		miOpen.setActionCommand("Menu_Open");
 		menuFile.add(miOpen);
 
-		// ネットプレイ開始
+		// NetPlay start
 		JMenuItem miNetPlay = new JMenuItem(getUIText("Menu_NetPlay"));
 		miNetPlay.setMnemonic('N');
 		miNetPlay.addActionListener(this);
 		miNetPlay.setActionCommand("Menu_NetPlay");
 		menuFile.add(miNetPlay);
 
-		// 終了
+		// End
 //		JMenuItem miExit = new JMenuItem(getUIText("Menu_Exit"));
 //		miExit.setMnemonic('X');
 //		miExit.addActionListener(this);
 //		miExit.setActionCommand("Menu_Exit");
 //		menuFile.add(miExit);
 
-		// 設定Menu
+		// SettingMenu
 		JMenu menuConfig = new JMenu(getUIText("Menu_Config"));
 		menuConfig.setMnemonic('C');
 		menubar.add(menuConfig);
 
-		// ルール選択
+		// Selection rules
 		JMenuItem miRuleSelect = new JMenuItem(getUIText("Menu_RuleSelect"));
 		miRuleSelect.setMnemonic('R');
 		miRuleSelect.addActionListener(this);
 		miRuleSelect.setActionCommand("Menu_RuleSelect");
 		menuConfig.add(miRuleSelect);
 
-		// ルール選択(2P)
+		// Selection rules(2P)
 		JMenuItem miRuleSelect2P = new JMenuItem(getUIText("Menu_RuleSelect2P"));
 		miRuleSelect2P.setMnemonic('S');
 		miRuleSelect2P.addActionListener(this);
 		miRuleSelect2P.setActionCommand("Menu_RuleSelect2P");
 		menuConfig.add(miRuleSelect2P);
 
-		// チューニング設定
+		// Tuning settings
 		JMenuItem miGameTuning = new JMenuItem(getUIText("Menu_GameTuning"));
 		miGameTuning.setMnemonic('T');
 		miGameTuning.addActionListener(this);
 		miGameTuning.setActionCommand("Menu_GameTuning");
 		menuConfig.add(miGameTuning);
 
-		// チューニング設定(2P)
+		// Tuning settings(2P)
 		JMenuItem miGameTuning2P = new JMenuItem(getUIText("Menu_GameTuning2P"));
 		miGameTuning2P.setMnemonic('U');
 		miGameTuning2P.addActionListener(this);
 		miGameTuning2P.setActionCommand("Menu_GameTuning2P");
 		menuConfig.add(miGameTuning2P);
 
-		// AI設定
+		// AISetting
 		JMenuItem miAIConfig = new JMenuItem(getUIText("Menu_AIConfig"));
 		miAIConfig.setMnemonic('A');
 		miAIConfig.addActionListener(this);
 		miAIConfig.setActionCommand("Menu_AIConfig");
 		menuConfig.add(miAIConfig);
 
-		// AI設定(2P)
+		// AISetting(2P)
 		JMenuItem miAIConfig2P = new JMenuItem(getUIText("Menu_AIConfig2P"));
 		miAIConfig2P.setMnemonic('Z');
 		miAIConfig2P.addActionListener(this);
 		miAIConfig2P.setActionCommand("Menu_AIConfig2P");
 		menuConfig.add(miAIConfig2P);
 
-		// キー設定
+		// Key settings
 		JMenuItem miKeyConfig = new JMenuItem(getUIText("Menu_KeyConfig"));
 		miKeyConfig.setMnemonic('K');
 		miKeyConfig.addActionListener(this);
 		miKeyConfig.setActionCommand("Menu_KeyConfig");
 		menuConfig.add(miKeyConfig);
 
-		// キー設定(2P)
+		// Key settings(2P)
 		JMenuItem miKeyConfig2P = new JMenuItem(getUIText("Menu_KeyConfig2P"));
 		miKeyConfig2P.setMnemonic('E');
 		miKeyConfig2P.addActionListener(this);
 		miKeyConfig2P.setActionCommand("Menu_KeyConfig2P");
 		menuConfig.add(miKeyConfig2P);
 
-		// 更新 check 設定
+		// Update check Setting
 		JMenuItem miUpdateCheck = new JMenuItem(getUIText("Menu_UpdateCheck"));
 		miUpdateCheck.setMnemonic('D');
 		miUpdateCheck.addActionListener(this);
 		miUpdateCheck.setActionCommand("Menu_UpdateCheck");
 		menuConfig.add(miUpdateCheck);
 
-		// その他の設定
+		// Other Settings
 		JMenuItem miGeneralConfig = new JMenuItem(getUIText("Menu_GeneralConfig"));
 		miGeneralConfig.setMnemonic('G');
 		miGeneralConfig.addActionListener(this);
@@ -799,7 +799,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * オフLinesStart game buttonが押されたとき
+	 * OffLinesStart game buttonWhen is pressed
 	 */
 	protected void onStartOfflineClicked() {
 		String strMode = (String)listboxMode.getSelectedValue();
@@ -859,14 +859,14 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/*
-	 * Menu 実行時の処理
+	 * Menu What Happens at Runtime
 	 */
 	public void actionPerformed(ActionEvent e) {
-		// オフLinesStart game
+		// OffLinesStart game
 		if(e.getActionCommand() == "Top_StartOffline") {
 			onStartOfflineClicked();
 		}
-		// リプレイ開く
+		// Open Replay
 		else if(e.getActionCommand() == "Menu_Open") {
 			if(replayFileChooser == null) {
 				File dir = new File(propGlobal.getProperty("custom.replay.directory", "replay"));
@@ -888,7 +888,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 				gameFrame.displayWindow();
 			}
 		}
-		// ネットプレイ開始
+		// NetPlay start
 		else if(e.getActionCommand() == "Menu_NetPlay") {
 			startNetPlayGame();
 			if(gameFrame == null) {
@@ -903,7 +903,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			this.setVisible(false);
 			gameFrame.displayWindow();
 		}
-		// ルール選択
+		// Selection rules
 		else if(e.getActionCommand() == "Menu_RuleSelect") {
 			if(ruleSelectFrame == null) {
 				ruleSelectFrame = new RuleSelectInternalFrame(this);
@@ -911,7 +911,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			ruleSelectFrame.load(0);
 			ruleSelectFrame.setVisible(true);
 		}
-		// ルール選択(2P)
+		// Selection rules(2P)
 		else if(e.getActionCommand() == "Menu_RuleSelect2P") {
 			if(ruleSelectFrame == null) {
 				ruleSelectFrame = new RuleSelectInternalFrame(this);
@@ -919,7 +919,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			ruleSelectFrame.load(1);
 			ruleSelectFrame.setVisible(true);
 		}
-		// キーボード設定
+		// Keyboard settings
 		else if(e.getActionCommand() == "Menu_KeyConfig") {
 			if(keyConfigFrame == null) {
 				keyConfigFrame = new KeyConfigInternalFrame(this);
@@ -927,7 +927,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			keyConfigFrame.load(0);
 			keyConfigFrame.setVisible(true);
 		}
-		// キーボード設定(2P)
+		// Keyboard settings(2P)
 		else if(e.getActionCommand() == "Menu_KeyConfig2P") {
 			if(keyConfigFrame == null) {
 				keyConfigFrame = new KeyConfigInternalFrame(this);
@@ -935,7 +935,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			keyConfigFrame.load(1);
 			keyConfigFrame.setVisible(true);
 		}
-		// AI設定
+		// AISetting
 		else if(e.getActionCommand() == "Menu_AIConfig") {
 			if(aiSelectFrame == null) {
 				aiSelectFrame = new AISelectInternalFrame(this);
@@ -943,7 +943,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			aiSelectFrame.load(0);
 			aiSelectFrame.setVisible(true);
 		}
-		// AI設定(2P)
+		// AISetting(2P)
 		else if(e.getActionCommand() == "Menu_AIConfig2P") {
 			if(aiSelectFrame == null) {
 				aiSelectFrame = new AISelectInternalFrame(this);
@@ -951,7 +951,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			aiSelectFrame.load(1);
 			aiSelectFrame.setVisible(true);
 		}
-		// チューニング設定
+		// Tuning settings
 		else if(e.getActionCommand() == "Menu_GameTuning") {
 			if(gameTuningFrame == null) {
 				gameTuningFrame = new GameTuningInternalFrame(this);
@@ -959,7 +959,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			gameTuningFrame.load(0);
 			gameTuningFrame.setVisible(true);
 		}
-		// チューニング設定(2P)
+		// Tuning settings(2P)
 		else if(e.getActionCommand() == "Menu_GameTuning2P") {
 			if(gameTuningFrame == null) {
 				gameTuningFrame = new GameTuningInternalFrame(this);
@@ -967,7 +967,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			gameTuningFrame.load(1);
 			gameTuningFrame.setVisible(true);
 		}
-		// 更新 check 設定
+		// Update check Setting
 		else if(e.getActionCommand() == "Menu_UpdateCheck") {
 			if(updateCheckFrame == null) {
 				updateCheckFrame = new UpdateCheckInternalFrame(this);
@@ -975,7 +975,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			updateCheckFrame.load();
 			updateCheckFrame.setVisible(true);
 		}
-		// その他の設定
+		// Other Settings
 		else if(e.getActionCommand() == "Menu_GeneralConfig") {
 			if(generalConfigFrame == null) {
 				generalConfigFrame = new GeneralConfigInternalFrame(this);
@@ -983,14 +983,14 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			generalConfigFrame.load();
 			generalConfigFrame.setVisible(true);
 		}
-		// 終了
+		// End
 		else if(e.getActionCommand() == "Menu_Exit") {
 			shutdown();
 		}
 	}
 
 	/**
-	 * すべてのサブウィンドウを隠す
+	 * Hide all subwindows
 	 */
 	public void hideAllSubWindows() {
 		if(keyConfigFrame != null) keyConfigFrame.setVisible(false);
@@ -1029,7 +1029,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 		// Initialization for each player
 		for(int i = 0; i < gameManager.getPlayers(); i++) {
-			// チューニング設定
+			// Tuning settings
 			gameManager.engine[i].owRotateButtonDefaultRight = propGlobal.getProperty(i + ".tuning.owRotateButtonDefaultRight", -1);
 			gameManager.engine[i].owSkin = propGlobal.getProperty(i + ".tuning.owSkin", -1);
 			gameManager.engine[i].owMinDAS = propGlobal.getProperty(i + ".tuning.owMinDAS", -1);
@@ -1040,7 +1040,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			gameManager.engine[i].owBlockOutlineType = propGlobal.getProperty(i + ".tuning.owBlockOutlineType", -1);
 			gameManager.engine[i].owBlockShowOutlineOnly = propGlobal.getProperty(i + ".tuning.owBlockShowOutlineOnly", -1);
 
-			// ルール
+			// Rule
 			RuleOptions ruleopt = null;
 			String rulename = strRulePath;
 			if(rulename == null) {
@@ -1059,7 +1059,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			}
 			gameManager.engine[i].ruleopt = ruleopt;
 
-			// NEXT順生成アルゴリズム
+			// NEXTOrder generation algorithm
 			if((ruleopt.strRandomizer != null) && (ruleopt.strRandomizer.length() > 0)) {
 				Randomizer randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer);
 				gameManager.engine[i].randomizer = randomizerObject;
@@ -1091,8 +1091,8 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * リプレイを読み込んで再生
-	 * @param filename リプレイ dataのFilename
+	 * Load and play the replay
+	 * @param filename Replay dataOfFilename
 	 */
 	public void startReplayGame(String filename) {
 		log.info("Loading Replay:" + filename);
@@ -1125,12 +1125,12 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 		// Initialization for each player
 		for(int i = 0; i < gameManager.getPlayers(); i++) {
-			// ルール
+			// Rule
 			RuleOptions ruleopt = new RuleOptions();
 			ruleopt.readProperty(prop, i);
 			gameManager.engine[i].ruleopt = ruleopt;
 
-			// NEXT順生成アルゴリズム
+			// NEXTOrder generation algorithm
 			if((ruleopt.strRandomizer != null) && (ruleopt.strRandomizer.length() > 0)) {
 				Randomizer randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer);
 				gameManager.engine[i].randomizer = randomizerObject;
@@ -1142,7 +1142,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 				gameManager.engine[i].wallkick = wallkickObject;
 			}
 
-			// AI (リプレイ追記用）
+			// AI (For added replay)
 			String aiName = propGlobal.getProperty(i + ".ai", "");
 			if(aiName.length() > 0) {
 				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
@@ -1162,7 +1162,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * ネットプレイ開始処理
+	 * NetPlay start processing
 	 */
 	public void startNetPlayGame() {
 		// gameManager Initialization
@@ -1274,7 +1274,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * Observerクライアントを開始
+	 * ObserverStart the client
 	 */
 	public synchronized static void startObserverClient() {
 		log.debug("startObserverClient called");
@@ -1300,7 +1300,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * Observerクライアントを停止
+	 * ObserverStop the client
 	 */
 	public synchronized static void stopObserverClient() {
 		log.debug("stopObserverClient called");
@@ -1317,8 +1317,8 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * Observerクライアント取得
-	 * @return Observerクライアント
+	 * ObserverClient acquisition
+	 * @return ObserverClient
 	 */
 	public synchronized static NetObserverClient getObserverClient() {
 		return netObserverClient;
@@ -1371,22 +1371,22 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * リプレイファイル選択用フィルタ
+	 * Filter for selecting files replay
 	 */
 	protected class ReplayFileFilter extends FileFilter {
 		/*
-		 * ファイルを表示するかどうか判定
+		 * Decision whether or not to display the file
 		 */
 		@Override
 		public boolean accept(File f) {
-			// ディレクトリなら無条件表示
-			// またはファイル末尾が.repだったら表示
+			// If the directory displayed unconditional
+			// Or the end of the file is.repIf it was displayed
 			if(f.isDirectory() || f.getName().endsWith(".rep")) return true;
 			return false;
 		}
 
 		/*
-		 * このフィルタの表示名を返す
+		 * Returns the display name for this filter
 		 */
 		@Override
 		public String getDescription() {
@@ -1395,7 +1395,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	}
 
 	/**
-	 * Mode 選択リストボックス用MouseAdapter
+	 * Mode For selection list boxMouseAdapter
 	 */
 	protected class ListboxModeMouseAdapter extends MouseAdapter {
 		@Override
