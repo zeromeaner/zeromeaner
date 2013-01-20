@@ -25,7 +25,6 @@
 							<jnlp>
 								<inputTemplate>src/main/jnlp/zero.vm</inputTemplate>
 								<outputFile>zero.jnlp</outputFile>
-								<allPermissions>true</allPermissions>
 								<offlineAllowed>true</offlineAllowed>
 								<mainClass>org.zeromeaner.gui.swing.NullpoMinoSwing</mainClass>
 							</jnlp>
@@ -38,8 +37,13 @@
 	</build>
 
 	<dependencies>
-		<!-- <dependency> <groupId>org.codehaus.mojo</groupId> <artifactId>webstart-maven-plugin</artifactId> 
-			<version>1.0-beta-3</version> </dependency> -->
+		<!--
+			<dependency>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>webstart-maven-plugin</artifactId>
+			<version>1.0-beta-3</version>
+			</dependency>
+		-->
 		<dependency>
 			<groupId>org.zeromeaner</groupId>
 			<artifactId>zeromeaner-core</artifactId>

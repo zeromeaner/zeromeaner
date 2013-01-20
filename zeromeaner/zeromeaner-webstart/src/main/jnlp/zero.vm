@@ -29,6 +29,12 @@
     <j2se version="$j2seVersion"/>
      $dependencies
   </resources>
-  <application-desc main-class="$mainClass"/>
+  <applet-desc 
+	name="$project.Name"
+	main-class="$mainClass"
+	width="800"
+	height="800"
+	/>
+  <update check="always"/>
 </jnlp>
 
