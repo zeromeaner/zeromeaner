@@ -70,7 +70,7 @@ public class AppletMain extends Applet {
 
 		try {
 			CookieAccess.uri = getDocumentBase().toURI();
-		} catch(URISyntaxException ue) {
+		} catch(Throwable ue) {
 			ue.printStackTrace();
 		}
 		
