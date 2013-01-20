@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>..</module>
+		<module>zeromeaner-core</module>
 		<module>zeromeaner-tuning</module>
 	</modules>
 
