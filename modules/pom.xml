@@ -38,7 +38,7 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.zeromeaner</groupId>
-				<artifactId>zeromeaner</artifactId>
+				<artifactId>zeromeaner-core</artifactId>
 				<version>8.0.3.12-SNAPSHOT</version>
 			</dependency>
 			<dependency>

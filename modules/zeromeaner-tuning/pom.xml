@@ -10,7 +10,7 @@
   <dependencies>
   	<dependency>
   		<groupId>org.zeromeaner</groupId>
-  		<artifactId>zeromeaner</artifactId>
+  		<artifactId>zeromeaner-core</artifactId>
   	</dependency>
   </dependencies>
 </project>
