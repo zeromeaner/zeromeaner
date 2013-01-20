@@ -4,31 +4,31 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookieStore;
+import java.net.HttpCookie;
+import java.net.URI;
+import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 
-import netscape.javascript.JSObject;
-
 public class CookieAccess {
+	public static URI uri;
+	
 	public static Map<String, String> get() {
 		try {
 			String data = "";
-			JSObject myBrowser = JSObject.getWindow(AppletMain.instance);
-			JSObject myDocument = (JSObject) myBrowser.getMember("document");
-
-			String myCookie = (String) myDocument.getMember("cookie");
-
-			if (myCookie.length() > 0) {
-				String[] cookies = myCookie.split(";");
-				for (String cookie : cookies) {
-					int pos = cookie.indexOf("=");
-					if (cookie.substring(0, pos).trim().equals("c")) {
-						data = cookie.substring(pos + 1);
-						break;
-					}
-				}
+			
+			CookieManager manager = (CookieManager) CookieHandler.getDefault();
+			List<HttpCookie> cookies = manager.getCookieStore().get(uri);
+			for(HttpCookie c : cookies) {
+				if("c".equals(c.getName()))
+					data = c.getValue();
 			}
+			
 			if("".equals(data))
 				return new TreeMap<String, String>();
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -61,10 +61,11 @@ public class CookieAccess {
 				sb.append(String.format("%02x", b));
 			}
 			String value = sb.toString();
-			JSObject win = JSObject.getWindow(AppletMain.instance);
-			JSObject doc = (JSObject) win.getMember("document");
-			String data = "c=" + value + "; path=/; expires=Thu, 31-Dec-2019 12:00:00 GMT";
-			doc.setMember("cookie", data);
+			
+			CookieManager manager = (CookieManager) CookieHandler.getDefault();
+			CookieStore store = manager.getCookieStore();
+			HttpCookie c = new HttpCookie("c", value);
+			store.add(uri, c);
 		} catch(Throwable ex) {
 //			JOptionPane.showMessageDialog(applet, ex.toString());
 			ex.printStackTrace();

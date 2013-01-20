@@ -18,6 +18,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -67,6 +68,12 @@ public class AppletMain extends Applet {
 
 		instance = this;
 
+		try {
+			CookieAccess.uri = getDocumentBase().toURI();
+		} catch(URISyntaxException ue) {
+			ue.printStackTrace();
+		}
+		
 		setLayout(new BorderLayout());
 		desktop = new JDesktopPane();
 		desktop.setBackground(Color.decode("0x444488"));
