@@ -9,6 +9,7 @@
 	<modules>
 		<module>zeromeaner-core</module>
 		<module>zeromeaner-tuning</module>
+		<module>zeromeaner-webstart</module>
 	</modules>
 
 	<build>

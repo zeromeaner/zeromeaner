@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>zeromeaner-parent</artifactId>
+		<groupId>org.zeromeaner</groupId>
+		<version>8.0.3.12-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>zeromeaner-webstart</artifactId>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>webstart-maven-plugin</artifactId>
+				<version>1.0-beta-3</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jnlp-inline</goal>
+						</goals>
+						<configuration>
+							<jnlp>
+								<inputTemplate>src/main/jnlp/zero.vm</inputTemplate>
+								<outputFile>zero.jnlp</outputFile>
+								<allPermissions>true</allPermissions>
+								<offlineAllowed>true</offlineAllowed>
+								<mainClass>org.zeromeaner.gui.swing.NullpoMinoSwing</mainClass>
+							</jnlp>
+							<codebase>$${codebase}</codebase>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<!-- <dependency> <groupId>org.codehaus.mojo</groupId> <artifactId>webstart-maven-plugin</artifactId> 
+			<version>1.0-beta-3</version> </dependency> -->
+		<dependency>
+			<groupId>org.zeromeaner</groupId>
+			<artifactId>zeromeaner-core</artifactId>
+		</dependency>
+	</dependencies>
+
+	<name>Zeromeaner Webstart</name>
+	<organization>
+		<name>Robin Kirkman</name>
+	</organization>
+</project>

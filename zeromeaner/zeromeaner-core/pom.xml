@@ -223,7 +223,7 @@
 		<groupId>org.zeromeaner</groupId>
 		<artifactId>zeromeaner-parent</artifactId>
 		<version>8.0.3.12-SNAPSHOT</version>
-		<relativePath>modules</relativePath>
+		<relativePath>..</relativePath>
 	</parent>
 	<name>Zeromeaner Core</name>
 </project>
