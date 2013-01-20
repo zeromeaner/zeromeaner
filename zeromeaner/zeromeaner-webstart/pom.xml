@@ -26,7 +26,8 @@
 								<inputTemplate>src/main/jnlp/zero.vm</inputTemplate>
 								<outputFile>zero.jnlp</outputFile>
 								<offlineAllowed>true</offlineAllowed>
-								<mainClass>org.zeromeaner.gui.swing.NullpoMinoSwing</mainClass>
+								<mainClass>org.zeromeaner.gui.applet.AppletMain</mainClass>
+								<allPermissions>true</allPermissions>
 							</jnlp>
 							<codebase>$${codebase}</codebase>
 						</configuration>
