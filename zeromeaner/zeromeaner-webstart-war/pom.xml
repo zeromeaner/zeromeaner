@@ -10,6 +10,10 @@
 	<artifactId>zeromeaner-webstart-war</artifactId>
 	<packaging>war</packaging>
 
+	<properties>
+		<war.suffix></war.suffix>
+	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -17,7 +21,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.3</version>
 				<configuration>
-					<warName>zero</warName>
+					<warName>zero${war.suffix}</warName>
 					<webXml>src/main/webapp/web.xml</webXml>
 					<webappDirectory>${project.build.directory}/zero</webappDirectory>
 				</configuration>
