@@ -28,8 +28,10 @@ public class KNetServer {
 		
 		@Override
 		public void received(Connection connection, Object object) {
-			if(!(object instanceof KNetEvent))
+			if(!(object instanceof KNetEvent)) {
+				System.out.println("Server discarding " + object);
 				return;
+			}
 			KNetEvent e = (KNetEvent) object;
 			if(e.is(NetEventArgs.UDP))
 				server.sendToAllExceptUDP(connection.getID(), object);
@@ -42,12 +44,10 @@ public class KNetServer {
 		this.port = port;
 		source = new KNetEventSource(nextClientId.incrementAndGet());
 		server = new Server();
+		KNetKryo.configure(server.getKryo());
+		server.start();
 		server.bind(port, port);
 		server.addListener(new Listener.ThreadedListener(listener));
-	}
-	
-	public void start() {
-		server.start();
 	}
 	
 	public void stop() {

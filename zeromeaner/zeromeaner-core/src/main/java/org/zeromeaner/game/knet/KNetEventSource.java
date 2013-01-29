@@ -15,6 +15,11 @@ public class KNetEventSource implements KryoSerializable {
 		this.id = id;
 	}
 	
+	@Override
+	public String toString() {
+		return String.valueOf(id);
+	}
+	
 	public KNetEvent event(Object... args) {
 		return new KNetEvent(this, args);
 	}

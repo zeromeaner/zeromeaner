@@ -118,6 +118,11 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 	}
 	
 	@Override
+	public String toString() {
+		return getClass().getName() + "[source=" + getSource() + ", args=" + args + "]";
+	}
+	
+	@Override
 	public KNetEventSource getSource() {
 		return (KNetEventSource) super.getSource();
 	}

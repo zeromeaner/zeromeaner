@@ -1,6 +1,7 @@
 package org.zeromeaner.game.knet;
 
 import java.io.IOException;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.event.EventListenerList;
 
@@ -33,15 +34,27 @@ public class KNetClient {
 		}
 	};
 	
-	public KNetClient(String host, int port) throws IOException {
+	public KNetClient(String host, int port) {
 		this.host = host;
 		this.port = port;
 		client = new Client();
-		client.connect(0, host, port, port);
+		KNetKryo.configure(client.getKryo());
+		client.addListener(new Listener.ThreadedListener(listener));
 	}
 	
-	public void start() {
+	public void start() throws IOException, InterruptedException {
+		final Semaphore sync = new Semaphore(0);
+		KNetListener lsync = new KNetListener() {
+			@Override
+			public void knetEvented(KNetClient client, KNetEvent e) {
+				sync.release();
+				removeKNetListener(this);
+			}
+		};
+		addKNetListener(lsync);
 		client.start();
+		client.connect(1000, host, port, port);
+		sync.acquire();
 	}
 	
 	public void stop() {
@@ -63,6 +76,10 @@ public class KNetClient {
 				((KNetListener) ll[i+1]).knetEvented(this, e);
 			}
 		}
+	}
+	
+	public KNetEventSource getSource() {
+		return source;
 	}
 	
 	public void addKNetListener(KNetListener l) {
