@@ -13,7 +13,7 @@ import static org.zeromeaner.game.knet.KNetEvent.NetEventArgs.*;
 
 public class KNetServer {
 	protected int port;
-	protected AtomicInteger nextClientId = new AtomicInteger();
+	protected AtomicInteger nextClientId = new AtomicInteger(-1);
 	protected Server server;
 	
 	protected KNetEventSource source;

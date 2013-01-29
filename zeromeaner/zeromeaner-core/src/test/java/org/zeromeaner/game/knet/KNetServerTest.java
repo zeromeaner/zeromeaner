@@ -11,11 +11,11 @@ public class KNetServerTest {
 	public void testConnectClients() throws Exception {
 		KNetServer server = new KNetServer(11223);
 		try {
-			KNetClient c1 = new KNetClient("localhost", 11223);
+			KNetClient c1 = new KNetClient("c1", "localhost", 11223);
 			try {
 				c1.start();
 				final Semaphore sync = new Semaphore(0);
-				KNetClient c2 = new KNetClient("localhost", 11223);
+				KNetClient c2 = new KNetClient("c2", "localhost", 11223);
 				try {
 					c2.start();
 					c2.addKNetListener(new KNetListener() {

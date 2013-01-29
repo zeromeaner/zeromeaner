@@ -12,6 +12,7 @@ import com.esotericsoftware.kryonet.Listener;
 import static org.zeromeaner.game.knet.KNetEvent.NetEventArgs.*;
 
 public class KNetClient {
+	protected String type;
 	protected String host;
 	protected int port;
 	protected Client client;
@@ -35,6 +36,11 @@ public class KNetClient {
 	};
 	
 	public KNetClient(String host, int port) {
+		this("Unknown", host, port);
+	}
+	
+	public KNetClient(String type, String host, int port) {
+		this.type = type;
 		this.host = host;
 		this.port = port;
 		client = new Client();
@@ -64,6 +70,7 @@ public class KNetClient {
 	protected void received(Connection connection, KNetEvent e) {
 		if(e.is(ASSIGN_SOURCE)) {
 			source = (KNetEventSource) e.get(ASSIGN_SOURCE);
+			source.setType(type);
 			issue(source.event(CONNECTED, true));
 		}
 		issue(e);
