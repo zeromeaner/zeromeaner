@@ -8,7 +8,7 @@ import com.esotericsoftware.kryo.io.Output;
 public class KNetChatMessage {
 	private KNetEventSource source;
 	private String username;
-	private int room;
+	private int channel;
 	private long timestamp;
 	private String body;
 
@@ -31,12 +31,12 @@ public class KNetChatMessage {
 		this.username = username;
 	}
 
-	public int getRoom() {
-		return room;
+	public int getChannel() {
+		return channel;
 	}
-
-	public void setRoom(int room) {
-		this.room = room;
+	
+	public void setChannel(int channel) {
+		this.channel = channel;
 	}
 
 	public long getTimestamp() {

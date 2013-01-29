@@ -48,7 +48,7 @@ public class KNetClient {
 		client.addListener(new Listener.ThreadedListener(listener));
 	}
 	
-	public void start() throws IOException, InterruptedException {
+	public KNetClient start() throws IOException, InterruptedException {
 		final Semaphore sync = new Semaphore(0);
 		KNetListener lsync = new KNetListener() {
 			@Override
@@ -61,6 +61,7 @@ public class KNetClient {
 		client.start();
 		client.connect(1000, host, port, port);
 		sync.acquire();
+		return this;
 	}
 	
 	public void stop() {
@@ -89,6 +90,10 @@ public class KNetClient {
 		return source;
 	}
 	
+	public KNetEvent event(Object... args) {
+		return getSource().event(args);
+	}
+	
 	public void addKNetListener(KNetListener l) {
 		listenerList.add(KNetListener.class, l);
 	}
@@ -97,12 +102,48 @@ public class KNetClient {
 		listenerList.remove(KNetListener.class, l);
 	}
 	
+	public boolean isExternal(KNetEvent e) {
+		return !getSource().equals(e.getSource());
+	}
+	
+	public boolean isLocal(KNetEvent e) {
+		return getSource().equals(e.getSource());
+	}
+	
+	public void reply(KNetEvent e, Object... args) {
+		KNetEvent resp = event(args);
+		resp.set(ADDRESS, e.getSource());
+		resp.set(IN_REPLY_TO, e);
+		fire(resp);
+	}
+	
+	public void fire(Object... args) {
+		fire(event(args));
+	}
+	
+	public void fire(KNetEvent e) {
+		if(e.is(UDP))
+			fireUDP(e);
+		else
+			fireTCP(e);
+	}
+	
+	public void fireTCP(Object... args) {
+		fireTCP(event(args));
+	}
+	
 	public void fireTCP(KNetEvent e) {
+		e.getArgs().remove(UDP);
 		issue(e);
 		client.sendTCP(e);
 	}
 	
+	public void fireUDP(Object... args) {
+		fireUDP(event(args));
+	}
+	
 	public void fireUDP(KNetEvent e) {
+		e.getArgs().put(UDP, true);
 		issue(e);
 		client.sendUDP(e);
 	}

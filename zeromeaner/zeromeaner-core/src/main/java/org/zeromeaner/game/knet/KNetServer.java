@@ -29,7 +29,6 @@ public class KNetServer {
 		@Override
 		public void received(Connection connection, Object object) {
 			if(!(object instanceof KNetEvent)) {
-				System.out.println("Server discarding " + object);
 				return;
 			}
 			KNetEvent e = (KNetEvent) object;
@@ -52,5 +51,9 @@ public class KNetServer {
 	
 	public void stop() {
 		server.stop();
+	}
+	
+	public int getPort() {
+		return port;
 	}
 }

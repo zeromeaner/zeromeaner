@@ -37,6 +37,19 @@ public class KNetEventSource implements KryoSerializable {
 		return "(" + id + "," + type + ")";
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof KNetEventSource) {
+			return id == ((KNetEventSource) obj).id;
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return id;
+	}
+	
 	public KNetEvent event(Object... args) {
 		return new KNetEvent(this, args);
 	}

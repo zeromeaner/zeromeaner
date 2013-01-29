@@ -4,6 +4,8 @@ import java.util.EnumMap;
 import java.util.EventObject;
 import java.util.Map;
 
+import org.zeromeaner.game.knet.srv.KSChannelManager.ChannelInfo;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
@@ -35,6 +37,21 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 		PAYLOAD,
 		
 		/**
+		 * A specific {@link KNetEventSource} that should receive this message
+		 */
+		ADDRESS,
+		
+		/**
+		 * A {@link String} describing the error
+		 */
+		ERROR,
+		
+		/**
+		 * A specific {@link KNetEvent} that this event is in reply to
+		 */
+		IN_REPLY_TO,
+		
+		/**
 		 * The username of the event sender
 		 * Argument: {@link String}
 		 */
@@ -44,7 +61,7 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 		 * The room ID for this message.  -1 is the lobby.
 		 * Argument: {@link Integer}
 		 */
-		ROOM_ID,
+		CHANNEL_ID,
 		
 		/**
 		 * The timstamp (millis UTC) of this message.  Optional.
@@ -53,15 +70,22 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 		TIMESTAMP,
 		
 		/**
+		 * Issued by a client to request a list of the current rooms.
+		 * Issued by a server to respond with the list of rooms.  Server responses place
+		 * an array of {@link ChannelInfo} objects in {@link #PAYLOAD}.
+		 */
+		CHANNEL_LIST,
+		
+		/**
 		 * Issued for chats in a room.  {@link #PAYLOAD} will be a string.
 		 */
-		ROOM_CHAT,
+		CHANNEL_CHAT,
 		
 		/** Issued when joining a room */
-		ROOM_JOIN,
+		CHANNEL_JOIN,
 		
 		/** Issued when leaving a room */
-		ROOM_LEAVE,
+		CHANNEL_LEAVE,
 		
 		;
 		
@@ -76,24 +100,39 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 			case USERNAME:
 				output.writeString((String) argValue);
 				break;
-			case ROOM_ID:
+			case CHANNEL_ID:
 				output.writeInt((Integer) argValue, true);
 				break;
 			case TIMESTAMP:
 				output.writeLong((Long) argValue, true);
+				break;
+			case ADDRESS:
+				kryo.writeObject(output, argValue);
+				break;
+			case ERROR:
+				output.writeString((String) argValue);
+				break;
+			case IN_REPLY_TO:
+				kryo.writeObject(output, argValue);
 				break;
 			}
 		}
 		
 		public Object read(Kryo kryo, Input input) {
 			switch(this) {
+			case IN_REPLY_TO:
+				return kryo.readObject(input, KNetEvent.class);
+			case ERROR:
+				return input.readString();
+			case ADDRESS:
+				return kryo.readObject(input, KNetEventSource.class);
 			case ASSIGN_SOURCE:
 				return kryo.readObject(input, KNetEventSource.class);
 			case PAYLOAD:
 				return kryo.readClassAndObject(input);
 			case USERNAME:
 				return input.readString();
-			case ROOM_ID:
+			case CHANNEL_ID:
 				return input.readInt(true);
 			case TIMESTAMP:
 				return input.readLong(true);
@@ -119,7 +158,7 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 	
 	@Override
 	public String toString() {
-		return getClass().getName() + "[source=" + getSource() + ", args=" + args + "]";
+		return getClass().getSimpleName() + "[source=" + getSource() + ", args=" + args + "]";
 	}
 	
 	@Override
@@ -133,6 +172,10 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 	
 	public boolean is(NetEventArgs arg) {
 		return args.containsKey(arg);
+	}
+	
+	public void set(NetEventArgs arg, Object value) {
+		args.put(arg, value);
 	}
 	
 	public Map<NetEventArgs, Object> getArgs() {
