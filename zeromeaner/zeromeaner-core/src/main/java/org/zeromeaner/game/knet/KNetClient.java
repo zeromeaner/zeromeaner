@@ -24,6 +24,11 @@ public class KNetClient {
 		public void received(Connection connection, Object object) {
 			KNetClient.this.received(connection, object);
 		}
+		
+		@Override
+		public void disconnected(Connection connection) {
+			issue(source.event(DISCONNECTED, true));
+		}
 	};
 	
 	public KNetClient(String host, int port) throws IOException {
@@ -43,8 +48,10 @@ public class KNetClient {
 
 	protected void received(Connection connection, Object object) {
 		KNetEvent e = (KNetEvent) object;
-		if(e.is(ASSIGN_SOURCE))
+		if(e.is(ASSIGN_SOURCE)) {
 			source = (KNetEventSource) e.get(ASSIGN_SOURCE);
+			issue(source.event(CONNECTED, true));
+		}
 		issue(e);
 	}
 	

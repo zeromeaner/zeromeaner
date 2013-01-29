@@ -11,16 +11,81 @@ import com.esotericsoftware.kryo.io.Output;
 
 public class KNetEvent extends EventObject implements KryoSerializable {
 	public static enum NetEventArgs {
+		/**
+		 * Issued when a server assigns a {@link KNetEventSource} to a client.
+		 * Argument: {@link KNetEventSource}.
+		 */
 		ASSIGN_SOURCE,
+		/**
+		 * Issued when a client connects to a server, after receiving a {@link KNetEventSource}.
+		 */
+		CONNECTED,
+		/**
+		 * Issued when a client disconnects from a server.
+		 */
+		DISCONNECTED,
+		
+		/**
+		 * Any object payload.
+		 * Argument: {@link Object}
+		 */
+		PAYLOAD,
+		
+		/**
+		 * The username of the event sender
+		 * Argument: {@link String}
+		 */
+		USERNAME,
+		
+		/**
+		 * The room ID for this message.  -1 is the lobby.
+		 * Argument: {@link Integer}
+		 */
+		ROOM_ID,
+		
+		/**
+		 * The timstamp (millis UTC) of this message.  Optional.
+		 * Argument: {@link Long}
+		 */
+		TIMESTAMP,
 		
 		;
 		
 		public void write(Kryo kryo, Output output, Object argValue) {
-			
+			switch(this) {
+			case ASSIGN_SOURCE:
+				kryo.writeObject(output, (KNetEventSource) argValue);
+				break;
+			case PAYLOAD:
+				kryo.writeClassAndObject(output, argValue);
+				break;
+			case USERNAME:
+				output.writeString((String) argValue);
+				break;
+			case ROOM_ID:
+				output.writeInt((Integer) argValue, true);
+				break;
+			case TIMESTAMP:
+				output.writeLong((Long) argValue, true);
+				break;
+			}
 		}
 		
 		public Object read(Kryo kryo, Input input) {
-			return null;
+			switch(this) {
+			case ASSIGN_SOURCE:
+				return kryo.readObject(input, KNetEventSource.class);
+			case PAYLOAD:
+				return kryo.readClassAndObject(input);
+			case USERNAME:
+				return input.readString();
+			case ROOM_ID:
+				return input.readInt(true);
+			case TIMESTAMP:
+				return input.readLong(true);
+			default:
+				return true;
+			}
 		}
 	}
 	
