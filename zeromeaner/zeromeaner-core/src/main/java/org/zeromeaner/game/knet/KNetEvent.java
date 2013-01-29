@@ -103,6 +103,28 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 		
 		/** Issued when the next piece list is sent. The {@link Piece}[] is sent in {@link #PAYLOAD}  */
 		GAME_NEXT_PIECE,
+		
+		/** Issued when the game is ending */
+		GAME_ENDING,
+		
+		/** Issued when the game says excellent? */
+		GAME_EXCELLENT,
+		
+		/** Issued when we die? */
+		DEAD,
+		
+		/** Issued when we show the results screen? */
+		GAME_RESULTS_SCREEN,
+		
+		GAME_RETRY,
+		
+		RESET_1P,
+		
+		/**
+		 * Signal cursor movement?
+		 * Argument: {@link Integer}
+		 */
+		GAME_CURSOR,
 		;
 		
 		public void write(Kryo kryo, Output output, Object argValue) {

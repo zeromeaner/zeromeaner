@@ -312,7 +312,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 				netSendField(engine);
 				netSendNextAndHold(engine);
 				netSendStats(engine);
-				netLobby.netPlayerClient.send("game\tending\n");
+				knetClient.fire(GAME, true, GAME_ENDING, true);
 			}
 		}
 		return false;
@@ -329,7 +329,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 				netSendField(engine);
 				netSendNextAndHold(engine);
 				netSendStats(engine);
-				netLobby.netPlayerClient.send("game\texcellent\n");
+//				netLobby.netPlayerClient.send("game\texcellent\n");
+				knetClient.fire(GAME, true, GAME_EXCELLENT, true);
 			}
 		}
 		return false;
@@ -351,10 +352,10 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 						netSendStats(engine);
 					}
 					netSendEndGameStats(engine);
-					netLobby.netPlayerClient.send("dead\t-1\n");
+					knetClient.fire(DEAD, true);
 				} else if(engine.statc[0] >= engine.field.getHeight() + 1 + 180) {
 					// To results screen
-					netLobby.netPlayerClient.send("game\tresultsscreen\n");
+					knetClient.fire(GAME, true, GAME_RESULTS_SCREEN, true);
 				}
 			} else {
 				if(engine.statc[0] < engine.field.getHeight() + 1 + 180) {
@@ -392,7 +393,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 			if(engine.ctrl.isPush(Controller.BUTTON_A) && !netIsWatch && (netReplaySendStatus == 2)) {
 				engine.playSE("decide");
 				if((netNumSpectators > 0) || (netForceSendMovements)) {
-					netLobby.netPlayerClient.send("game\tretry\n");
+					knetClient.fire(GAME, true, GAME_RETRY, true);
 					netSendOptions(engine);
 				}
 				owner.reset();
@@ -426,7 +427,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 		if((engine.ctrl.isMenuRepeatKey(Controller.BUTTON_UP) || engine.ctrl.isMenuRepeatKey(Controller.BUTTON_DOWN)) &&
 			netIsNetPlay && ((netNumSpectators > 0) || (netForceSendMovements)))
 		{
-			netLobby.netPlayerClient.send("game\tcursor\t" + engine.statc[2] + "\n");
+			knetClient.fire(GAME, true, GAME_CURSOR, engine.statc[2]);
 		}
 
 		return change;
@@ -439,39 +440,10 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	public void netplayOnRetryKey(GameEngine engine, int playerID) {
 		if(netIsNetPlay && !netIsWatch) {
 			owner.reset();
-			netLobby.netPlayerClient.send("reset1p\n");
+//			netLobby.netPlayerClient.send("reset1p\n");
+			knetClient.fire(RESET_1P, true);
 			netSendOptions(engine);
 		}
-	}
-
-	/**
-	 * NET: Initialization Completed (Never called)
-	 */
-	public void netlobbyOnInit(NetLobbyFrame lobby) {
-	}
-
-	/**
-	 * NET: Login completed (Never called)
-	 */
-	public void netlobbyOnLoginOK(NetLobbyFrame lobby, NetPlayerClient client) {
-	}
-
-	/**
-	 * NET: When you enter a room (Never called)
-	 */
-	public void netlobbyOnRoomJoin(NetLobbyFrame lobby, NetPlayerClient client, NetRoomInfo roomInfo) {
-	}
-
-	/**
-	 * NET: When you returned to lobby (Never called)
-	 */
-	public void netlobbyOnRoomLeave(NetLobbyFrame lobby, NetPlayerClient client) {
-	}
-
-	/*
-	 * NET: When disconnected
-	 */
-	public void netlobbyOnDisconnect(NetLobbyFrame lobby, NetPlayerClient client, Throwable ex) {
 	}
 
 	/*
