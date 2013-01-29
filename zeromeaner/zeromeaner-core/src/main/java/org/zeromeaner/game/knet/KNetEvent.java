@@ -25,6 +25,9 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 		 */
 		DISCONNECTED,
 		
+		/** Issued when the packet should be sent via UDP instead of TCP */
+		UDP,
+		
 		/**
 		 * Any object payload.
 		 * Argument: {@link Object}
@@ -48,6 +51,17 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 		 * Argument: {@link Long}
 		 */
 		TIMESTAMP,
+		
+		/**
+		 * Issued for chats in a room.  {@link #PAYLOAD} will be a string.
+		 */
+		ROOM_CHAT,
+		
+		/** Issued when joining a room */
+		ROOM_JOIN,
+		
+		/** Issued when leaving a room */
+		ROOM_LEAVE,
 		
 		;
 		

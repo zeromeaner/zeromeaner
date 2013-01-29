@@ -3,6 +3,8 @@ package org.zeromeaner.game.knet;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.zeromeaner.game.knet.KNetEvent.NetEventArgs;
+
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -22,7 +24,17 @@ public class KNetServer {
 			connection.sendTCP(source.event(
 					ASSIGN_SOURCE, new KNetEventSource(nextClientId.incrementAndGet())
 					));
-					
+		}
+		
+		@Override
+		public void received(Connection connection, Object object) {
+			if(!(object instanceof KNetEvent))
+				return;
+			KNetEvent e = (KNetEvent) object;
+			if(e.is(NetEventArgs.UDP))
+				server.sendToAllExceptUDP(connection.getID(), object);
+			else
+				server.sendToAllExceptTCP(connection.getID(), object);
 		}
 	};
 	

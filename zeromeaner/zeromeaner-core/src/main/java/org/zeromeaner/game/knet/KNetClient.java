@@ -22,7 +22,9 @@ public class KNetClient {
 	protected Listener listener = new Listener() {
 		@Override
 		public void received(Connection connection, Object object) {
-			KNetClient.this.received(connection, object);
+			if(!(object instanceof KNetEvent))
+				return;
+			KNetClient.this.received(connection, (KNetEvent) object);
 		}
 		
 		@Override
@@ -46,8 +48,7 @@ public class KNetClient {
 		client.stop();
 	}
 
-	protected void received(Connection connection, Object object) {
-		KNetEvent e = (KNetEvent) object;
+	protected void received(Connection connection, KNetEvent e) {
 		if(e.is(ASSIGN_SOURCE)) {
 			source = (KNetEventSource) e.get(ASSIGN_SOURCE);
 			issue(source.event(CONNECTED, true));
@@ -59,7 +60,7 @@ public class KNetClient {
 		Object[] ll = listenerList.getListenerList();
 		for(int i = ll.length - 2; i >= 0; i -= 2) {
 			if(ll[i] == KNetListener.class) {
-				((KNetListener) ll[i+1]).knetEvented(e);
+				((KNetListener) ll[i+1]).knetEvented(this, e);
 			}
 		}
 	}
