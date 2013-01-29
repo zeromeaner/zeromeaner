@@ -226,7 +226,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	 * Set new target
 	 */
 	private void setNewTarget() {
-		if((getNumberOfPossibleTargets() >= 1) && (netCurrentRoomInfo != null) && (netCurrentRoomInfo.isTarget) &&
+		if((getNumberOfPossibleTargets() >= 1) && (channelInfo != null) && (channelInfo.isTarget) &&
 		   (!netvsIsWatch()) && (!netvsIsPractice))
 		{
 			do {
@@ -314,7 +314,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 
 			int numAliveTeams = netvsGetNumberOfTeamsAlive();
 			int attackNumPlayerIndex = numAliveTeams - 2;
-			if(netvsIsPractice || !netCurrentRoomInfo.reduceLineSend) attackNumPlayerIndex = 0;
+			if(netvsIsPractice || !channelInfo.reduceLineSend) attackNumPlayerIndex = 0;
 			if(attackNumPlayerIndex < 0) attackNumPlayerIndex = 0;
 			if(attackNumPlayerIndex > 4) attackNumPlayerIndex = 4;
 
@@ -409,7 +409,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			}
 
 			// All clear (Bravo)
-			if((lines >= 1) && (engine.field.isEmpty()) && (netCurrentRoomInfo.bravo)) {
+			if((lines >= 1) && (engine.field.isEmpty()) && (channelInfo.bravo)) {
 				engine.playSE("bravo");
 				pts[ATTACK_CATEGORY_BRAVO] += 6;
 			}
@@ -422,7 +422,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			for(int i = 0; i < pts.length; i++){
 				pts[i] *= GARBAGE_DENOMINATOR;
 			}
-			if(netCurrentRoomInfo.useFractionalGarbage && !netvsIsPractice) {
+			if(channelInfo.useFractionalGarbage && !netvsIsPractice) {
 				if(numAliveTeams >= 3) {
 					for(int i = 0; i < pts.length; i++){
 						pts[i] = pts[i] / (numAliveTeams - 1);
@@ -438,9 +438,9 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			// Garbage countering
 			garbage[playerID] = getTotalGarbageLines();
 			for(int i = 0; i < pts.length; i++){ //TODO: Establish specific priority of garbage cancellation.
-				if((pts[i] > 0) && (garbage[playerID] > 0) && (netCurrentRoomInfo.counter)) {
-					while(!netCurrentRoomInfo.useFractionalGarbage && !garbageEntries.isEmpty() && (pts[i] > 0)
-						|| netCurrentRoomInfo.useFractionalGarbage && !garbageEntries.isEmpty() && (pts[i] >= GARBAGE_DENOMINATOR))
+				if((pts[i] > 0) && (garbage[playerID] > 0) && (channelInfo.counter)) {
+					while(!channelInfo.useFractionalGarbage && !garbageEntries.isEmpty() && (pts[i] > 0)
+						|| channelInfo.useFractionalGarbage && !garbageEntries.isEmpty() && (pts[i] >= GARBAGE_DENOMINATOR))
 					{
 						GarbageEntry garbageEntry = garbageEntries.getFirst();
 						garbageEntry.lines -= pts[i];
@@ -473,7 +473,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		}
 
 		// Garbage lines appear
-		if( ((lines == 0) || (!netCurrentRoomInfo.rensaBlock)) && (getTotalGarbageLines() >= GARBAGE_DENOMINATOR) && (!netvsIsPractice) ) {
+		if( ((lines == 0) || (!channelInfo.rensaBlock)) && (getTotalGarbageLines() >= GARBAGE_DENOMINATOR) && (!netvsIsPractice) ) {
 			engine.playSE("garbage");
 
 			int smallGarbageCount = 0;
@@ -483,8 +483,8 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 				hole = engine.random.nextInt(engine.field.getWidth());
 			}
 
-			int finalGarbagePercent = netCurrentRoomInfo.garbagePercent;
-			if(netCurrentRoomInfo.divideChangeRateByPlayers){
+			int finalGarbagePercent = channelInfo.garbagePercent;
+			if(channelInfo.divideChangeRateByPlayers){
 				finalGarbagePercent /= (netvsGetNumberOfTeamsAlive() - 1);
 			}
 
@@ -497,7 +497,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 					int seatFrom = netvsPlayerSeatID[garbageEntry.playerID];
 					int garbageColor = (seatFrom < 0) ? Block.BLOCK_COLOR_GRAY : NETVS_PLAYER_COLOR_BLOCK[seatFrom];
 					netvsLastAttackerUID = garbageEntry.uid;
-					if(netCurrentRoomInfo.garbageChangePerAttack == true){
+					if(channelInfo.garbageChangePerAttack == true){
 						if(engine.random.nextInt(100) < finalGarbagePercent) {
 							newHole = engine.random.nextInt(engine.field.getWidth() - 1);
 							if(newHole >= hole) {
@@ -528,7 +528,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 				if(smallGarbageCount / GARBAGE_DENOMINATOR > 0) {
 					netvsLastAttackerUID = -1;
 
-					if(netCurrentRoomInfo.garbageChangePerAttack == true){
+					if(channelInfo.garbageChangePerAttack == true){
 						if(engine.random.nextInt(100) < finalGarbagePercent) {
 							newHole = engine.random.nextInt(engine.field.getWidth() - 1);
 							if(newHole >= hole) {
@@ -564,15 +564,15 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		}
 
 		// HURRY UP!
-		if((netCurrentRoomInfo.hurryupSeconds >= 0) && (engine.timerActive) && (!netvsIsPractice)) {
+		if((channelInfo.hurryupSeconds >= 0) && (engine.timerActive) && (!netvsIsPractice)) {
 			if(hurryupStarted) {
 				hurryupCount++;
 
-				if(hurryupCount % netCurrentRoomInfo.hurryupInterval == 0) {
+				if(hurryupCount % channelInfo.hurryupInterval == 0) {
 					engine.field.addHurryupFloor(1, engine.getSkin());
 				}
 			} else {
-				hurryupCount = netCurrentRoomInfo.hurryupInterval - 1;
+				hurryupCount = channelInfo.hurryupInterval - 1;
 			}
 		}
 	}
@@ -588,8 +588,8 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		if((playerID == 0) && (hurryupShowFrames > 0)) hurryupShowFrames--;
 
 		// HURRY UP!
-		if((playerID == 0) && (engine.timerActive) && (netCurrentRoomInfo != null) && (netCurrentRoomInfo.hurryupSeconds >= 0) &&
-		   (netvsPlayTimer == netCurrentRoomInfo.hurryupSeconds * 60) && (!hurryupStarted))
+		if((playerID == 0) && (engine.timerActive) && (channelInfo != null) && (channelInfo.hurryupSeconds >= 0) &&
+		   (netvsPlayTimer == channelInfo.hurryupSeconds * 60) && (!hurryupStarted))
 		{
 			if(!netvsIsWatch() && !netvsIsPractice) {
 				netLobby.netPlayerClient.send("game\thurryup\n");
@@ -634,11 +634,11 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 
 		// Target
 		if((playerID == 0) && !netvsIsWatch() && (netvsPlayTimerActive) && (engine.gameActive) && (engine.timerActive) &&
-		   (getNumberOfPossibleTargets() >= 1) && (netCurrentRoomInfo != null) && (netCurrentRoomInfo.isTarget))
+		   (getNumberOfPossibleTargets() >= 1) && (channelInfo != null) && (channelInfo.isTarget))
 		{
 			targetTimer++;
 
-			if((targetTimer >= netCurrentRoomInfo.targetTimer) || (!netvsIsAttackable(targetID))) {
+			if((targetTimer >= channelInfo.targetTimer) || (!netvsIsAttackable(targetID))) {
 				targetTimer = 0;
 				setNewTarget();
 			}
@@ -657,7 +657,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 
 		if(netvsPlayerExist[playerID] && engine.isVisible) {
 			// Garbage Count
-			if((garbage[playerID] > 0) && (netCurrentRoomInfo.useFractionalGarbage) && (engine.stat != GameEngine.STAT_RESULT)) {
+			if((garbage[playerID] > 0) && (channelInfo.useFractionalGarbage) && (engine.stat != GameEngine.STAT_RESULT)) {
 				String strTempGarbage;
 
 				int fontColor = EventRenderer.COLOR_WHITE;
@@ -675,11 +675,11 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			}
 
 			// Target
-			if((playerID == targetID) && (netCurrentRoomInfo != null) && (netCurrentRoomInfo.isTarget) && (netvsNumAlivePlayers >= 3) &&
+			if((playerID == targetID) && (channelInfo != null) && (channelInfo.isTarget) && (netvsNumAlivePlayers >= 3) &&
 			   (netvsIsGameActive) && netvsIsAttackable(playerID) && !netvsIsWatch())
 			{
 				int fontcolor = EventRenderer.COLOR_GREEN;
-				if((targetTimer >= netCurrentRoomInfo.targetTimer - 20) && (targetTimer % 2 == 0)) fontcolor = EventRenderer.COLOR_WHITE;
+				if((targetTimer >= channelInfo.targetTimer - 20) && (targetTimer % 2 == 0)) fontcolor = EventRenderer.COLOR_WHITE;
 
 				if(engine.displaysize != -1) {
 					owner.receiver.drawMenuFont(engine, playerID, 2, 12, "TARGET", fontcolor);
@@ -699,8 +699,8 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		}
 
 		// Hurry Up
-		if((netCurrentRoomInfo != null) && (playerID == 0)) {
-			if((netCurrentRoomInfo.hurryupSeconds >= 0) && (hurryupShowFrames > 0) && (!netvsIsPractice) && (hurryupStarted)) {
+		if((channelInfo != null) && (playerID == 0)) {
+			if((channelInfo.hurryupSeconds >= 0) && (hurryupShowFrames > 0) && (!netvsIsPractice) && (hurryupStarted)) {
 				owner.receiver.drawDirectFont(engine, 0, 256 - 8, 32, "HURRY UP!", (hurryupShowFrames % 2 == 0));
 			}
 		}
@@ -778,7 +778,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 						owner.receiver.drawMenuFont(engine, playerID, 2, 22, (lastcombo[playerID] - 1) + "COMBO", EventRenderer.COLOR_CYAN);
 				} else {
 					int x2 = 8;
-					if(netCurrentRoomInfo.useFractionalGarbage && (garbage[playerID] > 0)) x2 = 0;
+					if(channelInfo.useFractionalGarbage && (garbage[playerID] > 0)) x2 = 0;
 
 					switch(lastevent[playerID]) {
 					case EVENT_SINGLE:
@@ -995,11 +995,11 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 				int targetSeatID = Integer.parseInt(message[ATTACK_CATEGORIES + 10]);
 
 				if( !netvsIsWatch() && (owner.engine[0].timerActive) && (sumPts > 0) && (!netvsIsPractice) && (!netvsIsNewcomer) &&
-					((targetSeatID == -1) || (netvsPlayerSeatID[0] == targetSeatID) || (!netCurrentRoomInfo.isTarget)) &&
+					((targetSeatID == -1) || (netvsPlayerSeatID[0] == targetSeatID) || (!channelInfo.isTarget)) &&
 					netvsIsAttackable(playerID) )
 				{
 					int secondAdd = 0; //TODO: Allow for chunking of attack types other than b2b.
-					if(netCurrentRoomInfo.b2bChunk){
+					if(channelInfo.b2bChunk){
 						secondAdd = pts[ATTACK_CATEGORY_B2B];
 					}
 
@@ -1018,7 +1018,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			}
 			// HurryUp
 			if(message[3].equals("hurryup")) {
-				if(!hurryupStarted && (netCurrentRoomInfo != null) && (netCurrentRoomInfo.hurryupSeconds > 0)) {
+				if(!hurryupStarted && (channelInfo != null) && (channelInfo.hurryupSeconds > 0)) {
 					if(!netvsIsWatch() && !netvsIsPractice && owner.engine[0].timerActive) {
 						owner.receiver.playSE("hurryup");
 					}

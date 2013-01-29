@@ -3317,4 +3317,112 @@ public class Field implements Serializable {
 				setBlock(xMax, y, temp);
 			}
 	}
+
+	public int getHidden_height() {
+		return hidden_height;
+	}
+
+	public void setHidden_height(int hidden_height) {
+		this.hidden_height = hidden_height;
+	}
+
+	public Block[][] getBlock_field() {
+		return block_field;
+	}
+
+	public void setBlock_field(Block[][] block_field) {
+		this.block_field = block_field;
+	}
+
+	public Block[][] getBlock_hidden() {
+		return block_hidden;
+	}
+
+	public void setBlock_hidden(Block[][] block_hidden) {
+		this.block_hidden = block_hidden;
+	}
+
+	public boolean[] getLineflag_field() {
+		return lineflag_field;
+	}
+
+	public void setLineflag_field(boolean[] lineflag_field) {
+		this.lineflag_field = lineflag_field;
+	}
+
+	public boolean[] getLineflag_hidden() {
+		return lineflag_hidden;
+	}
+
+	public void setLineflag_hidden(boolean[] lineflag_hidden) {
+		this.lineflag_hidden = lineflag_hidden;
+	}
+
+	public boolean isCeiling() {
+		return ceiling;
+	}
+
+	public void setCeiling(boolean ceiling) {
+		this.ceiling = ceiling;
+	}
+
+	public int getColorClearExtraCount() {
+		return colorClearExtraCount;
+	}
+
+	public void setColorClearExtraCount(int colorClearExtraCount) {
+		this.colorClearExtraCount = colorClearExtraCount;
+	}
+
+	public int getColorsCleared() {
+		return colorsCleared;
+	}
+
+	public void setColorsCleared(int colorsCleared) {
+		this.colorsCleared = colorsCleared;
+	}
+
+	public int getGemsCleared() {
+		return gemsCleared;
+	}
+
+	public void setGemsCleared(int gemsCleared) {
+		this.gemsCleared = gemsCleared;
+	}
+
+	public int getGarbageCleared() {
+		return garbageCleared;
+	}
+
+	public void setGarbageCleared(int garbageCleared) {
+		this.garbageCleared = garbageCleared;
+	}
+
+	public ArrayList<Integer> getLineColorsCleared() {
+		return lineColorsCleared;
+	}
+
+	public void setLineColorsCleared(ArrayList<Integer> lineColorsCleared) {
+		this.lineColorsCleared = lineColorsCleared;
+	}
+
+	public ArrayList<Block[]> getLastLinesCleared() {
+		return lastLinesCleared;
+	}
+
+	public void setLastLinesCleared(ArrayList<Block[]> lastLinesCleared) {
+		this.lastLinesCleared = lastLinesCleared;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public void setHurryupFloorLines(int hurryupFloorLines) {
+		this.hurryupFloorLines = hurryupFloorLines;
+	}
 }

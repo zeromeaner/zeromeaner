@@ -4,6 +4,8 @@ import java.util.EnumMap;
 import java.util.EventObject;
 import java.util.Map;
 
+import org.zeromeaner.game.component.Field;
+import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.knet.srv.KSChannelManager.ChannelInfo;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -87,6 +89,20 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 		/** Issued when leaving a room */
 		CHANNEL_LEAVE,
 		
+		/** Issued for in-game events */
+		GAME,
+		
+		/** Issued when an in-game piece is locked */
+		GAME_PIECE_LOCKED,
+		
+		/** Issued when the field is sent.  {@link Field} is sent in {@link #PAYLOAD} */ 
+		GAME_FIELD,
+		
+		/** Issued when the hold piece is sent. The {@link Piece} is sent in {@link #PAYLOAD}  */
+		GAME_HOLD_PIECE,
+		
+		/** Issued when the next piece list is sent. The {@link Piece}[] is sent in {@link #PAYLOAD}  */
+		GAME_NEXT_PIECE,
 		;
 		
 		public void write(Kryo kryo, Output output, Object argValue) {

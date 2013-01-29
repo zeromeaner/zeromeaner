@@ -43,14 +43,14 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netvsApplyRoomSettings(GameEngine engine) {
-		if(netCurrentRoomInfo != null) {
-			engine.speed.gravity = netCurrentRoomInfo.gravity;
-			engine.speed.denominator = netCurrentRoomInfo.denominator;
-			engine.speed.are = netCurrentRoomInfo.are;
-			engine.speed.areLine = netCurrentRoomInfo.areLine;
-			engine.speed.lineDelay = netCurrentRoomInfo.lineDelay;
-			engine.speed.lockDelay = netCurrentRoomInfo.lockDelay;
-			engine.speed.das = netCurrentRoomInfo.das;
+		if(channelInfo != null) {
+			engine.speed.gravity = channelInfo.gravity;
+			engine.speed.denominator = channelInfo.denominator;
+			engine.speed.are = channelInfo.are;
+			engine.speed.areLine = channelInfo.areLine;
+			engine.speed.lineDelay = channelInfo.lineDelay;
+			engine.speed.lockDelay = channelInfo.lockDelay;
+			engine.speed.das = channelInfo.das;
 		}
 	}
 
@@ -68,7 +68,7 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 		if(skin < 0) skin = 0;
 
 		for(int y = h - 1; y >= h - goalLines; y--) {
-			if((hole == -1) || (engine.random.nextInt(100) < netCurrentRoomInfo.garbagePercent)) {
+			if((hole == -1) || (engine.random.nextInt(100) < channelInfo.garbagePercent)) {
 				int newhole = -1;
 				do {
 					newhole = engine.random.nextInt(w);
@@ -167,7 +167,7 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 		super.onReady(engine, playerID);
 
 		if((engine.statc[0] == 0) && netvsPlayerExist[playerID]) {
-			if((netCurrentRoomInfo == null) || !netCurrentRoomInfo.useMap) {
+			if((channelInfo == null) || !channelInfo.useMap) {
 				// Fill the field with garbage
 				engine.createFieldIfNeeded();
 				fillGarbage(engine, playerID);
@@ -224,7 +224,7 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 		int playerID = engine.getPlayerID();
 		int remainLines = 0;
 
-		if((netCurrentRoomInfo == null) || !netCurrentRoomInfo.useMap) {
+		if((channelInfo == null) || !channelInfo.useMap) {
 			// Normal game
 			remainLines = playerRemainLines[playerID];
 			engine.meterValue = remainLines * owner.receiver.getBlockGraphicsHeight(engine, playerID);
@@ -246,7 +246,7 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 	@Override
 	public void calcScore(GameEngine engine, int playerID, int lines) {
 		if((lines > 0) && (playerID == 0)) {
-			if((netCurrentRoomInfo == null) || !netCurrentRoomInfo.useMap) {
+			if((channelInfo == null) || !channelInfo.useMap) {
 				playerRemainLines[playerID] = getRemainGarbageLines(engine, playerID);
 			} else if(engine.field != null) {
 				playerRemainLines[playerID] = engine.field.getHowManyGems() - engine.field.getHowManyGemClears();

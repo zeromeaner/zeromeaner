@@ -43,14 +43,14 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netvsApplyRoomSettings(GameEngine engine) {
-		if(netCurrentRoomInfo != null) {
-			engine.speed.gravity = netCurrentRoomInfo.gravity;
-			engine.speed.denominator = netCurrentRoomInfo.denominator;
-			engine.speed.are = netCurrentRoomInfo.are;
-			engine.speed.areLine = netCurrentRoomInfo.areLine;
-			engine.speed.lineDelay = netCurrentRoomInfo.lineDelay;
-			engine.speed.lockDelay = netCurrentRoomInfo.lockDelay;
-			engine.speed.das = netCurrentRoomInfo.das;
+		if(channelInfo != null) {
+			engine.speed.gravity = channelInfo.gravity;
+			engine.speed.denominator = channelInfo.denominator;
+			engine.speed.are = channelInfo.are;
+			engine.speed.areLine = channelInfo.areLine;
+			engine.speed.lineDelay = channelInfo.lineDelay;
+			engine.speed.lockDelay = channelInfo.lockDelay;
+			engine.speed.das = channelInfo.das;
 		}
 	}
 

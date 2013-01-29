@@ -16,29 +16,27 @@ import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
-import org.zeromeaner.game.net.NetPlayerClient;
-import org.zeromeaner.game.net.NetPlayerInfo;
-import org.zeromeaner.game.net.NetRoomInfo;
-import org.zeromeaner.game.net.NetSPRecord;
-import org.zeromeaner.game.net.NetUtil;
+import org.zeromeaner.game.knet.KNetClient;
+import org.zeromeaner.game.knet.KNetEvent;
+import org.zeromeaner.game.knet.KNetListener;
+import org.zeromeaner.game.knet.srv.KSChannelManager.ChannelInfo;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
-import org.zeromeaner.gui.net.NetLobbyFrame;
-import org.zeromeaner.gui.net.NetLobbyListener;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
+import static org.zeromeaner.game.knet.KNetEvent.NetEventArgs.*;
 
 /**
  * Special base class for netplay
  */
-public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
+public class AbstractNetMode extends AbstractMode implements KNetListener {
 	/** Log (Declared in NetDummyMode) */
 	static Logger log = Logger.getLogger(AbstractNetMode.class);
 
 	/** NET: Lobby (Declared in NetDummyMode) */
-	protected NetLobbyFrame netLobby;
+	protected KNetClient knetClient;
 
 	/** NET: GameManager (Declared in NetDummyMode; Don't override it!) */
 	protected GameManager owner;
@@ -50,7 +48,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	protected boolean netIsWatch;
 
 	/** NET: Current room info. Sometimes null. (Declared in NetDummyMode) */
-	protected NetRoomInfo netCurrentRoomInfo;
+	protected ChannelInfo channelInfo;
 
 	/** NET: Number of spectators (Declared in NetDummyMode) */
 	protected int netNumSpectators;
@@ -155,20 +153,6 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 */
 	@Override
 	public void netplayInit(Object obj) {
-		if(obj instanceof NetLobbyFrame) {
-			netLobby = (NetLobbyFrame)obj;
-			netLobby.setNetDummyMode(this);
-
-			try {
-				netLobby.ruleOptPlayer = new RuleOptions(owner.engine[0].ruleopt);
-			} catch (NullPointerException e) {
-				log.error("NPE on netplayInit; Most likely the mode is overriding 'owner' variable", e);
-			}
-
-			if((netLobby != null) && (netLobby.netPlayerClient != null) && (netLobby.netPlayerClient.getCurrentRoomInfo() != null)) {
-				netOnJoin(netLobby, netLobby.netPlayerClient, netLobby.netPlayerClient.getCurrentRoomInfo());
-			}
-		}
 	}
 
 	/**
@@ -176,10 +160,6 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 */
 	@Override
 	public void netplayUnload(Object obj) {
-		if(netLobby != null) {
-			netLobby.setNetDummyMode(null);
-			netLobby = null;
-		}
 	}
 
 	/**
@@ -290,7 +270,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 		if((engine.ending == 0) && (netIsNetPlay) && (!netIsWatch) && ((netNumSpectators > 0) || (netForceSendMovements))) {
 			netSendField(engine);
 			netSendStats(engine);
-			netLobby.netPlayerClient.send("game\tsynchronous\tlocked\t" + netvsMySeatID + "\n");
+			knetClient.fireTCP(GAME, true, GAME_PIECE_LOCKED, true);
 		}
 	}
 
@@ -506,7 +486,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 		if(message[0].equals("playerlogout")) {
 			NetPlayerInfo pInfo = new NetPlayerInfo(message[1]);
 
-			if((netCurrentRoomInfo != null) && (pInfo.roomID == netCurrentRoomInfo.roomID)) {
+			if((channelInfo != null) && (pInfo.roomID == channelInfo.roomID)) {
 				netUpdatePlayerExist();
 			}
 		}
@@ -658,10 +638,10 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 * @param client NetPlayerClient
 	 * @param roomInfo NetRoomInfo
 	 */
-	protected void netOnJoin(NetLobbyFrame lobby, NetPlayerClient client, NetRoomInfo roomInfo) {
+	protected void netOnJoin(KNetClient client, ChannelInfo roomInfo) {
 		log.debug("onJoin on NetDummyMode");
 
-		netCurrentRoomInfo = roomInfo;
+		channelInfo = roomInfo;
 		netIsNetPlay = true;
 		netIsWatch = (netLobby.netPlayerClient.getYourPlayerInfo().seatID == -1);
 		netNumSpectators = 0;
@@ -701,9 +681,9 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 		netNumSpectators = 0;
 		netPlayerName = "";
 
-		if((netCurrentRoomInfo != null) && (netCurrentRoomInfo.roomID != -1) && (netLobby != null)) {
+		if((channelInfo != null) && (channelInfo.roomID != -1) && (netLobby != null)) {
 			for(NetPlayerInfo pInfo: netLobby.updateSameRoomPlayerInfoList()) {
-				if(pInfo.roomID == netCurrentRoomInfo.roomID) {
+				if(pInfo.roomID == channelInfo.roomID) {
 					if(pInfo.seatID == 0) {
 						netPlayerName = pInfo.strName;
 					} else if(pInfo.seatID == -1) {
@@ -875,46 +855,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 * @param engine GameEngine
 	 */
 	protected void netSendField(GameEngine engine) {
-		if(owner.receiver.isStickySkin(engine) || netAlwaysSendFieldAttributes) {
-			// Send with attributes
-			String strSrcFieldData = engine.field.attrFieldToString();
-			int nocompSize = strSrcFieldData.length();
-
-			String strCompFieldData = NetUtil.compressString(strSrcFieldData);
-			int compSize = strCompFieldData.length();
-
-			String strFieldData = strSrcFieldData;
-			boolean isCompressed = false;
-			if(compSize < nocompSize) {
-				strFieldData = strCompFieldData;
-				isCompressed = true;
-			}
-
-			String msg = "game\tfieldattr\t";
-			msg += engine.getSkin() + "\t";
-			msg += strFieldData + "\t" + isCompressed + "\n";
-			netLobby.netPlayerClient.send(msg);
-		} else {
-			// Send without attributes
-			String strSrcFieldData = engine.field.fieldToString();
-			int nocompSize = strSrcFieldData.length();
-
-			String strCompFieldData = NetUtil.compressString(strSrcFieldData);
-			int compSize = strCompFieldData.length();
-
-			String strFieldData = strSrcFieldData;
-			boolean isCompressed = false;
-			if(compSize < nocompSize) {
-				strFieldData = strCompFieldData;
-				isCompressed = true;
-			}
-
-			String msg = "game\tfield\t";
-			msg += engine.getSkin() + "\t";
-			msg += engine.field.getHeightWithoutHurryupFloor() + "\t";
-			msg += strFieldData + "\t" + isCompressed + "\n";
-			netLobby.netPlayerClient.send(msg);
-		}
+		knetClient.fireUDP(GAME, true, GAME_FIELD, true, PAYLOAD, engine.field);
 	}
 
 	/**
@@ -922,45 +863,8 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 * @param engine GameEngine
 	 * @param message Message array
 	 */
-	protected void netRecvField(GameEngine engine, String[] message) {
-		if(message[3].equals("fieldattr")) {
-			// With attributes
-			if(message.length > 4) {
-				engine.nowPieceObject = null;
-				engine.holdDisable = false;
-				if(engine.stat == GameEngine.STAT_SETTING) engine.stat = GameEngine.STAT_MOVE;
-				int skin = Integer.parseInt(message[4]);
-				netPlayerSkin = skin;
-				if(message.length > 6) {
-					boolean isCompressed = Boolean.parseBoolean(message[6]);
-					String strFieldData = message[5];
-					if(isCompressed) {
-						strFieldData = NetUtil.decompressString(strFieldData);
-					}
-					engine.field.attrStringToField(strFieldData, skin);
-				}
-			}
-		} else {
-			// Without attributes
-			if(message.length > 5) {
-				engine.nowPieceObject = null;
-				engine.holdDisable = false;
-				if(engine.stat == GameEngine.STAT_SETTING) engine.stat = GameEngine.STAT_MOVE;
-				int skin = Integer.parseInt(message[4]);
-				int highestWallY = Integer.parseInt(message[5]);
-				netPlayerSkin = skin;
-				if(message.length > 7) {
-					String strFieldData = message[6];
-					boolean isCompressed = Boolean.parseBoolean(message[7]);
-					if(isCompressed) {
-						strFieldData = NetUtil.decompressString(strFieldData);
-					}
-					engine.field.stringToField(strFieldData, skin, highestWallY, highestWallY);
-				} else {
-					engine.field.reset();
-				}
-			}
-		}
+	protected void netRecvField(GameEngine engine, KNetEvent e) {
+		engine.field = (Field) e.get(PAYLOAD);
 	}
 
 	/**
@@ -972,26 +876,15 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 		int holdDirection = Piece.DIRECTION_UP;
 		int holdColor = Block.BLOCK_COLOR_GRAY;
 		if(engine.holdPieceObject != null) {
-			holdID = engine.holdPieceObject.id;
-			holdDirection = engine.holdPieceObject.direction;
-			holdColor = engine.ruleopt.pieceColor[engine.holdPieceObject.id];
+			knetClient.fireUDP(GAME, true, GAME_HOLD_PIECE, true, PAYLOAD, engine.holdPieceObject);
 		}
 
-		String msg = "game\tnext\t" + engine.ruleopt.nextDisplay + "\t" + engine.holdDisable + "\t";
-
-		for(int i = -1; i < engine.ruleopt.nextDisplay; i++) {
-			if(i < 0) {
-				msg += holdID + ";" + holdDirection + ";" + holdColor;
-			} else {
-				Piece nextObj = engine.getNextObject(engine.nextPieceCount + i);
-				msg += nextObj.id + ";" + nextObj.direction + ";" + engine.ruleopt.pieceColor[nextObj.id];
-			}
-
-			if(i < engine.ruleopt.nextDisplay - 1) msg += "\t";
+		Piece[] next = new Piece[engine.ruleopt.nextDisplay];
+		for(int i = 0; i < next.length; i++) {
+			next[i] = engine.getNextObject(engine.nextPieceCount + i);
 		}
 
-		msg += "\n";
-		netLobby.netPlayerClient.send(msg);
+		knetClient.fireUDP(GAME, true, GAME_NEXT_PIECE, true, PAYLOAD, next);
 	}
 
 	/**
@@ -1063,7 +956,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 				// Download
 				if(engine.ctrl.isPush(Controller.BUTTON_A)) {
 					engine.playSE("decide");
-					String strMsg = "spdownload\t" + NetUtil.urlEncode(netCurrentRoomInfo.ruleName) + "\t" +
+					String strMsg = "spdownload\t" + NetUtil.urlEncode(channelInfo.ruleName) + "\t" +
 									NetUtil.urlEncode(getName()) + "\t" + goaltype + "\t" +
 									(netRankingView != 0) + "\t" + NetUtil.urlEncode(netRankingName[d].get(netRankingCursor[d])) + "\n";
 					netLobby.netPlayerClient.send(strMsg);
@@ -1249,7 +1142,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 		netRankingMyRank[1] = -1;
 		netIsNetRankingDisplayMode = true;
 		owner.menuOnly = true;
-		String rule = (netCurrentRoomInfo.rated ? netCurrentRoomInfo.ruleName : "all");
+		String rule = (channelInfo.rated ? channelInfo.ruleName : "all");
 		netLobby.netPlayerClient.send("spranking\t" + NetUtil.urlEncode(rule) + "\t" +
 				NetUtil.urlEncode(getName()) + "\t" + goaltype + "\t" + false + "\n");
 		netLobby.netPlayerClient.send("spranking\t" + NetUtil.urlEncode(rule) + "\t" +
