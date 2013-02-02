@@ -18,15 +18,17 @@ import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
+import org.zeromeaner.game.knet.KNetEventSource;
 import org.zeromeaner.game.knet.KNetListener;
-import org.zeromeaner.game.knet.srv.KSChannelManager.ChannelInfo;
+import org.zeromeaner.game.knet.KNetPlayerInfo;
+import org.zeromeaner.game.knet.srv.KSChannelInfo;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
-import static org.zeromeaner.game.knet.KNetEvent.NetEventArgs.*;
+import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
 /**
  * Special base class for netplay
@@ -48,7 +50,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	protected boolean netIsWatch;
 
 	/** NET: Current room info. Sometimes null. (Declared in NetDummyMode) */
-	protected ChannelInfo channelInfo;
+	protected KSChannelInfo channelInfo;
 
 	/** NET: Number of spectators (Declared in NetDummyMode) */
 	protected int netNumSpectators;
@@ -449,14 +451,15 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	/*
 	 * NET: Message received
 	 */
-	public void netlobbyOnMessage(NetLobbyFrame lobby, NetPlayerClient client, String[] message) throws IOException {
+	@Override
+	public void knetEvented(KNetClient client, KNetEvent e) {
 		// Player status update
-		if(message[0].equals("playerupdate")) {
+		if(e.is(PLAYER_UPDATE)) {
 			netUpdatePlayerExist();
 		}
 		// When someone logout
-		if(message[0].equals("playerlogout")) {
-			NetPlayerInfo pInfo = new NetPlayerInfo(message[1]);
+		if(e.is(PLAYER_LOGOUT)) {
+			KNetEventSource pInfo = (KNetEventSource) e.get(PLAYER_LOGOUT);
 
 			if((channelInfo != null) && (pInfo.roomID == channelInfo.roomID)) {
 				netUpdatePlayerExist();
@@ -610,7 +613,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 * @param client NetPlayerClient
 	 * @param roomInfo NetRoomInfo
 	 */
-	protected void netOnJoin(KNetClient client, ChannelInfo roomInfo) {
+	protected void netOnJoin(KNetClient client, KSChannelInfo roomInfo) {
 		log.debug("onJoin on NetDummyMode");
 
 		channelInfo = roomInfo;

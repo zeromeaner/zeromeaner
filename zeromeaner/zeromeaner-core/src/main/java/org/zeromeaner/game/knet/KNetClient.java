@@ -9,7 +9,7 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-import static org.zeromeaner.game.knet.KNetEvent.NetEventArgs.*;
+import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
 public class KNetClient {
 	protected String type;

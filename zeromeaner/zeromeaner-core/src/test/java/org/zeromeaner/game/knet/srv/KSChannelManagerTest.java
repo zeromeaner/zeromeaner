@@ -10,7 +10,7 @@ import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.knet.KNetListener;
 import org.zeromeaner.game.knet.KNetServer;
 
-import static org.zeromeaner.game.knet.KNetEvent.NetEventArgs.*;
+import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
 public class KSChannelManagerTest {
 	private static KNetServer server;

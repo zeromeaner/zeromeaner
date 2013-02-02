@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
 import org.junit.Test;
-import org.zeromeaner.game.knet.KNetEvent.NetEventArgs;
 
 public class KNetServerTest {
 	@Test
@@ -26,11 +25,11 @@ public class KNetServerTest {
 						}
 					});
 
-					c1.fireTCP(c1.getSource().event(NetEventArgs.PAYLOAD, "hello there"));
+					c1.fireTCP(c1.getSource().event(KNetEventArgs.PAYLOAD, "hello there"));
 					
 					sync.acquire();
 
-					c1.fireTCP(c1.getSource().event(NetEventArgs.PAYLOAD, "hello there"));
+					c1.fireTCP(c1.getSource().event(KNetEventArgs.PAYLOAD, "hello there"));
 					
 					sync.acquire();
 				} finally {

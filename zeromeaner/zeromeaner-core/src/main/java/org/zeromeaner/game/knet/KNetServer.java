@@ -1,28 +1,33 @@
 package org.zeromeaner.game.knet;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.zeromeaner.game.knet.KNetEvent.NetEventArgs;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
-import static org.zeromeaner.game.knet.KNetEvent.NetEventArgs.*;
+import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
 public class KNetServer {
 	protected int port;
 	protected AtomicInteger nextClientId = new AtomicInteger(-1);
 	protected Server server;
 	
+	protected Map<Integer, KNetEventSource> sourcesByConnectionId = new HashMap<Integer, KNetEventSource>();
+	
 	protected KNetEventSource source;
 	
 	protected Listener listener = new Listener() {
 		@Override
 		public void connected(Connection connection) {
+			KNetEventSource evs = new KNetEventSource(nextClientId.incrementAndGet());
+			sourcesByConnectionId.put(connection.getID(), evs);
 			connection.sendTCP(source.event(
-					ASSIGN_SOURCE, new KNetEventSource(nextClientId.incrementAndGet())
+					ASSIGN_SOURCE, evs
 					));
 		}
 		
@@ -32,7 +37,14 @@ public class KNetServer {
 				return;
 			}
 			KNetEvent e = (KNetEvent) object;
-			if(e.is(NetEventArgs.UDP))
+			KNetEventSource evs = sourcesByConnectionId.get(connection.getID());
+			if(evs != null) {
+				if(e.is(UPDATE_SOURCE)) {
+					evs.updateFrom((KNetEventSource) e.get(UPDATE_SOURCE));
+				}
+				e.getSource().updateFrom(evs);
+			}
+			if(e.is(KNetEventArgs.UDP))
 				server.sendToAllExceptUDP(connection.getID(), object);
 			else
 				server.sendToAllExceptTCP(connection.getID(), object);

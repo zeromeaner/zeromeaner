@@ -8,12 +8,18 @@ import com.esotericsoftware.kryo.io.Output;
 public class KNetEventSource implements KryoSerializable {
 	protected int id;
 	protected String type;
+	protected String name;
 	
 	@Deprecated
 	public KNetEventSource() {}
 	
 	public KNetEventSource(int id) {
 		this.id = id;
+	}
+	
+	public void updateFrom(KNetEventSource source) {
+		this.type = source.getType();
+		this.name = source.getName();
 	}
 	
 	public int getId() {
@@ -34,7 +40,7 @@ public class KNetEventSource implements KryoSerializable {
 	
 	@Override
 	public String toString() {
-		return "(" + id + "," + type + ")";
+		return "(" + id + "," + type + "," + name + ")";
 	}
 	
 	@Override
@@ -57,13 +63,23 @@ public class KNetEventSource implements KryoSerializable {
 	@Override
 	public void write(Kryo kryo, Output output) {
 		output.writeInt(id, true);
-		kryo.writeObjectOrNull(output, type, String.class);
+		output.writeString(type);
+		output.writeString(name);
 	}
 
 	@Override
 	public void read(Kryo kryo, Input input) {
 		id = input.readInt(true);
-		type = kryo.readObjectOrNull(input, String.class);
+		type = input.readString();
+		name = input.readString();
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }
