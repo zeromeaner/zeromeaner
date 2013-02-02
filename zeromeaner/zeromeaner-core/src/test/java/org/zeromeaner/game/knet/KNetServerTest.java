@@ -3,43 +3,49 @@ package org.zeromeaner.game.knet;
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class KNetServerTest {
+	private KNetServer server;
+	private KNetClient sender;
+	private KNetClient receiver;
+
+	@Before
+	public void before() throws Exception {
+		server = new KNetServer(11223);
+		sender = new KNetClient("sender", "localhost", server.getPort()).start();
+		receiver = new KNetClient("receiver", "localhost", server.getPort()).start();
+	}
+
+	@After
+	public void after() throws Exception {
+		if(receiver != null)
+			receiver.stop();
+		if(sender != null)
+			sender.stop();
+		if(server != null)
+			server.stop();
+	}
+
 	@Test
 	public void testConnectClients() throws Exception {
-		KNetServer server = new KNetServer(11223);
-		try {
-			KNetClient c1 = new KNetClient("c1", "localhost", 11223);
-			try {
-				c1.start();
-				final Semaphore sync = new Semaphore(0);
-				KNetClient c2 = new KNetClient("c2", "localhost", 11223);
-				try {
-					c2.start();
-					c2.addKNetListener(new KNetListener() {
-						@Override
-						public void knetEvented(KNetClient client, KNetEvent e) {
-							System.out.println(e);
-							sync.release();
-						}
-					});
-
-					c1.fireTCP(c1.getSource().event(KNetEventArgs.PAYLOAD, "hello there"));
-					
-					sync.acquire();
-
-					c1.fireTCP(c1.getSource().event(KNetEventArgs.PAYLOAD, "hello there"));
-					
-					sync.acquire();
-				} finally {
-					c2.stop();
-				}
-			} finally {
-				c1.stop();
+		final Semaphore sync = new Semaphore(0);
+		receiver.addKNetListener(new KNetListener() {
+			@Override
+			public void knetEvented(KNetClient client, KNetEvent e) {
+				System.out.println(e);
+				sync.release();
 			}
-		} finally {
-			server.stop();
-		}
+		});
+
+		sender.fireTCP(sender.getSource().event(KNetEventArgs.PAYLOAD, "hello there"));
+
+		sync.acquire();
+
+		sender.fireTCP(sender.getSource().event(KNetEventArgs.PAYLOAD, "hello there"));
+
+		sync.acquire();
 	}
 }

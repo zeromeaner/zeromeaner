@@ -73,6 +73,7 @@ public class KNetClient {
 			source = (KNetEventSource) e.get(ASSIGN_SOURCE);
 			source.setType(type);
 			issue(source.event(CONNECTED, true));
+			fireTCP(UPDATE_SOURCE, source);
 		}
 		issue(e);
 	}

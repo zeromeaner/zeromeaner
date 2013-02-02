@@ -12,13 +12,13 @@ public enum KNetEventArgs {
 	 * Issued by a server when a server assigns a {@link KNetEventSource} to a client.
 	 * Argument: {@link KNetEventSource}.
 	 */
-	ASSIGN_SOURCE,
+	ASSIGN_SOURCE(KNetEventSource.class),
 	
 	/**
 	 * Issued by a client to update fields on the servers' record for that client.
 	 * Argument: {@link KNetEventSource} to get the new data from.
 	 */
-	UPDATE_SOURCE,
+	UPDATE_SOURCE(KNetEventSource.class),
 	/**
 	 * Issued when a client connects to a server, after receiving a {@link KNetEventSource}.
 	 */
@@ -35,40 +35,40 @@ public enum KNetEventArgs {
 	 * Any object payload.
 	 * Argument: {@link Object}
 	 */
-	PAYLOAD,
+	PAYLOAD(Object.class, true),
 	
 	/**
 	 * A specific {@link KNetEventSource} that should receive this message
 	 */
-	ADDRESS,
+	ADDRESS(KNetEventSource.class),
 	
 	/**
 	 * A {@link String} describing the error
 	 */
-	ERROR,
+	ERROR(String.class),
 	
 	/**
 	 * A specific {@link KNetEvent} that this event is in reply to
 	 */
-	IN_REPLY_TO,
+	IN_REPLY_TO(KNetEvent.class),
 	
 	/**
 	 * The username of the event sender
 	 * Argument: {@link String}
 	 */
-	USERNAME,
+	USERNAME(String.class),
 	
 	/**
 	 * The room ID for this message.  -1 is the lobby.
 	 * Argument: {@link Integer}
 	 */
-	CHANNEL_ID,
+	CHANNEL_ID(Integer.class),
 	
 	/**
-	 * The timstamp (millis UTC) of this message.  Optional.
+	 * The timstamp (millis UTC) of this message.
 	 * Argument: {@link Long}
 	 */
-	TIMESTAMP,
+	TIMESTAMP(Long.class),
 	
 	/**
 	 * Issued by a client to request a list of the current rooms.
@@ -78,9 +78,9 @@ public enum KNetEventArgs {
 	CHANNEL_LIST,
 	
 	/**
-	 * Issued for chats in a room.  {@link #PAYLOAD} will be a string.
+	 * Issued for chats in a room.
 	 */
-	CHANNEL_CHAT,
+	CHANNEL_CHAT(String.class),
 	
 	/** Issued when joining a room */
 	CHANNEL_JOIN,
@@ -94,14 +94,14 @@ public enum KNetEventArgs {
 	/** Issued when an in-game piece is locked */
 	GAME_PIECE_LOCKED,
 	
-	/** Issued when the field is sent.  {@link Field} is sent in {@link #PAYLOAD} */ 
-	GAME_FIELD,
+	/** Issued when the field is sent. */ 
+	GAME_FIELD(Field.class),
 	
-	/** Issued when the hold piece is sent. The {@link Piece} is sent in {@link #PAYLOAD}  */
-	GAME_HOLD_PIECE,
+	/** Issued when the hold piece is sent. */
+	GAME_HOLD_PIECE(Piece.class),
 	
-	/** Issued when the next piece list is sent. The {@link Piece}[] is sent in {@link #PAYLOAD}  */
-	GAME_NEXT_PIECE,
+	/** Issued when the next piece list is sent. */
+	GAME_NEXT_PIECE(Piece[].class),
 	
 	/** Issued when the game is ending */
 	GAME_ENDING,
@@ -126,66 +126,48 @@ public enum KNetEventArgs {
 	 * Signal cursor movement?
 	 * Argument: {@link Integer}
 	 */
-	GAME_CURSOR,
+	GAME_CURSOR(Integer.class),
 	
 	PLAYER_UPDATE,
 	
 	/**
 	 * Issued when a player logs out.
-	 * Argument: {@link KNetEventSource} the player that logged out
 	 */
 	PLAYER_LOGOUT,
 	;
 	
+	private Class<?> type;
+	private boolean nullable;
+	
+	private KNetEventArgs() {
+		this(null, false);
+	}
+	
+	private KNetEventArgs(Class<?> type) {
+		this(type, false);
+	}
+	
+	private KNetEventArgs(Class<?> type, boolean nullable) {
+		this.type = type;
+		this.nullable = nullable;
+	}
+	
 	public void write(Kryo kryo, Output output, Object argValue) {
-		switch(this) {
-		case ASSIGN_SOURCE:
-			kryo.writeObject(output, (KNetEventSource) argValue);
-			break;
-		case PAYLOAD:
+		if(type == null)
+			return;
+		if(nullable)
 			kryo.writeClassAndObject(output, argValue);
-			break;
-		case USERNAME:
-			output.writeString((String) argValue);
-			break;
-		case CHANNEL_ID:
-			output.writeInt((Integer) argValue, true);
-			break;
-		case TIMESTAMP:
-			output.writeLong((Long) argValue, true);
-			break;
-		case ADDRESS:
+		else
 			kryo.writeObject(output, argValue);
-			break;
-		case ERROR:
-			output.writeString((String) argValue);
-			break;
-		case IN_REPLY_TO:
-			kryo.writeObject(output, argValue);
-			break;
-		}
+		
 	}
 	
 	public Object read(Kryo kryo, Input input) {
-		switch(this) {
-		case IN_REPLY_TO:
-			return kryo.readObject(input, KNetEvent.class);
-		case ERROR:
-			return input.readString();
-		case ADDRESS:
-			return kryo.readObject(input, KNetEventSource.class);
-		case ASSIGN_SOURCE:
-			return kryo.readObject(input, KNetEventSource.class);
-		case PAYLOAD:
-			return kryo.readClassAndObject(input);
-		case USERNAME:
-			return input.readString();
-		case CHANNEL_ID:
-			return input.readInt(true);
-		case TIMESTAMP:
-			return input.readLong(true);
-		default:
+		if(type == null)
 			return true;
-		}
+		if(nullable)
+			return kryo.readClassAndObject(input);
+		else
+			return kryo.readObject(input, type);
 	}
 }
