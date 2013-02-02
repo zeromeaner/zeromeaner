@@ -91,11 +91,23 @@ public enum KNetEventArgs {
 	/** Issued for in-game events */
 	GAME,
 	
+	/**
+	 * Signal cursor movement?
+	 * Argument: {@link Integer}
+	 */
+	GAME_CURSOR, 
+	
 	/** Issued when an in-game piece is locked */
 	GAME_PIECE_LOCKED,
 	
 	/** Issued when the field is sent. */ 
 	GAME_FIELD(Field.class),
+	
+	GAME_OPTIONS(Object.class, true),
+	
+	GAME_STATS(Object.class, true),
+	
+	GAME_PIECE_MOVEMENT(Object.class, true),
 	
 	/** Issued when the hold piece is sent. */
 	GAME_HOLD_PIECE(Piece.class),
@@ -109,24 +121,22 @@ public enum KNetEventArgs {
 	/** Issued when the game says excellent? */
 	GAME_EXCELLENT,
 	
+	GAME_RETRY, 
+	
+	/** Issued when we show the results screen? */
+	GAME_RESULTS_SCREEN, 
+	
+	GAME_SYNCHRONOUS,
+	
+	GAME_SYNCHRONOUS_LOCKED,
+	
 	/** Issued when the game is starting? */
 	START,
 	
 	/** Issued when we die? */
 	DEAD,
 	
-	/** Issued when we show the results screen? */
-	GAME_RESULTS_SCREEN,
-	
-	GAME_RETRY,
-	
 	RESET_1P,
-	
-	/**
-	 * Signal cursor movement?
-	 * Argument: {@link Integer}
-	 */
-	GAME_CURSOR(Integer.class),
 	
 	PLAYER_UPDATE,
 	

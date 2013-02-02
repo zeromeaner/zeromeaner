@@ -466,7 +466,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 			}
 		}
 		// Game started
-		if(message[0].equals("start")) {
+		if(e.is(START)) {
 			log.debug("NET: Game started");
 
 			if(netIsWatch) {
@@ -476,7 +476,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 			}
 		}
 		// Dead
-		if(message[0].equals("dead")) {
+		if(e.is(DEAD)) {
 			log.debug("NET: Dead");
 
 			if(netIsWatch) {
@@ -505,13 +505,13 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 			netRecvNetPlayRanking(owner.engine[0], message);
 		}
 		// Reset
-		if(message[0].equals("reset1p")) {
+		if(e.is(RESET_1P)) {
 			if(netIsWatch) {
 				owner.reset();
 			}
 		}
 		// Game messages
-		if(message[0].equals("game")) {
+		if(e.is(GAME)) {
 			if(netIsWatch) {
 				GameEngine engine = owner.engine[0];
 				if(engine.field == null) {
@@ -519,46 +519,46 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 				}
 
 				// Move cursor
-				if(message[3].equals("cursor")) {
+				if(e.is(GAME_CURSOR)) {
 					if(engine.stat == GameEngine.STAT_SETTING) {
-						engine.statc[2] = Integer.parseInt(message[4]);
+						engine.statc[2] = (Integer) e.get(GAME_CURSOR);
 						engine.playSE("cursor");
 					}
 				}
 				// Change game options
-				if(message[3].equals("option")) {
-					netRecvOptions(engine, message);
+				if(e.is(GAME_OPTIONS)) {
+					netRecvOptions(engine, e);
 				}
 				// Field
-				if(message[3].equals("field") || message[3].equals("fieldattr")) {
-					netRecvField(engine, message);
+				if(e.is(GAME_FIELD)) {
+					netRecvField(engine, e);
 				}
 				// Stats
-				if(message[3].equals("stats")) {
-					netRecvStats(engine, message);
+				if(e.is(GAME_STATS)) {
+					netRecvStats(engine, e);
 				}
 				// Current Piece
-				if(message[3].equals("piece")) {
-					netRecvPieceMovement(engine, message);
+				if(e.is(GAME_PIECE_MOVEMENT)) {
+					netRecvPieceMovement(engine, e);
 				}
 				// Next and Hold
-				if(message[3].equals("next")) {
-					netRecvNextAndHold(engine, message);
+				if(e.is(GAME_NEXT_PIECE)) {
+					netRecvNextAndHold(engine, e);
 				}
 				// Ending
-				if(message[3].equals("ending")) {
+				if(e.is(GAME_ENDING)) {
 					engine.ending = 1;
 					if(!engine.staffrollEnable) engine.gameEnded();
 					engine.stat = GameEngine.STAT_ENDINGSTART;
 					engine.resetStatc();
 				}
 				// Excellent
-				if(message[3].equals("excellent")) {
+				if(e.is(GAME_EXCELLENT)) {
 					engine.stat = GameEngine.STAT_EXCELLENT;
 					engine.resetStatc();
 				}
 				// Retry
-				if(message[3].equals("retry")) {
+				if(e.is(GAME_RETRY)) {
 					engine.ending = 0;
 					engine.gameEnded();
 					engine.stat = GameEngine.STAT_SETTING;
@@ -566,7 +566,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 					engine.playSE("decide");
 				}
 				// Display results screen
-				if(message[3].equals("resultsscreen")) {
+				if(e.is(GAME_RESULTS_SCREEN)) {
 					engine.field.reset();
 					engine.stat = GameEngine.STAT_RESULT;
 					engine.resetStatc();
@@ -575,23 +575,23 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 		}
 		
 		if(isSynchronousPlay()) {
-			GameEngine e = owner.engine[0];
-			e.synchronousIncrement = netLobby.netPlayerClient.getPlayerCount() - 1;
-			if("game".equals(message[0])) {
-				if("synchronous".equals(message[3])) {
-					if("locked".equals(message[4])) {
-						e.synchronousSync.decrementAndGet();
+			GameEngine eng = owner.engine[0];
+			eng.synchronousIncrement = netLobby.netPlayerClient.getPlayerCount() - 1;
+			if(e.is(GAME)) {
+				if(e.is(GAME_SYNCHRONOUS)) {
+					if(e.is(GAME_SYNCHRONOUS_LOCKED)) {
+						eng.synchronousSync.decrementAndGet();
 					}
 				}
-				if("resultsscreen".equals(message[3])) {
-					e.synchronousSync.set(0);
+				if(e.is(GAME_RESULTS_SCREEN)) {
+					eng.synchronousSync.set(0);
 				}
 			}
-			if("playerlogout".equals(message[0])) {
-				e.synchronousSync.decrementAndGet();
+			if(e.is(PLAYER_LOGOUT)) {
+				eng.synchronousSync.decrementAndGet();
 			}
-			if("dead".equals(message[0])) {
-				e.synchronousSync.decrementAndGet();
+			if(e.is(DEAD)) {
+				eng.synchronousSync.decrementAndGet();
 			}
 		}
 	}
@@ -785,7 +785,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 * @param engine GameEngine
 	 * @param message Message array
 	 */
-	protected void netRecvPieceMovement(GameEngine engine, String[] message) {
+	protected void netRecvPieceMovement(GameEngine engine, KNetEvent e) {
 		int id = Integer.parseInt(message[4]);
 
 		if(id >= 0) {
@@ -867,7 +867,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 * @param engine GameEngine
 	 * @param message Message array
 	 */
-	protected void netRecvNextAndHold(GameEngine engine, String[] message) {
+	protected void netRecvNextAndHold(GameEngine engine, KNetEvent e) {
 		int maxNext = Integer.parseInt(message[4]);
 		engine.ruleopt.nextDisplay = maxNext;
 		engine.holdDisable = Boolean.parseBoolean(message[5]);
@@ -1233,7 +1233,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 * @param engine GameEngine
 	 * @param message Message array
 	 */
-	protected void netRecvStats(GameEngine engine, String[] message) {
+	protected void netRecvStats(GameEngine engine, KNetEvent e) {
 	}
 
 	/**
@@ -1258,7 +1258,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 * @param engine GameEngine
 	 * @param message Message array
 	 */
-	protected void netRecvOptions(GameEngine engine, String[] message) {
+	protected void netRecvOptions(GameEngine engine, KNetEvent e) {
 	}
 
 	/**
