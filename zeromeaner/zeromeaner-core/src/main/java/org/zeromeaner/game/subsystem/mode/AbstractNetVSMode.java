@@ -2,6 +2,7 @@ package org.zeromeaner.game.subsystem.mode;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
@@ -9,6 +10,7 @@ import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.event.EventRenderer;
+import org.zeromeaner.game.knet.KNetEventSource;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
@@ -25,14 +27,14 @@ public class AbstractNetVSMode extends AbstractNetMode {
 
 	/** NET-VS: Numbers of seats numbers corresponding to frames on player's screen */
 	protected static final int[][] NETVS_GAME_SEAT_NUMBERS =
-	{
+		{
 		{0,1,2,3,4,5},
 		{1,0,2,3,4,5},
 		{1,2,0,3,4,5},
 		{1,2,3,0,4,5},
 		{1,2,3,4,0,5},
 		{1,2,3,4,5,0},
-	};
+		};
 
 	/** NET-VS: Each player's garbage block color */
 	protected static final int[] NETVS_PLAYER_COLOR_BLOCK = {
@@ -251,10 +253,7 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	 * @return true if watch mode
 	 */
 	protected boolean netvsIsWatch() {
-		try {
-			return (netLobby.netPlayerClient.getYourPlayerInfo().seatID == -1);
-		} catch (Exception e) {}
-		return false;
+		return !channelInfo.getPlayers().contains(knetClient.getSource());
 	}
 
 	/**
@@ -262,10 +261,10 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netUpdatePlayerExist() {
-		netvsMySeatID = netLobby.netPlayerClient.getYourPlayerInfo().seatID;
+		netvsMySeatID = channelInfo.getPlayers().indexOf(knetClient.getSource());
 		netvsNumPlayers = 0;
 		netNumSpectators = 0;
-		netPlayerName = netLobby.netPlayerClient.getPlayerName();
+		netPlayerName = knetClient.getSource().getName();
 		netIsWatch = netvsIsWatch();
 
 		for(int i = 0; i < NETVS_MAX_PLAYERS; i++) {
@@ -281,40 +280,39 @@ public class AbstractNetVSMode extends AbstractNetMode {
 			owner.engine[i].framecolor = GameEngine.FRAME_COLOR_GRAY;
 		}
 
-		LinkedList<NetPlayerInfo> pList = netLobby.updateSameRoomPlayerInfoList();
+		//		LinkedList<NetPlayerInfo> pList = netLobby.updateSameRoomPlayerInfoList();
+		List<KNetEventSource> players = channelInfo.getPlayers();
 		LinkedList<String> teamList = new LinkedList<String>();
 
-		for(NetPlayerInfo pInfo: pList) {
-			if(pInfo.roomID == channelInfo.roomID) {
-				if(pInfo.seatID == -1) {
-					netNumSpectators++;
-				} else {
-					netvsNumPlayers++;
+		for(KNetEventSource pInfo: players) {
+			if(pInfo.seatID == -1) {
+				netNumSpectators++;
+			} else {
+				netvsNumPlayers++;
 
-					int playerID = netvsGetPlayerIDbySeatID(pInfo.seatID);
-					netvsPlayerExist[playerID] = true;
-					netvsPlayerReady[playerID] = pInfo.ready;
-					netvsPlayerActive[playerID] = pInfo.playing;
-					netvsPlayerSeatID[playerID] = pInfo.seatID;
-					netvsPlayerUID[playerID] = pInfo.uid;
-					netvsPlayerWinCount[playerID] = pInfo.winCountNow;
-					netvsPlayerPlayCount[playerID] = pInfo.playCountNow;
-					netvsPlayerName[playerID] = pInfo.strName;
-					netvsPlayerTeam[playerID] = pInfo.strTeam;
+				int playerID = players.indexOf(pInfo);
+				netvsPlayerExist[playerID] = true;
+				netvsPlayerReady[playerID] = pInfo.ready;
+				netvsPlayerActive[playerID] = pInfo.playing;
+				netvsPlayerSeatID[playerID] = pInfo.seatID;
+				netvsPlayerUID[playerID] = pInfo.uid;
+				netvsPlayerWinCount[playerID] = pInfo.winCountNow;
+				netvsPlayerPlayCount[playerID] = pInfo.playCountNow;
+				netvsPlayerName[playerID] = pInfo.getName();
+				netvsPlayerTeam[playerID] = pInfo.strTeam;
 
-					// Set frame color
-					if(pInfo.seatID < NETVS_PLAYER_COLOR_FRAME.length) {
-						owner.engine[playerID].framecolor = NETVS_PLAYER_COLOR_FRAME[pInfo.seatID];
-					}
+				// Set frame color
+				if(pInfo.seatID < NETVS_PLAYER_COLOR_FRAME.length) {
+					owner.engine[playerID].framecolor = NETVS_PLAYER_COLOR_FRAME[pInfo.seatID];
+				}
 
-					// Set team color
-					if(netvsPlayerTeam[playerID].length() > 0) {
-						if(!teamList.contains(netvsPlayerTeam[playerID])) {
-							teamList.add(netvsPlayerTeam[playerID]);
-							netvsPlayerTeamColor[playerID] = teamList.size();
-						} else {
-							netvsPlayerTeamColor[playerID] = teamList.indexOf(netvsPlayerTeam[playerID]) + 1;
-						}
+				// Set team color
+				if(netvsPlayerTeam[playerID].length() > 0) {
+					if(!teamList.contains(netvsPlayerTeam[playerID])) {
+						teamList.add(netvsPlayerTeam[playerID]);
+						netvsPlayerTeamColor[playerID] = teamList.size();
+					} else {
+						netvsPlayerTeamColor[playerID] = teamList.indexOf(netvsPlayerTeam[playerID]) + 1;
 					}
 				}
 			}
@@ -457,7 +455,7 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	protected void netvsSetGameScreenLayout(GameEngine engine) {
 		// Set display size
 		if( ((engine.getPlayerID() == 0) && !netvsIsWatch()) ||
-			((channelInfo != null) && (channelInfo.maxPlayers == 2) && (engine.getPlayerID() <= 1)) )
+				((channelInfo != null) && (channelInfo.maxPlayers == 2) && (engine.getPlayerID() <= 1)) )
 		{
 			engine.displaysize = 0;
 			engine.enableSE = true;
@@ -516,7 +514,7 @@ public class AbstractNetVSMode extends AbstractNetMode {
 				engine.tspinEnable = true;
 				engine.useAllSpinBonus = true;
 			}
-			
+
 			synchronousPlay = channelInfo.syncPlay;
 		}
 	}
@@ -1507,7 +1505,7 @@ public class AbstractNetVSMode extends AbstractNetMode {
 
 				// Force start
 				if((!netvsIsWatch()) && (netvsPlayTimerActive) && (!netvsIsPractice) &&
-				   (engine.stat == GameEngine.STAT_READY) && (engine.statc[0] < engine.goEnd))
+						(engine.stat == GameEngine.STAT_READY) && (engine.statc[0] < engine.goEnd))
 				{
 					engine.statc[0] = engine.goEnd;
 				}
