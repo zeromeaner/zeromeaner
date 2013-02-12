@@ -44,7 +44,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 		if(e.is(CHANNEL_LIST)) {
 			client.reply(e,
 					CHANNEL_LIST,
-					PAYLOAD, channels.values().toArray(new KNetChannelInfo[0]));
+					CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
 		}
 		if(e.is(CHANNEL_JOIN) && e.is(CHANNEL_ID)) {
 			int id = (Integer) e.get(CHANNEL_ID);
@@ -61,7 +61,8 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 			client.reply(e, 
 					CHANNEL_JOIN,
 					CHANNEL_ID, id,
-					PAYLOAD, e.getSource());
+					PAYLOAD, e.getSource(),
+					CHANNEL_INFO, new KNetChannelInfo[] { info });
 		}
 		if(e.is(CHANNEL_CREATE)) {
 			KNetChannelInfo request = (KNetChannelInfo) e.get(CHANNEL_CREATE);
@@ -90,7 +91,8 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 			client.fireTCP(
 					CHANNEL_LEAVE, 
 					CHANNEL_ID, id,
-					PAYLOAD, e.getSource());
+					PAYLOAD, e.getSource(),
+					CHANNEL_INFO, new KNetChannelInfo[] { info });
 		}
 		if(e.is(DISCONNECTED)) {
 			for(KNetChannelInfo info : channels.values()) {
@@ -100,7 +102,8 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				client.fireTCP(
 						CHANNEL_LEAVE,
 						CHANNEL_ID, info.getId(),
-						PAYLOAD, info);
+						PAYLOAD, e.getSource(),
+						CHANNEL_INFO, new KNetChannelInfo[] { info });
 			}
 		}
 	}

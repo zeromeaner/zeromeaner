@@ -5,6 +5,8 @@ import java.awt.CardLayout;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -165,14 +167,27 @@ public class KNetPanel extends JPanel implements KNetListener {
 		private JTextArea history = new JTextArea("");
 		private JTextField line = new JTextField("");
 		
-		public ChannelPanel(KNetChannelInfo channel) {
-			this.channel = channel;
+		public ChannelPanel(KNetChannelInfo c) {
+			this.channel = c;
 			
 			setLayout(new BorderLayout());
 			
 			add(new JScrollPane(history), BorderLayout.CENTER);
 			add(line, BorderLayout.SOUTH);
 			add(new JScrollPane(membersList), BorderLayout.WEST);
+			
+			line.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if(e.getKeyCode() != KeyEvent.VK_ENTER)
+						return;
+					client.fireTCP(
+							CHANNEL_CHAT, line.getText(),
+							CHANNEL_ID, channel.getId(),
+							TIMESTAMP, System.currentTimeMillis());
+					line.setText("");
+				}
+			});
 			
 			client.addKNetListener(this);
 		}
@@ -223,11 +238,13 @@ public class KNetPanel extends JPanel implements KNetListener {
 				});
 				return;
 			}
-			if(e.get(PAYLOAD) instanceof KNetChannelInfo) {
-				KNetChannelInfo c = (KNetChannelInfo) e.get(PAYLOAD);
-				if(c.getId() == channel.getId()) {
-					channel = (KNetChannelInfo) e.get(PAYLOAD);
-					update();
+			if(e.get(CHANNEL_INFO) instanceof KNetChannelInfo[]) {
+				KNetChannelInfo[] ca = (KNetChannelInfo[]) e.get(CHANNEL_INFO);
+				for(KNetChannelInfo c : ca) {
+					if(c.getId() == channel.getId()) {
+						channel = c;
+						update();
+					}
 				}
 			}
 			if(e.is(CHANNEL_JOIN) 
@@ -235,6 +252,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 					&& client.getSource().equals(e.get(PAYLOAD))
 					&& channel.getId() == (Integer) e.get(CHANNEL_ID)
 					&& client.isMine(e)) {
+				channel = ((KNetChannelInfo[]) e.get(CHANNEL_INFO))[0];
 				joined();
 			}
 			if(e.is(CHANNEL_LEAVE) 
@@ -242,7 +260,15 @@ public class KNetPanel extends JPanel implements KNetListener {
 					&& client.getSource().equals(e.get(PAYLOAD)) 
 					&& channel.getId() == (Integer) e.get(CHANNEL_ID)
 					&& client.isMine(e)) {
+				channel = ((KNetChannelInfo[]) e.get(CHANNEL_INFO))[0];
 				left();
+			}
+			if(e.is(CHANNEL_CHAT)
+					&& channel.getId() == (Integer) e.get(CHANNEL_ID)) {
+				String text = history.getText();
+				text += text.isEmpty() ? "" : "\n";
+				text += (String) e.get(CHANNEL_CHAT);
+				history.setText(text);
 			}
 		}
 	}
@@ -292,8 +318,8 @@ public class KNetPanel extends JPanel implements KNetListener {
 			client.fireTCP(CHANNEL_LIST, true);
 			return;
 		}
-		if(e.is(CHANNEL_LIST) && e.is(PAYLOAD)) {
-			List<KNetChannelInfo> channels = Arrays.asList((KNetChannelInfo[]) e.get(PAYLOAD));
+		if(e.is(CHANNEL_LIST) && (e.get(CHANNEL_INFO) instanceof KNetChannelInfo[])) {
+			List<KNetChannelInfo> channels = Arrays.asList((KNetChannelInfo[]) e.get(CHANNEL_INFO));
 			// Add new channels
 			for(KNetChannelInfo channel : channels) {
 				if(this.channels.containsKey(channel.getId()))

@@ -88,8 +88,10 @@ public enum KNetEventArgs {
 	 */
 	CHANNEL_CHAT(String.class),
 	
+	CHANNEL_INFO(KNetChannelInfo[].class),
+	
 	/** Issued when joining a room */
-	CHANNEL_JOIN(),
+	CHANNEL_JOIN,
 	
 	/** Issued when leaving a room */
 	CHANNEL_LEAVE,
