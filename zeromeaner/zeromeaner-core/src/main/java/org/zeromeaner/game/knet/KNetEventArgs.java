@@ -183,11 +183,12 @@ public enum KNetEventArgs {
 	FINISH(Boolean.class),
 	
 	HURRY_UP,
+
+	RACE_WIN,
 	
 	NETVSBATTLE_GAME_ATTACK(NetVSBattleMode.AttackInfo.class),
 	NETVSBATTLE_GAME_STATS(NetVSBattleMode.StatsInfo.class),
 	
-	NETVSLINERACE_RACE_WIN,
 	;
 	
 	private Class<?> type;

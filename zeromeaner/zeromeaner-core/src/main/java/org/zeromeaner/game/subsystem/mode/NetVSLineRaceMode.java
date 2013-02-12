@@ -149,7 +149,7 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 					}
 				}
 
-				knetClient.fireTCP(NETVSLINERACE_RACE_WIN, true);
+				knetClient.fireTCP(RACE_WIN, true);
 
 				// Wait until everyone dies
 				engine.stat = GameEngine.STAT_NOTHING;

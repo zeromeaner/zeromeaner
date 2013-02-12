@@ -1,10 +1,14 @@
 package org.zeromeaner.game.subsystem.mode;
 
 import org.zeromeaner.game.component.Block;
+import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
+import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.GeneralUtil;
+
+import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
 /**
  * NET-VS-DIG RACE mode
@@ -44,13 +48,13 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 	@Override
 	protected void netvsApplyRoomSettings(GameEngine engine) {
 		if(channelInfo != null) {
-			engine.speed.gravity = channelInfo.gravity;
-			engine.speed.denominator = channelInfo.denominator;
-			engine.speed.are = channelInfo.are;
-			engine.speed.areLine = channelInfo.areLine;
-			engine.speed.lineDelay = channelInfo.lineDelay;
-			engine.speed.lockDelay = channelInfo.lockDelay;
-			engine.speed.das = channelInfo.das;
+			engine.speed.gravity = currentGame().getGravity();
+			engine.speed.denominator = currentGame().getDenominator();
+			engine.speed.are = currentGame().getAre();
+			engine.speed.areLine = currentGame().getAreLine();
+			engine.speed.lineDelay = currentGame().getLineDelay();
+			engine.speed.lockDelay = currentGame().getLockDelay();
+			engine.speed.das = currentGame().getDas();
 		}
 	}
 
@@ -68,7 +72,7 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 		if(skin < 0) skin = 0;
 
 		for(int y = h - 1; y >= h - goalLines; y--) {
-			if((hole == -1) || (engine.random.nextInt(100) < channelInfo.garbagePercent)) {
+			if((hole == -1) || (engine.random.nextInt(100) < currentGame().getGarbagePercent())) {
 				int newhole = -1;
 				do {
 					newhole = engine.random.nextInt(w);
@@ -167,7 +171,7 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 		super.onReady(engine, playerID);
 
 		if((engine.statc[0] == 0) && netvsPlayerExist[playerID]) {
-			if((channelInfo == null) || !channelInfo.useMap) {
+			if((channelInfo == null) || currentGame().getMap() == null) {
 				// Fill the field with garbage
 				engine.createFieldIfNeeded();
 				fillGarbage(engine, playerID);
@@ -224,7 +228,7 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 		int playerID = engine.getPlayerID();
 		int remainLines = 0;
 
-		if((channelInfo == null) || !channelInfo.useMap) {
+		if((channelInfo == null) || currentGame().getMap() == null) {
 			// Normal game
 			remainLines = playerRemainLines[playerID];
 			engine.meterValue = remainLines * owner.receiver.getBlockGraphicsHeight(engine, playerID);
@@ -246,7 +250,7 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 	@Override
 	public void calcScore(GameEngine engine, int playerID, int lines) {
 		if((lines > 0) && (playerID == 0)) {
-			if((channelInfo == null) || !channelInfo.useMap) {
+			if((channelInfo == null) || currentGame().getMap() == null) {
 				playerRemainLines[playerID] = getRemainGarbageLines(engine, playerID);
 			} else if(engine.field != null) {
 				playerRemainLines[playerID] = engine.field.getHowManyGems() - engine.field.getHowManyGemClears();
@@ -272,12 +276,7 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 						}
 					}
 
-					String strMsg = "racewin";
-					for(int i = 0; i < getPlayers(); i++) {
-						if(uidArray[i] != -1) strMsg += "\t" + uidArray[i];
-					}
-					strMsg += "\n";
-					netLobby.netPlayerClient.send(strMsg);
+					knetClient.fireTCP(RACE_WIN, true);
 
 					// Wait until everyone dies
 					engine.stat = GameEngine.STAT_NOTHING;
@@ -405,8 +404,7 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 
 		if((playerID == 0) && !netvsIsPractice && !netvsIsWatch()) {
 			int remainLines = playerRemainLines[playerID];
-			String strMsg = "game\tstats\t" + remainLines + "\n";
-			netLobby.netPlayerClient.send(strMsg);
+			knetClient.fireUDP(GAME_STATS, remainLines);
 		}
 	}
 
@@ -414,9 +412,9 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 	 * Receive stats
 	 */
 	@Override
-	protected void netRecvStats(GameEngine engine, String[] message) {
+	protected void netRecvStats(GameEngine engine, KNetEvent e) {
 		int playerID = engine.getPlayerID();
-		if(message.length > 4) playerRemainLines[playerID] = Integer.parseInt(message[4]);
+		playerRemainLines[playerID] = (Integer) e.get(GAME_STATS);
 		updateMeter(engine);
 	}
 
@@ -425,33 +423,21 @@ public class NetVSDigRaceMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		int playerID = engine.getPlayerID();
-		String msg = "gstat\t";
-		msg += netvsPlayerPlace[playerID] + "\t";
-		msg += 0 + "\t" + 0 + "\t" + 0 + "\t";
-		msg += engine.statistics.lines + "\t" + engine.statistics.lpm + "\t";
-		msg += engine.statistics.totalPieceLocked + "\t" + engine.statistics.pps + "\t";
-		msg += netvsPlayTimer + "\t" + 0 + "\t" + netvsPlayerWinCount[playerID] + "\t" + netvsPlayerPlayCount[playerID];
-		msg += "\n";
-		netLobby.netPlayerClient.send(msg);
+		knetClient.fireTCP(GAME_END_STATS, engine.statistics);
 	}
 
 	/*
 	 * Receive end-of-game stats
 	 */
 	@Override
-	protected void netvsRecvEndGameStats(String[] message) {
-		int seatID = Integer.parseInt(message[2]);
+	protected void netvsRecvEndGameStats(KNetEvent e) {
+		int seatID = channelInfo.getSeatId(e);
 		int playerID = netvsGetPlayerIDbySeatID(seatID);
 
 		if((playerID != 0) || (netvsIsWatch())) {
 			GameEngine engine = owner.engine[playerID];
 
-			engine.statistics.lines = Integer.parseInt(message[8]);
-			engine.statistics.lpm = Float.parseFloat(message[9]);
-			engine.statistics.totalPieceLocked = Integer.parseInt(message[10]);
-			engine.statistics.pps = Float.parseFloat(message[11]);
-			engine.statistics.time = Integer.parseInt(message[12]);
+			engine.statistics.copy((Statistics) e.get(GAME_END_STATS));
 
 			netvsPlayerResultReceived[playerID] = true;
 		}
