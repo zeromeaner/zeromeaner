@@ -87,6 +87,10 @@ public class KNetClient {
 		}
 	}
 	
+	protected KNetEvent process(KNetEvent e) {
+		return e;
+	}
+	
 	public KNetEventSource getSource() {
 		return source;
 	}
@@ -134,6 +138,7 @@ public class KNetClient {
 	}
 	
 	public void fireTCP(KNetEvent e) {
+		e = process(e);
 		e.getArgs().remove(UDP);
 		issue(e);
 		client.sendTCP(e);
@@ -144,6 +149,7 @@ public class KNetClient {
 	}
 	
 	public void fireUDP(KNetEvent e) {
+		e = process(e);
 		e.getArgs().put(UDP, true);
 		issue(e);
 		client.sendUDP(e);

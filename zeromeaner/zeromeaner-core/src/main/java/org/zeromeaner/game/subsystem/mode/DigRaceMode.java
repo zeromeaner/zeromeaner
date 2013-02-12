@@ -32,16 +32,122 @@ import org.apache.log4j.Logger;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
+import org.zeromeaner.game.component.SpeedParam;
+import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
+import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
+import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
 /**
  * DIG RACE Mode
  */
 public class DigRaceMode extends AbstractNetMode {
+	public static class Stats {
+		private Statistics statistics;
+		private int goalType;
+		private boolean gameActive;
+		private boolean timerActive;
+		private int meterColor;
+		private int meterValue;
+		
+		public Statistics getStatistics() {
+			return statistics;
+		}
+		public void setStatistics(Statistics statistics) {
+			this.statistics = statistics;
+		}
+		public int getGoalType() {
+			return goalType;
+		}
+		public void setGoalType(int goalType) {
+			this.goalType = goalType;
+		}
+		public boolean isGameActive() {
+			return gameActive;
+		}
+		public void setGameActive(boolean gameActive) {
+			this.gameActive = gameActive;
+		}
+		public boolean isTimerActive() {
+			return timerActive;
+		}
+		public void setTimerActive(boolean timerActive) {
+			this.timerActive = timerActive;
+		}
+		public int getMeterColor() {
+			return meterColor;
+		}
+		public void setMeterColor(int meterColor) {
+			this.meterColor = meterColor;
+		}
+		public int getMeterValue() {
+			return meterValue;
+		}
+		public void setMeterValue(int meterValue) {
+			this.meterValue = meterValue;
+		}
+	}
+	
+	public static class EndGameStats {
+		private Statistics statistics;
+		private int garbageRemaining;
+		private int garbageGoal;
+		public Statistics getStatistics() {
+			return statistics;
+		}
+		public void setStatistics(Statistics statistics) {
+			this.statistics = statistics;
+		}
+		public int getGarbageRemaining() {
+			return garbageRemaining;
+		}
+		public void setGarbageRemaining(int garbageRemaining) {
+			this.garbageRemaining = garbageRemaining;
+		}
+		public int getGarbageGoal() {
+			return garbageGoal;
+		}
+		public void setGarbageGoal(int garbageGoal) {
+			this.garbageGoal = garbageGoal;
+		}
+	}
+	
+	public static class Options {
+		private SpeedParam speed;
+		private int bgmno;
+		private int goalType;
+		private int presetNumber;
+		
+		public SpeedParam getSpeed() {
+			return speed;
+		}
+		public void setSpeed(SpeedParam speed) {
+			this.speed = speed;
+		}
+		public int getBgmno() {
+			return bgmno;
+		}
+		public void setBgmno(int bgmno) {
+			this.bgmno = bgmno;
+		}
+		public int getGoalType() {
+			return goalType;
+		}
+		public void setGoalType(int goalType) {
+			this.goalType = goalType;
+		}
+		public int getPresetNumber() {
+			return presetNumber;
+		}
+		public void setPresetNumber(int presetNumber) {
+			this.presetNumber = presetNumber;
+		}
+	}
+	
 	/* ----- Main variables ----- */
 	/** Logger */
 	static Logger log = Logger.getLogger(DigRaceMode.class);
@@ -173,12 +279,8 @@ public class DigRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
-		// NET: Net Ranking
-		if(netIsNetRankingDisplayMode) {
-			netOnUpdateNetPlayRanking(engine, goaltype);
-		}
 		// Menu
-		else if(engine.getOwner().replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 10, playerID);
 
@@ -272,7 +374,8 @@ public class DigRaceMode extends AbstractNetMode {
 					receiver.saveModeConfig(owner.modeConfig);
 
 					// NET: Signal start of the game
-					if(netIsNetPlay) netLobby.netPlayerClient.send("start1p\n");
+					if(netIsNetPlay) 
+						knetClient.fireTCP(START_1P, true);
 
 					// Start game
 					return false;
@@ -282,11 +385,6 @@ public class DigRaceMode extends AbstractNetMode {
 			// Cancel
 			if(engine.ctrl.isPush(Controller.BUTTON_B) && !netIsNetPlay) {
 				engine.quitflag = true;
-			}
-
-			// NET: Netplay Ranking
-			if(engine.ctrl.isPush(Controller.BUTTON_D) && netIsNetPlay && !big && engine.ai == null) {
-				netEnterNetPlayRankingScreen(engine, playerID, goaltype);
 			}
 
 			engine.statc[3]++;
@@ -309,27 +407,22 @@ public class DigRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		if(netIsNetRankingDisplayMode) {
-			// NET: Netplay Ranking
-			netOnRenderNetPlayRanking(engine, playerID, receiver);
-		} else {
-			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
-					"GRAVITY", String.valueOf(engine.speed.gravity),
-					"G-MAX", String.valueOf(engine.speed.denominator),
-					"ARE", String.valueOf(engine.speed.are),
-					"ARE LINE", String.valueOf(engine.speed.areLine),
-					"LINE DELAY", String.valueOf(engine.speed.lineDelay),
-					"LOCK DELAY", String.valueOf(engine.speed.lockDelay),
-					"DAS", String.valueOf(engine.speed.das),
-					"BGM", String.valueOf(bgmno),
-					"GOAL", String.valueOf(GOAL_TABLE[goaltype]));
-			if (!engine.getOwner().replayMode)
-			{
-				menuColor = EventRenderer.COLOR_GREEN;
-				drawMenuCompact(engine, playerID, receiver,
-					"LOAD", String.valueOf(presetNumber),
-					"SAVE", String.valueOf(presetNumber));
-			}
+		drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
+				"GRAVITY", String.valueOf(engine.speed.gravity),
+				"G-MAX", String.valueOf(engine.speed.denominator),
+				"ARE", String.valueOf(engine.speed.are),
+				"ARE LINE", String.valueOf(engine.speed.areLine),
+				"LINE DELAY", String.valueOf(engine.speed.lineDelay),
+				"LOCK DELAY", String.valueOf(engine.speed.lockDelay),
+				"DAS", String.valueOf(engine.speed.das),
+				"BGM", String.valueOf(bgmno),
+				"GOAL", String.valueOf(GOAL_TABLE[goaltype]));
+		if (!engine.getOwner().replayMode)
+		{
+			menuColor = EventRenderer.COLOR_GREEN;
+			drawMenuCompact(engine, playerID, receiver,
+				"LOAD", String.valueOf(presetNumber),
+				"SAVE", String.valueOf(presetNumber));
 		}
 	}
 
@@ -502,7 +595,6 @@ public class DigRaceMode extends AbstractNetMode {
 		netDrawSpectatorsCount(engine, 0, 18);
 		// NET: All number of players
 		if(playerID == getPlayers() - 1) {
-			netDrawAllPlayersCount(engine);
 			netDrawGameRate(engine);
 		}
 		// NET: Player name (It may also appear in offline replay)
@@ -655,31 +747,29 @@ public class DigRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendStats(GameEngine engine) {
-		String msg = "game\tstats\t";
-		msg += engine.statistics.lines + "\t" + engine.statistics.totalPieceLocked + "\t";
-		msg += engine.statistics.time + "\t" + engine.statistics.lpm + "\t";
-		msg += engine.statistics.pps + "\t" + goaltype + "\t";
-		msg += engine.gameActive + "\t" + engine.timerActive + "\t";
-		msg += engine.meterColor + "\t" + engine.meterValue;
-		msg += "\n";
-		netLobby.netPlayerClient.send(msg);
+		Stats s = new Stats();
+		s.setStatistics(engine.statistics);
+		s.setGoalType(goaltype);
+		s.setGameActive(engine.gameActive);
+		s.setTimerActive(engine.timerActive);
+		s.setMeterColor(engine.meterColor);
+		s.setMeterValue(engine.meterValue);
+		knetClient.fireUDP(GAME_STATS, s);
 	}
 
 	/**
 	 * NET: Receive various in-game stats (as well as goaltype)
 	 */
 	@Override
-	protected void netRecvStats(GameEngine engine, String[] message) {
-		engine.statistics.lines = Integer.parseInt(message[4]);
-		engine.statistics.totalPieceLocked = Integer.parseInt(message[5]);
-		engine.statistics.time = Integer.parseInt(message[6]);
-		engine.statistics.lpm = Float.parseFloat(message[7]);
-		engine.statistics.pps = Float.parseFloat(message[8]);
-		goaltype = Integer.parseInt(message[9]);
-		engine.gameActive = Boolean.parseBoolean(message[10]);
-		engine.timerActive = Boolean.parseBoolean(message[11]);
-		engine.meterColor = Integer.parseInt(message[12]);
-		engine.meterValue = Integer.parseInt(message[13]);
+	protected void netRecvStats(GameEngine engine, KNetEvent e) {
+		Stats s = (Stats) e.get(GAME_STATS);
+		engine.statistics.copy(s.getStatistics());
+		goaltype = s.getGoalType();
+		goaltype = s.getGoalType();
+		engine.gameActive = s.isGameActive();
+		engine.timerActive = s.isTimerActive();
+		engine.meterColor = s.getMeterColor();
+		engine.meterValue = s.getMeterValue();
 	}
 
 	/**
@@ -688,47 +778,38 @@ public class DigRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		String subMsg = "";
-		subMsg += "GARBAGE;" + (GOAL_TABLE[goaltype] - getRemainGarbageLines(engine, goaltype)) + "/" + GOAL_TABLE[goaltype] + "\t";
-		subMsg += "LINE;" + engine.statistics.lines + "\t";
-		subMsg += "PIECE;" + engine.statistics.totalPieceLocked + "\t";
-		subMsg += "TIME;" + GeneralUtil.getTime(engine.statistics.time) + "\t";
-		subMsg += "LINE/MIN;" + engine.statistics.lpm + "\t";
-		subMsg += "PIECE/SEC;" + engine.statistics.pps + "\t";
-
-		String msg = "gstat1p\t" + NetUtil.urlEncode(subMsg) + "\n";
-		netLobby.netPlayerClient.send(msg);
+		EndGameStats egs = new EndGameStats();
+		egs.setStatistics(engine.statistics);
+		egs.setGarbageRemaining(GOAL_TABLE[goaltype] - getRemainGarbageLines(engine, goaltype));
+		egs.setGarbageGoal(GOAL_TABLE[goaltype]);
+		knetClient.fireTCP(GAME_END_STATS, egs);
 	}
-
+	
 	/**
 	 * NET: Send game options to all spectators
 	 * @param engine GameEngine
 	 */
 	@Override
 	protected void netSendOptions(GameEngine engine) {
-		String msg = "game\toption\t";
-		msg += engine.speed.gravity + "\t" + engine.speed.denominator + "\t" + engine.speed.are + "\t";
-		msg += engine.speed.areLine + "\t" + engine.speed.lineDelay + "\t" + engine.speed.lockDelay + "\t";
-		msg += engine.speed.das + "\t" + bgmno + "\t" + goaltype + "\t" + presetNumber;
-		msg += "\n";
-		netLobby.netPlayerClient.send(msg);
+		Options o = new Options();
+		o.setSpeed(engine.speed);
+		o.setBgmno(bgmno);
+		o.setGoalType(goaltype);
+		o.setPresetNumber(presetNumber);
+		knetClient.fireTCP(GAME_OPTIONS, o);
 	}
 
 	/**
 	 * NET: Receive game options
 	 */
 	@Override
-	protected void netRecvOptions(GameEngine engine, String[] message) {
-		engine.speed.gravity = Integer.parseInt(message[4]);
-		engine.speed.denominator = Integer.parseInt(message[5]);
-		engine.speed.are = Integer.parseInt(message[6]);
-		engine.speed.areLine = Integer.parseInt(message[7]);
-		engine.speed.lineDelay = Integer.parseInt(message[8]);
-		engine.speed.lockDelay = Integer.parseInt(message[9]);
-		engine.speed.das = Integer.parseInt(message[10]);
-		bgmno = Integer.parseInt(message[11]);
-		goaltype = Integer.parseInt(message[12]);
-		presetNumber = Integer.parseInt(message[13]);
+	protected void netRecvOptions(GameEngine engine, KNetEvent e) {
+		Options o = (Options) e.get(GAME_OPTIONS);
+		
+		engine.speed.copy(o.getSpeed());
+		bgmno = o.getBgmno();
+		goaltype = o.getGoalType();
+		presetNumber = o.getPresetNumber();
 	}
 
 	/**

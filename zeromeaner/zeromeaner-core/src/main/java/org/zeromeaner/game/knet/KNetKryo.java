@@ -23,6 +23,7 @@ import org.zeromeaner.game.knet.ser.SpeedParamSerializer;
 import org.zeromeaner.game.knet.ser.StatisticsSerializer;
 import org.zeromeaner.game.subsystem.mode.ComboRaceMode;
 import org.zeromeaner.game.subsystem.mode.DigChallengeMode;
+import org.zeromeaner.game.subsystem.mode.DigRaceMode;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
 import org.zeromeaner.util.CustomProperties;
 
@@ -66,6 +67,10 @@ public class KNetKryo {
 		
 		fieldSerializer(kryo, DigChallengeMode.Stats.class);
 		fieldSerializer(kryo, DigChallengeMode.Options.class);
+		
+		fieldSerializer(kryo, DigRaceMode.Stats.class);
+		fieldSerializer(kryo, DigRaceMode.EndGameStats.class);
+		fieldSerializer(kryo, DigRaceMode.Options.class);
 	}
 	
 	private static <T> void fieldSerializer(Kryo kryo, Class<T> clazz) {

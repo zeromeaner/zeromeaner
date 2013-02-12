@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.zeromeaner.game.component.Field;
@@ -23,6 +24,17 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 		super(type, host, port);
 	}
 
+	@Override
+	protected KNetEvent process(KNetEvent e) {
+		for(Map.Entry<KNetEventArgs, Object> en : e.getArgs().entrySet()) {
+			if(en.getKey().name().startsWith("GAME_")) {
+				e.set(GAME, true);
+				break;
+			}
+		}
+		return super.process(e);
+	}
+	
 	@Override
 	public void knetEvented(KNetClient client, KNetEvent e) {
 		if(e.is(MAPS)) {
