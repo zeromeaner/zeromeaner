@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.zeromeaner.game.component.RuleOptions;
+import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.knet.KNetEventSource;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -36,6 +37,10 @@ public class KNetChannelInfo implements KryoSerializable {
 		if(index == -1)
 			return null;
 		return playerInfo.get(index);
+	}
+	
+	public int getSeatId(KNetEvent e) {
+		return players.indexOf(e.getSource());
 	}
 	
 	@Override

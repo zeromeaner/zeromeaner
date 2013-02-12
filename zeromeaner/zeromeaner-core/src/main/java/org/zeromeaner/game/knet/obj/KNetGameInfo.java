@@ -30,7 +30,15 @@ public class KNetGameInfo {
 	private boolean reduceLineSend;
 	private boolean useFractionalGarbage;
 	private boolean targettedGarbage;
-	
+	private boolean rensaBlock;
+	private int garbagePercent;
+	private boolean divideChangeRateByPlayers;
+	private boolean garbageChangePerAttack;
+	private int hurryupSeconds;
+	private int hurryupInterval;
+	private int targetTimer;
+	private boolean b2bChunk;
+	private boolean counterGarbage;
 	
 	public int getGravity() {
 		return gravity;
@@ -131,6 +139,60 @@ public class KNetGameInfo {
 
 	public void setTargettedGarbage(boolean targettedGarbage) {
 		this.targettedGarbage = targettedGarbage;
+	}
+	public boolean isRensaBlock() {
+		return rensaBlock;
+	}
+	public void setRensaBlock(boolean rensaBlock) {
+		this.rensaBlock = rensaBlock;
+	}
+	public int getGarbagePercent() {
+		return garbagePercent;
+	}
+	public void setGarbagePercent(int garbagePercent) {
+		this.garbagePercent = garbagePercent;
+	}
+	public boolean isDivideChangeRateByPlayers() {
+		return divideChangeRateByPlayers;
+	}
+	public void setDivideChangeRateByPlayers(boolean divideChangeRateByPlayers) {
+		this.divideChangeRateByPlayers = divideChangeRateByPlayers;
+	}
+	public boolean isGarbageChangePerAttack() {
+		return garbageChangePerAttack;
+	}
+	public void setGarbageChangePerAttack(boolean garbageChangePerAttack) {
+		this.garbageChangePerAttack = garbageChangePerAttack;
+	}
+	public int getHurryupSeconds() {
+		return hurryupSeconds;
+	}
+	public void setHurryupSeconds(int hurryupSeconds) {
+		this.hurryupSeconds = hurryupSeconds;
+	}
+	public int getHurryupInterval() {
+		return hurryupInterval;
+	}
+	public void setHurryupInterval(int hurryupInterval) {
+		this.hurryupInterval = hurryupInterval;
+	}
+	public int getTargetTimer() {
+		return targetTimer;
+	}
+	public void setTargetTimer(int targetTimer) {
+		this.targetTimer = targetTimer;
+	}
+	public boolean isB2bChunk() {
+		return b2bChunk;
+	}
+	public void setB2bChunk(boolean b2bChunk) {
+		this.b2bChunk = b2bChunk;
+	}
+	public boolean isCounterGarbage() {
+		return counterGarbage;
+	}
+	public void setCounterGarbage(boolean counterGarbage) {
+		this.counterGarbage = counterGarbage;
 	}
 	
 }

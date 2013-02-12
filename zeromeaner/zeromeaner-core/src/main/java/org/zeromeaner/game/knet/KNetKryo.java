@@ -20,6 +20,7 @@ import org.zeromeaner.game.knet.ser.PieceSerializer;
 import org.zeromeaner.game.knet.ser.PropertiesSerializer;
 import org.zeromeaner.game.knet.ser.StatisticsSerializer;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
+import org.zeromeaner.game.subsystem.mode.NetVSBattleMode.EndGameStats;
 import org.zeromeaner.util.CustomProperties;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -53,5 +54,9 @@ public class KNetKryo {
 		
 		
 		kryo.register(NetVSBattleMode.AttackInfo.class);
+		kryo.register(NetVSBattleMode.StatsInfo.class);
+		kryo.register(
+				NetVSBattleMode.EndGameStats.class, 
+				new FieldSerializer<NetVSBattleMode.EndGameStats>(kryo, NetVSBattleMode.EndGameStats.class));
 	}
 }

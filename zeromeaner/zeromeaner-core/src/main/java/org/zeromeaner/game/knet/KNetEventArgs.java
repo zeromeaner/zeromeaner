@@ -7,6 +7,7 @@ import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.game.knet.obj.PieceHold;
 import org.zeromeaner.game.knet.obj.PieceMovement;
 import org.zeromeaner.game.knet.obj.Replay;
+import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
@@ -145,6 +146,8 @@ public enum KNetEventArgs {
 	
 	DEAD_PLACE(Integer.class),
 	
+	DEAD_KO(Integer.class),
+	
 	RESET_1P,
 	
 	PLAYER_UPDATE(KNetPlayerInfo.class),
@@ -178,6 +181,11 @@ public enum KNetEventArgs {
 	 * argument: {@link Boolean}: team win
 	 */
 	FINISH(Boolean.class),
+	
+	HURRY_UP,
+	
+	NETVSBATTLE_GAME_ATTACK(NetVSBattleMode.AttackInfo.class),
+	NETVSBATTLE_GAME_STATS(NetVSBattleMode.StatsInfo.class),
 	;
 	
 	private Class<?> type;
