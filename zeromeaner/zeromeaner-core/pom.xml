@@ -232,7 +232,7 @@
 	<parent>
 		<groupId>org.zeromeaner</groupId>
 		<artifactId>zeromeaner-parent</artifactId>
-		<version>8.0.3.12-SNAPSHOT</version>
+		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<name>Zeromeaner Core</name>
