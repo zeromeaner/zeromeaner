@@ -2,7 +2,6 @@ package org.zeromeaner.game.evil;
 
 import org.zeromeaner.game.play.GameEngine;
 
-import org.eviline.randomizer.AngelRandomizer;
 import org.eviline.randomizer.BipolarRandomizer;
 import org.eviline.randomizer.MaliciousRandomizer.MaliciousRandomizerProperties;
 

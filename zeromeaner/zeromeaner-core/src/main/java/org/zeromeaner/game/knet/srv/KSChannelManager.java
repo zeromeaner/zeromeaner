@@ -5,10 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
 import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
-import org.zeromeaner.game.knet.KNetEventSource;
 import org.zeromeaner.game.knet.KNetListener;
 
 

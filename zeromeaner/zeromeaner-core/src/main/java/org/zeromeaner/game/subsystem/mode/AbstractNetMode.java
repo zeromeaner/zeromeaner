@@ -1,27 +1,16 @@
 package org.zeromeaner.game.subsystem.mode;
 
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.TimeZone;
-import java.util.zip.Adler32;
-
-
 import org.apache.log4j.Logger;
 import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.component.ReplayData;
-import org.zeromeaner.game.component.RuleOptions;
-import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.knet.KNetEventSource;
 import org.zeromeaner.game.knet.KNetListener;
-import org.zeromeaner.game.knet.KNetPlayerInfo;
 import org.zeromeaner.game.knet.obj.PieceHold;
 import org.zeromeaner.game.knet.obj.PieceMovement;
 import org.zeromeaner.game.knet.obj.Replay;

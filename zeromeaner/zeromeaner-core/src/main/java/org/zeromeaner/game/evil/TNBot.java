@@ -4,31 +4,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Exchanger;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import org.eviline.Field;
 import org.eviline.PlayerAction;
 import org.eviline.PlayerAction.Type;
 import org.eviline.ai.AIKernel;
 import org.eviline.ai.AIKernel.Decision;
 import org.eviline.ai.AIKernel.QueueContext;
-import org.eviline.fitness.ElTetrisFitness;
 import org.eviline.fitness.EvilineFitness;
-import org.eviline.fitness.Fitness;
-import org.eviline.fitness.HybridFitness;
 import org.eviline.Shape;
 import org.eviline.ShapeType;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
-import org.zeromeaner.game.subsystem.mode.DigRaceMode;
-import org.zeromeaner.game.subsystem.mode.LineRaceMode;
 
 public class TNBot extends AbstractAI {
 

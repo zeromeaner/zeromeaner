@@ -4,10 +4,6 @@ import java.awt.BorderLayout;
 
 import javax.swing.JInternalFrame;
 
-import org.zeromeaner.gui.net.NetLobbyAdapter;
-import org.zeromeaner.gui.net.NetLobbyFrame;
-import org.zeromeaner.gui.net.NetLobbyListener;
-
 public class NetLobbyInternalFrame extends JInternalFrame {
 	public NetLobbyFrame frame;
 	

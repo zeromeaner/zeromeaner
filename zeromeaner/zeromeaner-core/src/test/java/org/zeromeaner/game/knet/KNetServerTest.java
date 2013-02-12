@@ -1,6 +1,5 @@
 package org.zeromeaner.game.knet;
 
-import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
 import org.junit.After;

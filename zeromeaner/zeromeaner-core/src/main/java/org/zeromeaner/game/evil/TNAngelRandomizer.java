@@ -4,7 +4,6 @@ import org.zeromeaner.game.play.GameEngine;
 
 import org.eviline.randomizer.AngelRandomizer;
 import org.eviline.randomizer.MaliciousRandomizer.MaliciousRandomizerProperties;
-import org.eviline.randomizer.ThreadedMaliciousRandomizer;
 
 public class TNAngelRandomizer extends TNRandomizer {
 	@Override

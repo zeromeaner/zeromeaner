@@ -8,7 +8,6 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
-import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.MarathonMode;
 import org.zeromeaner.util.GeneralUtil;
 

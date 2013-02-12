@@ -1,6 +1,5 @@
 package org.zeromeaner.game.evil;
 
-import org.eviline.randomizer.ConcurrentRandomizer;
 import org.eviline.randomizer.MaliciousRandomizer.MaliciousRandomizerProperties;
 import org.eviline.randomizer.ThreadedMaliciousRandomizer;
 

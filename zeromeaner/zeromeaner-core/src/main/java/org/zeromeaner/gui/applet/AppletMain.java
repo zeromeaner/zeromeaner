@@ -38,8 +38,6 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
 
-import org.zeromeaner.gui.net.NetLobbyFrame;
-
 public class AppletMain extends Applet {
 	public static AppletMain instance;
 

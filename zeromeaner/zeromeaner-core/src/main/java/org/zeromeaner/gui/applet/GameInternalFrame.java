@@ -54,7 +54,6 @@ import javax.swing.event.InternalFrameEvent;
 
 
 import org.apache.log4j.Logger;
-import org.zeromeaner.game.net.NetObserverClient;
 import org.zeromeaner.game.play.GameManager;
 
 /**
