@@ -186,6 +186,8 @@ public enum KNetEventArgs {
 	
 	NETVSBATTLE_GAME_ATTACK(NetVSBattleMode.AttackInfo.class),
 	NETVSBATTLE_GAME_STATS(NetVSBattleMode.StatsInfo.class),
+	
+	NETVSLINERACE_RACE_WIN,
 	;
 	
 	private Class<?> type;
