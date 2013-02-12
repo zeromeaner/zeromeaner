@@ -312,7 +312,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 
 			int numAliveTeams = netvsGetNumberOfTeamsAlive();
 			int attackNumPlayerIndex = numAliveTeams - 2;
-			if(netvsIsPractice || !channelInfo.reduceLineSend) attackNumPlayerIndex = 0;
+			if(netvsIsPractice || !channelInfo.getGame().isReduceLineSend()) attackNumPlayerIndex = 0;
 			if(attackNumPlayerIndex < 0) attackNumPlayerIndex = 0;
 			if(attackNumPlayerIndex > 4) attackNumPlayerIndex = 4;
 
@@ -407,7 +407,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			}
 
 			// All clear (Bravo)
-			if((lines >= 1) && (engine.field.isEmpty()) && (channelInfo.bravo)) {
+			if((lines >= 1) && (engine.field.isEmpty()) && (currentPlayer().isBravo())) {
 				engine.playSE("bravo");
 				pts[ATTACK_CATEGORY_BRAVO] += 6;
 			}
@@ -420,7 +420,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			for(int i = 0; i < pts.length; i++){
 				pts[i] *= GARBAGE_DENOMINATOR;
 			}
-			if(channelInfo.useFractionalGarbage && !netvsIsPractice) {
+			if(currentGame().isUseFractionalGarbage() && !netvsIsPractice) {
 				if(numAliveTeams >= 3) {
 					for(int i = 0; i < pts.length; i++){
 						pts[i] = pts[i] / (numAliveTeams - 1);
@@ -437,8 +437,8 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			garbage[playerID] = getTotalGarbageLines();
 			for(int i = 0; i < pts.length; i++){ //TODO: Establish specific priority of garbage cancellation.
 				if((pts[i] > 0) && (garbage[playerID] > 0) && (channelInfo.counter)) {
-					while(!channelInfo.useFractionalGarbage && !garbageEntries.isEmpty() && (pts[i] > 0)
-						|| channelInfo.useFractionalGarbage && !garbageEntries.isEmpty() && (pts[i] >= GARBAGE_DENOMINATOR))
+					while(!currentGame().isUseFractionalGarbage() && !garbageEntries.isEmpty() && (pts[i] > 0)
+						|| currentGame().isUseFractionalGarbage() && !garbageEntries.isEmpty() && (pts[i] >= GARBAGE_DENOMINATOR))
 					{
 						GarbageEntry garbageEntry = garbageEntries.getFirst();
 						garbageEntry.lines -= pts[i];

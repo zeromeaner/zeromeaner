@@ -15,6 +15,7 @@ public class KNetPlayerInfo implements KryoSerializable {
 	private int playCount;
 	private int winCount;
 	private String team;
+	private boolean bravo;
 	
 	@Override
 	public void write(Kryo kryo, Output output) {
@@ -25,6 +26,7 @@ public class KNetPlayerInfo implements KryoSerializable {
 		output.writeInt(playCount, true);
 		output.writeInt(winCount, true);
 		output.writeString(team);
+		output.writeBoolean(bravo);
 	}
 	
 	@Override
@@ -36,6 +38,7 @@ public class KNetPlayerInfo implements KryoSerializable {
 		playCount = input.readInt(true);
 		winCount = input.readInt(true);
 		team = input.readString();
+		bravo = input.readBoolean();
 	}
 	
 	public int getSeatId() {
@@ -85,5 +88,13 @@ public class KNetPlayerInfo implements KryoSerializable {
 
 	public void setChannel(KNetChannelInfo channel) {
 		this.channel = channel;
+	}
+
+	public boolean isBravo() {
+		return bravo;
+	}
+
+	public void setBravo(boolean bravo) {
+		this.bravo = bravo;
 	}
 }

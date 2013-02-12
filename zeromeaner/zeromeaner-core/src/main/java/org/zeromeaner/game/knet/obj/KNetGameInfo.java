@@ -27,6 +27,8 @@ public class KNetGameInfo implements KryoSerializable {
 	private TSpinEnableType tspinEnableType;
 	private boolean synchronousPlay;
 	private Field map;
+	private boolean reduceLineSend;
+	private boolean useFractionalGarbage;
 	
 	@Override
 	public void write(Kryo kryo, Output output) {
@@ -42,6 +44,8 @@ public class KNetGameInfo implements KryoSerializable {
 		output.writeInt(tspinEnableType.ordinal(), true);
 		output.writeBoolean(synchronousPlay);
 		kryo.writeObjectOrNull(output, map, Field.class);
+		output.writeBoolean(reduceLineSend);
+		output.writeBoolean(useFractionalGarbage);
 	}
 	
 	@Override
@@ -58,6 +62,8 @@ public class KNetGameInfo implements KryoSerializable {
 		tspinEnableType = TSpinEnableType.values()[input.readInt(true)];
 		synchronousPlay = input.readBoolean();
 		map = kryo.readObjectOrNull(input, Field.class);
+		reduceLineSend = input.readBoolean();
+		useFractionalGarbage = input.readBoolean();
 	}
 	
 	public int getGravity() {
@@ -135,6 +141,22 @@ public class KNetGameInfo implements KryoSerializable {
 
 	public void setMap(Field map) {
 		this.map = map;
+	}
+
+	public boolean isReduceLineSend() {
+		return reduceLineSend;
+	}
+
+	public void setReduceLineSend(boolean reduceLineSend) {
+		this.reduceLineSend = reduceLineSend;
+	}
+
+	public boolean isUseFractionalGarbage() {
+		return useFractionalGarbage;
+	}
+
+	public void setUseFractionalGarbage(boolean useFractionalGarbage) {
+		this.useFractionalGarbage = useFractionalGarbage;
 	}
 	
 }

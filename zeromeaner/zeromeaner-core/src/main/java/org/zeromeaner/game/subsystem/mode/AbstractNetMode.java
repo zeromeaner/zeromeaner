@@ -13,6 +13,8 @@ import org.zeromeaner.game.knet.KNetEventSource;
 import org.zeromeaner.game.knet.KNetGameClient;
 import org.zeromeaner.game.knet.KNetListener;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.zeromeaner.game.knet.obj.KNetGameInfo;
+import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.game.knet.obj.PieceHold;
 import org.zeromeaner.game.knet.obj.PieceMovement;
 import org.zeromeaner.game.knet.obj.Replay;
@@ -82,7 +84,18 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	public boolean isSynchronousPlay() {
 		return synchronousPlay;
 	}
+	
+	protected KNetPlayerInfo currentPlayer() {
+		int index = channelInfo.getPlayers().indexOf(knetClient.getSource());
+		if(index == -1)
+			return null;
+		return channelInfo.getPlayerInfo().get(index);
+	}
 
+	protected KNetGameInfo currentGame() {
+		return channelInfo.getGame();
+	}
+	
 	/*
 	 * NET: Mode name
 	 */
