@@ -5,15 +5,197 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
+import org.zeromeaner.game.component.SpeedParam;
+import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
+import org.zeromeaner.game.knet.KNetEvent;
+import org.zeromeaner.game.knet.KNetEventArgs;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
+
+import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
 /**
  * DIG CHALLENGE mode
  */
 public class DigChallengeMode extends AbstractNetMode {
+	public static class Stats {
+		private Statistics statistics;
+		private int garbageTimer;
+		private int garbageTotal;
+		private int goalType;
+		private boolean gameActive;
+		private boolean timerActive;
+		private int lastScore;
+		private int scGetTime;
+		private int lastEvent;
+		private boolean lastb2b;
+		private int lastCombo;
+		private int lastPiece;
+		private int bg;
+		private int garbagePending;
+		
+		public Statistics getStatistics() {
+			return statistics;
+		}
+		public void setStatistics(Statistics statistics) {
+			this.statistics = statistics;
+		}
+		public int getGarbageTimer() {
+			return garbageTimer;
+		}
+		public void setGarbageTimer(int garbageTimer) {
+			this.garbageTimer = garbageTimer;
+		}
+		public int getGarbageTotal() {
+			return garbageTotal;
+		}
+		public void setGarbageTotal(int garbageTotal) {
+			this.garbageTotal = garbageTotal;
+		}
+		public int getGoalType() {
+			return goalType;
+		}
+		public void setGoalType(int goalType) {
+			this.goalType = goalType;
+		}
+		public boolean isGameActive() {
+			return gameActive;
+		}
+		public void setGameActive(boolean gameActive) {
+			this.gameActive = gameActive;
+		}
+		public int getLastScore() {
+			return lastScore;
+		}
+		public void setLastScore(int lastScore) {
+			this.lastScore = lastScore;
+		}
+		public int getScGetTime() {
+			return scGetTime;
+		}
+		public void setScGetTime(int scGetTime) {
+			this.scGetTime = scGetTime;
+		}
+		public int getLastEvent() {
+			return lastEvent;
+		}
+		public void setLastEvent(int lastEvent) {
+			this.lastEvent = lastEvent;
+		}
+		public boolean isLastb2b() {
+			return lastb2b;
+		}
+		public void setLastb2b(boolean lastb2b) {
+			this.lastb2b = lastb2b;
+		}
+		public int getLastCombo() {
+			return lastCombo;
+		}
+		public void setLastCombo(int lastCombo) {
+			this.lastCombo = lastCombo;
+		}
+		public int getLastPiece() {
+			return lastPiece;
+		}
+		public void setLastPiece(int lastPiece) {
+			this.lastPiece = lastPiece;
+		}
+		public int getBg() {
+			return bg;
+		}
+		public void setBg(int bg) {
+			this.bg = bg;
+		}
+		public int getGarbagePending() {
+			return garbagePending;
+		}
+		public void setGarbagePending(int garbagePending) {
+			this.garbagePending = garbagePending;
+		}
+		public boolean isTimerActive() {
+			return timerActive;
+		}
+		public void setTimerActive(boolean timerActive) {
+			this.timerActive = timerActive;
+		}
+	}
+	
+	public static class Options {
+		private SpeedParam speed;
+		private int goalType;
+		private int startLevel;
+		private int bgmno;
+		private int tspinEnableType;
+		private boolean enableTSpinKick;
+		private int spinCheckType;
+		private boolean tspinEnableEZ;
+		private boolean enableB2B;
+		private boolean enableCombo;
+		
+		public SpeedParam getSpeed() {
+			return speed;
+		}
+		public void setSpeed(SpeedParam speed) {
+			this.speed = speed;
+		}
+		public int getGoalType() {
+			return goalType;
+		}
+		public void setGoalType(int goalType) {
+			this.goalType = goalType;
+		}
+		public int getStartLevel() {
+			return startLevel;
+		}
+		public void setStartLevel(int startLevel) {
+			this.startLevel = startLevel;
+		}
+		public int getBgmno() {
+			return bgmno;
+		}
+		public void setBgmno(int bgmno) {
+			this.bgmno = bgmno;
+		}
+		public int getTspinEnableType() {
+			return tspinEnableType;
+		}
+		public void setTspinEnableType(int tspinEnableType) {
+			this.tspinEnableType = tspinEnableType;
+		}
+		public boolean isEnableTSpinKick() {
+			return enableTSpinKick;
+		}
+		public void setEnableTSpinKick(boolean enableTSpinKick) {
+			this.enableTSpinKick = enableTSpinKick;
+		}
+		public int getSpinCheckType() {
+			return spinCheckType;
+		}
+		public void setSpinCheckType(int spinCheckType) {
+			this.spinCheckType = spinCheckType;
+		}
+		public boolean isTspinEnableEZ() {
+			return tspinEnableEZ;
+		}
+		public void setTspinEnableEZ(boolean tspinEnableEZ) {
+			this.tspinEnableEZ = tspinEnableEZ;
+		}
+		public boolean isEnableB2B() {
+			return enableB2B;
+		}
+		public void setEnableB2B(boolean enableB2B) {
+			this.enableB2B = enableB2B;
+		}
+		public boolean isEnableCombo() {
+			return enableCombo;
+		}
+		public void setEnableCombo(boolean enableCombo) {
+			this.enableCombo = enableCombo;
+		}
+	}
+	
 	/** Current version */
 	private static final int CURRENT_VERSION = 2;
 
@@ -220,12 +402,8 @@ public class DigChallengeMode extends AbstractNetMode {
 	 */
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
-		// NET: Net Ranking
-		if(netIsNetRankingDisplayMode) {
-			netOnUpdateNetPlayRanking(engine, goaltype);
-		}
 		// Menu
-		else if(engine.getOwner().replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 9, playerID);
 
@@ -291,7 +469,8 @@ public class DigChallengeMode extends AbstractNetMode {
 				receiver.saveModeConfig(owner.modeConfig);
 
 				// NET: Signal start of the game
-				if(netIsNetPlay) netLobby.netPlayerClient.send("start1p\n");
+				if(netIsNetPlay) 
+					knetClient.fireTCP(START_1P, true);
 
 				return false;
 			}
@@ -299,11 +478,6 @@ public class DigChallengeMode extends AbstractNetMode {
 			// Cancel
 			if(engine.ctrl.isPush(Controller.BUTTON_B) && !netIsNetPlay) {
 				engine.quitflag = true;
-			}
-
-			// NET: Netplay Ranking
-			if(engine.ctrl.isPush(Controller.BUTTON_D) && netIsNetPlay && netIsNetRankingViewOK(engine)) {
-				netEnterNetPlayRankingScreen(engine, playerID, goaltype);
 			}
 
 			engine.statc[3]++;
@@ -326,27 +500,22 @@ public class DigChallengeMode extends AbstractNetMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		if(netIsNetRankingDisplayMode) {
-			// NET: Netplay Ranking
-			netOnRenderNetPlayRanking(engine, playerID, receiver);
-		} else {
-			String strTSpinEnable = "";
-			if(tspinEnableType == 0) strTSpinEnable = "OFF";
-			if(tspinEnableType == 1) strTSpinEnable = "T-ONLY";
-			if(tspinEnableType == 2) strTSpinEnable = "ALL";
+		String strTSpinEnable = "";
+		if(tspinEnableType == 0) strTSpinEnable = "OFF";
+		if(tspinEnableType == 1) strTSpinEnable = "T-ONLY";
+		if(tspinEnableType == 2) strTSpinEnable = "ALL";
 
-			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
-					"GAME TYPE", (goaltype == 0) ? "NORMAL" : "REALTIME",
-					"LEVEL", String.valueOf(startlevel + 1),
-					"BGM", String.valueOf(bgmno),
-					"SPIN BONUS", strTSpinEnable,
-					"EZ SPIN", GeneralUtil.getONorOFF(enableTSpinKick),
-					"SPIN TYPE", (spinCheckType == 0) ? "4POINT" : "IMMOBILE",
-					"EZIMMOBILE", GeneralUtil.getONorOFF(tspinEnableEZ),
-					"B2B", GeneralUtil.getONorOFF(enableB2B),
-					"COMBO", GeneralUtil.getONorOFF(enableCombo),
-					"DAS", String.valueOf(engine.speed.das));
-		}
+		drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
+				"GAME TYPE", (goaltype == 0) ? "NORMAL" : "REALTIME",
+				"LEVEL", String.valueOf(startlevel + 1),
+				"BGM", String.valueOf(bgmno),
+				"SPIN BONUS", strTSpinEnable,
+				"EZ SPIN", GeneralUtil.getONorOFF(enableTSpinKick),
+				"SPIN TYPE", (spinCheckType == 0) ? "4POINT" : "IMMOBILE",
+				"EZIMMOBILE", GeneralUtil.getONorOFF(tspinEnableEZ),
+				"B2B", GeneralUtil.getONorOFF(enableB2B),
+				"COMBO", GeneralUtil.getONorOFF(enableCombo),
+				"DAS", String.valueOf(engine.speed.das));
 	}
 
 	/*
@@ -505,7 +674,6 @@ public class DigChallengeMode extends AbstractNetMode {
 		netDrawSpectatorsCount(engine, 0, 18);
 		// NET: All number of players
 		if(playerID == getPlayers() - 1) {
-			netDrawAllPlayersCount(engine);
 			netDrawGameRate(engine);
 		}
 		// NET: Player name (It may also appear in offline replay)
@@ -973,39 +1141,45 @@ public class DigChallengeMode extends AbstractNetMode {
 	@Override
 	protected void netSendStats(GameEngine engine) {
 		int bg = engine.getOwner().backgroundStatus.fadesw ? engine.getOwner().backgroundStatus.fadebg : engine.getOwner().backgroundStatus.bg;
-		String msg = "game\tstats\t";
-		msg += engine.statistics.score + "\t" + engine.statistics.lines + "\t" + engine.statistics.totalPieceLocked + "\t";
-		msg += engine.statistics.time + "\t" + engine.statistics.level + "\t";
-		msg += garbageTimer + "\t" + garbageTotal + "\t" + goaltype + "\t";
-		msg += engine.gameActive + "\t" + engine.timerActive + "\t";
-		msg += lastscore + "\t" + scgettime + "\t" + lastevent + "\t" + lastb2b + "\t" + lastcombo + "\t" + lastpiece + "\t";
-		msg += bg + "\t" + garbagePending + "\n";
-		netLobby.netPlayerClient.send(msg);
+		Stats s = new Stats();
+		s.setStatistics(engine.statistics);
+		s.setGarbageTimer(garbageTimer);
+		s.setGarbageTotal(garbageTotal);
+		s.setGoalType(goaltype);
+		s.setGameActive(engine.gameActive);
+		s.setTimerActive(engine.timerActive);
+		s.setLastScore(lastscore);
+		s.setScGetTime(scgettime);
+		s.setLastEvent(lastevent);
+		s.setLastb2b(lastb2b);
+		s.setLastCombo(lastcombo);
+		s.setLastPiece(lastpiece);
+		s.setBg(bg);
+		s.setGarbagePending(garbagePending);
+		knetClient.fireUDP(GAME_STATS, s);
 	}
 
 	/**
 	 * NET: Receive various in-game stats (as well as goaltype)
 	 */
 	@Override
-	protected void netRecvStats(GameEngine engine, String[] message) {
-		engine.statistics.score = Integer.parseInt(message[4]);
-		engine.statistics.lines = Integer.parseInt(message[5]);
-		engine.statistics.totalPieceLocked = Integer.parseInt(message[6]);
-		engine.statistics.time = Integer.parseInt(message[7]);
-		engine.statistics.level = Integer.parseInt(message[8]);
-		garbageTimer = Integer.parseInt(message[9]);
-		garbageTotal = Integer.parseInt(message[10]);
-		goaltype = Integer.parseInt(message[11]);
-		engine.gameActive = Boolean.parseBoolean(message[12]);
-		engine.timerActive = Boolean.parseBoolean(message[13]);
-		lastscore = Integer.parseInt(message[14]);
-		scgettime = Integer.parseInt(message[15]);
-		lastevent = Integer.parseInt(message[16]);
-		lastb2b = Boolean.parseBoolean(message[17]);
-		lastcombo = Integer.parseInt(message[18]);
-		lastpiece = Integer.parseInt(message[19]);
-		engine.getOwner().backgroundStatus.bg = Integer.parseInt(message[20]);
-		garbagePending = Integer.parseInt(message[21]);
+	protected void netRecvStats(GameEngine engine, KNetEvent e) {
+		Stats s = (Stats) e.get(GAME_STATS);
+		
+		engine.statistics.copy(s.getStatistics());
+		garbageTimer = s.getGarbageTimer();
+		garbageTotal = s.getGarbageTotal();
+		goaltype = s.getGoalType();
+		engine.gameActive = s.isGameActive();
+		engine.timerActive = s.isTimerActive();
+		lastscore = s.getLastScore();
+		scgettime = s.getScGetTime();
+		lastevent = s.getLastEvent();
+		lastb2b = s.isLastb2b();
+		lastcombo = s.getLastCombo();
+		lastpiece = s.getLastPiece();
+		engine.getOwner().backgroundStatus.bg = s.getBg();
+		garbagePending = s.getGarbagePending();
 
 		// Meter
 		updateMeter(engine);
@@ -1017,16 +1191,7 @@ public class DigChallengeMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		String subMsg = "";
-		subMsg += "SCORE;" + engine.statistics.score + "\t";
-		subMsg += "LINE;" + engine.statistics.lines + "\t";
-		subMsg += "GARBAGE;" + garbageTotal + "\t";
-		subMsg += "PIECE;" + engine.statistics.totalPieceLocked + "\t";
-		subMsg += "LEVEL;" + (engine.statistics.level + engine.statistics.levelDispAdd) + "\t";
-		subMsg += "TIME;" + GeneralUtil.getTime(engine.statistics.time) + "\t";
-
-		String msg = "gstat1p\t" + NetUtil.urlEncode(subMsg) + "\n";
-		netLobby.netPlayerClient.send(msg);
+		knetClient.fireTCP(GAME_END_STATS, engine.statistics);
 	}
 
 	/**
@@ -1035,28 +1200,36 @@ public class DigChallengeMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendOptions(GameEngine engine) {
-		String msg = "game\toption\t";
-		msg += goaltype + "\t" + startlevel + "\t" + bgmno + "\t";
-		msg += tspinEnableType + "\t" + enableTSpinKick + "\t" + spinCheckType + "\t" + tspinEnableEZ + "\t";
-		msg += enableB2B + "\t" + enableCombo + "\t" + engine.speed.das + "\n";
-		netLobby.netPlayerClient.send(msg);
+		Options o = new Options();
+		o.setGoalType(goaltype);
+		o.setStartLevel(startlevel);
+		o.setBgmno(bgmno);
+		o.setTspinEnableType(tspinEnableType);
+		o.setEnableTSpinKick(enableTSpinKick);
+		o.setSpinCheckType(spinCheckType);
+		o.setTspinEnableEZ(tspinEnableEZ);
+		o.setEnableB2B(enableB2B);
+		o.setEnableCombo(enableCombo);
+		o.setSpeed(engine.speed);
+		knetClient.fireTCP(GAME_OPTIONS, o);
 	}
 
 	/**
 	 * NET: Receive game options
 	 */
 	@Override
-	protected void netRecvOptions(GameEngine engine, String[] message) {
-		goaltype = Integer.parseInt(message[4]);
-		startlevel = Integer.parseInt(message[5]);
-		bgmno = Integer.parseInt(message[6]);
-		tspinEnableType = Integer.parseInt(message[7]);
-		enableTSpinKick = Boolean.parseBoolean(message[8]);
-		spinCheckType = Integer.parseInt(message[9]);
-		tspinEnableEZ = Boolean.parseBoolean(message[10]);
-		enableB2B = Boolean.parseBoolean(message[11]);
-		enableCombo = Boolean.parseBoolean(message[12]);
-		engine.speed.das = Integer.parseInt(message[13]);
+	protected void netRecvOptions(GameEngine engine, KNetEvent e) {
+		Options o = (Options) e.get(GAME_OPTIONS);
+		goaltype = o.getGoalType();
+		startlevel = o.getStartLevel();
+		bgmno = o.getBgmno();
+		tspinEnableType = o.getTspinEnableType();
+		enableTSpinKick = o.isEnableTSpinKick();
+		spinCheckType = o.getSpinCheckType();
+		tspinEnableEZ = o.isTspinEnableEZ();
+		enableB2B = o.isEnableB2B();
+		enableCombo = o.isEnableCombo();
+		engine.speed.copy(o.getSpeed());
 	}
 
 	/**
