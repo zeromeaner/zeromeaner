@@ -10,17 +10,20 @@ import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.knet.obj.KNStartInfo;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.zeromeaner.game.knet.obj.KNetGameInfo;
 import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.game.knet.obj.PieceHold;
 import org.zeromeaner.game.knet.obj.PieceMovement;
 import org.zeromeaner.game.knet.ser.BlockSerializer;
-import org.zeromeaner.game.knet.ser.FieldSerializer;
+
 import org.zeromeaner.game.knet.ser.PieceSerializer;
 import org.zeromeaner.game.knet.ser.PropertiesSerializer;
 import org.zeromeaner.game.knet.ser.StatisticsSerializer;
+import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
 import org.zeromeaner.util.CustomProperties;
 
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.serializers.FieldSerializer;
 
 public class KNetKryo {
 	public static void configure(Kryo kryo) {
@@ -28,8 +31,9 @@ public class KNetKryo {
 		kryo.register(KNetEventSource.class);
 		kryo.register(KNetChannelInfo.class);
 		kryo.register(KNetChannelInfo[].class);
+		kryo.register(KNetGameInfo.class, new FieldSerializer<KNetGameInfo>(kryo, KNetGameInfo.class));
 		kryo.register(KNetPlayerInfo.class);
-		kryo.register(Field.class, new FieldSerializer());
+		kryo.register(Field.class, new org.zeromeaner.game.knet.ser.FieldSerializer());
 		kryo.register(Block[][].class);
 		kryo.register(Block[].class);
 		kryo.register(Block.class, new BlockSerializer());
@@ -44,7 +48,10 @@ public class KNetKryo {
 		kryo.register(Properties.class, new PropertiesSerializer());
 		kryo.register(CustomProperties.class, new PropertiesSerializer());
 		kryo.register(Statistics.class, new StatisticsSerializer());
-		kryo.register(RuleOptions.class, new com.esotericsoftware.kryo.serializers.FieldSerializer<RuleOptions>(kryo, RuleOptions.class));
+		kryo.register(RuleOptions.class, new FieldSerializer<RuleOptions>(kryo, RuleOptions.class));
 		kryo.register(KNStartInfo.class);
+		
+		
+		kryo.register(NetVSBattleMode.AttackInfo.class);
 	}
 }

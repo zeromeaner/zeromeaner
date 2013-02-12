@@ -40,11 +40,104 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.GeneralUtil;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+
 
 /**
  * NET-VS-BATTLE Mode
  */
 public class NetVSBattleMode extends AbstractNetVSMode {
+	public static class AttackInfo implements KryoSerializable {
+		private int[] points;
+		private int lastEvent;
+		private boolean lastB2b;
+		private int lastCombo;
+		private int garbage;
+		private int lastPiece;
+		private int targetSeatId;
+		
+		@Override
+		public void write(Kryo kryo, Output output) {
+			kryo.writeObject(output, points);
+			output.writeInt(lastEvent, true);
+			output.writeBoolean(lastB2b);
+			output.writeInt(lastCombo, true);
+			output.writeInt(garbage, true);
+			output.writeInt(lastPiece, true);
+			output.writeInt(targetSeatId, true);
+		}
+		
+		@Override
+		public void read(Kryo kryo, Input input) {
+			points = kryo.readObject(input, int[].class);
+			lastEvent = input.readInt(true);
+			lastB2b = input.readBoolean();
+			lastCombo = input.readInt(true);
+			garbage = input.readInt(true);
+			lastPiece = input.readInt(true);
+			targetSeatId = input.readInt(true);
+		}
+
+		public int[] getPoints() {
+			return points;
+		}
+
+		public void setPoints(int[] points) {
+			this.points = points;
+		}
+
+		public int getLastEvent() {
+			return lastEvent;
+		}
+
+		public void setLastEvent(int lastEvent) {
+			this.lastEvent = lastEvent;
+		}
+
+		public boolean isLastB2b() {
+			return lastB2b;
+		}
+
+		public void setLastB2b(boolean lastB2b) {
+			this.lastB2b = lastB2b;
+		}
+
+		public int getLastCombo() {
+			return lastCombo;
+		}
+
+		public void setLastCombo(int lastCombo) {
+			this.lastCombo = lastCombo;
+		}
+
+		public int getGarbage() {
+			return garbage;
+		}
+
+		public void setGarbage(int garbage) {
+			this.garbage = garbage;
+		}
+
+		public int getLastPiece() {
+			return lastPiece;
+		}
+
+		public void setLastPiece(int lastPiece) {
+			this.lastPiece = lastPiece;
+		}
+
+		public int getTargetSeatId() {
+			return targetSeatId;
+		}
+
+		public void setTargetSeatId(int targetSeatId) {
+			this.targetSeatId = targetSeatId;
+		}
+	}
+	
 	/** Most recent scoring event type constants */
 	protected static final int EVENT_NONE = 0,
 							 EVENT_SINGLE = 1,
@@ -465,8 +558,15 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 				if((targetID != -1) && !netvsIsAttackable(targetID)) setNewTarget();
 				int targetSeatID = (targetID == -1) ? -1 : netvsPlayerSeatID[targetID];
 
-				netLobby.netPlayerClient.send("game\tattack\t" + stringPts + "\t" + lastevent[playerID] + "\t" + lastb2b[playerID] + "\t" +
-						lastcombo[playerID] + "\t" + garbage[playerID] + "\t" + lastpiece[playerID] + "\t" + targetSeatID + "\n");
+				AttackInfo attack = new AttackInfo();
+				attack.setPoints(pts);
+				attack.setLastEvent(lastevent[playerID]);
+				attack.setLastB2b(lastb2b[playerID]);
+				attack.setLastCombo(lastcombo[playerID]);
+				attack.setGarbage(garbage[playerID]);
+				attack.setLastPiece(lastpiece[playerID]);
+				attack.setTargetSeatId(targetSeatID);
+				knetClient.fireTCP(attack);
 			}
 		}
 

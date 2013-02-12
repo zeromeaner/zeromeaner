@@ -8,7 +8,7 @@ import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
-public class KNetGameInfo implements KryoSerializable {
+public class KNetGameInfo {
 	public static enum TSpinEnableType {
 		DISABLE,
 		ENABLE,
@@ -29,42 +29,8 @@ public class KNetGameInfo implements KryoSerializable {
 	private Field map;
 	private boolean reduceLineSend;
 	private boolean useFractionalGarbage;
+	private boolean targettedGarbage;
 	
-	@Override
-	public void write(Kryo kryo, Output output) {
-		output.writeInt(gravity, true);
-		output.writeInt(denominator, true);
-		output.writeInt(are, true);
-		output.writeInt(areLine, true);
-		output.writeInt(lineDelay, true);
-		output.writeInt(lockDelay, true);
-		output.writeInt(das, true);
-		output.writeBoolean(b2bEnable);
-		output.writeInt(comboType, true);
-		output.writeInt(tspinEnableType.ordinal(), true);
-		output.writeBoolean(synchronousPlay);
-		kryo.writeObjectOrNull(output, map, Field.class);
-		output.writeBoolean(reduceLineSend);
-		output.writeBoolean(useFractionalGarbage);
-	}
-	
-	@Override
-	public void read(Kryo kryo, Input input) {
-		gravity = input.readInt(true);
-		denominator = input.readInt(true);
-		are = input.readInt(true);
-		areLine = input.readInt(true);
-		lineDelay = input.readInt(true);
-		lockDelay = input.readInt(true);
-		das = input.readInt(true);
-		b2bEnable = input.readBoolean();
-		comboType = input.readInt(true);
-		tspinEnableType = TSpinEnableType.values()[input.readInt(true)];
-		synchronousPlay = input.readBoolean();
-		map = kryo.readObjectOrNull(input, Field.class);
-		reduceLineSend = input.readBoolean();
-		useFractionalGarbage = input.readBoolean();
-	}
 	
 	public int getGravity() {
 		return gravity;
@@ -157,6 +123,14 @@ public class KNetGameInfo implements KryoSerializable {
 
 	public void setUseFractionalGarbage(boolean useFractionalGarbage) {
 		this.useFractionalGarbage = useFractionalGarbage;
+	}
+
+	public boolean isTargettedGarbage() {
+		return targettedGarbage;
+	}
+
+	public void setTargettedGarbage(boolean targettedGarbage) {
+		this.targettedGarbage = targettedGarbage;
 	}
 	
 }
