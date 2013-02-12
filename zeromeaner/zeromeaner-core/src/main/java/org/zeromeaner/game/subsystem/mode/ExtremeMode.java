@@ -31,15 +31,185 @@ package org.zeromeaner.game.subsystem.mode;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Piece;
+import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
+import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
+
+import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
 /**
  * EXTREME Mode
  */
 public class ExtremeMode extends AbstractNetMode {
+	public static class Stats {
+		private Statistics statistics;
+		private boolean endless;
+		private boolean gameActive;
+		private boolean timerActive;
+		private int lastScore;
+		private int scGetTime;
+		private int lastEvent;
+		private boolean lastB2b;
+		private int lastCombo;
+		private int lastPiece;
+		private int bg;
+		private int rollTime;
+		private int meterValue;
+		private int meterColor;
+		public Statistics getStatistics() {
+			return statistics;
+		}
+		public void setStatistics(Statistics statistics) {
+			this.statistics = statistics;
+		}
+		public boolean isEndless() {
+			return endless;
+		}
+		public void setEndless(boolean endless) {
+			this.endless = endless;
+		}
+		public boolean isGameActive() {
+			return gameActive;
+		}
+		public void setGameActive(boolean gameActive) {
+			this.gameActive = gameActive;
+		}
+		public boolean isTimerActive() {
+			return timerActive;
+		}
+		public void setTimerActive(boolean timerActive) {
+			this.timerActive = timerActive;
+		}
+		public int getLastScore() {
+			return lastScore;
+		}
+		public void setLastScore(int lastScore) {
+			this.lastScore = lastScore;
+		}
+		public int getScGetTime() {
+			return scGetTime;
+		}
+		public void setScGetTime(int scGetTime) {
+			this.scGetTime = scGetTime;
+		}
+		public int getLastEvent() {
+			return lastEvent;
+		}
+		public void setLastEvent(int lastEvent) {
+			this.lastEvent = lastEvent;
+		}
+		public boolean isLastB2b() {
+			return lastB2b;
+		}
+		public void setLastB2b(boolean lastB2b) {
+			this.lastB2b = lastB2b;
+		}
+		public int getLastCombo() {
+			return lastCombo;
+		}
+		public void setLastCombo(int lastCombo) {
+			this.lastCombo = lastCombo;
+		}
+		public int getLastPiece() {
+			return lastPiece;
+		}
+		public void setLastPiece(int lastPiece) {
+			this.lastPiece = lastPiece;
+		}
+		public int getBg() {
+			return bg;
+		}
+		public void setBg(int bg) {
+			this.bg = bg;
+		}
+		public int getRollTime() {
+			return rollTime;
+		}
+		public void setRollTime(int rollTime) {
+			this.rollTime = rollTime;
+		}
+		public int getMeterValue() {
+			return meterValue;
+		}
+		public void setMeterValue(int meterValue) {
+			this.meterValue = meterValue;
+		}
+		public int getMeterColor() {
+			return meterColor;
+		}
+		public void setMeterColor(int meterColor) {
+			this.meterColor = meterColor;
+		}
+	}
+	public static class Options {
+		private int startLevel;
+		private int tspinEnableType;
+		private boolean enableTSpinKick;
+		private boolean enableB2B;
+		private boolean enableCombo;
+		private boolean endless;
+		private boolean big;
+		private int spinCheckType;
+		private boolean tspinEnableEZ;
+		
+		public int getStartLevel() {
+			return startLevel;
+		}
+		public void setStartLevel(int startLevel) {
+			this.startLevel = startLevel;
+		}
+		public int getTspinEnableType() {
+			return tspinEnableType;
+		}
+		public void setTspinEnableType(int tspinEnableType) {
+			this.tspinEnableType = tspinEnableType;
+		}
+		public boolean isEnableTSpinKick() {
+			return enableTSpinKick;
+		}
+		public void setEnableTSpinKick(boolean enableTSpinKick) {
+			this.enableTSpinKick = enableTSpinKick;
+		}
+		public boolean isEnableB2B() {
+			return enableB2B;
+		}
+		public void setEnableB2B(boolean enableB2B) {
+			this.enableB2B = enableB2B;
+		}
+		public boolean isEnableCombo() {
+			return enableCombo;
+		}
+		public void setEnableCombo(boolean enableCombo) {
+			this.enableCombo = enableCombo;
+		}
+		public boolean isEndless() {
+			return endless;
+		}
+		public void setEndless(boolean endless) {
+			this.endless = endless;
+		}
+		public boolean isBig() {
+			return big;
+		}
+		public void setBig(boolean big) {
+			this.big = big;
+		}
+		public int getSpinCheckType() {
+			return spinCheckType;
+		}
+		public void setSpinCheckType(int spinCheckType) {
+			this.spinCheckType = spinCheckType;
+		}
+		public boolean isTspinEnableEZ() {
+			return tspinEnableEZ;
+		}
+		public void setTspinEnableEZ(boolean tspinEnableEZ) {
+			this.tspinEnableEZ = tspinEnableEZ;
+		}
+	}
 	/** Current version */
 	private static final int CURRENT_VERSION = 1;
 
@@ -227,12 +397,8 @@ public class ExtremeMode extends AbstractNetMode {
 	 */
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
-		// NET: Net Ranking
-		if(netIsNetRankingDisplayMode) {
-			netOnUpdateNetPlayRanking(engine, netGetGoalType());
-		}
 		// Menu
-		else if(engine.getOwner().replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 8);
 
@@ -290,7 +456,8 @@ public class ExtremeMode extends AbstractNetMode {
 				receiver.saveModeConfig(owner.modeConfig);
 
 				// NET: Signal start of the game
-				if(netIsNetPlay) netLobby.netPlayerClient.send("start1p\n");
+				if(netIsNetPlay) 
+					knetClient.fireTCP(START_1P, true);
 
 				return false;
 			}
@@ -298,12 +465,6 @@ public class ExtremeMode extends AbstractNetMode {
 			// Cancel
 			if(engine.ctrl.isPush(Controller.BUTTON_B) && !netIsNetPlay) {
 				engine.quitflag = true;
-			}
-
-			// NET: Netplay Ranking
-			if(engine.ctrl.isPush(Controller.BUTTON_D) && netIsNetPlay && startlevel == 0 && !big && 
-					engine.ai == null) {
-				netEnterNetPlayRankingScreen(engine, playerID, netGetGoalType());
 			}
 
 			engine.statc[3]++;
@@ -326,29 +487,24 @@ public class ExtremeMode extends AbstractNetMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		if(netIsNetRankingDisplayMode) {
-			// NET: Netplay Ranking
-			netOnRenderNetPlayRanking(engine, playerID, receiver);
+		String strTSpinEnable = "";
+		if(version >= 1) {
+			if(tspinEnableType == 0) strTSpinEnable = "OFF";
+			if(tspinEnableType == 1) strTSpinEnable = "T-ONLY";
+			if(tspinEnableType == 2) strTSpinEnable = "ALL";
 		} else {
-			String strTSpinEnable = "";
-			if(version >= 1) {
-				if(tspinEnableType == 0) strTSpinEnable = "OFF";
-				if(tspinEnableType == 1) strTSpinEnable = "T-ONLY";
-				if(tspinEnableType == 2) strTSpinEnable = "ALL";
-			} else {
-				strTSpinEnable = GeneralUtil.getONorOFF(enableTSpin);
-			}
-			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
-					"LEVEL", String.valueOf(startlevel + 1),
-					"SPIN BONUS", strTSpinEnable,
-					"EZ SPIN", GeneralUtil.getONorOFF(enableTSpinKick),
-					"SPIN TYPE", (spinCheckType == 0) ? "4POINT" : "IMMOBILE",
-					"EZIMMOBILE", GeneralUtil.getONorOFF(tspinEnableEZ),
-					"B2B", GeneralUtil.getONorOFF(enableB2B),
-					"COMBO",  GeneralUtil.getONorOFF(enableCombo),
-					"ENDLESS", GeneralUtil.getONorOFF(endless),
-					"BIG", GeneralUtil.getONorOFF(big));
+			strTSpinEnable = GeneralUtil.getONorOFF(enableTSpin);
 		}
+		drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
+				"LEVEL", String.valueOf(startlevel + 1),
+				"SPIN BONUS", strTSpinEnable,
+				"EZ SPIN", GeneralUtil.getONorOFF(enableTSpinKick),
+				"SPIN TYPE", (spinCheckType == 0) ? "4POINT" : "IMMOBILE",
+				"EZIMMOBILE", GeneralUtil.getONorOFF(tspinEnableEZ),
+				"B2B", GeneralUtil.getONorOFF(enableB2B),
+				"COMBO",  GeneralUtil.getONorOFF(enableCombo),
+				"ENDLESS", GeneralUtil.getONorOFF(endless),
+				"BIG", GeneralUtil.getONorOFF(big));
 	}
 
 	/*
@@ -506,7 +662,6 @@ public class ExtremeMode extends AbstractNetMode {
 		netDrawSpectatorsCount(engine, 0, 18);
 		// NET: All number of players
 		if(playerID == getPlayers() - 1) {
-			netDrawAllPlayersCount(engine);
 			netDrawGameRate(engine);
 		}
 		// NET: Player name (It may also appear in offline replay)
@@ -872,41 +1027,45 @@ public class ExtremeMode extends AbstractNetMode {
 	@Override
 	protected void netSendStats(GameEngine engine) {
 		int bg = engine.getOwner().backgroundStatus.fadesw ? engine.getOwner().backgroundStatus.fadebg : engine.getOwner().backgroundStatus.bg;
-		String msg = "game\tstats\t";
-		msg += engine.statistics.score + "\t" + engine.statistics.lines + "\t" + engine.statistics.totalPieceLocked + "\t";
-		msg += engine.statistics.time + "\t" + engine.statistics.level + "\t";
-		msg += engine.statistics.lpm + "\t" + engine.statistics.spl + "\t" + endless + "\t";
-		msg += engine.gameActive + "\t" + engine.timerActive + "\t";
-		msg += lastscore + "\t" + scgettime + "\t" + lastevent + "\t" + lastb2b + "\t" + lastcombo + "\t" + lastpiece + "\t";
-		msg += bg + "\t" + rolltime + "\t" + engine.meterValue + "\t" + engine.meterColor + "\n";
-		netLobby.netPlayerClient.send(msg);
+		Stats s = new Stats();
+		s.setStatistics(engine.statistics);
+		s.setEndless(endless);
+		s.setGameActive(engine.gameActive);
+		s.setTimerActive(engine.timerActive);
+		s.setLastScore(lastscore);
+		s.setScGetTime(scgettime);
+		s.setLastEvent(lastevent);
+		s.setLastB2b(lastb2b);
+		s.setLastCombo(lastcombo);
+		s.setLastPiece(lastpiece);
+		s.setBg(bg);
+		s.setRollTime(rolltime);
+		s.setMeterColor(engine.meterColor);
+		s.setMeterValue(engine.meterValue);
+		knetClient.fireUDP(GAME_STATS, s);
 	}
 
 	/**
 	 * NET: Receive various in-game stats (as well as goaltype)
 	 */
 	@Override
-	protected void netRecvStats(GameEngine engine, String[] message) {
-		engine.statistics.score = Integer.parseInt(message[4]);
-		engine.statistics.lines = Integer.parseInt(message[5]);
-		engine.statistics.totalPieceLocked = Integer.parseInt(message[6]);
-		engine.statistics.time = Integer.parseInt(message[7]);
-		engine.statistics.level = Integer.parseInt(message[8]);
-		engine.statistics.lpm = Float.parseFloat(message[9]);
-		engine.statistics.spl = Double.parseDouble(message[10]);
-		endless = Boolean.parseBoolean(message[11]);
-		engine.gameActive = Boolean.parseBoolean(message[12]);
-		engine.timerActive = Boolean.parseBoolean(message[13]);
-		lastscore = Integer.parseInt(message[14]);
-		scgettime = Integer.parseInt(message[15]);
-		lastevent = Integer.parseInt(message[16]);
-		lastb2b = Boolean.parseBoolean(message[17]);
-		lastcombo = Integer.parseInt(message[18]);
-		lastpiece = Integer.parseInt(message[19]);
-		engine.getOwner().backgroundStatus.bg = Integer.parseInt(message[20]);
-		rolltime = Integer.parseInt(message[21]);
-		engine.meterValue = Integer.parseInt(message[22]);
-		engine.meterColor = Integer.parseInt(message[23]);
+	protected void netRecvStats(GameEngine engine, KNetEvent e) {
+		Stats s = (Stats) e.get(GAME_STATS);
+		
+		engine.statistics.copy(s.getStatistics());
+		endless = s.isEndless();
+		engine.gameActive = s.isGameActive();
+		engine.timerActive = s.isTimerActive();
+		lastscore = s.getLastScore();
+		scgettime = s.getScGetTime();
+		lastevent = s.getLastEvent();
+		lastb2b = s.isLastB2b();
+		lastcombo = s.getLastCombo();
+		lastpiece = s.getLastPiece();
+		engine.getOwner().backgroundStatus.bg = s.getBg();
+		rolltime = s.getRollTime();
+		engine.meterValue = s.getMeterValue();
+		engine.meterColor = s.getMeterColor();
 	}
 
 	/**
@@ -915,16 +1074,7 @@ public class ExtremeMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		String subMsg = "";
-		subMsg += "SCORE;" + engine.statistics.score + "\t";
-		subMsg += "LINE;" + engine.statistics.lines + "\t";
-		subMsg += "LEVEL;" + (engine.statistics.level + engine.statistics.levelDispAdd) + "\t";
-		subMsg += "TIME;" + GeneralUtil.getTime(engine.statistics.time) + "\t";
-		subMsg += "SCORE/LINE;" + engine.statistics.spl + "\t";
-		subMsg += "LINE/MIN;" + engine.statistics.lpm + "\t";
-
-		String msg = "gstat1p\t" + NetUtil.urlEncode(subMsg) + "\n";
-		netLobby.netPlayerClient.send(msg);
+		knetClient.fireTCP(GAME_END_STATS, engine.statistics);
 	}
 
 	/**
@@ -933,26 +1083,35 @@ public class ExtremeMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendOptions(GameEngine engine) {
-		String msg = "game\toption\t";
-		msg += startlevel + "\t" + tspinEnableType + "\t" + enableTSpinKick + "\t" + enableB2B + "\t";
-		msg += enableCombo + "\t" + endless + "\t" + big + "\t" + spinCheckType + "\t" + tspinEnableEZ + "\n";
-		netLobby.netPlayerClient.send(msg);
+		Options o = new Options();
+		o.setStartLevel(startlevel);
+		o.setTspinEnableType(tspinEnableType);
+		o.setEnableTSpinKick(enableTSpinKick);
+		o.setEnableB2B(enableB2B);
+		o.setEnableCombo(enableCombo);
+		o.setEndless(endless);
+		o.setBig(big);
+		o.setSpinCheckType(spinCheckType);
+		o.setTspinEnableEZ(tspinEnableEZ);
+		knetClient.fireTCP(GAME_OPTIONS, o);
 	}
 
 	/**
 	 * NET: Receive game options
 	 */
 	@Override
-	protected void netRecvOptions(GameEngine engine, String[] message) {
-		startlevel = Integer.parseInt(message[4]);
-		tspinEnableType = Integer.parseInt(message[5]);
-		enableTSpinKick = Boolean.parseBoolean(message[6]);
-		enableB2B = Boolean.parseBoolean(message[7]);
-		enableCombo = Boolean.parseBoolean(message[8]);
-		endless = Boolean.parseBoolean(message[9]);
-		big = Boolean.parseBoolean(message[10]);
-		spinCheckType = Integer.parseInt(message[11]);
-		tspinEnableEZ = Boolean.parseBoolean(message[12]);
+	protected void netRecvOptions(GameEngine engine, KNetEvent e) {
+		Options o = (Options) e.get(GAME_OPTIONS);
+		
+		startlevel = o.getStartLevel();
+		tspinEnableType = o.getTspinEnableType();
+		enableTSpinKick = o.isEnableTSpinKick();
+		enableB2B = o.isEnableB2B();
+		enableCombo = o.isEnableCombo();
+		endless = o.isEndless();
+		big = o.isBig();
+		spinCheckType = o.getSpinCheckType();
+		tspinEnableEZ = o.isTspinEnableEZ();
 	}
 
 	/**
