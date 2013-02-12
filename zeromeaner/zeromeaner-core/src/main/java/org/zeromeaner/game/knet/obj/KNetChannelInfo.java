@@ -21,6 +21,7 @@ public class KNetChannelInfo implements KryoSerializable {
 	private boolean ruleLock;
 	private RuleOptions rule;
 	private boolean playing;
+	private boolean autoStart;
 	private KNetGameInfo game;
 	
 	public KNetChannelInfo() {}
@@ -28,6 +29,13 @@ public class KNetChannelInfo implements KryoSerializable {
 	public KNetChannelInfo(int id, String name) {
 		this.id = id;
 		this.name = name;
+	}
+	
+	public KNetPlayerInfo getPlayerInfo(KNetEventSource source) {
+		int index = players.indexOf(source);
+		if(index == -1)
+			return null;
+		return playerInfo.get(index);
 	}
 	
 	@Override
@@ -98,6 +106,7 @@ public class KNetChannelInfo implements KryoSerializable {
 		output.writeBoolean(playing);
 		output.writeInt(maxPlayers, true);
 		kryo.writeObjectOrNull(output, game, KNetGameInfo.class);
+		output.writeBoolean(autoStart);
 	}
 	
 	@Override
@@ -118,6 +127,7 @@ public class KNetChannelInfo implements KryoSerializable {
 		playing = input.readBoolean();
 		maxPlayers = input.readInt(true);
 		game = kryo.readObjectOrNull(input, KNetGameInfo.class);
+		autoStart = input.readBoolean();
 	}
 
 	public boolean isRuleLock() {
@@ -166,5 +176,13 @@ public class KNetChannelInfo implements KryoSerializable {
 
 	public void setGame(KNetGameInfo game) {
 		this.game = game;
+	}
+
+	public boolean isAutoStart() {
+		return autoStart;
+	}
+
+	public void setAutoStart(boolean autoStart) {
+		this.autoStart = autoStart;
 	}
 }

@@ -368,6 +368,9 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 */
 	@Override
 	public void knetEvented(KNetClient client, KNetEvent e) {
+		if(e.is(DISCONNECTED))
+			netlobbyOnDisconnect(client, e);
+		
 		// Player status update
 		if(e.is(PLAYER_UPDATE)) {
 			netUpdatePlayerExist();
@@ -513,6 +516,12 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 				owner.engine[i].quitflag = true;
 			}
 		} catch (Exception e) {}
+	}
+
+	/**
+	 * NET-VS: Disconnected
+	 */
+	public void netlobbyOnDisconnect(KNetClient client, KNetEvent e) {
 	}
 
 	/**

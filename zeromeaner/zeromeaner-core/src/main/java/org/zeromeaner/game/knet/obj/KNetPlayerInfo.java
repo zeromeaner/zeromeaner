@@ -9,6 +9,7 @@ import com.esotericsoftware.kryo.io.Output;
 
 public class KNetPlayerInfo implements KryoSerializable {
 	private KNetEventSource player;
+	private KNetChannelInfo channel;
 	private boolean ready;
 	private boolean playing;
 	private int playCount;
@@ -18,6 +19,7 @@ public class KNetPlayerInfo implements KryoSerializable {
 	@Override
 	public void write(Kryo kryo, Output output) {
 		kryo.writeObject(output, player);
+		kryo.writeObject(output, channel);
 		output.writeBoolean(ready);
 		output.writeBoolean(playing);
 		output.writeInt(playCount, true);
@@ -28,11 +30,16 @@ public class KNetPlayerInfo implements KryoSerializable {
 	@Override
 	public void read(Kryo kryo, Input input) {
 		player = kryo.readObject(input, KNetEventSource.class);
+		channel = kryo.readObject(input, KNetChannelInfo.class);
 		ready = input.readBoolean();
 		playing = input.readBoolean();
 		playCount = input.readInt(true);
 		winCount = input.readInt(true);
 		team = input.readString();
+	}
+	
+	public int getSeatId() {
+		return channel.getPlayerInfo().indexOf(this);
 	}
 	
 	public KNetEventSource getPlayer() {
@@ -70,5 +77,13 @@ public class KNetPlayerInfo implements KryoSerializable {
 	}
 	public void setTeam(String team) {
 		this.team = team;
+	}
+
+	public KNetChannelInfo getChannel() {
+		return channel;
+	}
+
+	public void setChannel(KNetChannelInfo channel) {
+		this.channel = channel;
 	}
 }

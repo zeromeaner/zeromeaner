@@ -8,6 +8,7 @@ import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.Statistics;
+import org.zeromeaner.game.knet.obj.KNStartInfo;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.game.knet.obj.PieceHold;
@@ -44,5 +45,6 @@ public class KNetKryo {
 		kryo.register(CustomProperties.class, new PropertiesSerializer());
 		kryo.register(Statistics.class, new StatisticsSerializer());
 		kryo.register(RuleOptions.class, new com.esotericsoftware.kryo.serializers.FieldSerializer<RuleOptions>(kryo, RuleOptions.class));
+		kryo.register(KNStartInfo.class);
 	}
 }

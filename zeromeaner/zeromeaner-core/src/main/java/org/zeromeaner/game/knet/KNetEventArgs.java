@@ -2,6 +2,8 @@ package org.zeromeaner.game.knet;
 
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
+import org.zeromeaner.game.knet.obj.KNStartInfo;
+import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.game.knet.obj.PieceHold;
 import org.zeromeaner.game.knet.obj.PieceMovement;
 import org.zeromeaner.game.knet.obj.Replay;
@@ -133,26 +135,49 @@ public enum KNetEventArgs {
 	
 	GAME_SYNCHRONOUS_LOCKED,
 	
+	GAME_END_STATS(Object.class, true),
+	
 	/** Issued when the game is starting? */
-	START,
+	START(KNStartInfo.class),
 	
 	/** Issued when we die? */
-	DEAD,
+	DEAD(Integer.class),
+	
+	DEAD_PLACE(Integer.class),
 	
 	RESET_1P,
 	
-	PLAYER_UPDATE,
+	PLAYER_UPDATE(KNetPlayerInfo.class),
 	
 	/**
 	 * Issued when a player logs out.
 	 */
-	PLAYER_LOGOUT(KNetEventSource.class),
+	PLAYER_LOGOUT(KNetPlayerInfo.class),
 	
 	REPLAY_DATA(Replay.class),
 	REPLAY_NOT_RECEIVED,
 	REPLAY_RECEIVED,
 	
 	MAPS(Field[].class),
+	
+	READY(Boolean.class),
+	
+	AUTOSTART,
+	/**
+	 * argument: Integer: number of seconds
+	 */
+	AUTOSTART_BEGIN(Integer.class),
+	AUTOSTART_STOP,
+	
+	CHANGE_STATUS(KNetPlayerInfo.class),
+	
+	PLAYER_ENTER(KNetPlayerInfo.class),
+	PLAYER_LEAVE(KNetPlayerInfo.class),
+	
+	/**
+	 * argument: {@link Boolean}: team win
+	 */
+	FINISH(Boolean.class),
 	;
 	
 	private Class<?> type;
