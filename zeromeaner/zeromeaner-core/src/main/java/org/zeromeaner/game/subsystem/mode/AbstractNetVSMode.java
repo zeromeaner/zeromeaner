@@ -10,7 +10,10 @@ import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.event.EventRenderer;
+import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEventSource;
+import org.zeromeaner.game.knet.srv.KNetChannelInfo;
+import org.zeromeaner.game.knet.srv.KNetPlayerInfo;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
@@ -282,28 +285,30 @@ public class AbstractNetVSMode extends AbstractNetMode {
 
 		//		LinkedList<NetPlayerInfo> pList = netLobby.updateSameRoomPlayerInfoList();
 		List<KNetEventSource> players = channelInfo.getPlayers();
-		LinkedList<String> teamList = new LinkedList<String>();
+		List<KNetPlayerInfo> playerInfo = channelInfo.getPlayerInfo();
+		List<String> teamList = new LinkedList<String>();
 
-		for(KNetEventSource pInfo: players) {
-			if(pInfo.seatID == -1) {
+		for(KNetEventSource player: players) {
+			if(!channelInfo.getPlayers().contains(player)) {
 				netNumSpectators++;
 			} else {
 				netvsNumPlayers++;
 
-				int playerID = players.indexOf(pInfo);
+				int playerID = players.indexOf(player);
+				KNetPlayerInfo info = playerInfo.get(playerID);
 				netvsPlayerExist[playerID] = true;
-				netvsPlayerReady[playerID] = pInfo.ready;
-				netvsPlayerActive[playerID] = pInfo.playing;
-				netvsPlayerSeatID[playerID] = pInfo.seatID;
-				netvsPlayerUID[playerID] = pInfo.uid;
-				netvsPlayerWinCount[playerID] = pInfo.winCountNow;
-				netvsPlayerPlayCount[playerID] = pInfo.playCountNow;
-				netvsPlayerName[playerID] = pInfo.getName();
-				netvsPlayerTeam[playerID] = pInfo.strTeam;
+				netvsPlayerReady[playerID] = info.isReady();
+				netvsPlayerActive[playerID] = info.isPlaying();
+				netvsPlayerSeatID[playerID] = playerID;
+				netvsPlayerUID[playerID] = player.getId();
+				netvsPlayerWinCount[playerID] = info.getWinCount();
+				netvsPlayerPlayCount[playerID] = info.getPlayCount();
+				netvsPlayerName[playerID] = player.getName();
+				netvsPlayerTeam[playerID] = info.getTeam();
 
 				// Set frame color
-				if(pInfo.seatID < NETVS_PLAYER_COLOR_FRAME.length) {
-					owner.engine[playerID].framecolor = NETVS_PLAYER_COLOR_FRAME[pInfo.seatID];
+				if(playerID < NETVS_PLAYER_COLOR_FRAME.length) {
+					owner.engine[playerID].framecolor = NETVS_PLAYER_COLOR_FRAME[playerID];
 				}
 
 				// Set team color
@@ -323,12 +328,12 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	 * NET-VS: When you join the room
 	 */
 	@Override
-	protected void netOnJoin(NetLobbyFrame lobby, NetPlayerClient client, NetRoomInfo roomInfo) {
+	protected void netOnJoin(KNetClient client, KNetChannelInfo roomInfo) {
 		log.debug("netOnJoin() on NetDummyVSMode");
 
 		channelInfo = roomInfo;
 		netIsNetPlay = true;
-		netvsIsNewcomer = channelInfo.playing;
+		netvsIsNewcomer = channelInfo.isPlaying();
 
 		netUpdatePlayerExist();
 		netvsSetLockedRule();
@@ -418,22 +423,18 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	 * NET-VS: Set locked rule/Revert to user rule
 	 */
 	protected void netvsSetLockedRule() {
-		if((channelInfo != null) && (channelInfo.ruleLock)) {
+		if((channelInfo != null) && (channelInfo.isRuleLock())) {
 			// Set to locked rule
-			if((netLobby != null) && (netLobby.ruleOptLock != null)) {
-				Randomizer randomizer = GeneralUtil.loadRandomizer(netLobby.ruleOptLock.strRandomizer);
-				Wallkick wallkick = GeneralUtil.loadWallkick(netLobby.ruleOptLock.strWallkick);
-				for(int i = 0; i < getPlayers(); i++) {
-					owner.engine[i].ruleopt.copy(netLobby.ruleOptLock);
-					owner.engine[i].randomizer = randomizer;
-					owner.engine[i].wallkick = wallkick;
-				}
-			} else {
-				log.warn("Tried to set locked rule, but rule was not received yet!");
+			Randomizer randomizer = GeneralUtil.loadRandomizer(channelInfo.getRule().strRandomizer);
+			Wallkick wallkick = GeneralUtil.loadWallkick(channelInfo.getRule().strWallkick);
+			for(int i = 0; i < getPlayers(); i++) {
+				owner.engine[i].ruleopt.copy(channelInfo.getRule());
+				owner.engine[i].randomizer = randomizer;
+				owner.engine[i].wallkick = wallkick;
 			}
 		} else if(!netvsIsWatch()) {
 			// Revert rules
-			owner.engine[0].ruleopt.copy(netLobby.ruleOptPlayer);
+			owner.engine[0].ruleopt.copy(channelInfo.getRule());
 			owner.engine[0].randomizer = GeneralUtil.loadRandomizer(owner.engine[0].ruleopt.strRandomizer);
 			owner.engine[0].wallkick = GeneralUtil.loadWallkick(owner.engine[0].ruleopt.strWallkick);
 		}

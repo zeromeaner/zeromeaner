@@ -16,8 +16,11 @@ public class KNetChannelInfo implements KryoSerializable {
 	private String name;
 	private List<KNetEventSource> members = new ArrayList<KNetEventSource>();
 	private List<KNetEventSource> players = new ArrayList<KNetEventSource>();
+	private List<KNetPlayerInfo> playerInfo = new ArrayList<KNetPlayerInfo>();
+	private int maxPlayers;
 	private boolean ruleLock;
 	private RuleOptions rule;
+	private boolean playing;
 	
 	public KNetChannelInfo() {}
 	
@@ -87,6 +90,12 @@ public class KNetChannelInfo implements KryoSerializable {
 		}
 		output.writeBoolean(ruleLock);
 		kryo.writeObjectOrNull(output, rule, RuleOptions.class);
+		output.writeInt(playerInfo.size(), true);
+		for(KNetPlayerInfo pi : playerInfo) {
+			kryo.writeObject(output, pi);
+		}
+		output.writeBoolean(playing);
+		output.writeInt(maxPlayers, true);
 	}
 	
 	@Override
@@ -101,6 +110,11 @@ public class KNetChannelInfo implements KryoSerializable {
 			players.add(kryo.readObject(input, KNetEventSource.class));
 		ruleLock = input.readBoolean();
 		rule = kryo.readObjectOrNull(input, RuleOptions.class);
+		int pisize = input.readInt(true);
+		for(int i = 0; i < pisize; i++)
+			playerInfo.add(kryo.readObject(input, KNetPlayerInfo.class));
+		playing = input.readBoolean();
+		maxPlayers = input.readInt(true);
 	}
 
 	public boolean isRuleLock() {
@@ -117,5 +131,29 @@ public class KNetChannelInfo implements KryoSerializable {
 
 	public void setRule(RuleOptions rule) {
 		this.rule = rule;
+	}
+
+	public List<KNetPlayerInfo> getPlayerInfo() {
+		return playerInfo;
+	}
+
+	public void setPlayerInfo(List<KNetPlayerInfo> playerInfo) {
+		this.playerInfo = playerInfo;
+	}
+
+	public boolean isPlaying() {
+		return playing;
+	}
+
+	public void setPlaying(boolean playing) {
+		this.playing = playing;
+	}
+
+	public int getMaxPlayers() {
+		return maxPlayers;
+	}
+
+	public void setMaxPlayers(int maxPlayers) {
+		this.maxPlayers = maxPlayers;
 	}
 }

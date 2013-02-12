@@ -62,7 +62,7 @@ public enum KNetEventArgs {
 	USERNAME(String.class),
 	
 	/**
-	 * The room ID for this message.  -1 is the lobby.
+	 * The room ID for this message.
 	 * Argument: {@link Integer}
 	 */
 	CHANNEL_ID(Integer.class),
