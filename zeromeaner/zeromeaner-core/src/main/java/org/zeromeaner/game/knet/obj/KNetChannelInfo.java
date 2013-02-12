@@ -1,4 +1,4 @@
-package org.zeromeaner.game.knet.srv;
+package org.zeromeaner.game.knet.obj;
 
 import java.util.ArrayList;
 import java.util.List;

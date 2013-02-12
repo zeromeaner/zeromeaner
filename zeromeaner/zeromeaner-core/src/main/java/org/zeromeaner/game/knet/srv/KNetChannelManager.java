@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.knet.KNetListener;
+import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 
 
 import static org.zeromeaner.game.knet.KNetEventArgs.*;

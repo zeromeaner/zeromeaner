@@ -8,6 +8,8 @@ import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.Statistics;
+import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.game.knet.obj.PieceHold;
 import org.zeromeaner.game.knet.obj.PieceMovement;
 import org.zeromeaner.game.knet.ser.BlockSerializer;
@@ -15,8 +17,6 @@ import org.zeromeaner.game.knet.ser.FieldSerializer;
 import org.zeromeaner.game.knet.ser.PieceSerializer;
 import org.zeromeaner.game.knet.ser.PropertiesSerializer;
 import org.zeromeaner.game.knet.ser.StatisticsSerializer;
-import org.zeromeaner.game.knet.srv.KNetChannelInfo;
-import org.zeromeaner.game.knet.srv.KNetPlayerInfo;
 import org.zeromeaner.util.CustomProperties;
 
 import com.esotericsoftware.kryo.Kryo;
