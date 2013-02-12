@@ -21,7 +21,10 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 	public KNetEvent(KNetEventSource source, Object... args) {
 		super(source);
 		for(int i = 0; i < args.length; i += 2) {
-			this.args.put((KNetEventArgs) args[i], args[i+1]);
+			if(!(args[i+1] instanceof KNetEventArgs))
+				this.args.put((KNetEventArgs) args[i], args[i+1]);
+			else
+				this.args.put((KNetEventArgs) args[i--], true);
 		}
 	}
 	

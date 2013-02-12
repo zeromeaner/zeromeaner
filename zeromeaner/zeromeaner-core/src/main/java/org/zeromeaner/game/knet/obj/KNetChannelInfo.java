@@ -45,7 +45,7 @@ public class KNetChannelInfo implements KryoSerializable {
 	
 	@Override
 	public String toString() {
-		return "[" + id + ":" + name + "]";
+		return "[" + id + ":" + name + members + "]";
 	}
 	
 	@Override
