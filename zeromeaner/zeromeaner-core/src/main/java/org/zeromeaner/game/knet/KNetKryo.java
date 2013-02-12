@@ -6,12 +6,14 @@ import java.util.Properties;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
+import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.knet.obj.PieceHold;
 import org.zeromeaner.game.knet.obj.PieceMovement;
 import org.zeromeaner.game.knet.ser.BlockSerializer;
 import org.zeromeaner.game.knet.ser.FieldSerializer;
 import org.zeromeaner.game.knet.ser.PieceSerializer;
 import org.zeromeaner.game.knet.ser.PropertiesSerializer;
+import org.zeromeaner.game.knet.ser.StatisticsSerializer;
 import org.zeromeaner.game.knet.srv.KSChannelInfo;
 import org.zeromeaner.util.CustomProperties;
 
@@ -37,5 +39,6 @@ public class KNetKryo {
 		kryo.register(PieceMovement.class);
 		kryo.register(Properties.class, new PropertiesSerializer());
 		kryo.register(CustomProperties.class, new PropertiesSerializer());
+		kryo.register(Statistics.class, new StatisticsSerializer());
 	}
 }
