@@ -18,6 +18,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -26,6 +27,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
@@ -40,6 +43,17 @@ public class KNetPanel extends JPanel implements KNetListener {
 	private static final String CONNECTED_PANEL_CARD = ConnectedPanel.class.getName();
 	
 	public static void main(String[] args) {
+		try {
+		    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+		        if ("Nimbus".equals(info.getName())) {
+		            UIManager.setLookAndFeel(info.getClassName());
+		            break;
+		        }
+		    }
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		
 		JFrame f = new JFrame(KNetPanel.class.getName());
 		f.add(new KNetPanel());
 		f.pack();
@@ -102,8 +116,11 @@ public class KNetPanel extends JPanel implements KNetListener {
 		
 		public ConnectionListPanel() {
 			super(new BorderLayout());
-			add(new JScrollPane(connectionsList), BorderLayout.CENTER);
-			JPanel p = new JPanel(new GridLayout(0, 1));
+			JPanel p = new JPanel(new BorderLayout(10, 10));
+			p.add(new JLabel("Connections List:"), BorderLayout.NORTH);
+			p.add(new JScrollPane(connectionsList), BorderLayout.CENTER);
+			add(p, BorderLayout.CENTER);
+			p = new JPanel(new GridLayout(0, 1));
 			p.add(connect);
 			p.add(add);
 			p.add(remove);
@@ -131,7 +148,6 @@ public class KNetPanel extends JPanel implements KNetListener {
 		private JButton join = new JButton(new AbstractAction("Join Channel") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				visible().join();
 			}
 		});
@@ -139,8 +155,17 @@ public class KNetPanel extends JPanel implements KNetListener {
 		private JButton leave = new JButton(new AbstractAction("Leave Channel") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				visible().leave();
+			}
+		});
+		
+		private JButton disconnect = new JButton(new AbstractAction("Disconnect") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				client.stop();
+				client = null;
+				cards.show(KNetPanel.this, CONNECTION_LIST_PANEL_CARD);
 			}
 		});
 		
@@ -151,6 +176,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 			p.add(add);
 			p.add(join);
 			p.add(leave);
+			p.add(disconnect);
 			add(p, BorderLayout.EAST);
 		}
 		
@@ -170,11 +196,19 @@ public class KNetPanel extends JPanel implements KNetListener {
 		public ChannelPanel(KNetChannelInfo c) {
 			this.channel = c;
 			
-			setLayout(new BorderLayout());
+			setLayout(new BorderLayout(10, 10));
 			
-			add(new JScrollPane(history), BorderLayout.CENTER);
+			JPanel p = new JPanel(new BorderLayout());
+			p.add(new JLabel("Chat Messages:"), BorderLayout.NORTH);
+			p.add(new JScrollPane(history), BorderLayout.CENTER);
+			add(p, BorderLayout.CENTER);
+			
 			add(line, BorderLayout.SOUTH);
-			add(new JScrollPane(membersList), BorderLayout.WEST);
+			
+			p = new JPanel(new BorderLayout());
+			p.add(new JLabel("User List:"), BorderLayout.NORTH);
+			p.add(new JScrollPane(membersList), BorderLayout.CENTER);
+			add(p, BorderLayout.WEST);
 			
 			line.addKeyListener(new KeyAdapter() {
 				@Override
@@ -267,6 +301,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 					&& channel.getId() == (Integer) e.get(CHANNEL_ID)) {
 				String text = history.getText();
 				text += text.isEmpty() ? "" : "\n";
+				text += e.getSource().getName() + ": ";
 				text += (String) e.get(CHANNEL_CHAT);
 				history.setText(text);
 			}
