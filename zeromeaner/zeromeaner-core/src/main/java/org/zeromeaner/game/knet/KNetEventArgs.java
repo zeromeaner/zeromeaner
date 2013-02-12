@@ -141,6 +141,8 @@ public enum KNetEventArgs {
 	/** Issued when the game is starting? */
 	START(KNStartInfo.class),
 	
+	START_1P,
+	
 	/** Issued when we die? */
 	DEAD(Integer.class),
 	

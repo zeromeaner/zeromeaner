@@ -19,8 +19,8 @@ import org.zeromeaner.game.knet.ser.BlockSerializer;
 import org.zeromeaner.game.knet.ser.PieceSerializer;
 import org.zeromeaner.game.knet.ser.PropertiesSerializer;
 import org.zeromeaner.game.knet.ser.StatisticsSerializer;
+import org.zeromeaner.game.subsystem.mode.ComboRaceMode;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
-import org.zeromeaner.game.subsystem.mode.NetVSBattleMode.EndGameStats;
 import org.zeromeaner.util.CustomProperties;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -32,7 +32,7 @@ public class KNetKryo {
 		kryo.register(KNetEventSource.class);
 		kryo.register(KNetChannelInfo.class);
 		kryo.register(KNetChannelInfo[].class);
-		kryo.register(KNetGameInfo.class, new FieldSerializer<KNetGameInfo>(kryo, KNetGameInfo.class));
+		fieldSerializer(kryo, KNetGameInfo.class);
 		kryo.register(KNetPlayerInfo.class);
 		kryo.register(Field.class, new org.zeromeaner.game.knet.ser.FieldSerializer());
 		kryo.register(Block[][].class);
@@ -49,14 +49,19 @@ public class KNetKryo {
 		kryo.register(Properties.class, new PropertiesSerializer());
 		kryo.register(CustomProperties.class, new PropertiesSerializer());
 		kryo.register(Statistics.class, new StatisticsSerializer());
-		kryo.register(RuleOptions.class, new FieldSerializer<RuleOptions>(kryo, RuleOptions.class));
+		fieldSerializer(kryo, RuleOptions.class);
 		kryo.register(KNStartInfo.class);
 		
 		
 		kryo.register(NetVSBattleMode.AttackInfo.class);
 		kryo.register(NetVSBattleMode.StatsInfo.class);
-		kryo.register(
-				NetVSBattleMode.EndGameStats.class, 
-				new FieldSerializer<NetVSBattleMode.EndGameStats>(kryo, NetVSBattleMode.EndGameStats.class));
+		fieldSerializer(kryo, NetVSBattleMode.EndGameStats.class);
+		
+		fieldSerializer(kryo, ComboRaceMode.Stats.class);
+		fieldSerializer(kryo, ComboRaceMode.Options.class);
+	}
+	
+	private static <T> void fieldSerializer(Kryo kryo, Class<T> clazz) {
+		kryo.register(clazz, new FieldSerializer<T>(kryo, clazz));
 	}
 }
