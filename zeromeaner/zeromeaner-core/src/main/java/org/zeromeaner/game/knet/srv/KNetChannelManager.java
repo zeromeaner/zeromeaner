@@ -61,7 +61,19 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 			client.reply(e, 
 					CHANNEL_JOIN,
 					CHANNEL_ID, id,
-					PAYLOAD, info);
+					PAYLOAD, e.getSource());
+		}
+		if(e.is(CHANNEL_CREATE)) {
+			KNetChannelInfo request = (KNetChannelInfo) e.get(CHANNEL_CREATE);
+			for(KNetChannelInfo ci : channels.values()) {
+				if(request.getName().equals(ci.getName())) {
+					client.reply(e, ERROR, "Cannot create duplicate channel named " + request.getName());
+					return;
+				}
+			}
+			KNetChannelInfo create = new KNetChannelInfo(nextChannelId.incrementAndGet(), request.getName());
+			channels.put(create.getId(), create);
+			client.fireTCP(CHANNEL_LIST, PAYLOAD, channels.values().toArray(new KNetChannelInfo[0]));
 		}
 		if(e.is(CHANNEL_LEAVE) && e.is(CHANNEL_ID)) {
 			int id = (Integer) e.get(CHANNEL_ID);
@@ -70,19 +82,15 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				return;
 			}
 			KNetChannelInfo info = channels.get(id);
-			if(lobby.equals(info)) {
-				client.reply(e, ERROR, "Cannot leave lobby");
-				return;
-			}
 			if(!info.getMembers().contains(e.getSource())) {
 				client.reply(e, ERROR, "Not in channel with id " + id);
 				return;
 			}
 			info.depart(e.getSource());
 			client.fireTCP(
-					CHANNEL_LEAVE,
+					CHANNEL_LEAVE, 
 					CHANNEL_ID, id,
-					PAYLOAD, info);
+					PAYLOAD, e.getSource());
 		}
 		if(e.is(DISCONNECTED)) {
 			for(KNetChannelInfo info : channels.values()) {

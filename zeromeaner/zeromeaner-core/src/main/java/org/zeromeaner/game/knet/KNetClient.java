@@ -116,6 +116,10 @@ public class KNetClient {
 		return getSource().equals(e.getSource());
 	}
 	
+	public boolean isMine(KNetEvent e) {
+		return !isLocal(e) && !e.is(ADDRESS) || getSource().equals(e.get(ADDRESS));
+	}
+	
 	public void reply(KNetEvent e, Object... args) {
 		KNetEvent resp = event(args);
 		resp.set(ADDRESS, e.getSource());

@@ -3,6 +3,7 @@ package org.zeromeaner.game.knet;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.knet.obj.KNStartInfo;
+import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.game.knet.obj.PieceHold;
 import org.zeromeaner.game.knet.obj.PieceMovement;
@@ -65,17 +66,16 @@ public enum KNetEventArgs {
 	USERNAME(String.class),
 	
 	/**
-	 * The room ID for this message.
-	 * Argument: {@link Integer}
-	 */
-	CHANNEL_ID(Integer.class),
-	
-	/**
 	 * The timstamp (millis UTC) of this message.
 	 * Argument: {@link Long}
 	 */
 	TIMESTAMP(Long.class),
 	
+	/**
+	 * The room ID for this message.
+	 * Argument: {@link Integer}
+	 */
+	CHANNEL_ID(Integer.class), 
 	/**
 	 * Issued by a client to request a list of the current rooms.
 	 * Issued by a server to respond with the list of rooms.  Server responses place
@@ -89,10 +89,12 @@ public enum KNetEventArgs {
 	CHANNEL_CHAT(String.class),
 	
 	/** Issued when joining a room */
-	CHANNEL_JOIN,
+	CHANNEL_JOIN(),
 	
 	/** Issued when leaving a room */
 	CHANNEL_LEAVE,
+	
+	CHANNEL_CREATE(KNetChannelInfo.class),
 	
 	/** Issued for in-game events */
 	GAME,

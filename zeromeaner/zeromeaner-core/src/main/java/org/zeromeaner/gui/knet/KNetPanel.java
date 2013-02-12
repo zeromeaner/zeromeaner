@@ -13,9 +13,11 @@ import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -116,7 +118,11 @@ public class KNetPanel extends JPanel implements KNetListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
+				String name = JOptionPane.showInputDialog(KNetPanel.this, "Enter the channel name to add");
+				if(name == null)
+					return;
+				KNetChannelInfo create = new KNetChannelInfo(-1, name);
+				client.fireTCP(CHANNEL_CREATE, create);
 			}
 		});
 		
@@ -124,7 +130,15 @@ public class KNetPanel extends JPanel implements KNetListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
+				visible().join();
+			}
+		});
+		
+		private JButton leave = new JButton(new AbstractAction("Leave Channel") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				visible().leave();
 			}
 		});
 		
@@ -133,7 +147,13 @@ public class KNetPanel extends JPanel implements KNetListener {
 			add(channels, BorderLayout.CENTER);
 			JPanel p = new JPanel(new GridLayout(0, 1));
 			p.add(add);
+			p.add(join);
+			p.add(leave);
 			add(p, BorderLayout.EAST);
+		}
+		
+		private ChannelPanel visible() {
+			return (ChannelPanel) channels.getSelectedComponent();
 		}
 	}
 	
@@ -156,6 +176,33 @@ public class KNetPanel extends JPanel implements KNetListener {
 			
 			client.addKNetListener(this);
 		}
+		
+		private void join() {
+			if(activeChannel != null) {
+				activeChannel.leave();
+			}
+			client.fireTCP(CHANNEL_JOIN, CHANNEL_ID, channel.getId());
+		}
+		
+		private void joined() {
+			activeChannel = this;
+			connectedPanel.channels.setIconAt(
+					connectedPanel.channels.indexOfComponent(this),
+					new ImageIcon(KNetPanel.class.getClassLoader().getResource("org/zeromeaner/game/knet/active-channel.png")));
+			revalidate();
+		}
+		
+		private void leave() {
+			client.fireTCP(CHANNEL_LEAVE, CHANNEL_ID, channel.getId());
+		}
+		
+		private void left() {
+			connectedPanel.channels.setIconAt(
+					connectedPanel.channels.indexOfComponent(this),
+					null);
+			activeChannel = null;
+			revalidate();
+		}
 
 		private void update() {
 			membersModel.clear();
@@ -166,13 +213,36 @@ public class KNetPanel extends JPanel implements KNetListener {
 		}
 		
 		@Override
-		public void knetEvented(KNetClient client, KNetEvent e) {
+		public void knetEvented(final KNetClient client, final KNetEvent e) {
+			if(!EventQueue.isDispatchThread()) {
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						knetEvented(client, e);
+					}
+				});
+				return;
+			}
 			if(e.get(PAYLOAD) instanceof KNetChannelInfo) {
 				KNetChannelInfo c = (KNetChannelInfo) e.get(PAYLOAD);
 				if(c.getId() == channel.getId()) {
 					channel = (KNetChannelInfo) e.get(PAYLOAD);
 					update();
 				}
+			}
+			if(e.is(CHANNEL_JOIN) 
+					&& e.is(PAYLOAD) 
+					&& client.getSource().equals(e.get(PAYLOAD))
+					&& channel.getId() == (Integer) e.get(CHANNEL_ID)
+					&& client.isMine(e)) {
+				joined();
+			}
+			if(e.is(CHANNEL_LEAVE) 
+					&& e.is(PAYLOAD) 
+					&& client.getSource().equals(e.get(PAYLOAD)) 
+					&& channel.getId() == (Integer) e.get(CHANNEL_ID)
+					&& client.isMine(e)) {
+				left();
 			}
 		}
 	}
