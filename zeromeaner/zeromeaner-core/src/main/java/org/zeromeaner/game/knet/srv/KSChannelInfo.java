@@ -3,6 +3,7 @@ package org.zeromeaner.game.knet.srv;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.knet.KNetEventSource;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -15,6 +16,8 @@ public class KSChannelInfo implements KryoSerializable {
 	private String name;
 	private List<KNetEventSource> members = new ArrayList<KNetEventSource>();
 	private List<KNetEventSource> players = new ArrayList<KNetEventSource>();
+	private boolean ruleLock;
+	private RuleOptions rule;
 	
 	public KSChannelInfo() {}
 	
@@ -82,6 +85,8 @@ public class KSChannelInfo implements KryoSerializable {
 		for(KNetEventSource p : players) {
 			kryo.writeObject(output, p);
 		}
+		output.writeBoolean(ruleLock);
+		kryo.writeObjectOrNull(output, rule, RuleOptions.class);
 	}
 	
 	@Override
@@ -94,5 +99,23 @@ public class KSChannelInfo implements KryoSerializable {
 		int psize = input.readInt(true);
 		for(int i = 0; i < psize; i++)
 			players.add(kryo.readObject(input, KNetEventSource.class));
+		ruleLock = input.readBoolean();
+		rule = kryo.readObjectOrNull(input, RuleOptions.class);
+	}
+
+	public boolean isRuleLock() {
+		return ruleLock;
+	}
+
+	public void setRuleLock(boolean ruleLock) {
+		this.ruleLock = ruleLock;
+	}
+
+	public RuleOptions getRule() {
+		return rule;
+	}
+
+	public void setRule(RuleOptions rule) {
+		this.rule = rule;
 	}
 }

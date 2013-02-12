@@ -6,6 +6,7 @@ import java.util.Properties;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
+import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.knet.obj.PieceHold;
 import org.zeromeaner.game.knet.obj.PieceMovement;
@@ -40,5 +41,6 @@ public class KNetKryo {
 		kryo.register(Properties.class, new PropertiesSerializer());
 		kryo.register(CustomProperties.class, new PropertiesSerializer());
 		kryo.register(Statistics.class, new StatisticsSerializer());
+		kryo.register(RuleOptions.class, new com.esotericsoftware.kryo.serializers.FieldSerializer<RuleOptions>(kryo, RuleOptions.class));
 	}
 }

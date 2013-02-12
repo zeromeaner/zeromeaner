@@ -4,6 +4,7 @@ import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.knet.obj.PieceHold;
 import org.zeromeaner.game.knet.obj.PieceMovement;
+import org.zeromeaner.game.knet.obj.Replay;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
@@ -146,6 +147,11 @@ public enum KNetEventArgs {
 	 * Issued when a player logs out.
 	 */
 	PLAYER_LOGOUT(KNetEventSource.class),
+	
+	REPLAY_DATA(Replay.class),
+	REPLAY_NOT_RECEIVED,
+	REPLAY_RECEIVED,
+	
 	;
 	
 	private Class<?> type;
