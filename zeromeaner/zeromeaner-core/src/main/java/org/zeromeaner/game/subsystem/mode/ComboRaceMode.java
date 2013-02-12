@@ -32,6 +32,7 @@ import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Piece;
+import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.knet.KNetEvent;
@@ -141,7 +142,70 @@ public class ComboRaceMode extends AbstractNetMode {
 	}
 	
 	public static class Options {
+		private SpeedParam speed;
+		private int bgmno;
+		private int goalType;
+		private int presetNumber;
+		private int shapeType;
+		private int comboColumn;
+		private int comboWidth;
+		private int ceilingAdjust;
+		private boolean spawnAboveField;
 		
+		public SpeedParam getSpeed() {
+			return speed;
+		}
+		public void setSpeed(SpeedParam speed) {
+			this.speed = speed;
+		}
+		public int getBgmno() {
+			return bgmno;
+		}
+		public void setBgmno(int bgmno) {
+			this.bgmno = bgmno;
+		}
+		public int getGoalType() {
+			return goalType;
+		}
+		public void setGoalType(int goalType) {
+			this.goalType = goalType;
+		}
+		public int getPresetNumber() {
+			return presetNumber;
+		}
+		public void setPresetNumber(int presetNumber) {
+			this.presetNumber = presetNumber;
+		}
+		public int getShapeType() {
+			return shapeType;
+		}
+		public void setShapeType(int shapeType) {
+			this.shapeType = shapeType;
+		}
+		public int getComboColumn() {
+			return comboColumn;
+		}
+		public void setComboColumn(int comboColumn) {
+			this.comboColumn = comboColumn;
+		}
+		public int getComboWidth() {
+			return comboWidth;
+		}
+		public void setComboWidth(int comboWidth) {
+			this.comboWidth = comboWidth;
+		}
+		public int getCeilingAdjust() {
+			return ceilingAdjust;
+		}
+		public void setCeilingAdjust(int ceilingAdjust) {
+			this.ceilingAdjust = ceilingAdjust;
+		}
+		public boolean isSpawnAboveField() {
+			return spawnAboveField;
+		}
+		public void setSpawnAboveField(boolean spawnAboveField) {
+			this.spawnAboveField = spawnAboveField;
+		}
 	}
 	
 	/** Current version */
@@ -1045,12 +1109,17 @@ public class ComboRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendOptions(GameEngine engine) {
-		String msg = "game\toption\t";
-		msg += engine.speed.gravity + "\t" + engine.speed.denominator + "\t" + engine.speed.are + "\t";
-		msg += engine.speed.areLine + "\t" + engine.speed.lineDelay + "\t" + engine.speed.lockDelay + "\t";
-		msg += engine.speed.das + "\t" + bgmno + "\t" + goaltype + "\t" + presetNumber + "\t";
-		msg += shapetype + "\t" + comboColumn + "\t" + comboWidth + "\t" + ceilingAdjust + "\t" + spawnAboveField + "\n";
-		netLobby.netPlayerClient.send(msg);
+		Options o = new Options();
+		o.setSpeed(engine.speed);
+		o.setBgmno(bgmno);
+		o.setGoalType(goaltype);
+		o.setPresetNumber(presetNumber);
+		o.setShapeType(shapetype);
+		o.setComboColumn(comboColumn);
+		o.setComboWidth(comboWidth);
+		o.setCeilingAdjust(ceilingAdjust);
+		o.setSpawnAboveField(spawnAboveField);
+		knetClient.fireTCP(GAME_OPTIONS, o);
 	}
 
 	/**
@@ -1058,21 +1127,16 @@ public class ComboRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netRecvOptions(GameEngine engine, KNetEvent e) {
-		engine.speed.gravity = Integer.parseInt(message[4]);
-		engine.speed.denominator = Integer.parseInt(message[5]);
-		engine.speed.are = Integer.parseInt(message[6]);
-		engine.speed.areLine = Integer.parseInt(message[7]);
-		engine.speed.lineDelay = Integer.parseInt(message[8]);
-		engine.speed.lockDelay = Integer.parseInt(message[9]);
-		engine.speed.das = Integer.parseInt(message[10]);
-		bgmno = Integer.parseInt(message[11]);
-		goaltype = Integer.parseInt(message[12]);
-		presetNumber = Integer.parseInt(message[13]);
-		shapetype = Integer.parseInt(message[14]);
-		comboColumn = Integer.parseInt(message[15]);
-		comboWidth = Integer.parseInt(message[16]);
-		ceilingAdjust = Integer.parseInt(message[17]);
-		spawnAboveField = Boolean.parseBoolean(message[18]);
+		Options o = (Options) e.get(GAME_OPTIONS);
+		engine.speed.copy(o.getSpeed());
+		bgmno = o.getBgmno();
+		goaltype = o.getGoalType();
+		presetNumber = o.getPresetNumber();
+		shapetype = o.getShapeType();
+		comboColumn = o.getComboColumn();
+		comboWidth = o.getComboWidth();
+		ceilingAdjust = o.getCeilingAdjust();
+		spawnAboveField = o.isSpawnAboveField();
 	}
 
 	/**

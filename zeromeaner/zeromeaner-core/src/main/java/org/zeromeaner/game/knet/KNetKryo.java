@@ -7,6 +7,7 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
+import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.knet.obj.KNStartInfo;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
@@ -18,6 +19,7 @@ import org.zeromeaner.game.knet.ser.BlockSerializer;
 
 import org.zeromeaner.game.knet.ser.PieceSerializer;
 import org.zeromeaner.game.knet.ser.PropertiesSerializer;
+import org.zeromeaner.game.knet.ser.SpeedParamSerializer;
 import org.zeromeaner.game.knet.ser.StatisticsSerializer;
 import org.zeromeaner.game.subsystem.mode.ComboRaceMode;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
@@ -38,6 +40,7 @@ public class KNetKryo {
 		kryo.register(Block[][].class);
 		kryo.register(Block[].class);
 		kryo.register(Block.class, new BlockSerializer());
+		kryo.register(SpeedParam.class, new SpeedParamSerializer());
 		kryo.register(boolean[].class);
 		kryo.register(ArrayList.class);
 		kryo.register(Piece.class, new PieceSerializer());
