@@ -13,6 +13,7 @@ import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEventSource;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.zeromeaner.game.knet.obj.KNetGameInfo;
 import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
@@ -456,7 +457,7 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	protected void netvsSetGameScreenLayout(GameEngine engine) {
 		// Set display size
 		if( ((engine.getPlayerID() == 0) && !netvsIsWatch()) ||
-				((channelInfo != null) && (channelInfo.maxPlayers == 2) && (engine.getPlayerID() <= 1)) )
+				((channelInfo != null) && (channelInfo.getMaxPlayers() == 2) && (engine.getPlayerID() <= 1)) )
 		{
 			engine.displaysize = 0;
 			engine.enableSE = true;
@@ -466,7 +467,7 @@ public class AbstractNetVSMode extends AbstractNetMode {
 		}
 
 		// Set visible flag
-		if((channelInfo != null) && (engine.getPlayerID() >= channelInfo.maxPlayers)) {
+		if((channelInfo != null) && (engine.getPlayerID() >= channelInfo.getMaxPlayers())) {
 			engine.isVisible = false;
 		}
 
@@ -494,29 +495,34 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	 */
 	protected void netvsApplyRoomSettings(GameEngine engine) {
 		if(channelInfo != null) {
-			engine.speed.gravity = channelInfo.gravity;
-			engine.speed.denominator = channelInfo.denominator;
-			engine.speed.are = channelInfo.are;
-			engine.speed.areLine = channelInfo.areLine;
-			engine.speed.lineDelay = channelInfo.lineDelay;
-			engine.speed.lockDelay = channelInfo.lockDelay;
-			engine.speed.das = channelInfo.das;
+			KNetGameInfo game = channelInfo.getGame();
 
-			engine.b2bEnable = channelInfo.b2b;
-			engine.comboType = channelInfo.combo ? GameEngine.COMBO_TYPE_NORMAL : GameEngine.COMBO_TYPE_DISABLE;
-
-			if(channelInfo.tspinEnableType == 0) {
+			engine.speed.gravity = game.getGravity();
+			engine.speed.denominator = game.getDenominator();
+			engine.speed.are = game.getAre();
+			engine.speed.areLine = game.getAreLine();
+			engine.speed.lineDelay = game.getLineDelay();
+			engine.speed.lockDelay = game.getLockDelay();
+			engine.speed.das = game.getDas();
+			
+			engine.b2bEnable = game.isB2bEnable();
+			engine.comboType = game.getComboType();
+			
+			switch(game.getTspinEnableType()) {
+			case DISABLE:
 				engine.tspinEnable = false;
 				engine.useAllSpinBonus = false;
-			} else if(channelInfo.tspinEnableType == 1) {
+				break;
+			case ENABLE:
 				engine.tspinEnable = true;
 				engine.useAllSpinBonus = false;
-			} else if(channelInfo.tspinEnableType == 2) {
+				break;
+			case ENABLE_WITH_BONUSES:
 				engine.tspinEnable = true;
 				engine.useAllSpinBonus = true;
 			}
-
-			synchronousPlay = channelInfo.syncPlay;
+			
+			synchronousPlay = game.isSynchronousPlay();
 		}
 	}
 
@@ -556,18 +562,18 @@ public class AbstractNetVSMode extends AbstractNetMode {
 		netvsSetGameScreenLayout();
 
 		// Map
-		if(channelInfo.useMap && (netLobby.mapList.size() > 0)) {
+		if(channelInfo.getGame().getMap() != null && (knetClient.getMaps().size() > 0)) {
 			if(netvsRandMap == null) netvsRandMap = new Random();
 
 			int map = 0;
-			int maxMap = netLobby.mapList.size();
+			int maxMap = knetClient.getMaps().size();
 			do {
 				map = netvsRandMap.nextInt(maxMap);
 			} while ((map == netvsMapPreviousPracticeMap) && (maxMap >= 2));
 			netvsMapPreviousPracticeMap = map;
 
 			engine.createFieldIfNeeded();
-			engine.field.stringToField(netLobby.mapList.get(map));
+			engine.field.copy(knetClient.getMaps().get(map));
 			engine.field.setAllSkin(engine.getSkin());
 			engine.field.setAllAttribute(Block.BLOCK_ATTRIBUTE_VISIBLE, true);
 			engine.field.setAllAttribute(Block.BLOCK_ATTRIBUTE_OUTLINE, true);
@@ -659,8 +665,8 @@ public class AbstractNetVSMode extends AbstractNetMode {
 			}
 		}
 		owner.receiver.drawDirectFont(engine, 0, x, y + 72, "ALL ROOMS", EventRenderer.COLOR_GREEN, 0.5f);
-		if(netLobby != null && netLobby.netPlayerClient != null)
-			owner.receiver.drawDirectFont(engine, 0, x, y + 80, "" + netLobby.netPlayerClient.getRoomInfoList().size(), EventRenderer.COLOR_WHITE, 0.5f);
+		if(knetClient != null)
+			owner.receiver.drawDirectFont(engine, 0, x, y + 80, "" + knetClient.getChannels().size(), EventRenderer.COLOR_WHITE, 0.5f);
 	}
 
 	/**

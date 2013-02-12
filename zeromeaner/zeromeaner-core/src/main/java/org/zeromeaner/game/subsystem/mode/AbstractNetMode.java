@@ -10,6 +10,7 @@ import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.knet.KNetEventSource;
+import org.zeromeaner.game.knet.KNetGameClient;
 import org.zeromeaner.game.knet.KNetListener;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 import org.zeromeaner.game.knet.obj.PieceHold;
@@ -32,7 +33,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	static Logger log = Logger.getLogger(AbstractNetMode.class);
 
 	/** NET: Lobby (Declared in NetDummyMode) */
-	protected KNetClient knetClient;
+	protected KNetGameClient knetClient;
 
 	/** NET: GameManager (Declared in NetDummyMode; Don't override it!) */
 	protected GameManager owner;

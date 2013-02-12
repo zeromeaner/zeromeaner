@@ -152,6 +152,7 @@ public enum KNetEventArgs {
 	REPLAY_NOT_RECEIVED,
 	REPLAY_RECEIVED,
 	
+	MAPS(Field[].class),
 	;
 	
 	private Class<?> type;

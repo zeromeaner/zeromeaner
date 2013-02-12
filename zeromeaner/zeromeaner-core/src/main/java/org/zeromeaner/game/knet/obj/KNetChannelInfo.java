@@ -21,6 +21,7 @@ public class KNetChannelInfo implements KryoSerializable {
 	private boolean ruleLock;
 	private RuleOptions rule;
 	private boolean playing;
+	private KNetGameInfo game;
 	
 	public KNetChannelInfo() {}
 	
@@ -96,6 +97,7 @@ public class KNetChannelInfo implements KryoSerializable {
 		}
 		output.writeBoolean(playing);
 		output.writeInt(maxPlayers, true);
+		kryo.writeObjectOrNull(output, game, KNetGameInfo.class);
 	}
 	
 	@Override
@@ -115,6 +117,7 @@ public class KNetChannelInfo implements KryoSerializable {
 			playerInfo.add(kryo.readObject(input, KNetPlayerInfo.class));
 		playing = input.readBoolean();
 		maxPlayers = input.readInt(true);
+		game = kryo.readObjectOrNull(input, KNetGameInfo.class);
 	}
 
 	public boolean isRuleLock() {
@@ -155,5 +158,13 @@ public class KNetChannelInfo implements KryoSerializable {
 
 	public void setMaxPlayers(int maxPlayers) {
 		this.maxPlayers = maxPlayers;
+	}
+
+	public KNetGameInfo getGame() {
+		return game;
+	}
+
+	public void setGame(KNetGameInfo game) {
+		this.game = game;
 	}
 }
