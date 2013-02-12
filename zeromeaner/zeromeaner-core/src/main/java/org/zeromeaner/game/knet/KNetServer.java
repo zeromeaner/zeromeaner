@@ -49,6 +49,13 @@ public class KNetServer {
 			else
 				server.sendToAllExceptTCP(connection.getID(), object);
 		}
+		
+		@Override
+		public void disconnected(Connection connection) {
+			KNetEventSource es = sourcesByConnectionId.get(connection.getID());
+			KNetEvent e = new KNetEvent(es, DISCONNECTED);
+			server.sendToAllExceptTCP(connection.getID(), e);
+		}
 	};
 	
 	public KNetServer(int port) throws IOException {

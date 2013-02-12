@@ -13,6 +13,8 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
 public class KNetChannelInfo implements KryoSerializable {
+	public static final int LOBBY_CHANNEL_ID = 0;
+	
 	private int id;
 	private String name;
 	private List<KNetEventSource> members = new ArrayList<KNetEventSource>();
@@ -41,6 +43,14 @@ public class KNetChannelInfo implements KryoSerializable {
 	
 	public int getSeatId(KNetEvent e) {
 		return players.indexOf(e.getSource());
+	}
+	
+	public void depart(KNetEventSource source) {
+		members.remove(source);
+		int index = players.indexOf(source);
+		players.remove(source);
+		if(index != -1)
+			playerInfo.remove(source);
 	}
 	
 	@Override

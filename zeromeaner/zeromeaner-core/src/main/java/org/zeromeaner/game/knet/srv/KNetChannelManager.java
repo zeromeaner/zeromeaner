@@ -43,7 +43,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 			return;
 		if(e.is(CHANNEL_LIST)) {
 			client.reply(e,
-					CHANNEL_LIST, true,
+					CHANNEL_LIST,
 					PAYLOAD, channels.values().toArray(new KNetChannelInfo[0]));
 		}
 		if(e.is(CHANNEL_JOIN) && e.is(CHANNEL_ID)) {
@@ -59,7 +59,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 			}
 			info.getMembers().add(e.getSource());
 			client.reply(e, 
-					CHANNEL_JOIN, true,
+					CHANNEL_JOIN,
 					CHANNEL_ID, id,
 					PAYLOAD, info);
 		}
@@ -78,11 +78,22 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				client.reply(e, ERROR, "Not in channel with id " + id);
 				return;
 			}
-			info.getMembers().remove(e.getSource());
-			client.reply(e,
-					CHANNEL_LEAVE, true,
+			info.depart(e.getSource());
+			client.fireTCP(
+					CHANNEL_LEAVE,
 					CHANNEL_ID, id,
 					PAYLOAD, info);
+		}
+		if(e.is(DISCONNECTED)) {
+			for(KNetChannelInfo info : channels.values()) {
+				if(!info.getMembers().contains(e.getSource()))
+					continue;
+				info.depart(e.getSource());
+				client.fireTCP(
+						CHANNEL_LEAVE,
+						CHANNEL_ID, info.getId(),
+						PAYLOAD, info);
+			}
 		}
 	}
 

@@ -5,6 +5,11 @@ import java.awt.CardLayout;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListModel;
@@ -42,6 +47,9 @@ public class KNetPanel extends JPanel implements KNetListener {
 	private CardLayout cards;
 	private ConnectionListPanel connectionsListPanel;
 	private ConnectedPanel connectedPanel;
+	
+	private Map<Integer, ChannelPanel> channels = new HashMap<Integer, ChannelPanel>();
+	private ChannelPanel activeChannel;
 	
 	private KNetClient client;
 	
@@ -104,9 +112,28 @@ public class KNetPanel extends JPanel implements KNetListener {
 	private class ConnectedPanel extends JPanel {
 		private JTabbedPane channels = new JTabbedPane(JTabbedPane.LEFT);
 		
+		private JButton add = new JButton(new AbstractAction("Add Channel") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		private JButton join = new JButton(new AbstractAction("Join Channel") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
 		public ConnectedPanel() {
 			super(new BorderLayout());
 			add(channels, BorderLayout.CENTER);
+			JPanel p = new JPanel(new GridLayout(0, 1));
+			p.add(add);
+			add(p, BorderLayout.EAST);
 		}
 	}
 	
@@ -135,13 +162,17 @@ public class KNetPanel extends JPanel implements KNetListener {
 			for(KNetEventSource s : channel.getMembers()) {
 				membersModel.addElement(s.getName());
 			}
+			revalidate();
 		}
 		
 		@Override
 		public void knetEvented(KNetClient client, KNetEvent e) {
 			if(e.get(PAYLOAD) instanceof KNetChannelInfo) {
-				channel = (KNetChannelInfo) e.get(PAYLOAD);
-				update();
+				KNetChannelInfo c = (KNetChannelInfo) e.get(PAYLOAD);
+				if(c.getId() == channel.getId()) {
+					channel = (KNetChannelInfo) e.get(PAYLOAD);
+					update();
+				}
 			}
 		}
 	}
@@ -192,14 +223,28 @@ public class KNetPanel extends JPanel implements KNetListener {
 			return;
 		}
 		if(e.is(CHANNEL_LIST) && e.is(PAYLOAD)) {
-			KNetChannelInfo[] channels = (KNetChannelInfo[]) e.get(PAYLOAD);
+			List<KNetChannelInfo> channels = Arrays.asList((KNetChannelInfo[]) e.get(PAYLOAD));
+			// Add new channels
 			for(KNetChannelInfo channel : channels) {
+				if(this.channels.containsKey(channel.getId()))
+					continue;
 				ChannelPanel chanPan = new ChannelPanel(channel);
 				connectedPanel.channels.addTab(channel.getName(), chanPan);
-				if(channel.getId() == 0) {
+				this.channels.put(channel.getId(), chanPan);
+				if(channel.getId() == KNetChannelInfo.LOBBY_CHANNEL_ID) { // Autojoin the lobby
 					client.fireTCP(CHANNEL_JOIN, CHANNEL_ID, channel.getId());
 				}
 			}
+			// Remove expired channels
+			Iterator<Map.Entry<Integer, ChannelPanel>> ci = this.channels.entrySet().iterator();
+			while(ci.hasNext()) {
+				Map.Entry<Integer, ChannelPanel> ce = ci.next();
+				if(!channels.contains(ce.getValue().channel)) {
+					connectedPanel.channels.removeTabAt(connectedPanel.channels.indexOfTabComponent(ce.getValue()));
+					ci.remove();
+				}
+			}
+			revalidate();
 		}
 	}
 }
