@@ -2,6 +2,8 @@ package org.zeromeaner.game.knet;
 
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
+import org.zeromeaner.game.knet.obj.PieceHold;
+import org.zeromeaner.game.knet.obj.PieceMovement;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
@@ -107,10 +109,10 @@ public enum KNetEventArgs {
 	
 	GAME_STATS(Object.class, true),
 	
-	GAME_PIECE_MOVEMENT(Object.class, true),
+	GAME_PIECE_MOVEMENT(PieceMovement.class),
 	
 	/** Issued when the hold piece is sent. */
-	GAME_HOLD_PIECE(Piece.class),
+	GAME_HOLD_PIECE(PieceHold.class),
 	
 	/** Issued when the next piece list is sent. */
 	GAME_NEXT_PIECE(Piece[].class),
@@ -143,7 +145,7 @@ public enum KNetEventArgs {
 	/**
 	 * Issued when a player logs out.
 	 */
-	PLAYER_LOGOUT,
+	PLAYER_LOGOUT(KNetEventSource.class),
 	;
 	
 	private Class<?> type;

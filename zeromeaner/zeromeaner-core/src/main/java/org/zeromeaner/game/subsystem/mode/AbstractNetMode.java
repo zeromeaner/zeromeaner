@@ -21,10 +21,13 @@ import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.knet.KNetEventSource;
 import org.zeromeaner.game.knet.KNetListener;
 import org.zeromeaner.game.knet.KNetPlayerInfo;
+import org.zeromeaner.game.knet.obj.PieceHold;
+import org.zeromeaner.game.knet.obj.PieceMovement;
 import org.zeromeaner.game.knet.srv.KSChannelInfo;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
+import org.zeromeaner.gui.knet.KNetFrame;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
@@ -461,7 +464,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 		if(e.is(PLAYER_LOGOUT)) {
 			KNetEventSource pInfo = (KNetEventSource) e.get(PLAYER_LOGOUT);
 
-			if((channelInfo != null) && (pInfo.roomID == channelInfo.roomID)) {
+			if(channelInfo != null && channelInfo.getMembers().contains(pInfo)) {
 				netUpdatePlayerExist();
 			}
 		}
@@ -576,7 +579,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 		
 		if(isSynchronousPlay()) {
 			GameEngine eng = owner.engine[0];
-			eng.synchronousIncrement = netLobby.netPlayerClient.getPlayerCount() - 1;
+			eng.synchronousIncrement = channelInfo.getPlayers().size();
 			if(e.is(GAME)) {
 				if(e.is(GAME_SYNCHRONOUS)) {
 					if(e.is(GAME_SYNCHRONOUS_LOCKED)) {
@@ -599,7 +602,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	/*
 	 * NET: When the lobby window is closed
 	 */
-	public void netlobbyOnExit(NetLobbyFrame lobby) {
+	public void netlobbyOnExit(KNetFrame lobby) {
 		try {
 			for(int i = 0; i < owner.engine.length; i++) {
 				owner.engine[i].quitflag = true;
@@ -618,7 +621,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 
 		channelInfo = roomInfo;
 		netIsNetPlay = true;
-		netIsWatch = (netLobby.netPlayerClient.getYourPlayerInfo().seatID == -1);
+		netIsWatch = !channelInfo.getPlayers().contains(knetClient.getSource());
 		netNumSpectators = 0;
 		netUpdatePlayerExist();
 
@@ -656,17 +659,20 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 		netNumSpectators = 0;
 		netPlayerName = "";
 
-		if((channelInfo != null) && (channelInfo.roomID != -1) && (netLobby != null)) {
-			for(NetPlayerInfo pInfo: netLobby.updateSameRoomPlayerInfoList()) {
-				if(pInfo.roomID == channelInfo.roomID) {
-					if(pInfo.seatID == 0) {
-						netPlayerName = pInfo.strName;
-					} else if(pInfo.seatID == -1) {
-						netNumSpectators++;
-					}
-				}
-			}
-		}
+//		if((channelInfo != null) && (channelInfo.roomID != -1) && (netLobby != null)) {
+//			for(NetPlayerInfo pInfo: netLobby.updateSameRoomPlayerInfoList()) {
+//				if(pInfo.roomID == channelInfo.roomID) {
+//					if(pInfo.seatID == 0) {
+//						netPlayerName = pInfo.strName;
+//					} else if(pInfo.seatID == -1) {
+//						netNumSpectators++;
+//					}
+//				}
+//			}
+//		}
+		
+		netNumSpectators = channelInfo.getMembers().size() - channelInfo.getPlayers().size();
+		netPlayerName = knetClient.getSource().getName();
 	}
 
 	/**
@@ -756,9 +762,18 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	protected boolean netSendPieceMovement(GameEngine engine, boolean forceSend) {
 		if( ((engine.nowPieceObject == null) && (netPrevPieceID != Piece.PIECE_NONE)) || (engine.manualLock) )
 		{
-			netPrevPieceID = Piece.PIECE_NONE;
-			netLobby.netPlayerClient.send("game\tpiece\t" + netPrevPieceID + "\t" + netPrevPieceX + "\t" + netPrevPieceY + "\t" +
-					netPrevPieceDir + "\t" + 0 + "\t" + engine.getSkin() + "\t" + false + "\n");
+			
+			PieceMovement pm = new PieceMovement();
+			pm.setPieceId(netPrevPieceID);
+			pm.setX(netPrevPieceX);
+			pm.setY(netPrevPieceY);
+			pm.setDirection(netPrevPieceDir);
+			pm.setSkin(engine.getSkin());
+			
+			knetClient.fireUDP(knetClient.event(
+					GAME, true,
+					GAME_PIECE_MOVEMENT, pm));
+			
 			return true;
 		}
 		else if((engine.nowPieceObject.id != netPrevPieceID) || (engine.nowPieceX != netPrevPieceX) ||
@@ -772,9 +787,21 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 
 			int x = netPrevPieceX + engine.nowPieceObject.dataOffsetX[netPrevPieceDir];
 			int y = netPrevPieceY + engine.nowPieceObject.dataOffsetY[netPrevPieceDir];
-			netLobby.netPlayerClient.send("game\tpiece\t" + netPrevPieceID + "\t" + x + "\t" + y + "\t" + netPrevPieceDir + "\t" +
-							engine.nowPieceBottomY + "\t" + engine.ruleopt.pieceColor[netPrevPieceID] + "\t" + engine.getSkin() + "\t" +
-							engine.nowPieceObject.big + "\n");
+			
+			PieceMovement pm = new PieceMovement();
+			pm.setPieceId(netPrevPieceID);
+			pm.setX(x);
+			pm.setY(y);
+			pm.setDirection(netPrevPieceDir);
+			pm.setBottomY(engine.nowPieceBottomY);
+			pm.setColor(engine.ruleopt.pieceColor[netPrevPieceID]);
+			pm.setSkin(engine.getSkin());
+			pm.setBig(engine.nowPieceObject.big);
+			
+			knetClient.fireUDP(knetClient.event(
+					GAME, true,
+					GAME_PIECE_MOVEMENT, pm));
+			
 			return true;
 		}
 		return false;
@@ -786,16 +813,21 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 * @param message Message array
 	 */
 	protected void netRecvPieceMovement(GameEngine engine, KNetEvent e) {
-		int id = Integer.parseInt(message[4]);
+		if(!e.is(GAME) || !e.is(GAME_PIECE_MOVEMENT))
+			return;
+		
+		PieceMovement pm = (PieceMovement) e.get(GAME_PIECE_MOVEMENT);
+		
+		int id = pm.getPieceId();
 
 		if(id >= 0) {
-			int pieceX = Integer.parseInt(message[5]);
-			int pieceY = Integer.parseInt(message[6]);
-			int pieceDir = Integer.parseInt(message[7]);
-			//int pieceBottomY = Integer.parseInt(message[8]);
-			int pieceColor = Integer.parseInt(message[9]);
-			int pieceSkin = Integer.parseInt(message[10]);
-			boolean pieceBig = (message.length > 11) ? Boolean.parseBoolean(message[11]) : false;
+			int pieceX = pm.getX();;
+			int pieceY = pm.getY();
+			int pieceDir = pm.getDirection();
+			int pieceBottomY = pm.getBottomY();
+			int pieceColor = pm.getColor();
+			int pieceSkin = pm.getSkin();
+			boolean pieceBig = pm.isBig();
 
 			engine.nowPieceObject = new Piece(id);
 			engine.nowPieceObject.direction = pieceDir;
@@ -847,19 +879,16 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 * @param engine GameEngine
 	 */
 	protected void netSendNextAndHold(GameEngine engine) {
-		int holdID = Piece.PIECE_NONE;
-		int holdDirection = Piece.DIRECTION_UP;
-		int holdColor = Block.BLOCK_COLOR_GRAY;
-		if(engine.holdPieceObject != null) {
-			knetClient.fireUDP(GAME, true, GAME_HOLD_PIECE, true, PAYLOAD, engine.holdPieceObject);
-		}
-
+		PieceHold hold = new PieceHold();
+		hold.setPiece(engine.holdPieceObject);
+		hold.setDisableHold(engine.holdDisable);
+		
 		Piece[] next = new Piece[engine.ruleopt.nextDisplay];
 		for(int i = 0; i < next.length; i++) {
 			next[i] = engine.getNextObject(engine.nextPieceCount + i);
 		}
 
-		knetClient.fireUDP(GAME, true, GAME_NEXT_PIECE, true, PAYLOAD, next);
+		knetClient.fireUDP(GAME, true, GAME_HOLD_PIECE, hold, GAME_NEXT_PIECE, next);
 	}
 
 	/**
@@ -868,39 +897,21 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 * @param message Message array
 	 */
 	protected void netRecvNextAndHold(GameEngine engine, KNetEvent e) {
-		int maxNext = Integer.parseInt(message[4]);
+		if(!e.is(GAME) || !e.is(GAME_HOLD_PIECE) || !e.is(GAME_NEXT_PIECE))
+			return;
+		
+		PieceHold hold = (PieceHold) e.get(GAME_HOLD_PIECE);
+		Piece[] next = (Piece[]) e.get(GAME_NEXT_PIECE);
+		
+		int maxNext = next.length;
 		engine.ruleopt.nextDisplay = maxNext;
-		engine.holdDisable = Boolean.parseBoolean(message[5]);
+		engine.holdDisable = hold.isDisableHold();
 
-		for(int i = 0; i < maxNext + 1; i++) {
-			if(i + 6 < message.length) {
-				String[] strPieceData = message[i + 6].split(";");
-				int pieceID = Integer.parseInt(strPieceData[0]);
-				int pieceDirection = Integer.parseInt(strPieceData[1]);
-				int pieceColor = Integer.parseInt(strPieceData[2]);
-
-				if(i == 0) {
-					if(pieceID == Piece.PIECE_NONE) {
-						engine.holdPieceObject = null;
-					} else {
-						engine.holdPieceObject = new Piece(pieceID);
-						engine.holdPieceObject.direction = pieceDirection;
-						engine.holdPieceObject.setColor(pieceColor);
-						engine.holdPieceObject.setSkin(netPlayerSkin);
-						engine.holdPieceObject.updateConnectData();
-					}
-				} else {
-					if((engine.nextPieceArrayObject == null) || (engine.nextPieceArrayObject.length < maxNext)) {
-						engine.nextPieceArrayObject = new Piece[maxNext];
-					}
-					engine.nextPieceArrayObject[i - 1] = new Piece(pieceID);
-					engine.nextPieceArrayObject[i - 1].direction = pieceDirection;
-					engine.nextPieceArrayObject[i - 1].setColor(pieceColor);
-					engine.nextPieceArrayObject[i - 1].setSkin(netPlayerSkin);
-					engine.nextPieceArrayObject[i - 1].updateConnectData();
-				}
-			}
-		}
+		engine.holdPieceObject = hold.getPiece();
+		
+		if(engine.nextPieceArrayObject == null || engine.nextPieceArrayObject.length < maxNext)
+			engine.nextPieceArrayObject = new Piece[maxNext];
+		System.arraycopy(next, 0, engine.nextPieceArrayObject, 0, maxNext);
 
 		engine.isNextVisible = true;
 		engine.isHoldVisible = true;

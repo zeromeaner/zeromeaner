@@ -14,6 +14,7 @@ public class KSChannelInfo implements KryoSerializable {
 	private int id;
 	private String name;
 	private List<KNetEventSource> members = new ArrayList<KNetEventSource>();
+	private List<KNetEventSource> players = new ArrayList<KNetEventSource>();
 	
 	public KSChannelInfo() {}
 	
@@ -61,6 +62,14 @@ public class KSChannelInfo implements KryoSerializable {
 		this.members = members;
 	}
 	
+	public List<KNetEventSource> getPlayers() {
+		return players;
+	}
+	
+	public void setPlayers(List<KNetEventSource> players) {
+		this.players = players;
+	}
+	
 	@Override
 	public void write(Kryo kryo, Output output) {
 		output.writeInt(id, true);
@@ -68,6 +77,10 @@ public class KSChannelInfo implements KryoSerializable {
 		output.writeInt(members.size(), true);
 		for(KNetEventSource m : members) {
 			kryo.writeObject(output, m);
+		}
+		output.writeInt(players.size(), true);
+		for(KNetEventSource p : players) {
+			kryo.writeObject(output, p);
 		}
 	}
 	
@@ -78,5 +91,8 @@ public class KSChannelInfo implements KryoSerializable {
 		int msize = input.readInt(true);
 		for(int i = 0; i < msize; i++)
 			members.add(kryo.readObject(input, KNetEventSource.class));
+		int psize = input.readInt(true);
+		for(int i = 0; i < psize; i++)
+			players.add(kryo.readObject(input, KNetEventSource.class));
 	}
 }
