@@ -21,7 +21,7 @@ import org.zeromeaner.game.knet.obj.Replay;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
-import org.zeromeaner.gui.knet.KNetFrame;
+import org.zeromeaner.gui.knet.KNetPanel;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
@@ -523,7 +523,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	/*
 	 * NET: When the lobby window is closed
 	 */
-	public void netlobbyOnExit(KNetFrame lobby) {
+	public void netlobbyOnExit(KNetPanel lobby) {
 		try {
 			for(int i = 0; i < owner.engine.length; i++) {
 				owner.engine[i].quitflag = true;
