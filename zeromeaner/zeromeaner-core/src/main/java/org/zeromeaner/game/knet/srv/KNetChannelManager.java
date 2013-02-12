@@ -12,19 +12,19 @@ import org.zeromeaner.game.knet.KNetListener;
 
 import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
-public class KSChannelManager extends KNetClient implements KNetListener {
-	protected Map<Integer, KSChannelInfo> channels = new HashMap<Integer, KSChannelInfo>();
+public class KNetChannelManager extends KNetClient implements KNetListener {
+	protected Map<Integer, KNetChannelInfo> channels = new HashMap<Integer, KNetChannelInfo>();
 	protected AtomicInteger nextChannelId = new AtomicInteger(-1);
-	protected KSChannelInfo lobby;
+	protected KNetChannelInfo lobby;
 	
-	public KSChannelManager(int port) {
+	public KNetChannelManager(int port) {
 		this("localhost", port);
 	}
 	
-	public KSChannelManager(String host, int port) {
+	public KNetChannelManager(String host, int port) {
 		super("RoomManager", host, port);
 		
-		lobby = new KSChannelInfo(nextChannelId.incrementAndGet(), "lobby");
+		lobby = new KNetChannelInfo(nextChannelId.incrementAndGet(), "lobby");
 		
 		channels.put(lobby.getId(), lobby);
 		
@@ -32,8 +32,8 @@ public class KSChannelManager extends KNetClient implements KNetListener {
 	}
 
 	@Override
-	public KSChannelManager start() throws IOException, InterruptedException {
-		return (KSChannelManager) super.start();
+	public KNetChannelManager start() throws IOException, InterruptedException {
+		return (KNetChannelManager) super.start();
 	}
 	
 	@Override
@@ -43,7 +43,7 @@ public class KSChannelManager extends KNetClient implements KNetListener {
 		if(e.is(CHANNEL_LIST)) {
 			client.reply(e,
 					CHANNEL_LIST, true,
-					PAYLOAD, channels.values().toArray(new KSChannelInfo[0]));
+					PAYLOAD, channels.values().toArray(new KNetChannelInfo[0]));
 		}
 		if(e.is(CHANNEL_JOIN) && e.is(CHANNEL_ID)) {
 			int id = (Integer) e.get(CHANNEL_ID);
@@ -51,7 +51,7 @@ public class KSChannelManager extends KNetClient implements KNetListener {
 				client.reply(e, ERROR, "Unknown channel id " + id);
 				return;
 			}
-			KSChannelInfo info = channels.get(id);
+			KNetChannelInfo info = channels.get(id);
 			if(info.getMembers().contains(e.getSource())) {
 				client.reply(e, ERROR, "Already joined channel with id " + id);
 				return;
@@ -68,7 +68,7 @@ public class KSChannelManager extends KNetClient implements KNetListener {
 				client.reply(e, ERROR, "Unknown channel id " + id);
 				return;
 			}
-			KSChannelInfo info = channels.get(id);
+			KNetChannelInfo info = channels.get(id);
 			if(lobby.equals(info)) {
 				client.reply(e, ERROR, "Cannot leave lobby");
 				return;

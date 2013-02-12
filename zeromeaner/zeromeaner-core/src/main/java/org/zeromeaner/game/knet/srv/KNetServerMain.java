@@ -5,7 +5,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.zeromeaner.game.knet.KNetServer;
 
-public class KSMain {
+public class KNetServerMain {
 
 	private static final Options OPTIONS;
 	static {
@@ -18,7 +18,7 @@ public class KSMain {
 	 */
 	public static void main(String[] args) {
 		try {
-			new KSMain().innerMain(args);
+			new KNetServerMain().innerMain(args);
 		} catch(Exception ex) {
 			throw new RuntimeException(ex);
 		}
@@ -30,7 +30,7 @@ public class KSMain {
 		int port = Integer.parseInt(cli.getOptionValue("port", "61897"));
 		
 		KNetServer server = new KNetServer(port);
-		KSChannelManager chanman = new KSChannelManager("localhost", port).start();
+		KNetChannelManager chanman = new KNetChannelManager("localhost", port).start();
 	}
 
 }

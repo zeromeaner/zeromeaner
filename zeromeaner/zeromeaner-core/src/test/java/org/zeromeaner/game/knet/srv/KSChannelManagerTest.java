@@ -27,7 +27,7 @@ public class KSChannelManagerTest {
 	
 	@Test
 	public void testChannelList() throws Exception {
-		KSChannelManager chanman = new KSChannelManager(server.getPort());
+		KNetChannelManager chanman = new KNetChannelManager(server.getPort());
 		KNetClient c = new KNetClient("localhost", server.getPort());
 		final Semaphore sync = new Semaphore(0);
 		c.addKNetListener(new KNetListener() {

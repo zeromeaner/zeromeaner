@@ -14,7 +14,7 @@ import org.zeromeaner.game.knet.KNetListener;
 import org.zeromeaner.game.knet.obj.PieceHold;
 import org.zeromeaner.game.knet.obj.PieceMovement;
 import org.zeromeaner.game.knet.obj.Replay;
-import org.zeromeaner.game.knet.srv.KSChannelInfo;
+import org.zeromeaner.game.knet.srv.KNetChannelInfo;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
@@ -44,7 +44,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	protected boolean netIsWatch;
 
 	/** NET: Current room info. Sometimes null. (Declared in NetDummyMode) */
-	protected KSChannelInfo channelInfo;
+	protected KNetChannelInfo channelInfo;
 
 	/** NET: Number of spectators (Declared in NetDummyMode) */
 	protected int netNumSpectators;
@@ -520,7 +520,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 * @param client NetPlayerClient
 	 * @param roomInfo NetRoomInfo
 	 */
-	protected void netOnJoin(KNetClient client, KSChannelInfo roomInfo) {
+	protected void netOnJoin(KNetClient client, KNetChannelInfo roomInfo) {
 		log.debug("onJoin on NetDummyMode");
 
 		channelInfo = roomInfo;

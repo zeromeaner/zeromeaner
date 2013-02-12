@@ -11,7 +11,7 @@ import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
-public class KSChannelInfo implements KryoSerializable {
+public class KNetChannelInfo implements KryoSerializable {
 	private int id;
 	private String name;
 	private List<KNetEventSource> members = new ArrayList<KNetEventSource>();
@@ -19,9 +19,9 @@ public class KSChannelInfo implements KryoSerializable {
 	private boolean ruleLock;
 	private RuleOptions rule;
 	
-	public KSChannelInfo() {}
+	public KNetChannelInfo() {}
 	
-	public KSChannelInfo(int id, String name) {
+	public KNetChannelInfo(int id, String name) {
 		this.id = id;
 		this.name = name;
 	}
@@ -38,8 +38,8 @@ public class KSChannelInfo implements KryoSerializable {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof KSChannelInfo) {
-			return id == ((KSChannelInfo) obj).id;
+		if(obj instanceof KNetChannelInfo) {
+			return id == ((KNetChannelInfo) obj).id;
 		}
 		return false;
 	}

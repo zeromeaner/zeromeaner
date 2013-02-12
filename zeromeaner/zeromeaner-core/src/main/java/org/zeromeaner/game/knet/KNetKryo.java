@@ -15,7 +15,7 @@ import org.zeromeaner.game.knet.ser.FieldSerializer;
 import org.zeromeaner.game.knet.ser.PieceSerializer;
 import org.zeromeaner.game.knet.ser.PropertiesSerializer;
 import org.zeromeaner.game.knet.ser.StatisticsSerializer;
-import org.zeromeaner.game.knet.srv.KSChannelInfo;
+import org.zeromeaner.game.knet.srv.KNetChannelInfo;
 import org.zeromeaner.util.CustomProperties;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -24,8 +24,8 @@ public class KNetKryo {
 	public static void configure(Kryo kryo) {
 		kryo.register(KNetEvent.class);
 		kryo.register(KNetEventSource.class);
-		kryo.register(KSChannelInfo.class);
-		kryo.register(KSChannelInfo[].class);
+		kryo.register(KNetChannelInfo.class);
+		kryo.register(KNetChannelInfo[].class);
 		kryo.register(Field.class, new FieldSerializer());
 		kryo.register(Block[][].class);
 		kryo.register(Block[].class);
