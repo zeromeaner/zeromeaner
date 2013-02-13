@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -35,12 +36,14 @@ import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.knet.KNetEventSource;
 import org.zeromeaner.game.knet.KNetListener;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.zeromeaner.game.knet.obj.KNetGameInfo;
 
 import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
 public class KNetPanel extends JPanel implements KNetListener {
 	private static final String CONNECTION_LIST_PANEL_CARD = ConnectionListPanel.class.getName();
 	private static final String CONNECTED_PANEL_CARD = ConnectedPanel.class.getName();
+	private static final String CREATE_CHANNEL_PANEL_CARD = CreateChannelPanel.class.getName();
 	
 	public static void main(String[] args) {
 		try {
@@ -65,6 +68,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 	private CardLayout cards;
 	private ConnectionListPanel connectionsListPanel;
 	private ConnectedPanel connectedPanel;
+	private CreateChannelPanel createChannelPanel;
 	
 	private Map<Integer, ChannelPanel> channels = new HashMap<Integer, ChannelPanel>();
 	private ChannelPanel activeChannel;
@@ -116,9 +120,10 @@ public class KNetPanel extends JPanel implements KNetListener {
 		
 		public ConnectionListPanel() {
 			super(new BorderLayout());
-			JPanel p = new JPanel(new BorderLayout(10, 10));
-			p.add(new JLabel("Connections List:"), BorderLayout.NORTH);
+			JPanel p = new JPanel(new BorderLayout());
+//			p.add(new JLabel("Connections List:"), BorderLayout.NORTH);
 			p.add(new JScrollPane(connectionsList), BorderLayout.CENTER);
+			p.setBorder(BorderFactory.createTitledBorder("Connections List"));
 			add(p, BorderLayout.CENTER);
 			p = new JPanel(new GridLayout(0, 1));
 			p.add(connect);
@@ -136,12 +141,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 		private JButton add = new JButton(new AbstractAction("Add Channel") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				String name = JOptionPane.showInputDialog(KNetPanel.this, "Enter the channel name to add");
-				if(name == null)
-					return;
-				KNetChannelInfo create = new KNetChannelInfo(-1, name);
-				client.fireTCP(CHANNEL_CREATE, create);
+				cards.show(KNetPanel.this, CREATE_CHANNEL_PANEL_CARD);
 			}
 		});
 		
@@ -196,18 +196,20 @@ public class KNetPanel extends JPanel implements KNetListener {
 		public ChannelPanel(KNetChannelInfo c) {
 			this.channel = c;
 			
-			setLayout(new BorderLayout(10, 10));
+			setLayout(new BorderLayout());
 			
 			JPanel p = new JPanel(new BorderLayout());
-			p.add(new JLabel("Chat Messages:"), BorderLayout.NORTH);
+//			p.add(new JLabel("Chat Messages:"), BorderLayout.NORTH);
 			p.add(new JScrollPane(history), BorderLayout.CENTER);
+			p.setBorder(BorderFactory.createTitledBorder("Chat Messages"));
 			add(p, BorderLayout.CENTER);
 			
 			add(line, BorderLayout.SOUTH);
 			
 			p = new JPanel(new BorderLayout());
-			p.add(new JLabel("User List:"), BorderLayout.NORTH);
+//			p.add(new JLabel("User List:"), BorderLayout.NORTH);
 			p.add(new JScrollPane(membersList), BorderLayout.CENTER);
+			p.setBorder(BorderFactory.createTitledBorder("User List"));
 			add(p, BorderLayout.WEST);
 			
 			line.addKeyListener(new KeyAdapter() {
@@ -308,11 +310,60 @@ public class KNetPanel extends JPanel implements KNetListener {
 		}
 	}
 	
+	private class CreateChannelPanel extends JPanel {
+		private KNetChannelInfo channel;
+		private KNetGameInfo game;
+		private KNetGameInfoPanel gamePanel;
+		
+		private JTextField channelName = new JTextField("");
+		
+		private JButton create = new JButton(new AbstractAction("Create Channel") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		private JButton cancel = new JButton(new AbstractAction("Cancel") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				KNetPanel.this.remove(CreateChannelPanel.this);
+				KNetPanel.this.add(createChannelPanel = new CreateChannelPanel(), CREATE_CHANNEL_PANEL_CARD);
+				cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
+			}
+		});
+		
+		public CreateChannelPanel() {
+			setLayout(new BorderLayout());
+			channel = new KNetChannelInfo();
+			game = new KNetGameInfo();
+			gamePanel = new KNetGameInfoPanel(game);
+			
+			JPanel p;
+			
+			p = new JPanel(new GridLayout(0, 1));
+			p.add(create);
+			p.add(cancel);
+			add(p, BorderLayout.EAST);
+			
+			p = new JPanel(new BorderLayout());
+			p.add(gamePanel, BorderLayout.CENTER);
+			add(p, BorderLayout.CENTER);
+			JPanel q = new JPanel(new BorderLayout());
+			q.add(new JLabel("Channel name:"), BorderLayout.WEST);
+			q.add(channelName, BorderLayout.CENTER);
+			p.add(q, BorderLayout.NORTH);
+			add(p, BorderLayout.CENTER);
+		}
+	}
+	
 	public KNetPanel() {
 		setLayout(cards = new CardLayout());
 		
 		add(connectionsListPanel = new ConnectionListPanel(), CONNECTION_LIST_PANEL_CARD);
 		add(connectedPanel = new ConnectedPanel(), CONNECTED_PANEL_CARD);
+		add(createChannelPanel = new CreateChannelPanel(), CREATE_CHANNEL_PANEL_CARD);
 		
 		cards.show(this, CONNECTION_LIST_PANEL_CARD);
 	}
