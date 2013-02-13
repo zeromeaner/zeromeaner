@@ -244,6 +244,8 @@ public class KNetPanel extends JPanel implements KNetListener {
 			});
 			
 			client.addKNetListener(this);
+			
+			update();
 		}
 		
 		private void join() {
@@ -275,8 +277,14 @@ public class KNetPanel extends JPanel implements KNetListener {
 
 		private void update() {
 			membersModel.clear();
+			line.setEnabled(false);
+			line.setText("Join channel to chat");
 			for(KNetEventSource s : channel.getMembers()) {
 				membersModel.addElement(s.getName());
+				if(s.equals(client.getSource())) {
+					line.setEnabled(true);
+					line.setText("");
+				}
 			}
 			revalidate();
 		}

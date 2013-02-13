@@ -98,7 +98,8 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				client.reply(e, ERROR, "Not in channel with id " + id);
 				return;
 			}
-			info.depart(e.getSource());
+			if(info.getId() != KNetChannelInfo.LOBBY_CHANNEL_ID)
+				info.depart(e.getSource());
 			client.fireTCP(
 					CHANNEL_LEAVE, 
 					CHANNEL_ID, id,
