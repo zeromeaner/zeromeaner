@@ -6,6 +6,8 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
+import org.zeromeaner.game.component.SpeedParam;
+import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
@@ -31,6 +33,125 @@ import static org.zeromeaner.game.knet.KNetEventArgs.*;
  * Special base class for netplay
  */
 public class AbstractNetMode extends AbstractMode implements KNetListener {
+	public static class DefaultStats {
+		private Statistics statistics;
+		private int goalType;
+		private boolean gameActive;
+		private boolean timerActive;
+		private int lastScore;
+		private int scGetTime;
+		private int lastEvent;
+		private boolean lastB2b;
+		private int lastCombo;
+		private int lastPiece;
+		private int bg;
+		
+		public Statistics getStatistics() {
+			return statistics;
+		}
+		public void setStatistics(Statistics statistics) {
+			this.statistics = statistics;
+		}
+		public int getGoalType() {
+			return goalType;
+		}
+		public void setGoalType(int goalType) {
+			this.goalType = goalType;
+		}
+		public boolean isGameActive() {
+			return gameActive;
+		}
+		public void setGameActive(boolean gameActive) {
+			this.gameActive = gameActive;
+		}
+		public boolean isTimerActive() {
+			return timerActive;
+		}
+		public void setTimerActive(boolean timerActive) {
+			this.timerActive = timerActive;
+		}
+		public int getLastScore() {
+			return lastScore;
+		}
+		public void setLastScore(int lastScore) {
+			this.lastScore = lastScore;
+		}
+		public int getScGetTime() {
+			return scGetTime;
+		}
+		public void setScGetTime(int scGetTime) {
+			this.scGetTime = scGetTime;
+		}
+		public int getLastEvent() {
+			return lastEvent;
+		}
+		public void setLastEvent(int lastEvent) {
+			this.lastEvent = lastEvent;
+		}
+		public boolean isLastB2b() {
+			return lastB2b;
+		}
+		public void setLastB2b(boolean lastB2b) {
+			this.lastB2b = lastB2b;
+		}
+		public int getLastCombo() {
+			return lastCombo;
+		}
+		public void setLastCombo(int lastCombo) {
+			this.lastCombo = lastCombo;
+		}
+		public int getLastPiece() {
+			return lastPiece;
+		}
+		public void setLastPiece(int lastPiece) {
+			this.lastPiece = lastPiece;
+		}
+		public int getBg() {
+			return bg;
+		}
+		public void setBg(int bg) {
+			this.bg = bg;
+		}
+	}
+	
+	public static class DefaultOptions {
+		private SpeedParam speed;
+		private int bgmno;
+		private boolean big;
+		private int goalType;
+		private int presetNumber;
+		public SpeedParam getSpeed() {
+			return speed;
+		}
+		public void setSpeed(SpeedParam speed) {
+			this.speed = speed;
+		}
+		public int getBgmno() {
+			return bgmno;
+		}
+		public void setBgmno(int bgmno) {
+			this.bgmno = bgmno;
+		}
+		public boolean isBig() {
+			return big;
+		}
+		public void setBig(boolean big) {
+			this.big = big;
+		}
+		public int getGoalType() {
+			return goalType;
+		}
+		public void setGoalType(int goalType) {
+			this.goalType = goalType;
+		}
+		public int getPresetNumber() {
+			return presetNumber;
+		}
+		public void setPresetNumber(int presetNumber) {
+			this.presetNumber = presetNumber;
+		}
+	}
+	
 	/** Log (Declared in NetDummyMode) */
 	static Logger log = Logger.getLogger(AbstractNetMode.class);
 

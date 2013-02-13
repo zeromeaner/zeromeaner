@@ -32,6 +32,7 @@ import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.event.EventRenderer;
+import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
@@ -42,6 +43,73 @@ import static org.zeromeaner.game.knet.KNetEventArgs.*;
  * MARATHON Mode
  */
 public class MarathonMode extends AbstractNetMode {
+	public static class Options {
+		private int startLevel;
+		private int tspinEnableType;
+		private boolean enableTSpinKick;
+		private int spinCheckType;
+		private boolean tspinEnableEZ;
+		private boolean enableB2B;
+		private boolean enableCombo;
+		private int goalType;
+		private boolean big;
+		
+		public int getStartLevel() {
+			return startLevel;
+		}
+		public void setStartLevel(int startLevel) {
+			this.startLevel = startLevel;
+		}
+		public int getTspinEnableType() {
+			return tspinEnableType;
+		}
+		public void setTspinEnableType(int tspinEnableType) {
+			this.tspinEnableType = tspinEnableType;
+		}
+		public boolean isEnableTSpinKick() {
+			return enableTSpinKick;
+		}
+		public void setEnableTSpinKick(boolean enableTSpinKick) {
+			this.enableTSpinKick = enableTSpinKick;
+		}
+		public int getSpinCheckType() {
+			return spinCheckType;
+		}
+		public void setSpinCheckType(int spinCheckType) {
+			this.spinCheckType = spinCheckType;
+		}
+		public boolean isTspinEnableEZ() {
+			return tspinEnableEZ;
+		}
+		public void setTspinEnableEZ(boolean tspinEnableEZ) {
+			this.tspinEnableEZ = tspinEnableEZ;
+		}
+		public boolean isEnableB2B() {
+			return enableB2B;
+		}
+		public void setEnableB2B(boolean enableB2B) {
+			this.enableB2B = enableB2B;
+		}
+		public boolean isEnableCombo() {
+			return enableCombo;
+		}
+		public void setEnableCombo(boolean enableCombo) {
+			this.enableCombo = enableCombo;
+		}
+		public int getGoalType() {
+			return goalType;
+		}
+		public void setGoalType(int goalType) {
+			this.goalType = goalType;
+		}
+		public boolean isBig() {
+			return big;
+		}
+		public void setBig(boolean big) {
+			this.big = big;
+		}
+		
+	}
 	/** Current version */
 	private static final int CURRENT_VERSION = 2;
 
@@ -832,39 +900,39 @@ public class MarathonMode extends AbstractNetMode {
 	@Override
 	protected void netSendStats(GameEngine engine) {
 		int bg = engine.getOwner().backgroundStatus.fadesw ? engine.getOwner().backgroundStatus.fadebg : engine.getOwner().backgroundStatus.bg;
-		String msg = "game\tstats\t";
-		msg += engine.statistics.score + "\t" + engine.statistics.lines + "\t" + engine.statistics.totalPieceLocked + "\t";
-		msg += engine.statistics.time + "\t" + engine.statistics.level + "\t";
-		msg += engine.statistics.lpm + "\t" + engine.statistics.spl + "\t" + goaltype + "\t";
-		msg += engine.gameActive + "\t" + engine.timerActive + "\t";
-		msg += lastscore + "\t" + scgettime + "\t" + lastevent + "\t" + lastb2b + "\t" + lastcombo + "\t" + lastpiece + "\t";
-		msg += bg + "\n";
-		netLobby.netPlayerClient.send(msg);
+		DefaultStats s = new DefaultStats();
+		s.setStatistics(engine.statistics);
+		s.setGoalType(goaltype);
+		s.setGameActive(engine.gameActive);
+		s.setTimerActive(engine.timerActive);
+		s.setLastScore(lastscore);
+		s.setScGetTime(scgettime);
+		s.setLastEvent(lastevent);
+		s.setLastB2b(lastb2b);
+		s.setLastCombo(lastcombo);
+		s.setLastPiece(lastpiece);
+		knetClient.fireTCP(GAME_STATS, s);
 	}
 
 	/**
 	 * NET: Receive various in-game stats (as well as goaltype)
 	 */
 	@Override
-	protected void netRecvStats(GameEngine engine, String[] message) {
-		engine.statistics.score = Integer.parseInt(message[4]);
-		engine.statistics.lines = Integer.parseInt(message[5]);
-		engine.statistics.totalPieceLocked = Integer.parseInt(message[6]);
-		engine.statistics.time = Integer.parseInt(message[7]);
-		engine.statistics.level = Integer.parseInt(message[8]);
-		engine.statistics.lpm = Float.parseFloat(message[9]);
-		engine.statistics.spl = Double.parseDouble(message[10]);
-		goaltype = Integer.parseInt(message[11]);
-		engine.gameActive = Boolean.parseBoolean(message[12]);
-		engine.timerActive = Boolean.parseBoolean(message[13]);
-		lastscore = Integer.parseInt(message[14]);
-		scgettime = Integer.parseInt(message[15]);
-		lastevent = Integer.parseInt(message[16]);
-		lastb2b = Boolean.parseBoolean(message[17]);
-		lastcombo = Integer.parseInt(message[18]);
-		lastpiece = Integer.parseInt(message[19]);
-		engine.getOwner().backgroundStatus.bg = Integer.parseInt(message[20]);
-
+	protected void netRecvStats(GameEngine engine, KNetEvent e) {
+		DefaultStats s = (DefaultStats) e.get(GAME_STATS);
+		
+		engine.statistics.copy(s.getStatistics());
+		goaltype = s.getGoalType();
+		engine.gameActive = s.isGameActive();
+		engine.timerActive = s.isTimerActive();
+		lastscore = s.getLastScore();
+		scgettime = s.getScGetTime();
+		lastevent = s.getLastEvent();
+		lastb2b = s.isLastB2b();
+		lastcombo = s.getLastCombo();
+		lastpiece = s.getLastPiece();
+		engine.getOwner().backgroundStatus.bg = s.getBg();
+		
 		// Meter
 		engine.meterValue = ((engine.statistics.lines % 10) * receiver.getMeterMax(engine)) / 9;
 		engine.meterColor = GameEngine.METER_COLOR_GREEN;
@@ -879,16 +947,7 @@ public class MarathonMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		String subMsg = "";
-		subMsg += "SCORE;" + engine.statistics.score + "\t";
-		subMsg += "LINE;" + engine.statistics.lines + "\t";
-		subMsg += "LEVEL;" + (engine.statistics.level + engine.statistics.levelDispAdd) + "\t";
-		subMsg += "TIME;" + GeneralUtil.getTime(engine.statistics.time) + "\t";
-		subMsg += "SCORE/LINE;" + engine.statistics.spl + "\t";
-		subMsg += "LINE/MIN;" + engine.statistics.lpm + "\t";
-
-		String msg = "gstat1p\t" + NetUtil.urlEncode(subMsg) + "\n";
-		netLobby.netPlayerClient.send(msg);
+		knetClient.fireTCP(GAME_END_STATS, engine.statistics);
 	}
 
 	/**
@@ -897,26 +956,34 @@ public class MarathonMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendOptions(GameEngine engine) {
-		String msg = "game\toption\t";
-		msg += startlevel + "\t" + tspinEnableType + "\t" + enableTSpinKick + "\t" + spinCheckType + "\t" + tspinEnableEZ + "\t";
-		msg += enableB2B + "\t" + enableCombo + "\t" + goaltype + "\t" + big + "\n";
-		netLobby.netPlayerClient.send(msg);
+		Options o = new Options();
+		o.setStartLevel(startlevel);
+		o.setTspinEnableType(tspinEnableType);
+		o.setEnableTSpinKick(enableTSpinKick);
+		o.setSpinCheckType(spinCheckType);
+		o.setTspinEnableEZ(tspinEnableEZ);
+		o.setEnableB2B(enableB2B);
+		o.setEnableCombo(enableCombo);
+		o.setGoalType(goaltype);
+		o.setBig(big);
+		knetClient.fireTCP(GAME_OPTIONS, o);
 	}
 
 	/**
 	 * NET: Receive game options
 	 */
 	@Override
-	protected void netRecvOptions(GameEngine engine, String[] message) {
-		startlevel = Integer.parseInt(message[4]);
-		tspinEnableType = Integer.parseInt(message[5]);
-		enableTSpinKick = Boolean.parseBoolean(message[6]);
-		spinCheckType = Integer.parseInt(message[7]);
-		tspinEnableEZ = Boolean.parseBoolean(message[8]);
-		enableB2B = Boolean.parseBoolean(message[9]);
-		enableCombo = Boolean.parseBoolean(message[10]);
-		goaltype = Integer.parseInt(message[11]);
-		big = Boolean.parseBoolean(message[12]);
+	protected void netRecvOptions(GameEngine engine, KNetEvent e) {
+		Options o = (Options) e.get(GAME_OPTIONS);
+		startlevel = o.getStartLevel();
+		tspinEnableType = o.getTspinEnableType();
+		enableTSpinKick = o.isEnableTSpinKick();
+		spinCheckType = o.getSpinCheckType();
+		tspinEnableEZ = o.isTspinEnableEZ();
+		enableB2B = o.isEnableB2B();
+		enableCombo = o.isEnableCombo();
+		goaltype = o.getGoalType();
+		big = o.isBig();
 	}
 
 	/**

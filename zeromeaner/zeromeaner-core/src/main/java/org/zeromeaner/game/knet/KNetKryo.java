@@ -21,10 +21,13 @@ import org.zeromeaner.game.knet.ser.PieceSerializer;
 import org.zeromeaner.game.knet.ser.PropertiesSerializer;
 import org.zeromeaner.game.knet.ser.SpeedParamSerializer;
 import org.zeromeaner.game.knet.ser.StatisticsSerializer;
+import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.ComboRaceMode;
 import org.zeromeaner.game.subsystem.mode.DigChallengeMode;
 import org.zeromeaner.game.subsystem.mode.DigRaceMode;
 import org.zeromeaner.game.subsystem.mode.ExtremeMode;
+import org.zeromeaner.game.subsystem.mode.LineRaceMode;
+import org.zeromeaner.game.subsystem.mode.MarathonMode;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
 import org.zeromeaner.util.CustomProperties;
 
@@ -59,6 +62,8 @@ public class KNetKryo {
 		fieldSerializer(kryo, RuleOptions.class);
 		kryo.register(KNStartInfo.class);
 		
+		fieldSerializer(kryo, AbstractNetMode.DefaultStats.class);
+		fieldSerializer(kryo, AbstractNetMode.DefaultOptions.class);
 		
 		kryo.register(NetVSBattleMode.AttackInfo.class);
 		kryo.register(NetVSBattleMode.StatsInfo.class);
@@ -76,6 +81,8 @@ public class KNetKryo {
 		
 		fieldSerializer(kryo, ExtremeMode.Stats.class);
 		fieldSerializer(kryo, ExtremeMode.Options.class);
+
+		fieldSerializer(kryo, MarathonMode.Options.class);
 	}
 	
 	private static <T> void fieldSerializer(Kryo kryo, Class<T> clazz) {
