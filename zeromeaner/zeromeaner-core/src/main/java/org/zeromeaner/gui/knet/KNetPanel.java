@@ -90,6 +90,19 @@ public class KNetPanel extends JPanel implements KNetListener {
 				
 				client = new KNetClient("Player", host, port);
 				client.addKNetListener(KNetPanel.this);
+				client.addKNetListener(new KNetListener() {
+					@Override
+					public void knetEvented(KNetClient client, KNetEvent e) {
+						if(e.is(CONNECTED)) {
+							String user = username.getText();
+							if(user == null || user.isEmpty())
+								user = "anonymous";
+							client.getSource().setName(user);
+							client.removeKNetListener(this);
+							client.fireTCP(UPDATE_SOURCE, client.getSource());
+						}
+					}
+				});
 				try {
 					client.start();
 				} catch(Exception ex) {
@@ -118,10 +131,15 @@ public class KNetPanel extends JPanel implements KNetListener {
 			}
 		});
 		
+		private JTextField username = new JTextField();
+		
 		public ConnectionListPanel() {
 			super(new BorderLayout());
 			JPanel p = new JPanel(new BorderLayout());
-//			p.add(new JLabel("Connections List:"), BorderLayout.NORTH);
+			JPanel q = new JPanel(new BorderLayout());
+			q.add(new JLabel("Username:"), BorderLayout.WEST);
+			q.add(username, BorderLayout.CENTER);
+			p.add(q, BorderLayout.NORTH);
 			p.add(new JScrollPane(connectionsList), BorderLayout.CENTER);
 			p.setBorder(BorderFactory.createTitledBorder("Connections List"));
 			add(p, BorderLayout.CENTER);

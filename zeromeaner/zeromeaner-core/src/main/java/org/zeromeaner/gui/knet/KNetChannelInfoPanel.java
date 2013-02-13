@@ -125,6 +125,7 @@ public class KNetChannelInfoPanel extends JPanel {
 		mode.setSelectedIndex(0);
 	}}
 	
+	private JCheckBox syncPlay = new JCheckBox();
 	
 	public KNetChannelInfoPanel(KNetChannelInfo channel) {
 		this.channel = channel;
@@ -140,6 +141,7 @@ public class KNetChannelInfoPanel extends JPanel {
 		p.add(new JLabel("Automatic Start:")); p.add(autoStart);
 		p.add(new JLabel("Game Mode:")); p.add(mode);
 		p.add(new JLabel("Game Mode Rule:")); p.add(rule);
+		p.add(new JLabel("Synchronous Play:")); p.add(syncPlay);
 		tabs.addTab("General", p);
 		
 	}
