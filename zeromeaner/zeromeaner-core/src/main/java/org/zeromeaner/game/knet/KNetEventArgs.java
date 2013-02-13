@@ -144,6 +144,9 @@ public enum KNetEventArgs {
 	
 	GAME_END_STATS(Object.class, true),
 	
+	GAME_BONUS_LEVEL_ENTER,
+	GAME_BONUS_LEVEL_START,
+	
 	/** Issued when the game is starting? */
 	START(KNStartInfo.class),
 	

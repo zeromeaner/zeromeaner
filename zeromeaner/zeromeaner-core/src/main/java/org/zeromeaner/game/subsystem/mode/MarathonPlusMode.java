@@ -35,6 +35,8 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.event.EventRenderer;
+import org.zeromeaner.game.knet.KNetClient;
+import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
@@ -45,6 +47,38 @@ import static org.zeromeaner.game.knet.KNetEventArgs.*;
  * MARATHON+ Mode
  */
 public class MarathonPlusMode extends AbstractNetMode {
+	public static class Stats extends DefaultStats {
+		private int bonusLines;
+		private int bonusFlashNow;
+		private int bonusPieceCount;
+		private int bonusTime;
+		
+		public int getBonusLines() {
+			return bonusLines;
+		}
+		public void setBonusLines(int bonusLines) {
+			this.bonusLines = bonusLines;
+		}
+		public int getBonusFlashNow() {
+			return bonusFlashNow;
+		}
+		public void setBonusFlashNow(int bonusFlashNow) {
+			this.bonusFlashNow = bonusFlashNow;
+		}
+		public int getBonusPieceCount() {
+			return bonusPieceCount;
+		}
+		public void setBonusPieceCount(int bonusPieceCount) {
+			this.bonusPieceCount = bonusPieceCount;
+		}
+		public int getBonusTime() {
+			return bonusTime;
+		}
+		public void setBonusTime(int bonusTime) {
+			this.bonusTime = bonusTime;
+		}
+	}
+	
 	/** Current version */
 	private static final int CURRENT_VERSION = 1;
 
@@ -774,7 +808,8 @@ public class MarathonPlusMode extends AbstractNetMode {
 					netSendField(engine);
 					netSendNextAndHold(engine);
 					netSendStats(engine);
-					netLobby.netPlayerClient.send("game\tbonuslevelenter\n");
+//					netLobby.netPlayerClient.send("game\tbonuslevelenter\n");
+					knetClient.fireTCP(GAME_BONUS_LEVEL_ENTER);
 				}
 			}
 		} else if(engine.statc[0] == 90) {
@@ -794,7 +829,8 @@ public class MarathonPlusMode extends AbstractNetMode {
 					netSendField(engine);
 					netSendNextAndHold(engine);
 					netSendStats(engine);
-					netLobby.netPlayerClient.send("game\tbonuslevelstart\n");
+//					netLobby.netPlayerClient.send("game\tbonuslevelstart\n");
+					knetClient.fireTCP(GAME_BONUS_LEVEL_START);
 				}
 			}
 
@@ -1023,19 +1059,16 @@ public class MarathonPlusMode extends AbstractNetMode {
 		return -1;
 	}
 
-	/*
-	 * NET: Message received
-	 */
 	@Override
-	public void netlobbyOnMessage(NetLobbyFrame lobby, NetPlayerClient client, String[] message) throws IOException {
-		super.netlobbyOnMessage(lobby, client, message);
+	public void knetEvented(KNetClient client, KNetEvent e) {
+		super.knetEvented(client, e);
 
 		// Game messages
-		if(message[0].equals("game")) {
+		if(e.is(GAME)) {
 			GameEngine engine = owner.engine[0];
 
 			// Bonus level entered
-			if(message[3].equals("bonuslevelenter")) {
+			if(e.is(GAME_BONUS_LEVEL_ENTER)) {
 				engine.meterValue = 0;
 				owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
 				engine.timerActive = false;
@@ -1044,7 +1077,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 				engine.resetStatc();
 			}
 			// Bonus level started
-			else if(message[3].equals("bonuslevelstart")) {
+			else if(e.is(GAME_BONUS_LEVEL_START)) {
 				engine.ending = 0;
 				engine.stat = GameEngine.STAT_READY;
 				engine.resetStatc();
@@ -1056,8 +1089,8 @@ public class MarathonPlusMode extends AbstractNetMode {
 	 * NET: Receive field message
 	 */
 	@Override
-	protected void netRecvField(GameEngine engine, String[] message) {
-		super.netRecvField(engine, message);
+	protected void netRecvField(GameEngine engine, KNetEvent e) {
+		super.netRecvField(engine, e);
 
 		if((engine.statistics.level >= 20) && (engine.timerActive) && (engine.gameActive)) {
 			bonusLevelProc(engine);
@@ -1071,44 +1104,44 @@ public class MarathonPlusMode extends AbstractNetMode {
 	@Override
 	protected void netSendStats(GameEngine engine) {
 		int bg = engine.getOwner().backgroundStatus.fadesw ? engine.getOwner().backgroundStatus.fadebg : engine.getOwner().backgroundStatus.bg;
-		String msg = "game\tstats\t";
-		msg += engine.statistics.score + "\t" + engine.statistics.lines + "\t" + engine.statistics.totalPieceLocked + "\t";
-		msg += engine.statistics.time + "\t" + engine.statistics.level + "\t";
-		msg += engine.statistics.spl + "\t" + engine.statistics.spm + "\t" + engine.statistics.lpm + "\t" + engine.statistics.pps + "\t";
-		msg += engine.gameActive + "\t" + engine.timerActive + "\t";
-		msg += lastscore + "\t" + scgettime + "\t" + lastevent + "\t" + lastb2b + "\t" + lastcombo + "\t" + lastpiece + "\t";
-		msg += bg + "\t";
-		msg += bonusLines + "\t" + bonusFlashNow + "\t" + bonusPieceCount + "\t" + bonusTime + "\n";
-		netLobby.netPlayerClient.send(msg);
+		Stats s = new Stats();
+		s.setStatistics(engine.statistics);
+		s.setGameActive(engine.gameActive);
+		s.setTimerActive(engine.timerActive);
+		s.setLastScore(lastscore);
+		s.setScGetTime(scgettime);
+		s.setLastEvent(lastevent);
+		s.setLastB2b(lastb2b);
+		s.setLastCombo(lastcombo);
+		s.setLastPiece(lastpiece);
+		s.setBg(bg);
+		s.setBonusLines(bonusLines);
+		s.setBonusFlashNow(bonusFlashNow);
+		s.setBonusPieceCount(bonusPieceCount);
+		s.setBonusTime(bonusTime);
+		knetClient.fireTCP(GAME_STATS, s);
 	}
 
 	/**
 	 * NET: Receive various in-game stats (as well as goaltype)
 	 */
 	@Override
-	protected void netRecvStats(GameEngine engine, String[] message) {
-		engine.statistics.score = Integer.parseInt(message[4]);
-		engine.statistics.lines = Integer.parseInt(message[5]);
-		engine.statistics.totalPieceLocked = Integer.parseInt(message[6]);
-		engine.statistics.time = Integer.parseInt(message[7]);
-		engine.statistics.level = Integer.parseInt(message[8]);
-		engine.statistics.spl = Double.parseDouble(message[9]);
-		engine.statistics.spm = Double.parseDouble(message[10]);
-		engine.statistics.lpm = Float.parseFloat(message[11]);
-		engine.statistics.pps = Float.parseFloat(message[12]);
-		engine.gameActive = Boolean.parseBoolean(message[13]);
-		engine.timerActive = Boolean.parseBoolean(message[14]);
-		lastscore = Integer.parseInt(message[15]);
-		scgettime = Integer.parseInt(message[16]);
-		lastevent = Integer.parseInt(message[17]);
-		lastb2b = Boolean.parseBoolean(message[18]);
-		lastcombo = Integer.parseInt(message[19]);
-		lastpiece = Integer.parseInt(message[20]);
-		engine.getOwner().backgroundStatus.bg = Integer.parseInt(message[21]);
-		bonusLines = Integer.parseInt(message[22]);
-		bonusFlashNow = Integer.parseInt(message[23]);
-		bonusPieceCount = Integer.parseInt(message[24]);
-		bonusTime = Integer.parseInt(message[25]);
+	protected void netRecvStats(GameEngine engine, KNetEvent e) {
+		Stats s = (Stats) e.get(GAME_STATS);
+		engine.statistics.copy(s.getStatistics());
+		engine.gameActive = s.isGameActive();
+		engine.timerActive = s.isTimerActive();
+		lastscore = s.getLastScore();
+		scgettime = s.getScGetTime();
+		lastevent = s.getLastEvent();
+		lastb2b = s.isLastB2b();
+		lastcombo = s.getLastCombo();
+		lastpiece = s.getLastPiece();
+		engine.getOwner().backgroundStatus.bg = s.getBg();
+		bonusLines = s.getBonusLines();
+		bonusFlashNow = s.getBonusFlashNow();
+		bonusPieceCount = s.getBonusPieceCount();
+		bonusTime = s.getBonusTime();
 
 		// Meter
 		if(engine.statistics.level < 20) {
