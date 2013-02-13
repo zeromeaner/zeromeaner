@@ -35,7 +35,8 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
-/**
+import static org.zeromeaner.game.knet.KNetEventArgs.*
+;/**
  * TIME ATTACK mode (Original from NullpoUE build 010210 by Zircean. This mode is heavily modified from the original.)
  */
 public class TimeAttackMode extends AbstractNetMode {
@@ -480,12 +481,8 @@ public class TimeAttackMode extends AbstractNetMode {
 	 */
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
-		// NET: Net Ranking
-		if(netIsNetRankingDisplayMode) {
-			netOnUpdateNetPlayRanking(engine, netGetGoalType());
-		}
 		// Menu
-		else if(engine.getOwner().replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 3);
 
@@ -527,7 +524,8 @@ public class TimeAttackMode extends AbstractNetMode {
 				receiver.saveModeConfig(owner.modeConfig);
 
 				// NET: Signal start of the game
-				if(netIsNetPlay) netLobby.netPlayerClient.send("start1p\n");
+				if(netIsNetPlay) 
+					knetClient.fireTCP(START_1P);
 
 				return false;
 			}
@@ -535,11 +533,6 @@ public class TimeAttackMode extends AbstractNetMode {
 			// Check for B button, when pressed this will shutdown the game engine.
 			if(engine.ctrl.isPush(Controller.BUTTON_B) && !netIsNetPlay) {
 				engine.quitflag = true;
-			}
-
-			// NET: Netplay Ranking
-			if(engine.ctrl.isPush(Controller.BUTTON_D) && netIsNetPlay && !big && engine.ai == null) {
-				netEnterNetPlayRankingScreen(engine, playerID, goaltype);
 			}
 
 			engine.statc[3]++;
@@ -560,16 +553,11 @@ public class TimeAttackMode extends AbstractNetMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		if(netIsNetRankingDisplayMode) {
-			// NET: Netplay Ranking
-			netOnRenderNetPlayRanking(engine, playerID, receiver);
-		} else {
 			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
 					"DIFFICULTY", GAMETYPE_NAME[goaltype],
 					"LEVEL", String.valueOf(startlevel + 1),
 					"SHOW STIME", GeneralUtil.getONorOFF(showsectiontime),
 					"BIG",  GeneralUtil.getONorOFF(big));
-		}
 	}
 
 	/**
@@ -689,7 +677,6 @@ public class TimeAttackMode extends AbstractNetMode {
 		netDrawSpectatorsCount(engine, 0, 20);
 		// NET: All number of players
 		if(playerID == getPlayers() - 1) {
-			netDrawAllPlayersCount(engine);
 			netDrawGameRate(engine);
 		}
 		// NET: Player name (It may also appear in offline replay)

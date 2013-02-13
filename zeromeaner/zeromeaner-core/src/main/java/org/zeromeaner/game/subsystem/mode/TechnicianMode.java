@@ -36,6 +36,8 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
+import static org.zeromeaner.game.knet.KNetEventArgs.*;
+
 /**
  * TECHNICIAN Mode
  */
@@ -275,12 +277,8 @@ public class TechnicianMode extends AbstractNetMode {
 	 */
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
-		// NET: Net Ranking
-		if(netIsNetRankingDisplayMode) {
-			netOnUpdateNetPlayRanking(engine, goaltype);
-		}
 		// Menu
-		else if(engine.getOwner().replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 8);
 
@@ -339,7 +337,8 @@ public class TechnicianMode extends AbstractNetMode {
 				receiver.saveModeConfig(owner.modeConfig);
 
 				// NET: Signal start of the game
-				if(netIsNetPlay) netLobby.netPlayerClient.send("start1p\n");
+				if(netIsNetPlay) 
+					knetClient.fireTCP(START_1P);
 
 				return false;
 			}
@@ -347,11 +346,6 @@ public class TechnicianMode extends AbstractNetMode {
 			// Cancel
 			if(engine.ctrl.isPush(Controller.BUTTON_B) && !netIsNetPlay) {
 				engine.quitflag = true;
-			}
-
-			// NET: Netplay Ranking
-			if(engine.ctrl.isPush(Controller.BUTTON_D) && netIsNetPlay && netIsNetRankingViewOK(engine)) {
-				netEnterNetPlayRankingScreen(engine, playerID, goaltype);
 			}
 
 			engine.statc[3]++;
@@ -374,10 +368,6 @@ public class TechnicianMode extends AbstractNetMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		if(netIsNetRankingDisplayMode) {
-			// NET: Netplay Ranking
-			netOnRenderNetPlayRanking(engine, playerID, receiver);
-		} else {
 			String strTSpinEnable = "";
 			if(version >= 1) {
 				if(tspinEnableType == 0) strTSpinEnable = "OFF";
@@ -396,7 +386,6 @@ public class TechnicianMode extends AbstractNetMode {
 					"B2B", GeneralUtil.getONorOFF(enableB2B),
 					"COMBO",  GeneralUtil.getONorOFF(enableCombo),
 					"BIG", GeneralUtil.getONorOFF(big));
-		}
 	}
 
 	/*
@@ -601,7 +590,6 @@ public class TechnicianMode extends AbstractNetMode {
 		netDrawSpectatorsCount(engine, 0, 18);
 		// NET: All number of players
 		if(playerID == getPlayers() - 1) {
-			netDrawAllPlayersCount(engine);
 			netDrawGameRate(engine);
 		}
 		// NET: Player name (It may also appear in offline replay)

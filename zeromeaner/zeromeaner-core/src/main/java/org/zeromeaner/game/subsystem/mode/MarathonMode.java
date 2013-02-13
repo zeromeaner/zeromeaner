@@ -36,6 +36,8 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
+import static org.zeromeaner.game.knet.KNetEventArgs.*;
+
 /**
  * MARATHON Mode
  */
@@ -210,12 +212,8 @@ public class MarathonMode extends AbstractNetMode {
 	 */
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
-		// NET: Net Ranking
-		if(netIsNetRankingDisplayMode) {
-			netOnUpdateNetPlayRanking(engine, goaltype);
-		}
 		// Menu
-		else if(engine.getOwner().replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 8, playerID);
 
@@ -285,7 +283,8 @@ public class MarathonMode extends AbstractNetMode {
 				receiver.saveModeConfig(owner.modeConfig);
 
 				// NET: Signal start of the game
-				if(netIsNetPlay) netLobby.netPlayerClient.send("start1p\n");
+				if(netIsNetPlay) 
+					knetClient.fireTCP(START_1P);
 
 				return false;
 			}
@@ -293,12 +292,6 @@ public class MarathonMode extends AbstractNetMode {
 			// Cancel
 			if(engine.ctrl.isPush(Controller.BUTTON_B) && !netIsNetPlay) {
 				engine.quitflag = true;
-			}
-
-			// NET: Netplay Ranking
-			if(engine.ctrl.isPush(Controller.BUTTON_D) && netIsNetPlay && startlevel == 0 && !big && 
-					engine.ai == null) {
-				netEnterNetPlayRankingScreen(engine, playerID, goaltype);
 			}
 
 			engine.statc[3]++;
@@ -321,10 +314,6 @@ public class MarathonMode extends AbstractNetMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		if(netIsNetRankingDisplayMode) {
-			// NET: Netplay Ranking
-			netOnRenderNetPlayRanking(engine, playerID, receiver);
-		} else {
 			String strTSpinEnable = "";
 			if(version >= 2) {
 				if(tspinEnableType == 0) strTSpinEnable = "OFF";
@@ -343,7 +332,6 @@ public class MarathonMode extends AbstractNetMode {
 					"COMBO",  GeneralUtil.getONorOFF(enableCombo),
 					"GOAL",  (goaltype == 2) ? "ENDLESS" : tableGameClearLines[goaltype] + " LINES",
 					"BIG", GeneralUtil.getONorOFF(big));
-		}
 	}
 
 	/*
@@ -493,7 +481,6 @@ public class MarathonMode extends AbstractNetMode {
 		netDrawSpectatorsCount(engine, 0, 18);
 		// NET: All number of players
 		if(playerID == getPlayers() - 1) {
-			netDrawAllPlayersCount(engine);
 			netDrawGameRate(engine);
 		}
 		// NET: Player name (It may also appear in offline replay)
