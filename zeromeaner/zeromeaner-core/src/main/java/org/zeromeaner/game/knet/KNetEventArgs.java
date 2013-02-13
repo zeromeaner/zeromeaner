@@ -98,6 +98,8 @@ public enum KNetEventArgs {
 	
 	CHANNEL_CREATE(KNetChannelInfo.class),
 	
+	CHANNEL_DELETE(Integer.class),
+	
 	/** Issued for in-game events */
 	GAME,
 	

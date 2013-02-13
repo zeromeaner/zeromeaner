@@ -38,6 +38,7 @@ public class KNetKryo {
 		kryo.register(KNetChannelInfo.class);
 		kryo.register(KNetChannelInfo[].class);
 		fieldSerializer(kryo, KNetGameInfo.class);
+		kryo.register(KNetGameInfo.TSpinEnableType.class);
 		kryo.register(KNetPlayerInfo.class);
 		kryo.register(Field.class, new org.zeromeaner.game.knet.ser.FieldSerializer());
 		kryo.register(Block[][].class);

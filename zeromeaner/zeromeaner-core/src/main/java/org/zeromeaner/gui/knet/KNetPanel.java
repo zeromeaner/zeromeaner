@@ -298,6 +298,9 @@ public class KNetPanel extends JPanel implements KNetListener {
 					&& client.isMine(e)) {
 				channel = ((KNetChannelInfo[]) e.get(CHANNEL_INFO))[0];
 				left();
+				if(channel.getMembers().size() == 0) {
+					client.fireTCP(CHANNEL_DELETE, channel.getId());
+				}
 			}
 			if(e.is(CHANNEL_CHAT)
 					&& channel.getId() == (Integer) e.get(CHANNEL_ID)) {
@@ -312,16 +315,16 @@ public class KNetPanel extends JPanel implements KNetListener {
 	
 	private class CreateChannelPanel extends JPanel {
 		private KNetChannelInfo channel;
-		private KNetGameInfo game;
-		private KNetGameInfoPanel gamePanel;
-		
-		private JTextField channelName = new JTextField("");
+		private KNetChannelInfoPanel channelPanel;
 		
 		private JButton create = new JButton(new AbstractAction("Create Channel") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				channelPanel.updateChannel();
+				client.fireTCP(CHANNEL_CREATE, channel);
+				KNetPanel.this.remove(CreateChannelPanel.this);
+				KNetPanel.this.add(createChannelPanel = new CreateChannelPanel(), CREATE_CHANNEL_PANEL_CARD);
+				cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
 			}
 		});
 		
@@ -337,8 +340,9 @@ public class KNetPanel extends JPanel implements KNetListener {
 		public CreateChannelPanel() {
 			setLayout(new BorderLayout());
 			channel = new KNetChannelInfo();
-			game = new KNetGameInfo();
-			gamePanel = new KNetGameInfoPanel(game);
+			channel.setGame(new KNetGameInfo());
+			channelPanel = new KNetChannelInfoPanel(channel);
+			channelPanel.updateEditor();
 			
 			JPanel p;
 			
@@ -348,12 +352,8 @@ public class KNetPanel extends JPanel implements KNetListener {
 			add(p, BorderLayout.EAST);
 			
 			p = new JPanel(new BorderLayout());
-			p.add(gamePanel, BorderLayout.CENTER);
-			add(p, BorderLayout.CENTER);
-			JPanel q = new JPanel(new BorderLayout());
-			q.add(new JLabel("Channel name:"), BorderLayout.WEST);
-			q.add(channelName, BorderLayout.CENTER);
-			p.add(q, BorderLayout.NORTH);
+			p.add(channelPanel, BorderLayout.CENTER);
+			p.setBorder(BorderFactory.createTitledBorder("Channel Editor"));
 			add(p, BorderLayout.CENTER);
 		}
 	}
@@ -422,7 +422,9 @@ public class KNetPanel extends JPanel implements KNetListener {
 			while(ci.hasNext()) {
 				Map.Entry<Integer, ChannelPanel> ce = ci.next();
 				if(!channels.contains(ce.getValue().channel)) {
-					connectedPanel.channels.removeTabAt(connectedPanel.channels.indexOfTabComponent(ce.getValue()));
+					int index = connectedPanel.channels.indexOfComponent(ce.getValue());
+					if(index != -1)
+						connectedPanel.channels.removeTabAt(index);
 					ci.remove();
 				}
 			}

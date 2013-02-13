@@ -74,7 +74,18 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 			}
 			KNetChannelInfo create = new KNetChannelInfo(nextChannelId.incrementAndGet(), request.getName());
 			channels.put(create.getId(), create);
-			client.fireTCP(CHANNEL_LIST, PAYLOAD, channels.values().toArray(new KNetChannelInfo[0]));
+			client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
+		}
+		if(e.is(CHANNEL_DELETE)) {
+			int id = (Integer) e.get(CHANNEL_DELETE);
+			KNetChannelInfo info = channels.get(id);
+			if(id == KNetChannelInfo.LOBBY_CHANNEL_ID) {
+				client.reply(e, ERROR, "Cannot delete lobby");
+			} else if(info.getMembers().size() == 0) {
+				channels.remove(id);
+				client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
+			} else
+				client.reply(e, ERROR, "Cannot delete channel with members");
 		}
 		if(e.is(CHANNEL_LEAVE) && e.is(CHANNEL_ID)) {
 			int id = (Integer) e.get(CHANNEL_ID);
