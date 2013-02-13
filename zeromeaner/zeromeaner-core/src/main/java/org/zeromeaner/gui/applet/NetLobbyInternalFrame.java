@@ -4,22 +4,17 @@ import java.awt.BorderLayout;
 
 import javax.swing.JInternalFrame;
 
+import org.zeromeaner.gui.knet.KNetPanel;
+import org.zeromeaner.gui.knet.KNetPanelListener;
+
 public class NetLobbyInternalFrame extends JInternalFrame {
-	public NetLobbyFrame frame;
+	private KNetPanel knetPanel;
 	
 	public NetLobbyInternalFrame() {
-		this.frame = new NetLobbyFrame();
-		
-		frame.addListener(new NetLobbyAdapter() {
-			public void netlobbyOnExit(NetLobbyFrame lobby) {
-				NetLobbyInternalFrame.this.setVisible(false);
-			}
-		});
-		
-		setTitle(frame.getTitle());
+		knetPanel = new KNetPanel();
 		
 		setLayout(new BorderLayout());
-		add(frame.getContentPane(), BorderLayout.CENTER);
+		add(knetPanel, BorderLayout.CENTER);
 
 		setSize(800, 300);
 		
@@ -30,14 +25,14 @@ public class NetLobbyInternalFrame extends JInternalFrame {
 	}
 	
 	public void init() {
-		frame.init();
+		knetPanel.init();
 	}
 	
 	public void shutdown() {
-		frame.shutdown();
+		knetPanel.shutdown();
 	}
 	
-	public void addListener(NetLobbyListener l) {
-		frame.addListener(l);
+	public KNetPanel getKnetPanel() {
+		return knetPanel;
 	}
 }

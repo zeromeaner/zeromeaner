@@ -34,9 +34,13 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
+
+import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.zeromeaner.gui.knet.KNetPanel;
 
 public class AppletMain extends Applet {
 	public static AppletMain instance;
@@ -205,9 +209,8 @@ public class AppletMain extends Applet {
 		NullpoMinoInternalFrame.mainFrame.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Menu_NetPlay"));
 
 		// Connect to the server
-		final NetLobbyFrame nlf = NullpoMinoInternalFrame.netLobby.frame;
-		nlf.listboxServerList.setSelectedIndex(0);
-		nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "ServerSelect_Connect"));
+		final KNetPanel knp = NullpoMinoInternalFrame.netLobby.getKnetPanel();
+		knp.getConnectionsListPanel().connect();
 		
 		if(room == null || room.isEmpty())
 			return;
@@ -225,59 +228,58 @@ public class AppletMain extends Applet {
 			@Override
 			public void run() {
 				// Find the room
-				for(int row = 0; row < nlf.tablemodelRoomList.getRowCount(); row++) {
-					int namecol = nlf.tablemodelRoomList.findColumn(nlf.getUIText(nlf.ROOMTABLE_COLUMNNAMES[1]));
-					if(room.equals(nlf.tablemodelRoomList.getValueAt(row, namecol))) {
-						//								if(room.equals(nlf.tablemodelRoomList.getValueAt(row, 1))) {
-						int columnID = nlf.tablemodelRoomList.findColumn(nlf.getUIText(nlf.ROOMTABLE_COLUMNNAMES[0]));
-						String strRoomID = (String)nlf.tablemodelRoomList.getValueAt(row, columnID);
-						int roomID = Integer.parseInt(strRoomID);
-						nlf.joinRoom(roomID, false);
+				JTabbedPane tabs = knp.getConnectedPanel().getChannels();
+				for(int i = 0; i < tabs.getTabCount(); i++) {
+					KNetPanel.ChannelPanel chp = (KNetPanel.ChannelPanel) tabs.getComponentAt(i);
+					if(chp.getChannel().getName().equals(room)) {
+						chp.join();
 						return;
 					}
 				}
 
 				// Room not found
-				nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Lobby_RoomCreate"));
-				nlf.txtfldCreateRatedName.setText(room);
+				knp.getConnectedPanel().add();
+				
+				knp.getCreateChannelPanel().getChannel().setName(room);
+				knp.getCreateChannelPanel().getChannelPanel().updateEditor();
 				
 				createdRoom.set(true);
 			}
 		});
 		
-		if(!customize)
-			return;
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				if(!createdRoom.get())
-					return;
-//				nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CreateRated_Custom"));
-				nlf.btnCreateRatedCustom.doClick();
-			}
-		});
-		while(commands.hasNext()) {
-			String cmd = commands.next();
-			if("mode".equals(cmd)) {
-				final String mode = commands.next();
-				EventQueue.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						nlf.comboboxCreateRoomMode.getModel().setSelectedItem(mode);
-					}
-				});
-			} else if("ok".equals(cmd)) {
-				EventQueue.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						if(!createdRoom.get())
-							return;
-						nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CreateRated_OK"));
-					}
-				});
-			}
-			
-		}
+//		if(!customize)
+//			return;
+//		EventQueue.invokeLater(new Runnable() {
+//			@Override
+//			public void run() {
+//				if(!createdRoom.get())
+//					return;
+////				nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CreateRated_Custom"));
+//				nlf.btnCreateRatedCustom.doClick();
+//			}
+//		});
+//		while(commands.hasNext()) {
+//			String cmd = commands.next();
+//			if("mode".equals(cmd)) {
+//				final String mode = commands.next();
+//				EventQueue.invokeLater(new Runnable() {
+//					@Override
+//					public void run() {
+//						nlf.comboboxCreateRoomMode.getModel().setSelectedItem(mode);
+//					}
+//				});
+//			} else if("ok".equals(cmd)) {
+//				EventQueue.invokeLater(new Runnable() {
+//					@Override
+//					public void run() {
+//						if(!createdRoom.get())
+//							return;
+//						nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CreateRated_OK"));
+//					}
+//				});
+//			}
+//			
+//		}
 	}
 
 }
