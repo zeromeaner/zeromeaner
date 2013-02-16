@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.rkutil.core.Conditions;
+import org.rkutil.core.Transform;
+import org.rkutil.core.Transforms;
+import org.rkutil.core.coll.ConditionTransformArrayList;
 import org.zeromeaner.game.subsystem.mode.AbstractMode;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 
-import com.robinkirkman.util.FilterMap.FilterMappingArrayList;
-import com.robinkirkman.util.Filters;
-import com.robinkirkman.util.Mapping;
-import com.robinkirkman.util.Mappings;
 
-public class ModeList<T extends GameMode> extends FilterMappingArrayList<Class<? extends T>> {
+public class ModeList<T extends GameMode> extends ConditionTransformArrayList<Class<? extends T>> {
 	public static ModeList<GameMode> getModes() {
 		ModeList<GameMode> ret = new ModeList<GameMode>(GameMode.class);
 		try {
@@ -27,10 +27,10 @@ public class ModeList<T extends GameMode> extends FilterMappingArrayList<Class<?
 		return ret;
 	}
 	
-	public static final Mapping<Class<? extends GameMode>, String> MODE_NAME = new Mapping<Class<? extends GameMode>, String>() {
+	public static final Transform<Class<? extends GameMode>, String> MODE_NAME = new Transform<Class<? extends GameMode>, String>() {
 		@Override
-		public String map(Class<? extends GameMode> obj) {
-			return ((GameMode) Mappings.CLASS_NEWINSTANCE.map(obj)).getName();
+		public String transform(Class<? extends GameMode> obj) {
+			return (Transforms.<GameMode>newInstance().transform(obj)).getName();
 		}
 	};
 
@@ -47,11 +47,11 @@ public class ModeList<T extends GameMode> extends FilterMappingArrayList<Class<?
 		this.clazz = clazz;
 	}
 
-	public <U extends GameMode> ModeList<U> filter(Class<U> clazz) {
-		return new ModeList<U>(clazz, filter(Filters.isSubclass(clazz)).map(Mappings.asSubclass(clazz)));
+	public <U extends GameMode> ModeList<U> accept(Class<U> clazz) {
+		return new ModeList<U>(clazz, accept(Conditions.isAssignableFrom(clazz)).transform(Transforms.asSubclass(clazz)));
 	}
 	
 	public List<T> newInstances() {
-		return map(Mappings.CLASS_NEWINSTANCE).map(Mappings.asInstance(clazz));
+		return transform(Transforms.<T>newInstance());
 	}
 }

@@ -26,6 +26,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListDataListener;
 
+import org.rkutil.core.Condition;
+import org.rkutil.core.ListTransformProcessor;
+import org.rkutil.core.Transform;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 import org.zeromeaner.game.knet.obj.KNetGameInfo;
@@ -37,11 +40,6 @@ import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.RuleMap;
 
-import com.robinkirkman.util.Filter;
-import com.robinkirkman.util.Mapping;
-import com.robinkirkman.util.Mappings;
-import com.robinkirkman.util.Mappings.ListMapper;
-import com.robinkirkman.util.Mappings.Mapper;
 
 public class KNetChannelInfoPanel extends JPanel {
 	private KNetChannelInfo channel;
@@ -56,7 +54,7 @@ public class KNetChannelInfoPanel extends JPanel {
 				DefaultComboBoxModel model = (DefaultComboBoxModel) mode.getModel();
 				model.removeAllElements();
 				mode.setModel(model);
-				Filter<Class<? extends AbstractNetMode>> VS_MODE = new Filter<Class<? extends AbstractNetMode>>() {
+				Condition<Class<? extends AbstractNetMode>> VS_MODE = new Condition<Class<? extends AbstractNetMode>>() {
 					@Override
 					public boolean accept(Class<? extends AbstractNetMode> obj) {
 						int maxPlayers = (Integer) KNetChannelInfoPanel.this.maxPlayers.getValue();
@@ -66,7 +64,7 @@ public class KNetChannelInfoPanel extends JPanel {
 							return AbstractNetVSMode.class.isAssignableFrom(obj);
 					}
 				};
-				for(String modeName : ModeList.getModes().filter(AbstractNetMode.class).filter(VS_MODE).map(ModeList.MODE_NAME)) {
+				for(String modeName : ModeList.getModes().accept(AbstractNetMode.class).accept(VS_MODE).transform(ModeList.MODE_NAME)) {
 					model.addElement(modeName);
 				}
 				mode.setSelectedIndex(0);
@@ -85,7 +83,7 @@ public class KNetChannelInfoPanel extends JPanel {
 	{{
 		DefaultComboBoxModel model = new DefaultComboBoxModel();
 		mode.setModel(model);
-		Filter<Class<? extends AbstractNetMode>> VS_MODE = new Filter<Class<? extends AbstractNetMode>>() {
+		Condition<Class<? extends AbstractNetMode>> VS_MODE = new Condition<Class<? extends AbstractNetMode>>() {
 			@Override
 			public boolean accept(Class<? extends AbstractNetMode> obj) {
 				int maxPlayers = (Integer) KNetChannelInfoPanel.this.maxPlayers.getValue();
@@ -95,7 +93,7 @@ public class KNetChannelInfoPanel extends JPanel {
 					return AbstractNetVSMode.class.isAssignableFrom(obj);
 			}
 		};
-		for(String modeName : ModeList.getModes().filter(AbstractNetMode.class).filter(VS_MODE).map(ModeList.MODE_NAME)) {
+		for(String modeName : ModeList.getModes().accept(AbstractNetMode.class).accept(VS_MODE).transform(ModeList.MODE_NAME)) {
 			model.addElement(modeName);
 		}
 		mode.addActionListener(new ActionListener() {
@@ -111,13 +109,13 @@ public class KNetChannelInfoPanel extends JPanel {
 				List<String> ruleResources = recdRules.get(mode.getSelectedItem());
 				if(ruleResources == null)
 					return;
-				Mapping<String, String> RULE_NAME = new Mapping<String, String>() {
+				Transform<String, String> RULE_NAME = new Transform<String, String>() {
 					@Override
-					public String map(String obj) {
+					public String transform(String obj) {
 						return GeneralUtil.loadRule(obj).strRuleName;
 					}
 				};
-				for(String ruleName : Mappings.listMapper(RULE_NAME).map(ruleResources)) {
+				for(String ruleName : new ListTransformProcessor<String, String>(RULE_NAME).appliedTo(ruleResources)) {
 					ruleModel.addElement(ruleName);
 				}
 			}

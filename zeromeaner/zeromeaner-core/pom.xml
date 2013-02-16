@@ -78,8 +78,8 @@
 			<version>1.2</version>
 		</dependency>
 		<dependency>
-			<groupId>com.robinkirkman</groupId>
-			<artifactId>rbk-util</artifactId>
+			<groupId>org.rkutil</groupId>
+			<artifactId>rkutil-core</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
