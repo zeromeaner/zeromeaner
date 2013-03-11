@@ -30,7 +30,7 @@ public class ModeList<T extends GameMode> extends ConditionTransformArrayList<Cl
 	public static final Transform<Class<? extends GameMode>, String> MODE_NAME = new Transform<Class<? extends GameMode>, String>() {
 		@Override
 		public String transform(Class<? extends GameMode> obj) {
-			return (Transforms.<GameMode>newInstance().transform(obj)).getName();
+			return (Transforms.<GameMode>classNewInstance().transform(obj)).getName();
 		}
 	};
 
@@ -48,10 +48,10 @@ public class ModeList<T extends GameMode> extends ConditionTransformArrayList<Cl
 	}
 
 	public <U extends GameMode> ModeList<U> accept(Class<U> clazz) {
-		return new ModeList<U>(clazz, accept(Conditions.isAssignableFrom(clazz)).transform(Transforms.asSubclass(clazz)));
+		return new ModeList<U>(clazz, accept(Conditions.isAssignableFrom(clazz)).transform(Transforms.classAsSubclass(clazz)));
 	}
 	
 	public List<T> newInstances() {
-		return transform(Transforms.<T>newInstance());
+		return transform(Transforms.<T>classNewInstance());
 	}
 }

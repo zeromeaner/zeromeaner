@@ -79,6 +79,66 @@ public class MarathonPlusMode extends AbstractNetMode {
 		}
 	}
 	
+	public static class Options {
+		private int startLevel;
+		private int tspinEnableType;
+		private boolean enableTSpinKick;
+		private boolean enableB2B;
+		private boolean enableCombo;
+		private boolean big;
+		private int spinCheckType;
+		private boolean tspinEnableEZ;
+
+		public int getStartLevel() {
+			return startLevel;
+		}
+		public void setStartLevel(int startLevel) {
+			this.startLevel = startLevel;
+		}
+		public int getTspinEnableType() {
+			return tspinEnableType;
+		}
+		public void setTspinEnableType(int tspinEnableType) {
+			this.tspinEnableType = tspinEnableType;
+		}
+		public boolean isEnableTSpinKick() {
+			return enableTSpinKick;
+		}
+		public void setEnableTSpinKick(boolean enableTSpinKick) {
+			this.enableTSpinKick = enableTSpinKick;
+		}
+		public boolean isEnableB2B() {
+			return enableB2B;
+		}
+		public void setEnableB2B(boolean enableB2B) {
+			this.enableB2B = enableB2B;
+		}
+		public boolean isEnableCombo() {
+			return enableCombo;
+		}
+		public void setEnableCombo(boolean enableCombo) {
+			this.enableCombo = enableCombo;
+		}
+		public boolean isBig() {
+			return big;
+		}
+		public void setBig(boolean big) {
+			this.big = big;
+		}
+		public int getSpinCheckType() {
+			return spinCheckType;
+		}
+		public void setSpinCheckType(int spinCheckType) {
+			this.spinCheckType = spinCheckType;
+		}
+		public boolean isTspinEnableEZ() {
+			return tspinEnableEZ;
+		}
+		public void setTspinEnableEZ(boolean tspinEnableEZ) {
+			this.tspinEnableEZ = tspinEnableEZ;
+		}
+	}
+	
 	/** Current version */
 	private static final int CURRENT_VERSION = 1;
 
@@ -1161,25 +1221,27 @@ public class MarathonPlusMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		String subMsg = "";
-		subMsg += "SCORE;" + engine.statistics.score + "\t";
-		subMsg += "LINE;" + engine.statistics.lines + "\t";
-		subMsg += "BONUS LINE;" + bonusLines + "\t";
-		if(engine.statistics.level >= 20) {
-			subMsg += "LEVEL;BONUS\t";
-		} else {
-			subMsg += "LEVEL;" + (engine.statistics.level + engine.statistics.levelDispAdd) + "\t";
-		}
-		subMsg += "TOTAL TIME;" + GeneralUtil.getTime(engine.statistics.time) + "\t";
-		subMsg += "LV20- TIME;" + GeneralUtil.getTime(engine.statistics.time - bonusTime) + "\t";
-		subMsg += "BONUS TIME;" + GeneralUtil.getTime(bonusTime) + "\t";
-		subMsg += "SCORE/LINE;" + engine.statistics.spl + "\t";
-		subMsg += "SCORE/MIN;" + engine.statistics.spm + "\t";
-		subMsg += "LINE/MIN;" + engine.statistics.lpm + "\t";
-		subMsg += "PIECE/SEC;" + engine.statistics.pps + "\t";
-
-		String msg = "gstat1p\t" + NetUtil.urlEncode(subMsg) + "\n";
-		netLobby.netPlayerClient.send(msg);
+//		String subMsg = "";
+//		subMsg += "SCORE;" + engine.statistics.score + "\t";
+//		subMsg += "LINE;" + engine.statistics.lines + "\t";
+//		subMsg += "BONUS LINE;" + bonusLines + "\t";
+//		if(engine.statistics.level >= 20) {
+//			subMsg += "LEVEL;BONUS\t";
+//		} else {
+//			subMsg += "LEVEL;" + (engine.statistics.level + engine.statistics.levelDispAdd) + "\t";
+//		}
+//		subMsg += "TOTAL TIME;" + GeneralUtil.getTime(engine.statistics.time) + "\t";
+//		subMsg += "LV20- TIME;" + GeneralUtil.getTime(engine.statistics.time - bonusTime) + "\t";
+//		subMsg += "BONUS TIME;" + GeneralUtil.getTime(bonusTime) + "\t";
+//		subMsg += "SCORE/LINE;" + engine.statistics.spl + "\t";
+//		subMsg += "SCORE/MIN;" + engine.statistics.spm + "\t";
+//		subMsg += "LINE/MIN;" + engine.statistics.lpm + "\t";
+//		subMsg += "PIECE/SEC;" + engine.statistics.pps + "\t";
+//
+//		String msg = "gstat1p\t" + NetUtil.urlEncode(subMsg) + "\n";
+//		netLobby.netPlayerClient.send(msg);
+		
+		knetClient.fireTCP(GAME_END_STATS, engine.statistics);
 	}
 
 	/**
@@ -1188,25 +1250,35 @@ public class MarathonPlusMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendOptions(GameEngine engine) {
-		String msg = "game\toption\t";
-		msg += startlevel + "\t" + tspinEnableType + "\t" + enableTSpinKick + "\t" + enableB2B + "\t";
-		msg += enableCombo + "\t" + big + "\t" + spinCheckType + "\t" + tspinEnableEZ + "\n";
-		netLobby.netPlayerClient.send(msg);
+//		String msg = "game\toption\t";
+//		msg += startlevel + "\t" + tspinEnableType + "\t" + enableTSpinKick + "\t" + enableB2B + "\t";
+//		msg += enableCombo + "\t" + big + "\t" + spinCheckType + "\t" + tspinEnableEZ + "\n";
+//		netLobby.netPlayerClient.send(msg);
+		Options o = new Options();
+		o.setStartLevel(startlevel);
+		o.setTspinEnableType(tspinEnableType);
+		o.setEnableTSpinKick(enableTSpinKick);
+		o.setEnableB2B(enableB2B);
+		o.setEnableCombo(enableCombo);
+		o.setBig(big);
+		o.setSpinCheckType(spinCheckType);
+		o.setTspinEnableEZ(tspinEnableEZ);
+		knetClient.fireTCP(GAME_OPTIONS, o);
 	}
 
 	/**
 	 * NET: Receive game options
 	 */
 	@Override
-	protected void netRecvOptions(GameEngine engine, String[] message) {
-		startlevel = Integer.parseInt(message[4]);
-		tspinEnableType = Integer.parseInt(message[5]);
-		enableTSpinKick = Boolean.parseBoolean(message[6]);
-		enableB2B = Boolean.parseBoolean(message[7]);
-		enableCombo = Boolean.parseBoolean(message[8]);
-		big = Boolean.parseBoolean(message[9]);
-		spinCheckType = Integer.parseInt(message[10]);
-		tspinEnableEZ = Boolean.parseBoolean(message[11]);
+	protected void netRecvOptions(GameEngine engine, KNetEvent e) {
+		Options o = (Options) e.get(GAME_OPTIONS);
+		startlevel = o.getStartLevel();
+		tspinEnableType = o.getTspinEnableType();
+		enableTSpinKick = o.isEnableTSpinKick();
+		enableB2B = o.isEnableB2B();
+		big = o.isBig();
+		spinCheckType = o.getSpinCheckType();
+		tspinEnableEZ = o.isTspinEnableEZ();
 	}
 
 	/**

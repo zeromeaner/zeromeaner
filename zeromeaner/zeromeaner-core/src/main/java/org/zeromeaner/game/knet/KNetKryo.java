@@ -85,6 +85,7 @@ public class KNetKryo {
 
 		fieldSerializer(kryo, MarathonMode.Options.class);
 		fieldSerializer(kryo, MarathonPlusMode.Stats.class);
+		fieldSerializer(kryo, MarathonPlusMode.Options.class);
 	}
 	
 	private static <T> void fieldSerializer(Kryo kryo, Class<T> clazz) {
