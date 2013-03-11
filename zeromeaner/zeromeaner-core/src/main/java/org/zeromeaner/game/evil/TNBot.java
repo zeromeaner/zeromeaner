@@ -14,10 +14,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eviline.Field;
 import org.eviline.PlayerAction;
-import org.eviline.PlayerAction.Type;
+import org.eviline.PlayerActionType;
 import org.eviline.ai.AIKernel;
-import org.eviline.ai.AIKernel.Decision;
-import org.eviline.ai.AIKernel.QueueContext;
+import org.eviline.ai.Decision;
+import org.eviline.ai.DefaultAIKernel;
+import org.eviline.ai.QueueContext;
 import org.eviline.fitness.ElTetrisFitness;
 import org.eviline.fitness.EvilineFitness;
 import org.eviline.fitness.Fitness;
@@ -32,7 +33,7 @@ import org.zeromeaner.game.subsystem.mode.LineRaceMode;
 
 public class TNBot extends AbstractAI {
 
-	public static int controllerButtonId(PlayerAction.Type paType) {
+	public static int controllerButtonId(PlayerActionType paType) {
 		switch(paType) {
 		case DOWN_ONE:
 			return Controller.BUTTON_DOWN;
@@ -112,7 +113,7 @@ public class TNBot extends AbstractAI {
 	protected static ExecutorService POOL = Executors.newCachedThreadPool();
 
 	protected TNField field;
-	protected AIKernel kernel = new AIKernel();
+	protected DefaultAIKernel kernel = new DefaultAIKernel();
 	protected boolean pressed = false;
 
 	protected Future<List<PlayerAction>> futureActions;
@@ -183,7 +184,7 @@ public class TNBot extends AbstractAI {
 			public List<PlayerAction> call() throws Exception {
 				if(!skipHold && !held && engine.isHoldOK()) {
 					held = true;
-					return new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
+					return new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, PlayerActionType.HOLD)));
 				}
 				
 //				synchronized(pipeline) {
@@ -217,10 +218,10 @@ public class TNBot extends AbstractAI {
 							f.setShape(heldShape);
 							f.setShapeX(heldShape.type().starterX());
 							f.setShapeY(heldShape.type().starterY());
-							QueueContext qc = kernel.new QueueContext(f, new ShapeType[] {heldShape.type()});
+							QueueContext qc = new QueueContext(kernel, f, new ShapeType[] {heldShape.type()});
 							Decision heldBest = kernel.bestFor(qc);
 							if(heldBest.score < best.score) {
-								List<PlayerAction> hp = new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
+								List<PlayerAction> hp = new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, PlayerActionType.HOLD)));
 								hp.addAll(heldBest.bestPath);
 								heldBest.bestPath = hp;
 								best = heldBest;
@@ -235,7 +236,7 @@ public class TNBot extends AbstractAI {
 					for(int i = 1; i < types.length; i++) {
 						types[i] = TNPiece.fromNullpo(engine.getNextID(engine.nextPieceCount + i));
 					}
-					QueueContext qc = kernel.new QueueContext(field, types);
+					QueueContext qc = new QueueContext(kernel, field, types);
 					best = kernel.bestFor(qc);
 
 					// best for the hold shape
@@ -254,10 +255,10 @@ public class TNBot extends AbstractAI {
 							f.setShapeY(heldShape.type().starterY());
 							types = Arrays.copyOf(types, types.length);
 							types[0] = heldShape.type();
-							qc = kernel.new QueueContext(f, types);
+							qc = new QueueContext(kernel, f, types);
 							Decision heldBest = kernel.bestFor(qc);
 							if(heldBest.score < best.score) {
-								List<PlayerAction> hp = new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, Type.HOLD)));
+								List<PlayerAction> hp = new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, PlayerActionType.HOLD)));
 								hp.addAll(heldBest.bestPath);
 //								return hp;
 								heldBest.bestPath = hp;
@@ -356,23 +357,23 @@ public class TNBot extends AbstractAI {
 //			}
 //		}
 
-		if(actions().size() == 0 && pa.getType() != Type.HARD_DROP && pa.getType() != Type.HOLD) {
-			actions().add(new PlayerAction(pa.getEndField(), Type.HARD_DROP));
+		if(actions().size() == 0 && pa.getType() != PlayerActionType.HARD_DROP && pa.getType() != PlayerActionType.HOLD) {
+			actions().add(new PlayerAction(pa.getEndField(), PlayerActionType.HARD_DROP));
 		}
 
-		if(pa.getType() != Type.HOLD && pa.getType() != Type.HARD_DROP) {
+		if(pa.getType() != PlayerActionType.HOLD && pa.getType() != PlayerActionType.HARD_DROP) {
 			if(pa.getStartX() - Field.BUFFER != engine.nowPieceX || pa.getStartY() - Field.BUFFER != engine.nowPieceY) {
 				boolean recompute = false;
 				if(pa.getStartX() - Field.BUFFER == engine.nowPieceX && pa.getStartY() - Field.BUFFER > engine.nowPieceY) {
 					// We expected the piece to be lower than it is.  Odd, but just put back the current move and make a soft drop.
 					// This can happen on the very first move.
 					actions().add(0, pa);
-					pa = new PlayerAction(field, Type.DOWN_ONE);
+					pa = new PlayerAction(field, PlayerActionType.DOWN_ONE);
 				} else if(pa.getStartX() - Field.BUFFER == engine.nowPieceX && pa.getStartY() - Field.BUFFER < engine.nowPieceY) {
 					// We expected the piece to be higher than it is.
 					// This can happen on the very first move, or because of gravity.
 					// Discard soft-drop moves until we either catch up or need to recompute
-					while(pa.getType() == Type.DOWN_ONE && pa.getStartY() - Field.BUFFER < engine.nowPieceY) {
+					while(pa.getType() == PlayerActionType.DOWN_ONE && pa.getStartY() - Field.BUFFER < engine.nowPieceY) {
 						if(actions().size() == 0) {
 							recompute = true;
 							break;
@@ -423,7 +424,7 @@ public class TNBot extends AbstractAI {
 		boolean dropOnly = buttonId == Controller.BUTTON_DOWN;
 		if(dropOnly) {
 			for(PlayerAction npa : actions()) {
-				if(npa.getType() != Type.DOWN_ONE && npa.getType() != Type.HARD_DROP)
+				if(npa.getType() != PlayerActionType.DOWN_ONE && npa.getType() != PlayerActionType.HARD_DROP)
 					dropOnly = false;
 			}
 		}

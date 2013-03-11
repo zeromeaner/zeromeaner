@@ -49,7 +49,7 @@ public class TNField extends Field {
 				case Block.BLOCK_COLOR_RED: b = org.eviline.Block.Z; break;
 				case Block.BLOCK_COLOR_ORANGE: b = org.eviline.Block.L; break;
 				default:
-					b = org.eviline.Block._;
+					b = org.eviline.Block.X;
 				}
 				field[y + BUFFER][x + BUFFER] = b;
 			}
