@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.eviline.Field;
 import org.eviline.Shape;
+import org.eviline.ai.AI;
 import org.eviline.ai.AIKernel;
 import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.Piece;
@@ -76,8 +77,8 @@ public class TNRandomizer extends Randomizer {
 		field.update();
 		Field f;
 		f = field.copyInto(new Field());
-		AIKernel.getInstance().getFitness().paintImpossibles(f);
-		double base = AIKernel.getInstance().getFitness().score(f);
+		AI.getInstance().getFitness().prepareField(f);
+		double base = AI.getInstance().getFitness().score(f);
 
 		f = field.copyInto(new Field());
 		f.setShape(TNPiece.fromNullpo(engine.nowPieceObject));
@@ -85,8 +86,8 @@ public class TNRandomizer extends Randomizer {
 		f.setShapeY(engine.nowPieceBottomY + Field.BUFFER);
 		if(f.getShape() != null)
 			f.clockTick();
-		AIKernel.getInstance().getFitness().paintImpossibles(f);
-		double withMove = AIKernel.getInstance().getFitness().score(f);
+		AI.getInstance().getFitness().prepareField(f);
+		double withMove = AI.getInstance().getFitness().score(f);
 		
 		return new double[] {base, withMove - base};
 //		return 0;
