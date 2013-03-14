@@ -128,9 +128,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	/** Tuning Settings screen frame */
 	public static GameTuningInternalFrame gameTuningFrame;
 
-	/** Update check Setting screen frame */
-	public static UpdateCheckInternalFrame updateCheckFrame;
-
 	/** Command that was passed to the programLinesArgumentcount */
 	public static String[] programArgs;
 
@@ -704,13 +701,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		miKeyConfig2P.setActionCommand("Menu_KeyConfig2P");
 		menuConfig.add(miKeyConfig2P);
 
-		// Update check Setting
-		JMenuItem miUpdateCheck = new JMenuItem(getUIText("Menu_UpdateCheck"));
-		miUpdateCheck.setMnemonic('D');
-		miUpdateCheck.addActionListener(this);
-		miUpdateCheck.setActionCommand("Menu_UpdateCheck");
-		menuConfig.add(miUpdateCheck);
-
 		// Other Settings
 		JMenuItem miGeneralConfig = new JMenuItem(getUIText("Menu_GeneralConfig"));
 		miGeneralConfig.setMnemonic('G');
@@ -961,14 +951,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			gameTuningFrame.load(1);
 			gameTuningFrame.setVisible(true);
 		}
-		// Update check Setting
-		else if(e.getActionCommand() == "Menu_UpdateCheck") {
-			if(updateCheckFrame == null) {
-				updateCheckFrame = new UpdateCheckInternalFrame(this);
-			}
-			updateCheckFrame.load();
-			updateCheckFrame.setVisible(true);
-		}
 		// Other Settings
 		else if(e.getActionCommand() == "Menu_GeneralConfig") {
 			if(generalConfigFrame == null) {
@@ -992,7 +974,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		if(aiSelectFrame != null) aiSelectFrame.setVisible(false);
 		if(generalConfigFrame != null) generalConfigFrame.setVisible(false);
 		if(gameTuningFrame != null) gameTuningFrame.setVisible(false);
-		if(updateCheckFrame != null) updateCheckFrame.setVisible(false);
 	}
 
 	/**
