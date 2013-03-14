@@ -5,7 +5,7 @@
 		<artifactId>zeromeaner-parent</artifactId>
 		<groupId>org.zeromeaner</groupId>
 		<version>1.0.0-SNAPSHOT</version>
-		<relativePath>..</relativePath>
+		<relativePath>../zeromeaner-parent</relativePath>
 	</parent>
 	<artifactId>zeromeaner-webstart</artifactId>
 
