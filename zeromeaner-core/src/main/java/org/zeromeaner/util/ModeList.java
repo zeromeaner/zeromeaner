@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.rkutil.core.Conditions;
-import org.rkutil.core.Transform;
-import org.rkutil.core.Transforms;
-import org.rkutil.core.coll.ConditionTransformArrayList;
+import org.funcish.core.Mappings;
+import org.funcish.core.Predicates;
+import org.funcish.core.coll.ArrayFunctionalList;
+import org.funcish.core.fn.Mappicator;
+import org.funcish.core.impl.AbstractMappicator;
 import org.zeromeaner.game.subsystem.mode.AbstractMode;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 
 
-public class ModeList<T extends GameMode> extends ConditionTransformArrayList<Class<? extends T>> {
+public class ModeList<T extends GameMode> extends ArrayFunctionalList<Class<? extends T>> {
 	public static ModeList<GameMode> getModes() {
 		ModeList<GameMode> ret = new ModeList<GameMode>(GameMode.class);
 		try {
@@ -27,10 +28,11 @@ public class ModeList<T extends GameMode> extends ConditionTransformArrayList<Cl
 		return ret;
 	}
 	
-	public static final Transform<Class<? extends GameMode>, String> MODE_NAME = new Transform<Class<? extends GameMode>, String>() {
+	public static final Mappicator<Class<? extends GameMode>, String> MODE_NAME = 
+			new AbstractMappicator<Class<? extends GameMode>, String>((Class) Class.class, String.class) {
 		@Override
-		public String transform(Class<? extends GameMode> obj) {
-			return (Transforms.<GameMode>classNewInstance().transform(obj)).getName();
+		public String map0(Class<? extends GameMode> obj, Integer index) throws Exception {
+			return obj.newInstance().getName();
 		}
 	};
 
@@ -47,11 +49,11 @@ public class ModeList<T extends GameMode> extends ConditionTransformArrayList<Cl
 		this.clazz = clazz;
 	}
 
-	public <U extends GameMode> ModeList<U> accept(Class<U> clazz) {
-		return new ModeList<U>(clazz, accept(Conditions.isAssignableFrom(clazz)).transform(Transforms.classAsSubclass(clazz)));
+	public <U extends T> ModeList<U> accept(Class<U> clazz) {
+		return filter(Predicates.classIsAssignableFrom(clazz)).map(Mappings.<T, U>classAsSubclass(clazz), new ModeList<U>(clazz));
 	}
 	
 	public List<T> newInstances() {
-		return transform(Transforms.<T>classNewInstance());
+		return map(Mappings.<T>classNewInstance(clazz));
 	}
 }
