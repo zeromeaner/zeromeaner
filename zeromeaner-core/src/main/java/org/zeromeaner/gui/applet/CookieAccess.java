@@ -13,21 +13,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import netscape.javascript.JSObject;
+
 
 public class CookieAccess {
 	public static URI uri;
 	
 	public static Map<String, String> get() {
+		return get(AppletMain.instance);
+	}
+	
+	public static Map<String, String> get(AppletMain applet) {
 		try {
 			String data = "";
-			
-			CookieManager manager = (CookieManager) CookieHandler.getDefault();
-			List<HttpCookie> cookies = manager.getCookieStore().get(uri);
-			for(HttpCookie c : cookies) {
-				if("c".equals(c.getName()))
-					data = c.getValue();
+			JSObject myBrowser = JSObject.getWindow(applet);
+			JSObject myDocument = (JSObject) myBrowser.getMember("document");
+
+			String myCookie = (String) myDocument.getMember("cookie");
+
+			if (myCookie.length() > 0) {
+				String[] cookies = myCookie.split(";");
+				for (String cookie : cookies) {
+					int pos = cookie.indexOf("=");
+					if (cookie.substring(0, pos).trim().equals("c")) {
+						data = cookie.substring(pos + 1);
+						break;
+					}
+				}
 			}
-			
 			if("".equals(data))
 				return new TreeMap<String, String>();
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -35,20 +48,24 @@ public class CookieAccess {
 				bout.write(Integer.parseInt(data.substring(i, i+2), 16));
 			}
 			return (Map<String, String>) new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray())).readObject();
-		} catch(Throwable ex) {
+		} catch(Exception ex) {
 //			JOptionPane.showMessageDialog(applet, ex.toString());
 			ex.printStackTrace();
 			return new TreeMap<String, String>();
 		}
 	}
 	
-	public static void set(String key, String value) {
+	public static void set(Map<String, String> cookie) {
+		set(AppletMain.instance, cookie);
+	}
+	
+	public static void set(String key, String val) {
 		Map<String, String> c = get();
-		c.put(key, value);
+		c.put(key, val);
 		set(c);
 	}
 
-	public static void set(Map<String, String> cookie) {
+	public static void set(AppletMain applet, Map<String, String> cookie) {
 		try {
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();
 			ObjectOutputStream out = new ObjectOutputStream(bout);
@@ -60,14 +77,12 @@ public class CookieAccess {
 				sb.append(String.format("%02x", b));
 			}
 			String value = sb.toString();
-			
-			CookieManager manager = (CookieManager) CookieHandler.getDefault();
-			CookieStore store = manager.getCookieStore();
-			HttpCookie c = new HttpCookie("c", value);
-			store.add(uri, c);
-		} catch(Throwable ex) {
+			JSObject win = JSObject.getWindow(applet);
+			JSObject doc = (JSObject) win.getMember("document");
+			String data = "c=" + value + "; path=/; expires=Thu, 31-Dec-2019 12:00:00 GMT";
+			doc.setMember("cookie", data);
+		} catch(Exception ex) {
 //			JOptionPane.showMessageDialog(applet, ex.toString());
 			ex.printStackTrace();
 		}
-	}
-}
+	}}
