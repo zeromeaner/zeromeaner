@@ -4,11 +4,8 @@ org.zeromeaner.game.evil.TNMode
 org.zeromeaner.game.evil.TNNetVSBattleMode
 org.zeromeaner.game.subsystem.mode.ExtremeMode
 org.zeromeaner.game.subsystem.mode.LineRaceMode
-org.zeromeaner.game.subsystem.mode.ScoreRaceMode
 org.zeromeaner.game.subsystem.mode.DigRaceMode
 org.zeromeaner.game.subsystem.mode.ComboRaceMode
-org.zeromeaner.game.subsystem.mode.UltraMode
-org.zeromeaner.game.subsystem.mode.TechnicianMode
 org.zeromeaner.game.subsystem.mode.SquareMode
 org.zeromeaner.game.subsystem.mode.DigChallengeMode
 org.zeromeaner.game.subsystem.mode.RetroMarathonMode
@@ -23,7 +20,6 @@ org.zeromeaner.game.subsystem.mode.SpeedMania2Mode
 org.zeromeaner.game.subsystem.mode.GarbageManiaMode
 org.zeromeaner.game.subsystem.mode.PhantomManiaMode
 org.zeromeaner.game.subsystem.mode.FinalMode
-org.zeromeaner.game.subsystem.mode.TimeAttackMode
 org.zeromeaner.game.subsystem.mode.PracticeMode
 org.zeromeaner.game.subsystem.mode.GemManiaMode
 org.zeromeaner.game.subsystem.mode.VSLineRaceMode

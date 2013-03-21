@@ -1,44 +1,163 @@
 package org.zeromeaner.game.subsystem.mode;
 
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.TimeZone;
-import java.util.zip.Adler32;
-
-
 import org.apache.log4j.Logger;
 import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.component.RuleOptions;
+import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
-import org.zeromeaner.game.net.NetPlayerClient;
-import org.zeromeaner.game.net.NetPlayerInfo;
-import org.zeromeaner.game.net.NetRoomInfo;
-import org.zeromeaner.game.net.NetSPRecord;
-import org.zeromeaner.game.net.NetUtil;
+import org.zeromeaner.game.knet.KNetClient;
+import org.zeromeaner.game.knet.KNetEvent;
+import org.zeromeaner.game.knet.KNetEventSource;
+import org.zeromeaner.game.knet.KNetGameClient;
+import org.zeromeaner.game.knet.KNetListener;
+import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.zeromeaner.game.knet.obj.KNetGameInfo;
+import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
+import org.zeromeaner.game.knet.obj.PieceHold;
+import org.zeromeaner.game.knet.obj.PieceMovement;
+import org.zeromeaner.game.knet.obj.Replay;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
-import org.zeromeaner.gui.net.NetLobbyFrame;
-import org.zeromeaner.gui.net.NetLobbyListener;
+import org.zeromeaner.gui.knet.KNetPanel;
+import org.zeromeaner.gui.knet.KNetPanelListener;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
+import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
 /**
  * Special base class for netplay
  */
-public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
+public class AbstractNetMode extends AbstractMode implements KNetListener {
+	public static class DefaultStats {
+		private Statistics statistics;
+		private int goalType;
+		private boolean gameActive;
+		private boolean timerActive;
+		private int lastScore;
+		private int scGetTime;
+		private int lastEvent;
+		private boolean lastB2b;
+		private int lastCombo;
+		private int lastPiece;
+		private int bg;
+		
+		public Statistics getStatistics() {
+			return statistics;
+		}
+		public void setStatistics(Statistics statistics) {
+			this.statistics = statistics;
+		}
+		public int getGoalType() {
+			return goalType;
+		}
+		public void setGoalType(int goalType) {
+			this.goalType = goalType;
+		}
+		public boolean isGameActive() {
+			return gameActive;
+		}
+		public void setGameActive(boolean gameActive) {
+			this.gameActive = gameActive;
+		}
+		public boolean isTimerActive() {
+			return timerActive;
+		}
+		public void setTimerActive(boolean timerActive) {
+			this.timerActive = timerActive;
+		}
+		public int getLastScore() {
+			return lastScore;
+		}
+		public void setLastScore(int lastScore) {
+			this.lastScore = lastScore;
+		}
+		public int getScGetTime() {
+			return scGetTime;
+		}
+		public void setScGetTime(int scGetTime) {
+			this.scGetTime = scGetTime;
+		}
+		public int getLastEvent() {
+			return lastEvent;
+		}
+		public void setLastEvent(int lastEvent) {
+			this.lastEvent = lastEvent;
+		}
+		public boolean isLastB2b() {
+			return lastB2b;
+		}
+		public void setLastB2b(boolean lastB2b) {
+			this.lastB2b = lastB2b;
+		}
+		public int getLastCombo() {
+			return lastCombo;
+		}
+		public void setLastCombo(int lastCombo) {
+			this.lastCombo = lastCombo;
+		}
+		public int getLastPiece() {
+			return lastPiece;
+		}
+		public void setLastPiece(int lastPiece) {
+			this.lastPiece = lastPiece;
+		}
+		public int getBg() {
+			return bg;
+		}
+		public void setBg(int bg) {
+			this.bg = bg;
+		}
+	}
+	
+	public static class DefaultOptions {
+		private SpeedParam speed;
+		private int bgmno;
+		private boolean big;
+		private int goalType;
+		private int presetNumber;
+		public SpeedParam getSpeed() {
+			return speed;
+		}
+		public void setSpeed(SpeedParam speed) {
+			this.speed = speed;
+		}
+		public int getBgmno() {
+			return bgmno;
+		}
+		public void setBgmno(int bgmno) {
+			this.bgmno = bgmno;
+		}
+		public boolean isBig() {
+			return big;
+		}
+		public void setBig(boolean big) {
+			this.big = big;
+		}
+		public int getGoalType() {
+			return goalType;
+		}
+		public void setGoalType(int goalType) {
+			this.goalType = goalType;
+		}
+		public int getPresetNumber() {
+			return presetNumber;
+		}
+		public void setPresetNumber(int presetNumber) {
+			this.presetNumber = presetNumber;
+		}
+	}
+	
 	/** Log (Declared in NetDummyMode) */
 	static Logger log = Logger.getLogger(AbstractNetMode.class);
 
 	/** NET: Lobby (Declared in NetDummyMode) */
-	protected NetLobbyFrame netLobby;
+	protected KNetGameClient knetClient;
 
 	/** NET: GameManager (Declared in NetDummyMode; Don't override it!) */
 	protected GameManager owner;
@@ -50,7 +169,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	protected boolean netIsWatch;
 
 	/** NET: Current room info. Sometimes null. (Declared in NetDummyMode) */
-	protected NetRoomInfo netCurrentRoomInfo;
+	protected KNetChannelInfo channelInfo;
 
 	/** NET: Number of spectators (Declared in NetDummyMode) */
 	protected int netNumSpectators;
@@ -79,60 +198,6 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	/** NET: True if new personal record (Declared in NetDummyMode) */
 	protected boolean netIsPB;
 
-	/** NET: True if net ranking display mode (Declared in NetDummyMode) */
-	protected boolean netIsNetRankingDisplayMode;
-
-	/** NET: Net ranking cursor position (Declared in NetDummyMode) */
-	protected int[] netRankingCursor;
-
-	/** NET: Net ranking player's current rank (Declared in NetDummyMode) */
-	protected int[] netRankingMyRank;
-
-	/** NET: 0 if viewing all-time ranking, 1 if viewing daily ranking (Declared in NetDummyMode) */
-	protected int netRankingView;
-
-	/** NET: Net ranking type (Declared in NetDummyMode) */
-	protected int netRankingType;
-
-	/** NET: True if no data is present. [0] for all-time and [1] for daily. (Declared in NetDummyMode) */
-	protected boolean[] netRankingNoDataFlag;
-
-	/** NET: True if loading is complete. [0] for all-time and [1] for daily. (Declared in NetDummyMode) */
-	protected boolean[] netRankingReady;
-
-	/** NET: Net Rankings' rank (Declared in NetDummyMode) */
-	protected LinkedList<Integer>[] netRankingPlace;
-
-	/** NET: Net Rankings' names (Declared in NetDummyMode) */
-	protected LinkedList<String>[] netRankingName;
-
-	/** NET: Net Rankings' timestamps (Declared in NetDummyMode) */
-	protected LinkedList<Calendar>[] netRankingDate;
-
-	/** NET: Net Rankings' gamerates (Declared in NetDummyMode) */
-	protected LinkedList<Float>[] netRankingGamerate;
-
-	/** NET: Net Rankings' times (Declared in NetDummyMode) */
-	protected LinkedList<Integer>[] netRankingTime;
-
-	/** NET: Net Rankings' score (Declared in NetDummyMode) */
-	protected LinkedList<Integer>[] netRankingScore;
-
-	/** NET: Net Rankings' piece counts (Declared in NetDummyMode) */
-	protected LinkedList<Integer>[] netRankingPiece;
-
-	/** NET: Net Rankings' PPS values (Declared in NetDummyMode) */
-	protected LinkedList<Float>[] netRankingPPS;
-
-	/** NET: Net Rankings' line counts (Declared in NetDummyMode) */
-	protected LinkedList<Integer>[] netRankingLines;
-
-	/** NET: Net Rankings' score/line (Declared in NetDummyMode) */
-	protected LinkedList<Double>[] netRankingSPL;
-
-	/** NET: Net Rankings' roll completed flag (Declared in NetDummyMode) */
-	protected LinkedList<Integer>[] netRankingRollclear;
-
 	/** NET-VS: Local player's seat ID (-1:Spectator) */
 	protected int netvsMySeatID;
 
@@ -141,7 +206,18 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	public boolean isSynchronousPlay() {
 		return synchronousPlay;
 	}
+	
+	protected KNetPlayerInfo currentPlayer() {
+		int index = channelInfo.getPlayers().indexOf(knetClient.getSource());
+		if(index == -1)
+			return null;
+		return channelInfo.getPlayerInfo().get(index);
+	}
 
+	protected KNetGameInfo currentGame() {
+		return channelInfo.getGame();
+	}
+	
 	/*
 	 * NET: Mode name
 	 */
@@ -154,32 +230,20 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 * NET: Netplay Initialization. NetDummyMode will set the lobby's current mode to this.
 	 */
 	@Override
-	public void netplayInit(Object obj) {
-		if(obj instanceof NetLobbyFrame) {
-			netLobby = (NetLobbyFrame)obj;
-			netLobby.setNetDummyMode(this);
-
-			try {
-				netLobby.ruleOptPlayer = new RuleOptions(owner.engine[0].ruleopt);
-			} catch (NullPointerException e) {
-				log.error("NPE on netplayInit; Most likely the mode is overriding 'owner' variable", e);
-			}
-
-			if((netLobby != null) && (netLobby.netPlayerClient != null) && (netLobby.netPlayerClient.getCurrentRoomInfo() != null)) {
-				netOnJoin(netLobby, netLobby.netPlayerClient, netLobby.netPlayerClient.getCurrentRoomInfo());
-			}
-		}
+	public void netplayInit(KNetPanel obj) {
+		if(obj.getClient() != null)
+			obj.getClient().addKNetListener(this);
+		if(obj.getActiveChannel() != null)
+			channelInfo = obj.getActiveChannel().getChannel();
 	}
 
 	/**
 	 * NET: Netplay Unload. NetDummyMode will set the lobby's current mode to null.
 	 */
 	@Override
-	public void netplayUnload(Object obj) {
-		if(netLobby != null) {
-			netLobby.setNetDummyMode(null);
-			netLobby = null;
-		}
+	public void netplayUnload(KNetPanel obj) {
+		if(obj.getClient() != null)
+			obj.getClient().removeKNetListener(this);
 	}
 
 	/**
@@ -194,23 +258,6 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 		netNumSpectators = 0;
 		netForceSendMovements = false;
 		netPlayerName = "";
-		netRankingCursor = new int[2];
-		netRankingMyRank = new int[2];
-		netRankingView = 0;
-		netRankingNoDataFlag = new boolean[2];
-		netRankingReady = new boolean[2];
-
-		netRankingPlace = new LinkedList[2];
-		netRankingName = new LinkedList[2];
-		netRankingDate = new LinkedList[2];
-		netRankingGamerate = new LinkedList[2];
-		netRankingTime = new LinkedList[2];
-		netRankingScore = new LinkedList[2];
-		netRankingPiece = new LinkedList[2];
-		netRankingPPS = new LinkedList[2];
-		netRankingLines = new LinkedList[2];
-		netRankingSPL = new LinkedList[2];
-		netRankingRollclear = new LinkedList[2];
 	}
 
 	/**
@@ -239,7 +286,6 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 		netRankingRank[0] = -1;
 		netRankingRank[1] = -1;
 		netIsPB = false;
-		netIsNetRankingDisplayMode = false;
 		netAlwaysSendFieldAttributes = false;
 
 		if(netIsWatch) {
@@ -290,7 +336,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 		if((engine.ending == 0) && (netIsNetPlay) && (!netIsWatch) && ((netNumSpectators > 0) || (netForceSendMovements))) {
 			netSendField(engine);
 			netSendStats(engine);
-			netLobby.netPlayerClient.send("game\tsynchronous\tlocked\t" + netvsMySeatID + "\n");
+			knetClient.fireTCP(GAME, true, GAME_PIECE_LOCKED, true);
 		}
 	}
 
@@ -332,7 +378,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 				netSendField(engine);
 				netSendNextAndHold(engine);
 				netSendStats(engine);
-				netLobby.netPlayerClient.send("game\tending\n");
+				knetClient.fire(GAME, true, GAME_ENDING, true);
 			}
 		}
 		return false;
@@ -349,7 +395,8 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 				netSendField(engine);
 				netSendNextAndHold(engine);
 				netSendStats(engine);
-				netLobby.netPlayerClient.send("game\texcellent\n");
+//				netLobby.netPlayerClient.send("game\texcellent\n");
+				knetClient.fire(GAME, true, GAME_EXCELLENT, true);
 			}
 		}
 		return false;
@@ -371,10 +418,10 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 						netSendStats(engine);
 					}
 					netSendEndGameStats(engine);
-					netLobby.netPlayerClient.send("dead\t-1\n");
+					knetClient.fire(DEAD, true);
 				} else if(engine.statc[0] >= engine.field.getHeight() + 1 + 180) {
 					// To results screen
-					netLobby.netPlayerClient.send("game\tresultsscreen\n");
+					knetClient.fire(GAME, true, GAME_RESULTS_SCREEN, true);
 				}
 			} else {
 				if(engine.statc[0] < engine.field.getHeight() + 1 + 180) {
@@ -412,7 +459,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 			if(engine.ctrl.isPush(Controller.BUTTON_A) && !netIsWatch && (netReplaySendStatus == 2)) {
 				engine.playSE("decide");
 				if((netNumSpectators > 0) || (netForceSendMovements)) {
-					netLobby.netPlayerClient.send("game\tretry\n");
+					knetClient.fire(GAME, true, GAME_RETRY, true);
 					netSendOptions(engine);
 				}
 				owner.reset();
@@ -422,14 +469,6 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 		}
 
 		return false;
-	}
-
-	/**
-	 * NET: Render something such as HUD. NetDummyMode will render the number of players to bottom-right of the screen.
-	 */
-	@Override
-	public void renderLast(GameEngine engine, int playerID) {
-		if(playerID == getPlayers() - 1) netDrawAllPlayersCount(engine);
 	}
 
 	/**
@@ -446,7 +485,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 		if((engine.ctrl.isMenuRepeatKey(Controller.BUTTON_UP) || engine.ctrl.isMenuRepeatKey(Controller.BUTTON_DOWN)) &&
 			netIsNetPlay && ((netNumSpectators > 0) || (netForceSendMovements)))
 		{
-			netLobby.netPlayerClient.send("game\tcursor\t" + engine.statc[2] + "\n");
+			knetClient.fire(GAME, true, GAME_CURSOR, engine.statc[2]);
 		}
 
 		return change;
@@ -459,59 +498,34 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	public void netplayOnRetryKey(GameEngine engine, int playerID) {
 		if(netIsNetPlay && !netIsWatch) {
 			owner.reset();
-			netLobby.netPlayerClient.send("reset1p\n");
+//			netLobby.netPlayerClient.send("reset1p\n");
+			knetClient.fire(RESET_1P, true);
 			netSendOptions(engine);
 		}
-	}
-
-	/**
-	 * NET: Initialization Completed (Never called)
-	 */
-	public void netlobbyOnInit(NetLobbyFrame lobby) {
-	}
-
-	/**
-	 * NET: Login completed (Never called)
-	 */
-	public void netlobbyOnLoginOK(NetLobbyFrame lobby, NetPlayerClient client) {
-	}
-
-	/**
-	 * NET: When you enter a room (Never called)
-	 */
-	public void netlobbyOnRoomJoin(NetLobbyFrame lobby, NetPlayerClient client, NetRoomInfo roomInfo) {
-	}
-
-	/**
-	 * NET: When you returned to lobby (Never called)
-	 */
-	public void netlobbyOnRoomLeave(NetLobbyFrame lobby, NetPlayerClient client) {
-	}
-
-	/*
-	 * NET: When disconnected
-	 */
-	public void netlobbyOnDisconnect(NetLobbyFrame lobby, NetPlayerClient client, Throwable ex) {
 	}
 
 	/*
 	 * NET: Message received
 	 */
-	public void netlobbyOnMessage(NetLobbyFrame lobby, NetPlayerClient client, String[] message) throws IOException {
+	@Override
+	public void knetEvented(KNetClient client, KNetEvent e) {
+		if(e.is(DISCONNECTED))
+			netlobbyOnDisconnect(client, e);
+		
 		// Player status update
-		if(message[0].equals("playerupdate")) {
+		if(e.is(PLAYER_UPDATE)) {
 			netUpdatePlayerExist();
 		}
 		// When someone logout
-		if(message[0].equals("playerlogout")) {
-			NetPlayerInfo pInfo = new NetPlayerInfo(message[1]);
+		if(e.is(PLAYER_LOGOUT)) {
+			KNetEventSource pInfo = (KNetEventSource) e.get(PLAYER_LOGOUT);
 
-			if((netCurrentRoomInfo != null) && (pInfo.roomID == netCurrentRoomInfo.roomID)) {
+			if(channelInfo != null && channelInfo.getMembers().contains(pInfo)) {
 				netUpdatePlayerExist();
 			}
 		}
 		// Game started
-		if(message[0].equals("start")) {
+		if(e.is(START)) {
 			log.debug("NET: Game started");
 
 			if(netIsWatch) {
@@ -521,7 +535,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 			}
 		}
 		// Dead
-		if(message[0].equals("dead")) {
+		if(e.is(DEAD)) {
 			log.debug("NET: Dead");
 
 			if(netIsWatch) {
@@ -534,29 +548,22 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 			}
 		}
 		// Replay send fail
-		if(message[0].equals("spsendng")) {
+		if(e.is(REPLAY_NOT_RECEIVED)) {
 			netReplaySendStatus = 1;
 			netSendReplay(owner.engine[0]);
 		}
 		// Replay send complete
-		if(message[0].equals("spsendok")) {
+		if(e.is(REPLAY_RECEIVED)) {
 			netReplaySendStatus = 2;
-			netRankingRank[0] = Integer.parseInt(message[1]);
-			netIsPB = Boolean.parseBoolean(message[2]);
-			netRankingRank[1] = Integer.parseInt(message[3]);
-		}
-		// Netplay Ranking
-		if(message[0].equals("spranking")) {
-			netRecvNetPlayRanking(owner.engine[0], message);
 		}
 		// Reset
-		if(message[0].equals("reset1p")) {
+		if(e.is(RESET_1P)) {
 			if(netIsWatch) {
 				owner.reset();
 			}
 		}
 		// Game messages
-		if(message[0].equals("game")) {
+		if(e.is(GAME)) {
 			if(netIsWatch) {
 				GameEngine engine = owner.engine[0];
 				if(engine.field == null) {
@@ -564,46 +571,46 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 				}
 
 				// Move cursor
-				if(message[3].equals("cursor")) {
+				if(e.is(GAME_CURSOR)) {
 					if(engine.stat == GameEngine.STAT_SETTING) {
-						engine.statc[2] = Integer.parseInt(message[4]);
+						engine.statc[2] = (Integer) e.get(GAME_CURSOR);
 						engine.playSE("cursor");
 					}
 				}
 				// Change game options
-				if(message[3].equals("option")) {
-					netRecvOptions(engine, message);
+				if(e.is(GAME_OPTIONS)) {
+					netRecvOptions(engine, e);
 				}
 				// Field
-				if(message[3].equals("field") || message[3].equals("fieldattr")) {
-					netRecvField(engine, message);
+				if(e.is(GAME_FIELD)) {
+					netRecvField(engine, e);
 				}
 				// Stats
-				if(message[3].equals("stats")) {
-					netRecvStats(engine, message);
+				if(e.is(GAME_STATS)) {
+					netRecvStats(engine, e);
 				}
 				// Current Piece
-				if(message[3].equals("piece")) {
-					netRecvPieceMovement(engine, message);
+				if(e.is(GAME_PIECE_MOVEMENT)) {
+					netRecvPieceMovement(engine, e);
 				}
 				// Next and Hold
-				if(message[3].equals("next")) {
-					netRecvNextAndHold(engine, message);
+				if(e.is(GAME_NEXT_PIECE)) {
+					netRecvNextAndHold(engine, e);
 				}
 				// Ending
-				if(message[3].equals("ending")) {
+				if(e.is(GAME_ENDING)) {
 					engine.ending = 1;
 					if(!engine.staffrollEnable) engine.gameEnded();
 					engine.stat = GameEngine.STAT_ENDINGSTART;
 					engine.resetStatc();
 				}
 				// Excellent
-				if(message[3].equals("excellent")) {
+				if(e.is(GAME_EXCELLENT)) {
 					engine.stat = GameEngine.STAT_EXCELLENT;
 					engine.resetStatc();
 				}
 				// Retry
-				if(message[3].equals("retry")) {
+				if(e.is(GAME_RETRY)) {
 					engine.ending = 0;
 					engine.gameEnded();
 					engine.stat = GameEngine.STAT_SETTING;
@@ -611,7 +618,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 					engine.playSE("decide");
 				}
 				// Display results screen
-				if(message[3].equals("resultsscreen")) {
+				if(e.is(GAME_RESULTS_SCREEN)) {
 					engine.field.reset();
 					engine.stat = GameEngine.STAT_RESULT;
 					engine.resetStatc();
@@ -620,23 +627,23 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 		}
 		
 		if(isSynchronousPlay()) {
-			GameEngine e = owner.engine[0];
-			e.synchronousIncrement = netLobby.netPlayerClient.getPlayerCount() - 1;
-			if("game".equals(message[0])) {
-				if("synchronous".equals(message[3])) {
-					if("locked".equals(message[4])) {
-						e.synchronousSync.decrementAndGet();
+			GameEngine eng = owner.engine[0];
+			eng.synchronousIncrement = channelInfo.getPlayers().size();
+			if(e.is(GAME)) {
+				if(e.is(GAME_SYNCHRONOUS)) {
+					if(e.is(GAME_SYNCHRONOUS_LOCKED)) {
+						eng.synchronousSync.decrementAndGet();
 					}
 				}
-				if("resultsscreen".equals(message[3])) {
-					e.synchronousSync.set(0);
+				if(e.is(GAME_RESULTS_SCREEN)) {
+					eng.synchronousSync.set(0);
 				}
 			}
-			if("playerlogout".equals(message[0])) {
-				e.synchronousSync.decrementAndGet();
+			if(e.is(PLAYER_LOGOUT)) {
+				eng.synchronousSync.decrementAndGet();
 			}
-			if("dead".equals(message[0])) {
-				e.synchronousSync.decrementAndGet();
+			if(e.is(DEAD)) {
+				eng.synchronousSync.decrementAndGet();
 			}
 		}
 	}
@@ -644,7 +651,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	/*
 	 * NET: When the lobby window is closed
 	 */
-	public void netlobbyOnExit(NetLobbyFrame lobby) {
+	public void netlobbyOnExit(KNetPanel lobby) {
 		try {
 			for(int i = 0; i < owner.engine.length; i++) {
 				owner.engine[i].quitflag = true;
@@ -653,17 +660,23 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	}
 
 	/**
+	 * NET-VS: Disconnected
+	 */
+	public void netlobbyOnDisconnect(KNetClient client, KNetEvent e) {
+	}
+
+	/**
 	 * NET: When you join the room
 	 * @param lobby NetLobbyFrame
 	 * @param client NetPlayerClient
 	 * @param roomInfo NetRoomInfo
 	 */
-	protected void netOnJoin(NetLobbyFrame lobby, NetPlayerClient client, NetRoomInfo roomInfo) {
+	protected void netOnJoin(KNetClient client, KNetChannelInfo roomInfo) {
 		log.debug("onJoin on NetDummyMode");
 
-		netCurrentRoomInfo = roomInfo;
+		channelInfo = roomInfo;
 		netIsNetPlay = true;
-		netIsWatch = (netLobby.netPlayerClient.getYourPlayerInfo().seatID == -1);
+		netIsWatch = !channelInfo.getPlayers().contains(knetClient.getSource());
 		netNumSpectators = 0;
 		netUpdatePlayerExist();
 
@@ -674,11 +687,11 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 
 		if(roomInfo != null) {
 			// Set to locked rule
-			if((roomInfo.ruleLock) && (netLobby != null) && (netLobby.ruleOptLock != null)) {
+			if(channelInfo.isRuleLock()) {
 				log.info("Set locked rule");
-				Randomizer randomizer = GeneralUtil.loadRandomizer(netLobby.ruleOptLock.strRandomizer);
-				Wallkick wallkick = GeneralUtil.loadWallkick(netLobby.ruleOptLock.strWallkick);
-				owner.engine[0].ruleopt.copy(netLobby.ruleOptLock);
+				Randomizer randomizer = GeneralUtil.loadRandomizer(channelInfo.getRule().strRandomizer);
+				Wallkick wallkick = GeneralUtil.loadWallkick(channelInfo.getRule().strWallkick);
+				owner.engine[0].ruleopt.copy(channelInfo.getRule());
 				owner.engine[0].randomizer = randomizer;
 				owner.engine[0].wallkick = wallkick;
 				loadRanking(owner.modeConfig, owner.engine[0].ruleopt.strRuleName);
@@ -701,33 +714,20 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 		netNumSpectators = 0;
 		netPlayerName = "";
 
-		if((netCurrentRoomInfo != null) && (netCurrentRoomInfo.roomID != -1) && (netLobby != null)) {
-			for(NetPlayerInfo pInfo: netLobby.updateSameRoomPlayerInfoList()) {
-				if(pInfo.roomID == netCurrentRoomInfo.roomID) {
-					if(pInfo.seatID == 0) {
-						netPlayerName = pInfo.strName;
-					} else if(pInfo.seatID == -1) {
-						netNumSpectators++;
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * NET: Draw number of players to bottom-right of screen.
-	 * This subroutine uses "netLobby" and "owner" variables.
-	 * @param engine GameEngine
-	 */
-	protected void netDrawAllPlayersCount(GameEngine engine) {
-		if((netLobby != null) && (netLobby.netPlayerClient != null) && (netLobby.netPlayerClient.isConnected())) {
-			int fontcolor = EventRenderer.COLOR_BLUE;
-			if(netLobby.netPlayerClient.getObserverCount() > 0) fontcolor = EventRenderer.COLOR_GREEN;
-			if(netLobby.netPlayerClient.getPlayerCount() > 1) fontcolor = EventRenderer.COLOR_RED;
-			String strObserverInfo = String.format("%d/%d", netLobby.netPlayerClient.getObserverCount(), netLobby.netPlayerClient.getPlayerCount());
-			String strObserverString = String.format("%40s", strObserverInfo);
-			owner.receiver.drawDirectFont(engine, 0, 0, 480-16, strObserverString, fontcolor);
-		}
+//		if((channelInfo != null) && (channelInfo.roomID != -1) && (netLobby != null)) {
+//			for(NetPlayerInfo pInfo: netLobby.updateSameRoomPlayerInfoList()) {
+//				if(pInfo.roomID == channelInfo.roomID) {
+//					if(pInfo.seatID == 0) {
+//						netPlayerName = pInfo.strName;
+//					} else if(pInfo.seatID == -1) {
+//						netNumSpectators++;
+//					}
+//				}
+//			}
+//		}
+		
+		netNumSpectators = channelInfo.getMembers().size() - channelInfo.getPlayers().size();
+		netPlayerName = knetClient.getSource().getName();
 	}
 
 	/**
@@ -801,9 +801,18 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	protected boolean netSendPieceMovement(GameEngine engine, boolean forceSend) {
 		if( ((engine.nowPieceObject == null) && (netPrevPieceID != Piece.PIECE_NONE)) || (engine.manualLock) )
 		{
-			netPrevPieceID = Piece.PIECE_NONE;
-			netLobby.netPlayerClient.send("game\tpiece\t" + netPrevPieceID + "\t" + netPrevPieceX + "\t" + netPrevPieceY + "\t" +
-					netPrevPieceDir + "\t" + 0 + "\t" + engine.getSkin() + "\t" + false + "\n");
+			
+			PieceMovement pm = new PieceMovement();
+			pm.setPieceId(netPrevPieceID);
+			pm.setX(netPrevPieceX);
+			pm.setY(netPrevPieceY);
+			pm.setDirection(netPrevPieceDir);
+			pm.setSkin(engine.getSkin());
+			
+			knetClient.fireUDP(knetClient.event(
+					GAME, true,
+					GAME_PIECE_MOVEMENT, pm));
+			
 			return true;
 		}
 		else if((engine.nowPieceObject.id != netPrevPieceID) || (engine.nowPieceX != netPrevPieceX) ||
@@ -817,9 +826,21 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 
 			int x = netPrevPieceX + engine.nowPieceObject.dataOffsetX[netPrevPieceDir];
 			int y = netPrevPieceY + engine.nowPieceObject.dataOffsetY[netPrevPieceDir];
-			netLobby.netPlayerClient.send("game\tpiece\t" + netPrevPieceID + "\t" + x + "\t" + y + "\t" + netPrevPieceDir + "\t" +
-							engine.nowPieceBottomY + "\t" + engine.ruleopt.pieceColor[netPrevPieceID] + "\t" + engine.getSkin() + "\t" +
-							engine.nowPieceObject.big + "\n");
+			
+			PieceMovement pm = new PieceMovement();
+			pm.setPieceId(netPrevPieceID);
+			pm.setX(x);
+			pm.setY(y);
+			pm.setDirection(netPrevPieceDir);
+			pm.setBottomY(engine.nowPieceBottomY);
+			pm.setColor(engine.ruleopt.pieceColor[netPrevPieceID]);
+			pm.setSkin(engine.getSkin());
+			pm.setBig(engine.nowPieceObject.big);
+			
+			knetClient.fireUDP(knetClient.event(
+					GAME, true,
+					GAME_PIECE_MOVEMENT, pm));
+			
 			return true;
 		}
 		return false;
@@ -830,17 +851,22 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 * @param engine GameEngine
 	 * @param message Message array
 	 */
-	protected void netRecvPieceMovement(GameEngine engine, String[] message) {
-		int id = Integer.parseInt(message[4]);
+	protected void netRecvPieceMovement(GameEngine engine, KNetEvent e) {
+		if(!e.is(GAME) || !e.is(GAME_PIECE_MOVEMENT))
+			return;
+		
+		PieceMovement pm = (PieceMovement) e.get(GAME_PIECE_MOVEMENT);
+		
+		int id = pm.getPieceId();
 
 		if(id >= 0) {
-			int pieceX = Integer.parseInt(message[5]);
-			int pieceY = Integer.parseInt(message[6]);
-			int pieceDir = Integer.parseInt(message[7]);
-			//int pieceBottomY = Integer.parseInt(message[8]);
-			int pieceColor = Integer.parseInt(message[9]);
-			int pieceSkin = Integer.parseInt(message[10]);
-			boolean pieceBig = (message.length > 11) ? Boolean.parseBoolean(message[11]) : false;
+			int pieceX = pm.getX();;
+			int pieceY = pm.getY();
+			int pieceDir = pm.getDirection();
+			int pieceBottomY = pm.getBottomY();
+			int pieceColor = pm.getColor();
+			int pieceSkin = pm.getSkin();
+			boolean pieceBig = pm.isBig();
 
 			engine.nowPieceObject = new Piece(id);
 			engine.nowPieceObject.direction = pieceDir;
@@ -875,46 +901,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 * @param engine GameEngine
 	 */
 	protected void netSendField(GameEngine engine) {
-		if(owner.receiver.isStickySkin(engine) || netAlwaysSendFieldAttributes) {
-			// Send with attributes
-			String strSrcFieldData = engine.field.attrFieldToString();
-			int nocompSize = strSrcFieldData.length();
-
-			String strCompFieldData = NetUtil.compressString(strSrcFieldData);
-			int compSize = strCompFieldData.length();
-
-			String strFieldData = strSrcFieldData;
-			boolean isCompressed = false;
-			if(compSize < nocompSize) {
-				strFieldData = strCompFieldData;
-				isCompressed = true;
-			}
-
-			String msg = "game\tfieldattr\t";
-			msg += engine.getSkin() + "\t";
-			msg += strFieldData + "\t" + isCompressed + "\n";
-			netLobby.netPlayerClient.send(msg);
-		} else {
-			// Send without attributes
-			String strSrcFieldData = engine.field.fieldToString();
-			int nocompSize = strSrcFieldData.length();
-
-			String strCompFieldData = NetUtil.compressString(strSrcFieldData);
-			int compSize = strCompFieldData.length();
-
-			String strFieldData = strSrcFieldData;
-			boolean isCompressed = false;
-			if(compSize < nocompSize) {
-				strFieldData = strCompFieldData;
-				isCompressed = true;
-			}
-
-			String msg = "game\tfield\t";
-			msg += engine.getSkin() + "\t";
-			msg += engine.field.getHeightWithoutHurryupFloor() + "\t";
-			msg += strFieldData + "\t" + isCompressed + "\n";
-			netLobby.netPlayerClient.send(msg);
-		}
+		knetClient.fireUDP(GAME, true, GAME_FIELD, true, PAYLOAD, engine.field);
 	}
 
 	/**
@@ -922,45 +909,8 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 * @param engine GameEngine
 	 * @param message Message array
 	 */
-	protected void netRecvField(GameEngine engine, String[] message) {
-		if(message[3].equals("fieldattr")) {
-			// With attributes
-			if(message.length > 4) {
-				engine.nowPieceObject = null;
-				engine.holdDisable = false;
-				if(engine.stat == GameEngine.STAT_SETTING) engine.stat = GameEngine.STAT_MOVE;
-				int skin = Integer.parseInt(message[4]);
-				netPlayerSkin = skin;
-				if(message.length > 6) {
-					boolean isCompressed = Boolean.parseBoolean(message[6]);
-					String strFieldData = message[5];
-					if(isCompressed) {
-						strFieldData = NetUtil.decompressString(strFieldData);
-					}
-					engine.field.attrStringToField(strFieldData, skin);
-				}
-			}
-		} else {
-			// Without attributes
-			if(message.length > 5) {
-				engine.nowPieceObject = null;
-				engine.holdDisable = false;
-				if(engine.stat == GameEngine.STAT_SETTING) engine.stat = GameEngine.STAT_MOVE;
-				int skin = Integer.parseInt(message[4]);
-				int highestWallY = Integer.parseInt(message[5]);
-				netPlayerSkin = skin;
-				if(message.length > 7) {
-					String strFieldData = message[6];
-					boolean isCompressed = Boolean.parseBoolean(message[7]);
-					if(isCompressed) {
-						strFieldData = NetUtil.decompressString(strFieldData);
-					}
-					engine.field.stringToField(strFieldData, skin, highestWallY, highestWallY);
-				} else {
-					engine.field.reset();
-				}
-			}
-		}
+	protected void netRecvField(GameEngine engine, KNetEvent e) {
+		engine.field = (Field) e.get(PAYLOAD);
 	}
 
 	/**
@@ -968,30 +918,16 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 * @param engine GameEngine
 	 */
 	protected void netSendNextAndHold(GameEngine engine) {
-		int holdID = Piece.PIECE_NONE;
-		int holdDirection = Piece.DIRECTION_UP;
-		int holdColor = Block.BLOCK_COLOR_GRAY;
-		if(engine.holdPieceObject != null) {
-			holdID = engine.holdPieceObject.id;
-			holdDirection = engine.holdPieceObject.direction;
-			holdColor = engine.ruleopt.pieceColor[engine.holdPieceObject.id];
+		PieceHold hold = new PieceHold();
+		hold.setPiece(engine.holdPieceObject);
+		hold.setDisableHold(engine.holdDisable);
+		
+		Piece[] next = new Piece[engine.ruleopt.nextDisplay];
+		for(int i = 0; i < next.length; i++) {
+			next[i] = engine.getNextObject(engine.nextPieceCount + i);
 		}
 
-		String msg = "game\tnext\t" + engine.ruleopt.nextDisplay + "\t" + engine.holdDisable + "\t";
-
-		for(int i = -1; i < engine.ruleopt.nextDisplay; i++) {
-			if(i < 0) {
-				msg += holdID + ";" + holdDirection + ";" + holdColor;
-			} else {
-				Piece nextObj = engine.getNextObject(engine.nextPieceCount + i);
-				msg += nextObj.id + ";" + nextObj.direction + ";" + engine.ruleopt.pieceColor[nextObj.id];
-			}
-
-			if(i < engine.ruleopt.nextDisplay - 1) msg += "\t";
-		}
-
-		msg += "\n";
-		netLobby.netPlayerClient.send(msg);
+		knetClient.fireUDP(GAME, true, GAME_HOLD_PIECE, hold, GAME_NEXT_PIECE, next);
 	}
 
 	/**
@@ -999,357 +935,27 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 * @param engine GameEngine
 	 * @param message Message array
 	 */
-	protected void netRecvNextAndHold(GameEngine engine, String[] message) {
-		int maxNext = Integer.parseInt(message[4]);
+	protected void netRecvNextAndHold(GameEngine engine, KNetEvent e) {
+		if(!e.is(GAME) || !e.is(GAME_HOLD_PIECE) || !e.is(GAME_NEXT_PIECE))
+			return;
+		
+		PieceHold hold = (PieceHold) e.get(GAME_HOLD_PIECE);
+		Piece[] next = (Piece[]) e.get(GAME_NEXT_PIECE);
+		
+		int maxNext = next.length;
 		engine.ruleopt.nextDisplay = maxNext;
-		engine.holdDisable = Boolean.parseBoolean(message[5]);
+		engine.holdDisable = hold.isDisableHold();
 
-		for(int i = 0; i < maxNext + 1; i++) {
-			if(i + 6 < message.length) {
-				String[] strPieceData = message[i + 6].split(";");
-				int pieceID = Integer.parseInt(strPieceData[0]);
-				int pieceDirection = Integer.parseInt(strPieceData[1]);
-				int pieceColor = Integer.parseInt(strPieceData[2]);
-
-				if(i == 0) {
-					if(pieceID == Piece.PIECE_NONE) {
-						engine.holdPieceObject = null;
-					} else {
-						engine.holdPieceObject = new Piece(pieceID);
-						engine.holdPieceObject.direction = pieceDirection;
-						engine.holdPieceObject.setColor(pieceColor);
-						engine.holdPieceObject.setSkin(netPlayerSkin);
-						engine.holdPieceObject.updateConnectData();
-					}
-				} else {
-					if((engine.nextPieceArrayObject == null) || (engine.nextPieceArrayObject.length < maxNext)) {
-						engine.nextPieceArrayObject = new Piece[maxNext];
-					}
-					engine.nextPieceArrayObject[i - 1] = new Piece(pieceID);
-					engine.nextPieceArrayObject[i - 1].direction = pieceDirection;
-					engine.nextPieceArrayObject[i - 1].setColor(pieceColor);
-					engine.nextPieceArrayObject[i - 1].setSkin(netPlayerSkin);
-					engine.nextPieceArrayObject[i - 1].updateConnectData();
-				}
-			}
-		}
+		engine.holdPieceObject = hold.getPiece();
+		
+		if(engine.nextPieceArrayObject == null || engine.nextPieceArrayObject.length < maxNext)
+			engine.nextPieceArrayObject = new Piece[maxNext];
+		System.arraycopy(next, 0, engine.nextPieceArrayObject, 0, maxNext);
 
 		engine.isNextVisible = true;
 		engine.isHoldVisible = true;
 	}
 
-	/**
-	 * Menu routine for 1P NetPlay online ranking screen. Usually called from onSetting(engine, playerID).
-	 * @param engine GameEngine
-	 * @param goaltype Goal Type
-	 */
-	protected void netOnUpdateNetPlayRanking(GameEngine engine, int goaltype) {
-		if(netIsNetRankingDisplayMode) {
-			int d = netRankingView;
-
-			if(!netRankingNoDataFlag[d] && netRankingReady[d] && (netRankingPlace != null) && (netRankingPlace[d] != null)) {
-				// Up
-				if(engine.ctrl.isMenuRepeatKey(Controller.BUTTON_UP)) {
-					netRankingCursor[d]--;
-					if(netRankingCursor[d] < 0) netRankingCursor[d] = netRankingPlace[d].size() - 1;
-					engine.playSE("cursor");
-				}
-				// Down
-				if(engine.ctrl.isMenuRepeatKey(Controller.BUTTON_DOWN)) {
-					netRankingCursor[d]++;
-					if(netRankingCursor[d] > netRankingPlace[d].size() - 1) netRankingCursor[d] = 0;
-					engine.playSE("cursor");
-				}
-				// Download
-				if(engine.ctrl.isPush(Controller.BUTTON_A)) {
-					engine.playSE("decide");
-					String strMsg = "spdownload\t" + NetUtil.urlEncode(netCurrentRoomInfo.ruleName) + "\t" +
-									NetUtil.urlEncode(getName()) + "\t" + goaltype + "\t" +
-									(netRankingView != 0) + "\t" + NetUtil.urlEncode(netRankingName[d].get(netRankingCursor[d])) + "\n";
-					netLobby.netPlayerClient.send(strMsg);
-					netIsNetRankingDisplayMode = false;
-					owner.menuOnly = false;
-				}
-			}
-
-			// Left/Right
-			if(engine.ctrl.isPush(Controller.BUTTON_LEFT) || engine.ctrl.isPush(Controller.BUTTON_RIGHT)) {
-				if(netRankingView == 0) netRankingView = 1;
-				else netRankingView = 0;
-				engine.playSE("change");
-			}
-
-			// Exit
-			if(engine.ctrl.isPush(Controller.BUTTON_B)) {
-				netIsNetRankingDisplayMode = false;
-				owner.menuOnly = false;
-			}
-		}
-	}
-
-	/**
-	 * Render 1P NetPlay online ranking screen. Usually called from renderSetting(engine, playerID).
-	 * @param engine GameEngine
-	 * @param playerID Player ID
-	 * @param receiver EventReceiver
-	 */
-	protected void netOnRenderNetPlayRanking(GameEngine engine, int playerID, EventRenderer receiver) {
-		if(netIsNetRankingDisplayMode) {
-			String strBtnA = receiver.getKeyNameByButtonID(engine, Controller.BUTTON_A);
-			String strBtnB = receiver.getKeyNameByButtonID(engine, Controller.BUTTON_B);
-
-			int d = netRankingView;
-
-			if(!netRankingNoDataFlag[d] && netRankingReady[d] && (netRankingPlace != null) && (netRankingPlace[d] != null)) {
-				receiver.drawMenuFont(engine, playerID, 0, 1, "<<", EventRenderer.COLOR_ORANGE);
-				receiver.drawMenuFont(engine, playerID, 38, 1, ">>", EventRenderer.COLOR_ORANGE);
-				receiver.drawMenuFont(engine, playerID, 3, 1,
-						((d != 0) ? "DAILY" : "ALL-TIME") + " RANKING (" + (netRankingCursor[d]+1) + "/" + netRankingPlace[d].size() + ")",
-						EventRenderer.COLOR_GREEN);
-
-				int startIndex = (netRankingCursor[d] / 20) * 20;
-				int endIndex = startIndex + 20;
-				if(endIndex > netRankingPlace[d].size()) endIndex = netRankingPlace[d].size();
-				int c = 0;
-
-				if(netRankingType == NetSPRecord.RANKINGTYPE_GENERIC_SCORE) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    SCORE   LINE TIME     NAME", EventRenderer.COLOR_BLUE);
-				} else if(netRankingType == NetSPRecord.RANKINGTYPE_GENERIC_TIME) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    TIME     PIECE PPS    NAME", EventRenderer.COLOR_BLUE);
-				} else if(netRankingType == NetSPRecord.RANKINGTYPE_SCORERACE) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    TIME     LINE SPL    NAME", EventRenderer.COLOR_BLUE);
-				} else if(netRankingType == NetSPRecord.RANKINGTYPE_DIGRACE) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    TIME     LINE PIECE  NAME", EventRenderer.COLOR_BLUE);
-				} else if(netRankingType == NetSPRecord.RANKINGTYPE_ULTRA) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    SCORE   LINE PIECE    NAME", EventRenderer.COLOR_BLUE);
-				} else if(netRankingType == NetSPRecord.RANKINGTYPE_COMBORACE) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    COMBO TIME     PPS    NAME", EventRenderer.COLOR_BLUE);
-				} else if(netRankingType == NetSPRecord.RANKINGTYPE_DIGCHALLENGE) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    SCORE   LINE TIME     NAME", EventRenderer.COLOR_BLUE);
-				} else if(netRankingType == NetSPRecord.RANKINGTYPE_TIMEATTACK) {
-					receiver.drawMenuFont(engine, playerID, 1, 3, "    LINE  TIME     PPS    NAME", EventRenderer.COLOR_BLUE);
-				}
-
-				for(int i = startIndex; i < endIndex; i++) {
-					if(i == netRankingCursor[d]) {
-						receiver.drawMenuFont(engine, playerID, 0, 4 + c, "b", EventRenderer.COLOR_RED);
-					}
-
-					int rankColor = (i == netRankingMyRank[d]) ? EventRenderer.COLOR_PINK : EventRenderer.COLOR_YELLOW;
-					if(netRankingPlace[d].get(i) == -1) {
-						receiver.drawMenuFont(engine, playerID, 1, 4 + c, "N/A", rankColor);
-					} else {
-						receiver.drawMenuFont(engine, playerID, 1, 4 + c, String.format("%3d", netRankingPlace[d].get(i)+1), rankColor);
-					}
-
-					if(netRankingType == NetSPRecord.RANKINGTYPE_GENERIC_SCORE) {
-						receiver.drawMenuFont(engine, playerID, 5, 4 + c, "" + netRankingScore[d].get(i), (i == netRankingCursor[d]));
-						receiver.drawMenuFont(engine, playerID, 13, 4 + c, "" + netRankingLines[d].get(i), (i == netRankingCursor[d]));
-						receiver.drawMenuFont(engine, playerID, 18, 4 + c, GeneralUtil.getTime(netRankingTime[d].get(i)), (i == netRankingCursor[d]));
-						receiver.drawTTFMenuFont(engine, playerID, 27, 4 + c, netRankingName[d].get(i), (i == netRankingCursor[d]));
-					} else if(netRankingType == NetSPRecord.RANKINGTYPE_GENERIC_TIME) {
-						receiver.drawMenuFont(engine, playerID, 5, 4 + c, GeneralUtil.getTime(netRankingTime[d].get(i)), (i == netRankingCursor[d]));
-						receiver.drawMenuFont(engine, playerID, 14, 4 + c, "" + netRankingPiece[d].get(i), (i == netRankingCursor[d]));
-						receiver.drawMenuFont(engine, playerID, 20, 4 + c, String.format("%.5g", netRankingPPS[d].get(i)), (i == netRankingCursor[d]));
-						receiver.drawTTFMenuFont(engine, playerID, 27, 4 + c, netRankingName[d].get(i), (i == netRankingCursor[d]));
-					} else if(netRankingType == NetSPRecord.RANKINGTYPE_SCORERACE) {
-						receiver.drawMenuFont(engine, playerID, 5, 4 + c, GeneralUtil.getTime(netRankingTime[d].get(i)), (i == netRankingCursor[d]));
-						receiver.drawMenuFont(engine, playerID, 14, 4 + c, "" + netRankingLines[d].get(i), (i == netRankingCursor[d]));
-						receiver.drawMenuFont(engine, playerID, 19, 4 + c, String.format("%.5g", netRankingSPL[d].get(i)), (i == netRankingCursor[d]));
-						receiver.drawTTFMenuFont(engine, playerID, 26, 4 + c, netRankingName[d].get(i), (i == netRankingCursor[d]));
-					} else if(netRankingType == NetSPRecord.RANKINGTYPE_DIGRACE) {
-						receiver.drawMenuFont(engine, playerID, 5, 4 + c, GeneralUtil.getTime(netRankingTime[d].get(i)), (i == netRankingCursor[d]));
-						receiver.drawMenuFont(engine, playerID, 14, 4 + c, "" + netRankingLines[d].get(i), (i == netRankingCursor[d]));
-						receiver.drawMenuFont(engine, playerID, 19, 4 + c, "" + netRankingPiece[d].get(i), (i == netRankingCursor[d]));
-						receiver.drawTTFMenuFont(engine, playerID, 26, 4 + c, netRankingName[d].get(i), (i == netRankingCursor[d]));
-					} else if(netRankingType == NetSPRecord.RANKINGTYPE_ULTRA) {
-						receiver.drawMenuFont(engine, playerID, 5, 4 + c, "" + netRankingScore[d].get(i), (i == netRankingCursor[d]));
-						receiver.drawMenuFont(engine, playerID, 13, 4 + c, "" + netRankingLines[d].get(i), (i == netRankingCursor[d]));
-						receiver.drawMenuFont(engine, playerID, 18, 4 + c, "" + netRankingPiece[d].get(i), (i == netRankingCursor[d]));
-						receiver.drawTTFMenuFont(engine, playerID, 27, 4 + c, netRankingName[d].get(i), (i == netRankingCursor[d]));
-					} else if(netRankingType == NetSPRecord.RANKINGTYPE_COMBORACE) {
-						receiver.drawMenuFont(engine, playerID, 5, 4 + c, "" + (netRankingScore[d].get(i) - 1), (i == netRankingCursor[d]));
-						receiver.drawMenuFont(engine, playerID, 11, 4 + c, GeneralUtil.getTime(netRankingTime[d].get(i)), (i == netRankingCursor[d]));
-						receiver.drawMenuFont(engine, playerID, 20, 4 + c, String.format("%.4g", netRankingPPS[d].get(i)), (i == netRankingCursor[d]));
-						receiver.drawTTFMenuFont(engine, playerID, 27, 4 + c, netRankingName[d].get(i), (i == netRankingCursor[d]));
-					} else if(netRankingType == NetSPRecord.RANKINGTYPE_DIGCHALLENGE) {
-						receiver.drawMenuFont(engine, playerID, 5, 4 + c, "" + netRankingScore[d].get(i), (i == netRankingCursor[d]));
-						receiver.drawMenuFont(engine, playerID, 13, 4 + c, "" + netRankingLines[d].get(i), (i == netRankingCursor[d]));
-						receiver.drawMenuFont(engine, playerID, 18, 4 + c, GeneralUtil.getTime(netRankingTime[d].get(i)), (i == netRankingCursor[d]));
-						receiver.drawTTFMenuFont(engine, playerID, 27, 4 + c, netRankingName[d].get(i), (i == netRankingCursor[d]));
-					} else if(netRankingType == NetSPRecord.RANKINGTYPE_TIMEATTACK) {
-						int fontcolor = EventRenderer.COLOR_WHITE;
-						if(netRankingRollclear[d].get(i) == 1) fontcolor = EventRenderer.COLOR_GREEN;
-						if(netRankingRollclear[d].get(i) == 2) fontcolor = EventRenderer.COLOR_ORANGE;
-						receiver.drawMenuFont(engine, playerID, 5, 4 + c, "" + netRankingLines[d].get(i), fontcolor);
-						receiver.drawMenuFont(engine, playerID, 11, 4 + c, GeneralUtil.getTime(netRankingTime[d].get(i)), (i == netRankingCursor[d]));
-						receiver.drawMenuFont(engine, playerID, 20, 4 + c, String.format("%.4g", netRankingPPS[d].get(i)), (i == netRankingCursor[d]));
-						receiver.drawTTFMenuFont(engine, playerID, 27, 4 + c, netRankingName[d].get(i), (i == netRankingCursor[d]));
-					}
-
-					c++;
-				}
-
-				if((netRankingCursor[d] >= 0) && (netRankingCursor[d] < netRankingDate[d].size())) {
-					String strDate = "----/--/-- --:--:--";
-					Calendar calendar = netRankingDate[d].get(netRankingCursor[d]);
-					if(calendar != null) {
-						strDate = GeneralUtil.getCalendarString(calendar, TimeZone.getDefault());
-					}
-					receiver.drawMenuFont(engine, playerID, 1, 25, "DATE:" + strDate, EventRenderer.COLOR_CYAN);
-
-					float gamerate = netRankingGamerate[d].get(netRankingCursor[d]);
-					receiver.drawMenuFont(engine, playerID, 1, 26, "GAMERATE:" + ((gamerate == 0f) ? "UNKNOWN" : (100*gamerate)+"%"),
-							EventRenderer.COLOR_CYAN);
-				}
-
-				receiver.drawMenuFont(engine, playerID, 1, 27,
-						"A(" + strBtnA + " KEY):DOWNLOAD\nB(" + strBtnB + " KEY):BACK LEFT/RIGHT:" + ((d == 0) ? "DAILY" : "ALL-TIME"),
-						EventRenderer.COLOR_ORANGE);
-			} else if(netRankingNoDataFlag[d]) {
-				receiver.drawMenuFont(engine, playerID, 0, 1, "<<", EventRenderer.COLOR_ORANGE);
-				receiver.drawMenuFont(engine, playerID, 38, 1, ">>", EventRenderer.COLOR_ORANGE);
-				receiver.drawMenuFont(engine, playerID, 3, 1,
-						((d != 0) ? "DAILY" : "ALL-TIME") + " RANKING",
-						EventRenderer.COLOR_GREEN);
-
-				receiver.drawMenuFont(engine, playerID, 1, 3, "NO DATA", EventRenderer.COLOR_DARKBLUE);
-
-				receiver.drawMenuFont(engine, playerID, 1, 28, "B(" + strBtnB + " KEY):BACK LEFT/RIGHT:" + ((d == 0) ? "DAILY" : "ALL-TIME"),
-						EventRenderer.COLOR_ORANGE);
-			} else if(!netRankingReady[d] && (netRankingPlace == null) || (netRankingPlace[d] == null)) {
-				receiver.drawMenuFont(engine, playerID, 0, 1, "<<", EventRenderer.COLOR_ORANGE);
-				receiver.drawMenuFont(engine, playerID, 38, 1, ">>", EventRenderer.COLOR_ORANGE);
-				receiver.drawMenuFont(engine, playerID, 3, 1,
-						((d != 0) ? "DAILY" : "ALL-TIME") + " RANKING",
-						EventRenderer.COLOR_GREEN);
-
-				receiver.drawMenuFont(engine, playerID, 1, 3, "LOADING...", EventRenderer.COLOR_CYAN);
-
-				receiver.drawMenuFont(engine, playerID, 1, 28, "B(" + strBtnB + " KEY):BACK LEFT/RIGHT:" + ((d == 0) ? "DAILY" : "ALL-TIME"),
-						EventRenderer.COLOR_ORANGE);
-			}
-		}
-	}
-
-	/**
-	 * Enter the netplay ranking screen
-	 * @param engine GameEngine
-	 * @param playerID Player ID
-	 * @param goaltype Game Type
-	 */
-	protected void netEnterNetPlayRankingScreen(GameEngine engine, int playerID, int goaltype) {
-		if(netRankingPlace != null) {
-			netRankingPlace[0] = null;
-			netRankingPlace[1] = null;
-		}
-		netRankingCursor[0] = 0;
-		netRankingCursor[1] = 0;
-		netRankingMyRank[0] = -1;
-		netRankingMyRank[1] = -1;
-		netIsNetRankingDisplayMode = true;
-		owner.menuOnly = true;
-		String rule = (netCurrentRoomInfo.rated ? netCurrentRoomInfo.ruleName : "all");
-		netLobby.netPlayerClient.send("spranking\t" + NetUtil.urlEncode(rule) + "\t" +
-				NetUtil.urlEncode(getName()) + "\t" + goaltype + "\t" + false + "\n");
-		netLobby.netPlayerClient.send("spranking\t" + NetUtil.urlEncode(rule) + "\t" +
-				NetUtil.urlEncode(getName()) + "\t" + goaltype + "\t" + true + "\n");
-	}
-
-	/**
-	 * Receive 1P NetPlay ranking.
-	 * @param engine GameEngine
-	 * @param message Message array
-	 */
-	protected void netRecvNetPlayRanking(GameEngine engine, String[] message) {
-		String strDebugTemp = "";
-		for(int i = 0; i < message.length; i++) {
-			strDebugTemp += message[i] + " ";
-		}
-		log.debug(strDebugTemp);
-
-		if(message.length > 7) {
-			boolean isDaily = Boolean.parseBoolean(message[4]);
-			int d = isDaily ? 1 : 0;
-
-			netRankingType = Integer.parseInt(message[5]);
-			int maxRecords = Integer.parseInt(message[6]);
-			String[] arrayRow = message[7].split(";");
-			maxRecords = Math.min(maxRecords, arrayRow.length);
-
-			netRankingNoDataFlag[d] = false;
-			netRankingReady[d] = false;
-			netRankingPlace[d] = new LinkedList<Integer>();
-			netRankingName[d] = new LinkedList<String>();
-			netRankingDate[d] = new LinkedList<Calendar>();
-			netRankingGamerate[d] = new LinkedList<Float>();
-			netRankingTime[d] = new LinkedList<Integer>();
-			netRankingScore[d] = new LinkedList<Integer>();
-			netRankingPiece[d] = new LinkedList<Integer>();
-			netRankingPPS[d] = new LinkedList<Float>();
-			netRankingLines[d] = new LinkedList<Integer>();
-			netRankingSPL[d] = new LinkedList<Double>();
-			netRankingRollclear[d] = new LinkedList<Integer>();
-
-			for(int i = 0; i < maxRecords; i++) {
-				String[] arrayData = arrayRow[i].split(",");
-				netRankingPlace[d].add(Integer.parseInt(arrayData[0]));
-				String pName = NetUtil.urlDecode(arrayData[1]);
-				netRankingName[d].add(pName);
-				netRankingDate[d].add(GeneralUtil.importCalendarString(arrayData[2]));
-				netRankingGamerate[d].add(Float.parseFloat(arrayData[3]));
-
-				if(netRankingType == NetSPRecord.RANKINGTYPE_GENERIC_SCORE) {
-					netRankingScore[d].add(Integer.parseInt(arrayData[4]));
-					netRankingLines[d].add(Integer.parseInt(arrayData[5]));
-					netRankingTime[d].add(Integer.parseInt(arrayData[6]));
-				} else if(netRankingType == NetSPRecord.RANKINGTYPE_GENERIC_TIME) {
-					netRankingTime[d].add(Integer.parseInt(arrayData[4]));
-					netRankingPiece[d].add(Integer.parseInt(arrayData[5]));
-					netRankingPPS[d].add(Float.parseFloat(arrayData[6]));
-				} else if(netRankingType == NetSPRecord.RANKINGTYPE_SCORERACE) {
-					netRankingTime[d].add(Integer.parseInt(arrayData[4]));
-					netRankingLines[d].add(Integer.parseInt(arrayData[5]));
-					netRankingSPL[d].add(Double.parseDouble(arrayData[6]));
-				} else if(netRankingType == NetSPRecord.RANKINGTYPE_DIGRACE) {
-					netRankingTime[d].add(Integer.parseInt(arrayData[4]));
-					netRankingLines[d].add(Integer.parseInt(arrayData[5]));
-					netRankingPiece[d].add(Integer.parseInt(arrayData[6]));
-				} else if(netRankingType == NetSPRecord.RANKINGTYPE_ULTRA) {
-					netRankingScore[d].add(Integer.parseInt(arrayData[4]));
-					netRankingLines[d].add(Integer.parseInt(arrayData[5]));
-					netRankingPiece[d].add(Integer.parseInt(arrayData[6]));
-				} else if(netRankingType == NetSPRecord.RANKINGTYPE_COMBORACE) {
-					netRankingScore[d].add(Integer.parseInt(arrayData[4]));
-					netRankingTime[d].add(Integer.parseInt(arrayData[5]));
-					netRankingPPS[d].add(Float.parseFloat(arrayData[6]));
-				} else if(netRankingType == NetSPRecord.RANKINGTYPE_DIGCHALLENGE) {
-					netRankingScore[d].add(Integer.parseInt(arrayData[4]));
-					netRankingLines[d].add(Integer.parseInt(arrayData[5]));
-					netRankingTime[d].add(Integer.parseInt(arrayData[6]));
-				} else if(netRankingType == NetSPRecord.RANKINGTYPE_TIMEATTACK) {
-					netRankingLines[d].add(Integer.parseInt(arrayData[4]));
-					netRankingTime[d].add(Integer.parseInt(arrayData[5]));
-					netRankingPPS[d].add(Float.parseFloat(arrayData[6]));
-					netRankingRollclear[d].add(Integer.parseInt(arrayData[7]));
-				} else {
-					log.error("Unknown ranking type:" + netRankingType);
-				}
-
-				if(pName.equals(netPlayerName)) {
-					netRankingCursor[d] = i;
-					netRankingMyRank[d] = i;
-				}
-			}
-
-			netRankingReady[d] = true;
-		} else if(message.length > 4) {
-			boolean isDaily = Boolean.parseBoolean(message[4]);
-			int d = isDaily ? 1 : 0;
-			netRankingNoDataFlag[d] = true;
-			netRankingReady[d] = false;
-		}
-	}
 
 	/**
 	 * NET: Send various in-game stats (as well as goaltype)<br>
@@ -1365,7 +971,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 * @param engine GameEngine
 	 * @param message Message array
 	 */
-	protected void netRecvStats(GameEngine engine, String[] message) {
+	protected void netRecvStats(GameEngine engine, KNetEvent e) {
 	}
 
 	/**
@@ -1390,7 +996,7 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 * @param engine GameEngine
 	 * @param message Message array
 	 */
-	protected void netRecvOptions(GameEngine engine, String[] message) {
+	protected void netRecvOptions(GameEngine engine, KNetEvent e) {
 	}
 
 	/**
@@ -1400,19 +1006,15 @@ public class AbstractNetMode extends AbstractMode implements NetLobbyListener {
 	 */
 	protected void netSendReplay(GameEngine engine) {
 		if(netIsNetRankingSendOK(engine)) {
-			NetSPRecord record = new NetSPRecord();
-			record.setReplayProp(owner.replayProp);
-			record.stats = new Statistics(engine.statistics);
-			record.gameType = netGetGoalType();
-
-			String strData = NetUtil.compressString(record.exportString());
-
-			Adler32 checksumObj = new Adler32();
-			checksumObj.update(NetUtil.stringToBytes(strData));
-			long sChecksum = checksumObj.getValue();
-
-			netLobby.netPlayerClient.send("spsend\t" + sChecksum + "\t" + strData + "\n");
+			Replay replay = new Replay();
+			replay.setReplay(owner.replayProp);
+			replay.setStatistics(engine.statistics);
+			replay.setGameType(netGetGoalType());
+			
+			knetClient.fireTCP(REPLAY_DATA, replay);
+			
 		} else {
+			// TODO wtf does this magic constant mean?
 			netReplaySendStatus = 2;
 		}
 	}

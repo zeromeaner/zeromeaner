@@ -35,18 +35,163 @@ import java.util.Locale;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Piece;
+import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
-import org.zeromeaner.game.net.NetPlayerClient;
+import org.zeromeaner.game.knet.KNetClient;
+import org.zeromeaner.game.knet.KNetEvent;
+import org.zeromeaner.game.knet.KNetEventArgs;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.gui.net.NetLobbyFrame;
 import org.zeromeaner.util.GeneralUtil;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+
+import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
 /**
  * NET-VS-BATTLE Mode
  */
 public class NetVSBattleMode extends AbstractNetVSMode {
+	public static class AttackInfo implements KryoSerializable {
+		private int[] points;
+		private int lastEvent;
+		private boolean lastB2b;
+		private int lastCombo;
+		private int garbage;
+		private int lastPiece;
+		private int targetSeatId;
+		
+		@Override
+		public void write(Kryo kryo, Output output) {
+			kryo.writeObject(output, points);
+			output.writeInt(lastEvent, true);
+			output.writeBoolean(lastB2b);
+			output.writeInt(lastCombo, true);
+			output.writeInt(garbage, true);
+			output.writeInt(lastPiece, true);
+			output.writeInt(targetSeatId, true);
+		}
+		
+		@Override
+		public void read(Kryo kryo, Input input) {
+			points = kryo.readObject(input, int[].class);
+			lastEvent = input.readInt(true);
+			lastB2b = input.readBoolean();
+			lastCombo = input.readInt(true);
+			garbage = input.readInt(true);
+			lastPiece = input.readInt(true);
+			targetSeatId = input.readInt(true);
+		}
+
+		public int[] getPoints() {
+			return points;
+		}
+
+		public void setPoints(int[] points) {
+			this.points = points;
+		}
+
+		public int getLastEvent() {
+			return lastEvent;
+		}
+
+		public void setLastEvent(int lastEvent) {
+			this.lastEvent = lastEvent;
+		}
+
+		public boolean isLastB2b() {
+			return lastB2b;
+		}
+
+		public void setLastB2b(boolean lastB2b) {
+			this.lastB2b = lastB2b;
+		}
+
+		public int getLastCombo() {
+			return lastCombo;
+		}
+
+		public void setLastCombo(int lastCombo) {
+			this.lastCombo = lastCombo;
+		}
+
+		public int getGarbage() {
+			return garbage;
+		}
+
+		public void setGarbage(int garbage) {
+			this.garbage = garbage;
+		}
+
+		public int getLastPiece() {
+			return lastPiece;
+		}
+
+		public void setLastPiece(int lastPiece) {
+			this.lastPiece = lastPiece;
+		}
+
+		public int getTargetSeatId() {
+			return targetSeatId;
+		}
+
+		public void setTargetSeatId(int targetSeatId) {
+			this.targetSeatId = targetSeatId;
+		}
+	}
+	
+	public static class StatsInfo implements KryoSerializable {
+		private int garbage;
+		@Override
+		public void write(Kryo kryo, Output output) {
+			output.writeInt(garbage, true);
+		}
+		@Override
+		public void read(Kryo kryo, Input input) {
+			garbage = input.readInt(true);
+		}
+		public int getGarbage() {
+			return garbage;
+		}
+		public void setGarbage(int garbage) {
+			this.garbage = garbage;
+		}
+	}
+	
+	public static class EndGameStats {
+		private float tempGarbageSent;
+		private float playerAPL;
+		private float playerAPM;
+		private Statistics stats;
+		public float getTempGarbageSent() {
+			return tempGarbageSent;
+		}
+		public void setTempGarbageSent(float tempGarbageSent) {
+			this.tempGarbageSent = tempGarbageSent;
+		}
+		public float getPlayerAPL() {
+			return playerAPL;
+		}
+		public void setPlayerAPL(float playerAPL) {
+			this.playerAPL = playerAPL;
+		}
+		public float getPlayerAPM() {
+			return playerAPM;
+		}
+		public void setPlayerAPM(float playerAPM) {
+			this.playerAPM = playerAPM;
+		}
+		public Statistics getStats() {
+			return stats;
+		}
+		public void setStats(Statistics stats) {
+			this.stats = stats;
+		}
+	}
+	
 	/** Most recent scoring event type constants */
 	protected static final int EVENT_NONE = 0,
 							 EVENT_SINGLE = 1,
@@ -226,7 +371,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	 * Set new target
 	 */
 	private void setNewTarget() {
-		if((getNumberOfPossibleTargets() >= 1) && (netCurrentRoomInfo != null) && (netCurrentRoomInfo.isTarget) &&
+		if((getNumberOfPossibleTargets() >= 1) && (channelInfo != null) && (currentGame().isTargettedGarbage()) &&
 		   (!netvsIsWatch()) && (!netvsIsPractice))
 		{
 			do {
@@ -314,7 +459,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 
 			int numAliveTeams = netvsGetNumberOfTeamsAlive();
 			int attackNumPlayerIndex = numAliveTeams - 2;
-			if(netvsIsPractice || !netCurrentRoomInfo.reduceLineSend) attackNumPlayerIndex = 0;
+			if(netvsIsPractice || !channelInfo.getGame().isReduceLineSend()) attackNumPlayerIndex = 0;
 			if(attackNumPlayerIndex < 0) attackNumPlayerIndex = 0;
 			if(attackNumPlayerIndex > 4) attackNumPlayerIndex = 4;
 
@@ -409,7 +554,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			}
 
 			// All clear (Bravo)
-			if((lines >= 1) && (engine.field.isEmpty()) && (netCurrentRoomInfo.bravo)) {
+			if((lines >= 1) && (engine.field.isEmpty()) && (currentPlayer().isBravo())) {
 				engine.playSE("bravo");
 				pts[ATTACK_CATEGORY_BRAVO] += 6;
 			}
@@ -422,7 +567,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			for(int i = 0; i < pts.length; i++){
 				pts[i] *= GARBAGE_DENOMINATOR;
 			}
-			if(netCurrentRoomInfo.useFractionalGarbage && !netvsIsPractice) {
+			if(currentGame().isUseFractionalGarbage() && !netvsIsPractice) {
 				if(numAliveTeams >= 3) {
 					for(int i = 0; i < pts.length; i++){
 						pts[i] = pts[i] / (numAliveTeams - 1);
@@ -438,9 +583,9 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			// Garbage countering
 			garbage[playerID] = getTotalGarbageLines();
 			for(int i = 0; i < pts.length; i++){ //TODO: Establish specific priority of garbage cancellation.
-				if((pts[i] > 0) && (garbage[playerID] > 0) && (netCurrentRoomInfo.counter)) {
-					while(!netCurrentRoomInfo.useFractionalGarbage && !garbageEntries.isEmpty() && (pts[i] > 0)
-						|| netCurrentRoomInfo.useFractionalGarbage && !garbageEntries.isEmpty() && (pts[i] >= GARBAGE_DENOMINATOR))
+				if((pts[i] > 0) && (garbage[playerID] > 0) && (currentGame().isCounterGarbage())) {
+					while(!currentGame().isUseFractionalGarbage() && !garbageEntries.isEmpty() && (pts[i] > 0)
+						|| currentGame().isUseFractionalGarbage() && !garbageEntries.isEmpty() && (pts[i] >= GARBAGE_DENOMINATOR))
 					{
 						GarbageEntry garbageEntry = garbageEntries.getFirst();
 						garbageEntry.lines -= pts[i];
@@ -467,13 +612,20 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 				if((targetID != -1) && !netvsIsAttackable(targetID)) setNewTarget();
 				int targetSeatID = (targetID == -1) ? -1 : netvsPlayerSeatID[targetID];
 
-				netLobby.netPlayerClient.send("game\tattack\t" + stringPts + "\t" + lastevent[playerID] + "\t" + lastb2b[playerID] + "\t" +
-						lastcombo[playerID] + "\t" + garbage[playerID] + "\t" + lastpiece[playerID] + "\t" + targetSeatID + "\n");
+				AttackInfo attack = new AttackInfo();
+				attack.setPoints(pts);
+				attack.setLastEvent(lastevent[playerID]);
+				attack.setLastB2b(lastb2b[playerID]);
+				attack.setLastCombo(lastcombo[playerID]);
+				attack.setGarbage(garbage[playerID]);
+				attack.setLastPiece(lastpiece[playerID]);
+				attack.setTargetSeatId(targetSeatID);
+				knetClient.fireTCP(attack);
 			}
 		}
 
 		// Garbage lines appear
-		if( ((lines == 0) || (!netCurrentRoomInfo.rensaBlock)) && (getTotalGarbageLines() >= GARBAGE_DENOMINATOR) && (!netvsIsPractice) ) {
+		if( ((lines == 0) || (!currentGame().isRensaBlock())) && (getTotalGarbageLines() >= GARBAGE_DENOMINATOR) && (!netvsIsPractice) ) {
 			engine.playSE("garbage");
 
 			int smallGarbageCount = 0;
@@ -483,8 +635,8 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 				hole = engine.random.nextInt(engine.field.getWidth());
 			}
 
-			int finalGarbagePercent = netCurrentRoomInfo.garbagePercent;
-			if(netCurrentRoomInfo.divideChangeRateByPlayers){
+			int finalGarbagePercent = currentGame().getGarbagePercent();
+			if(currentGame().isDivideChangeRateByPlayers()){
 				finalGarbagePercent /= (netvsGetNumberOfTeamsAlive() - 1);
 			}
 
@@ -497,7 +649,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 					int seatFrom = netvsPlayerSeatID[garbageEntry.playerID];
 					int garbageColor = (seatFrom < 0) ? Block.BLOCK_COLOR_GRAY : NETVS_PLAYER_COLOR_BLOCK[seatFrom];
 					netvsLastAttackerUID = garbageEntry.uid;
-					if(netCurrentRoomInfo.garbageChangePerAttack == true){
+					if(currentGame().isGarbageChangePerAttack()){
 						if(engine.random.nextInt(100) < finalGarbagePercent) {
 							newHole = engine.random.nextInt(engine.field.getWidth() - 1);
 							if(newHole >= hole) {
@@ -528,7 +680,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 				if(smallGarbageCount / GARBAGE_DENOMINATOR > 0) {
 					netvsLastAttackerUID = -1;
 
-					if(netCurrentRoomInfo.garbageChangePerAttack == true){
+					if(currentGame().isGarbageChangePerAttack()){
 						if(engine.random.nextInt(100) < finalGarbagePercent) {
 							newHole = engine.random.nextInt(engine.field.getWidth() - 1);
 							if(newHole >= hole) {
@@ -564,15 +716,15 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		}
 
 		// HURRY UP!
-		if((netCurrentRoomInfo.hurryupSeconds >= 0) && (engine.timerActive) && (!netvsIsPractice)) {
+		if((currentGame().getHurryupSeconds() >= 0) && (engine.timerActive) && (!netvsIsPractice)) {
 			if(hurryupStarted) {
 				hurryupCount++;
 
-				if(hurryupCount % netCurrentRoomInfo.hurryupInterval == 0) {
+				if(hurryupCount % currentGame().getHurryupInterval() == 0) {
 					engine.field.addHurryupFloor(1, engine.getSkin());
 				}
 			} else {
-				hurryupCount = netCurrentRoomInfo.hurryupInterval - 1;
+				hurryupCount = currentGame().getHurryupInterval() - 1;
 			}
 		}
 	}
@@ -588,11 +740,12 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		if((playerID == 0) && (hurryupShowFrames > 0)) hurryupShowFrames--;
 
 		// HURRY UP!
-		if((playerID == 0) && (engine.timerActive) && (netCurrentRoomInfo != null) && (netCurrentRoomInfo.hurryupSeconds >= 0) &&
-		   (netvsPlayTimer == netCurrentRoomInfo.hurryupSeconds * 60) && (!hurryupStarted))
+		if((playerID == 0) && (engine.timerActive) && (channelInfo != null) && (currentGame().getHurryupSeconds() >= 0) &&
+		   (netvsPlayTimer == currentGame().getHurryupSeconds() * 60) && (!hurryupStarted))
 		{
 			if(!netvsIsWatch() && !netvsIsPractice) {
-				netLobby.netPlayerClient.send("game\thurryup\n");
+//				netLobby.netPlayerClient.send("game\thurryup\n");
+				knetClient.fireUDP(HURRY_UP, true);
 				owner.receiver.playSE("hurryup");
 			}
 			hurryupStarted = true;
@@ -634,11 +787,11 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 
 		// Target
 		if((playerID == 0) && !netvsIsWatch() && (netvsPlayTimerActive) && (engine.gameActive) && (engine.timerActive) &&
-		   (getNumberOfPossibleTargets() >= 1) && (netCurrentRoomInfo != null) && (netCurrentRoomInfo.isTarget))
+		   (getNumberOfPossibleTargets() >= 1) && (channelInfo != null) && (currentGame().isTargettedGarbage()))
 		{
 			targetTimer++;
 
-			if((targetTimer >= netCurrentRoomInfo.targetTimer) || (!netvsIsAttackable(targetID))) {
+			if((targetTimer >= currentGame().getTargetTimer()) || (!netvsIsAttackable(targetID))) {
 				targetTimer = 0;
 				setNewTarget();
 			}
@@ -657,7 +810,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 
 		if(netvsPlayerExist[playerID] && engine.isVisible) {
 			// Garbage Count
-			if((garbage[playerID] > 0) && (netCurrentRoomInfo.useFractionalGarbage) && (engine.stat != GameEngine.STAT_RESULT)) {
+			if((garbage[playerID] > 0) && (currentGame().isUseFractionalGarbage()) && (engine.stat != GameEngine.STAT_RESULT)) {
 				String strTempGarbage;
 
 				int fontColor = EventRenderer.COLOR_WHITE;
@@ -675,11 +828,11 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			}
 
 			// Target
-			if((playerID == targetID) && (netCurrentRoomInfo != null) && (netCurrentRoomInfo.isTarget) && (netvsNumAlivePlayers >= 3) &&
+			if((playerID == targetID) && (channelInfo != null) && (currentGame().isTargettedGarbage()) && (netvsNumAlivePlayers >= 3) &&
 			   (netvsIsGameActive) && netvsIsAttackable(playerID) && !netvsIsWatch())
 			{
 				int fontcolor = EventRenderer.COLOR_GREEN;
-				if((targetTimer >= netCurrentRoomInfo.targetTimer - 20) && (targetTimer % 2 == 0)) fontcolor = EventRenderer.COLOR_WHITE;
+				if((targetTimer >= currentGame().getTargetTimer() - 20) && (targetTimer % 2 == 0)) fontcolor = EventRenderer.COLOR_WHITE;
 
 				if(engine.displaysize != -1) {
 					owner.receiver.drawMenuFont(engine, playerID, 2, 12, "TARGET", fontcolor);
@@ -699,8 +852,8 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		}
 
 		// Hurry Up
-		if((netCurrentRoomInfo != null) && (playerID == 0)) {
-			if((netCurrentRoomInfo.hurryupSeconds >= 0) && (hurryupShowFrames > 0) && (!netvsIsPractice) && (hurryupStarted)) {
+		if((channelInfo != null) && (playerID == 0)) {
+			if((currentGame().getHurryupSeconds() >= 0) && (hurryupShowFrames > 0) && (!netvsIsPractice) && (hurryupStarted)) {
 				owner.receiver.drawDirectFont(engine, 0, 256 - 8, 32, "HURRY UP!", (hurryupShowFrames % 2 == 0));
 			}
 		}
@@ -778,7 +931,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 						owner.receiver.drawMenuFont(engine, playerID, 2, 22, (lastcombo[playerID] - 1) + "COMBO", EventRenderer.COLOR_CYAN);
 				} else {
 					int x2 = 8;
-					if(netCurrentRoomInfo.useFractionalGarbage && (garbage[playerID] > 0)) x2 = 0;
+					if(currentGame().isUseFractionalGarbage() && (garbage[playerID] > 0)) x2 = 0;
 
 					switch(lastevent[playerID]) {
 					case EVENT_SINGLE:
@@ -893,7 +1046,10 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	@Override
 	protected void netSendStats(GameEngine engine) {
 		if((engine.getPlayerID() == 0) && !netvsIsPractice && !netvsIsWatch()) {
-			netLobby.netPlayerClient.send("game\tstats\t" + garbage[engine.getPlayerID()] + "\n");
+//			netLobby.netPlayerClient.send("game\tstats\t" + garbage[engine.getPlayerID()] + "\n");
+			StatsInfo stats = new StatsInfo();
+			stats.setGarbage(garbage[engine.getPlayerID()]);
+			knetClient.fireTCP(NETVSBATTLE_GAME_STATS, stats);
 		}
 	}
 
@@ -901,9 +1057,12 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	 * Receive stats
 	 */
 	@Override
-	protected void netRecvStats(GameEngine engine, String[] message) {
-		if(message.length > 4) {
-			garbage[engine.getPlayerID()] = Integer.parseInt(message[4]);
+	protected void netRecvStats(GameEngine engine, KNetEvent e) {
+//		if(message.length > 4) {
+//			garbage[engine.getPlayerID()] = Integer.parseInt(message[4]);
+//		}
+		if(e.is(NETVSBATTLE_GAME_STATS)) {
+			garbage[engine.getPlayerID()] = ((StatsInfo) e.get(NETVSBATTLE_GAME_STATS)).getGarbage();
 		}
 	}
 
@@ -913,93 +1072,105 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
 		int playerID = engine.getPlayerID();
-		String msg = "gstat\t";
-		msg += netvsPlayerPlace[playerID] + "\t";
-		msg += ((float)garbageSent[playerID] / GARBAGE_DENOMINATOR) + "\t" + playerAPL[playerID] + "\t" + playerAPM[playerID] + "\t";
-		msg += engine.statistics.lines + "\t" + engine.statistics.lpm + "\t";
-		msg += engine.statistics.totalPieceLocked + "\t" + engine.statistics.pps + "\t";
-		msg += netvsPlayTimer + "\t" + currentKO + "\t" + netvsPlayerWinCount[playerID] + "\t" + netvsPlayerPlayCount[playerID];
-		msg += "\n";
-		netLobby.netPlayerClient.send(msg);
+//		String msg = "gstat\t";
+//		msg += netvsPlayerPlace[playerID] + "\t";
+//		msg += ((float)garbageSent[playerID] / GARBAGE_DENOMINATOR) + "\t" + playerAPL[playerID] + "\t" + playerAPM[playerID] + "\t";
+//		msg += engine.statistics.lines + "\t" + engine.statistics.lpm + "\t";
+//		msg += engine.statistics.totalPieceLocked + "\t" + engine.statistics.pps + "\t";
+//		msg += netvsPlayTimer + "\t" + currentKO + "\t" + netvsPlayerWinCount[playerID] + "\t" + netvsPlayerPlayCount[playerID];
+//		msg += "\n";
+//		netLobby.netPlayerClient.send(msg);
+		
+		EndGameStats egs = new EndGameStats();
+		egs.setTempGarbageSent(((float)garbageSent[playerID] / GARBAGE_DENOMINATOR));
+		egs.setPlayerAPL(playerAPL[playerID]);
+		egs.setPlayerAPM(playerAPM[playerID]);
+		egs.setStats(engine.statistics);
+		knetClient.fireTCP(GAME_END_STATS, egs);
 	}
 
 	/*
 	 * Receive end-of-game stats
 	 */
 	@Override
-	protected void netvsRecvEndGameStats(String[] message) {
-		int seatID = Integer.parseInt(message[2]);
+	protected void netvsRecvEndGameStats(KNetEvent e) {
+		
+		
+		int seatID = channelInfo.getSeatId(e);
 		int playerID = netvsGetPlayerIDbySeatID(seatID);
 
 		if((playerID != 0) || (netvsIsWatch())) {
 			GameEngine engine = owner.engine[playerID];
 
-			float tempGarbageSend = Float.parseFloat(message[5]);
+			EndGameStats egs = (EndGameStats) e.get(GAME_END_STATS);
+			
+			float tempGarbageSend = egs.getTempGarbageSent();
 			garbageSent[playerID] = (int)(tempGarbageSend * GARBAGE_DENOMINATOR);
 
-			playerAPL[playerID] = Float.parseFloat(message[6]);
-			playerAPM[playerID] = Float.parseFloat(message[7]);
-			engine.statistics.lines = Integer.parseInt(message[8]);
-			engine.statistics.lpm = Float.parseFloat(message[9]);
-			engine.statistics.totalPieceLocked = Integer.parseInt(message[10]);
-			engine.statistics.pps = Float.parseFloat(message[11]);
-			engine.statistics.time = Integer.parseInt(message[12]);
+			playerAPL[playerID] = egs.getPlayerAPL();
+			playerAPM[playerID] = egs.getPlayerAPM();
+			engine.statistics.copy(egs.getStats());
 
 			netvsPlayerResultReceived[playerID] = true;
 		}
 	}
 
+	
 	/*
 	 * Message received
 	 */
 	@Override
-	public void netlobbyOnMessage(NetLobbyFrame lobby, NetPlayerClient client, String[] message) throws IOException {
-		super.netlobbyOnMessage(lobby, client, message);
+	public void knetEvented(KNetClient client, KNetEvent e) {
+		super.knetEvented(client, e);
 
 		// Dead
-		if(message[0].equals("dead")) {
-			int seatID = Integer.parseInt(message[3]);
+//		if(message[0].equals("dead")) {
+		if(e.is(DEAD)) {
+			int seatID = channelInfo.getPlayers().indexOf(e.getSource());
 			int playerID = netvsGetPlayerIDbySeatID(seatID);
 			int koUID = -1;
-			if(message.length > 5) koUID = Integer.parseInt(message[5]);
+//			if(message.length > 5) koUID = Integer.parseInt(message[5]);
+			if(e.is(DEAD_KO))
+				koUID = (Integer) e.get(DEAD_KO);
 
 			// Increase KO count
-			if(koUID == netLobby.netPlayerClient.getPlayerUID()) {
+			if(koUID == knetClient.getSource().getId()) {
 				playerKObyYou[playerID] = true;
 				currentKO++;
 			}
 		}
 		// Game messages
-		if(message[0].equals("game")) {
-			int uid = Integer.parseInt(message[1]);
-			int seatID = Integer.parseInt(message[2]);
+//		if(message[0].equals("game")) {
+		if(e.is(GAME)) {
+			int uid = e.getSource().getId();
+			int seatID = channelInfo.getPlayers().indexOf(e.getSource());
 			int playerID = netvsGetPlayerIDbySeatID(seatID);
-			//GameEngine engine = owner.engine[playerID];
 
 			// Attack
-			if(message[3].equals("attack")) {
-				int[] pts = new int[ATTACK_CATEGORIES];
+			if(e.is(NETVSBATTLE_GAME_ATTACK)) {
+				AttackInfo attack = (AttackInfo) e.get(NETVSBATTLE_GAME_ATTACK);
+//				int[] pts = new int[ATTACK_CATEGORIES];
+				int[] pts = attack.getPoints();
 				int sumPts = 0;
 
-				for(int i = 0; i < ATTACK_CATEGORIES; i++){
-					pts[i] = Integer.parseInt(message[4+i]);
+				for(int i = 0; i < pts.length; i++){
 					sumPts += pts[i];
 				}
 
-				lastevent[playerID] = Integer.parseInt(message[ATTACK_CATEGORIES + 5]);
-				lastb2b[playerID] = Boolean.parseBoolean(message[ATTACK_CATEGORIES + 6]);
-				lastcombo[playerID] = Integer.parseInt(message[ATTACK_CATEGORIES + 7]);
-				garbage[playerID] = Integer.parseInt(message[ATTACK_CATEGORIES + 8]);
-				lastpiece[playerID] = Integer.parseInt(message[ATTACK_CATEGORIES + 9]);
+				lastevent[playerID] = attack.getLastEvent();
+				lastb2b[playerID] = attack.isLastB2b();
+				lastcombo[playerID] = attack.getLastCombo();
+				garbage[playerID] = attack.getGarbage();
+				lastpiece[playerID] = attack.getLastPiece();
 				scgettime[playerID] = 0;
-				int targetSeatID = Integer.parseInt(message[ATTACK_CATEGORIES + 10]);
+				int targetSeatID = attack.getTargetSeatId();
 
 				if( !netvsIsWatch() && (owner.engine[0].timerActive) && (sumPts > 0) && (!netvsIsPractice) && (!netvsIsNewcomer) &&
-					((targetSeatID == -1) || (netvsPlayerSeatID[0] == targetSeatID) || (!netCurrentRoomInfo.isTarget)) &&
+					((targetSeatID == -1) || (netvsPlayerSeatID[0] == targetSeatID) || (!currentGame().isTargettedGarbage())) &&
 					netvsIsAttackable(playerID) )
 				{
 					int secondAdd = 0; //TODO: Allow for chunking of attack types other than b2b.
-					if(netCurrentRoomInfo.b2bChunk){
+					if(currentGame().isB2bChunk()){
 						secondAdd = pts[ATTACK_CATEGORY_B2B];
 					}
 
@@ -1017,8 +1188,8 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 				}
 			}
 			// HurryUp
-			if(message[3].equals("hurryup")) {
-				if(!hurryupStarted && (netCurrentRoomInfo != null) && (netCurrentRoomInfo.hurryupSeconds > 0)) {
+			if(e.is(HURRY_UP)) {
+				if(!hurryupStarted && (channelInfo != null) && (currentGame().getHurryupSeconds() > 0)) {
 					if(!netvsIsWatch() && !netvsIsPractice && owner.engine[0].timerActive) {
 						owner.receiver.playSE("hurryup");
 					}

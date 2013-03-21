@@ -1,14 +1,20 @@
 package org.zeromeaner.game.subsystem.mode;
 
+import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
+import org.zeromeaner.game.knet.KNetEvent;
+import org.zeromeaner.game.knet.obj.KNetGameInfo;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.GeneralUtil;
+
+import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
 /**
  * NET-VS-LINE RACE mode
  */
 public class NetVSLineRaceMode extends AbstractNetVSMode {
+	
 	/** Number of lines required to win */
 	private int goalLines;	// TODO: Add option to change this
 
@@ -43,14 +49,15 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netvsApplyRoomSettings(GameEngine engine) {
-		if(netCurrentRoomInfo != null) {
-			engine.speed.gravity = netCurrentRoomInfo.gravity;
-			engine.speed.denominator = netCurrentRoomInfo.denominator;
-			engine.speed.are = netCurrentRoomInfo.are;
-			engine.speed.areLine = netCurrentRoomInfo.areLine;
-			engine.speed.lineDelay = netCurrentRoomInfo.lineDelay;
-			engine.speed.lockDelay = netCurrentRoomInfo.lockDelay;
-			engine.speed.das = netCurrentRoomInfo.das;
+		if(channelInfo != null) {
+			KNetGameInfo game = currentGame();
+			engine.speed.gravity = game.getGravity();
+			engine.speed.denominator = game.getDenominator();
+			engine.speed.are = game.getAre();
+			engine.speed.areLine = game.getAreLine();
+			engine.speed.lineDelay = game.getLineDelay();
+			engine.speed.lockDelay = game.getLockDelay();
+			engine.speed.das = game.getDas();
 		}
 	}
 
@@ -142,12 +149,7 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 					}
 				}
 
-				String strMsg = "racewin";
-				for(int i = 0; i < getPlayers(); i++) {
-					if(uidArray[i] != -1) strMsg += "\t" + uidArray[i];
-				}
-				strMsg += "\n";
-				netLobby.netPlayerClient.send(strMsg);
+				knetClient.fireTCP(RACE_WIN, true);
 
 				// Wait until everyone dies
 				engine.stat = GameEngine.STAT_NOTHING;
@@ -271,8 +273,7 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 	@Override
 	protected void netSendStats(GameEngine engine) {
 		if((engine.getPlayerID() == 0) && !netvsIsPractice && !netvsIsWatch()) {
-			String strMsg = "game\tstats\t" + engine.statistics.lines + "\t" + engine.statistics.pps + "\t" + engine.statistics.lpm + "\n";
-			netLobby.netPlayerClient.send(strMsg);
+			knetClient.fireUDP(GAME_STATS, engine.statistics);
 		}
 	}
 
@@ -280,10 +281,8 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 	 * Receive stats
 	 */
 	@Override
-	protected void netRecvStats(GameEngine engine, String[] message) {
-		if(message.length > 4) engine.statistics.lines = Integer.parseInt(message[4]);
-		if(message.length > 5) engine.statistics.pps = Float.parseFloat(message[5]);
-		if(message.length > 6) engine.statistics.lpm = Float.parseFloat(message[6]);
+	protected void netRecvStats(GameEngine engine, KNetEvent e) {
+		engine.statistics.copy((Statistics) e.get(GAME_STATS));
 		updateMeter(engine);
 	}
 
@@ -292,33 +291,21 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		int playerID = engine.getPlayerID();
-		String msg = "gstat\t";
-		msg += netvsPlayerPlace[playerID] + "\t";
-		msg += 0 + "\t" + 0 + "\t" + 0 + "\t";
-		msg += engine.statistics.lines + "\t" + engine.statistics.lpm + "\t";
-		msg += engine.statistics.totalPieceLocked + "\t" + engine.statistics.pps + "\t";
-		msg += netvsPlayTimer + "\t" + 0 + "\t" + netvsPlayerWinCount[playerID] + "\t" + netvsPlayerPlayCount[playerID];
-		msg += "\n";
-		netLobby.netPlayerClient.send(msg);
+		knetClient.fireTCP(GAME_END_STATS, engine.statistics);
 	}
 
 	/*
 	 * Receive end-of-game stats
 	 */
 	@Override
-	protected void netvsRecvEndGameStats(String[] message) {
-		int seatID = Integer.parseInt(message[2]);
+	protected void netvsRecvEndGameStats(KNetEvent e) {
+		int seatID = channelInfo.getSeatId(e);
 		int playerID = netvsGetPlayerIDbySeatID(seatID);
 
 		if((playerID != 0) || (netvsIsWatch())) {
 			GameEngine engine = owner.engine[playerID];
 
-			engine.statistics.lines = Integer.parseInt(message[8]);
-			engine.statistics.lpm = Float.parseFloat(message[9]);
-			engine.statistics.totalPieceLocked = Integer.parseInt(message[10]);
-			engine.statistics.pps = Float.parseFloat(message[11]);
-			engine.statistics.time = Integer.parseInt(message[12]);
+			engine.statistics.copy((Statistics) e.get(GAME_END_STATS));
 
 			netvsPlayerResultReceived[playerID] = true;
 		}

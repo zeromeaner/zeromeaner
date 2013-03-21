@@ -54,7 +54,6 @@ import javax.swing.event.InternalFrameEvent;
 
 
 import org.apache.log4j.Logger;
-import org.zeromeaner.game.net.NetObserverClient;
 import org.zeromeaner.game.play.GameManager;
 
 /**
@@ -279,9 +278,6 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		perfectYield = NullpoMinoInternalFrame.propConfig.getProperty("option.perfectYield", true);
 		syncDisplay = NullpoMinoInternalFrame.propConfig.getProperty("option.syncDisplay", true);
 
-		// ObserverStart
-		if(!isNetPlay) NullpoMinoInternalFrame.startObserverClient();
-
 		// Main loop
 		log.debug("Game thread start");
 		running = true;
@@ -355,8 +351,6 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 		NullpoMinoInternalFrame.gameManager.shutdown();
 		NullpoMinoInternalFrame.gameManager = null;
-
-		if(!isNetPlay) NullpoMinoInternalFrame.stopObserverClient();
 
 		log.debug("Game thread end");
 	}
@@ -626,6 +620,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 				}
 			} catch (Throwable e2) {}
 		} catch (Exception e) {
+			e.printStackTrace();
 			try {
 				if((NullpoMinoInternalFrame.gameManager != null) && NullpoMinoInternalFrame.gameManager.getQuitFlag()) {
 					shutdown();
@@ -697,19 +692,6 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 				NormalFontApplet.printFont(0, 480-16, df.format(actualFPS), NormalFontApplet.COLOR_BLUE, 1.0f);
 			else
 				NormalFontApplet.printFont(0, 480-16, df.format(actualFPS) + "/" + maxfpsCurrent, NormalFontApplet.COLOR_BLUE, 1.0f);
-		}
-
-		// ObserverInformation
-		NetObserverClient obClient = NullpoMinoInternalFrame.getObserverClient();
-		if((obClient != null) && obClient.isConnected()) {
-			int observerCount = obClient.getObserverCount();
-			int playerCount = obClient.getPlayerCount();
-			int fontcolor = NormalFontApplet.COLOR_BLUE;
-			if(observerCount > 1) fontcolor = NormalFontApplet.COLOR_GREEN;
-			if(observerCount > 0 && playerCount > 0) fontcolor = NormalFontApplet.COLOR_RED;
-			String strObserverInfo = String.format("%d/%d", observerCount, playerCount);
-			String strObserverString = String.format("%40s", strObserverInfo);
-			NormalFontApplet.printFont(0, 480 - 16, strObserverString, fontcolor);
 		}
 
 		// Displayed on the screen /ScreenshotCreating

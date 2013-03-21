@@ -1,14 +1,10 @@
 package org.zeromeaner.game.evil;
 
-import org.eviline.BasicPropertySource;
 import org.eviline.Shape;
 import org.eviline.randomizer.ConcurrentRandomizer;
 import org.eviline.randomizer.Randomizer;
 import org.eviline.randomizer.RandomizerFactory;
 import org.eviline.randomizer.RandomizerPresets;
-import org.eviline.randomizer.ThreadedMaliciousRandomizer;
-import org.eviline.randomizer.MaliciousRandomizer.MaliciousRandomizerProperties;
-
 import org.zeromeaner.game.play.GameEngine;
 
 public class TNConcurrentRandomizer extends TNRandomizer {

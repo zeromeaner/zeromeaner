@@ -16,21 +16,15 @@ import org.eviline.randomizer.RandomizerFactory;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.event.EventRenderer;
-import org.zeromeaner.game.net.NetPlayerClient;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
 import org.zeromeaner.game.subsystem.wallkick.StandardWallkick;
-import org.zeromeaner.gui.net.NetLobbyFrame;
 import org.zeromeaner.util.GeneralUtil;
 
 public class TNNetVSBattleMode extends NetVSBattleMode {
 	protected EventRenderer receiver;
 	
 	protected Map<GameEngine, TNNetplayRandomizer> randomizers = new HashMap<GameEngine, TNNetplayRandomizer>();
-	
-	protected NetLobbyFrame netLobby;
-	
-//	protected AtomicInteger sync;
 	
 	public TNNetVSBattleMode() {
 		LINE_ATTACK_TABLE =
@@ -117,12 +111,6 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 	}
 	
 	@Override
-	public void netplayInit(Object obj) {
-		netLobby = (NetLobbyFrame) obj;
-		super.netplayInit(obj);
-	}
-	
-	@Override
 	public boolean onReady(GameEngine engine, int playerID) {
 //		sync = new AtomicInteger(0);
 		return super.onReady(engine, playerID);
@@ -140,31 +128,7 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 	}
 	
 	@Override
-	public void netlobbyOnMessage(NetLobbyFrame lobby, NetPlayerClient client, String[] message) throws IOException {
-		super.netlobbyOnMessage(lobby, client, message);
-//		System.out.println(Arrays.toString(message));
-//		if("game".equals(message[0])) {
-//			if("eviline".equals(message[3])) {
-//				if("locked".equals(message[4])) {
-//					int playerID = Integer.parseInt(message[5]);
-//					sync.decrementAndGet();
-//				}
-//			}
-//			if("resultsscreen".equals(message[3]))
-//				sync.set(0);
-//		}
-//		if("playerlogout".equals(message[0]))
-//			sync.decrementAndGet();
-//		if("dead".equals(message[0]))
-//			sync.decrementAndGet();
-	}
-
-	@Override
 	public void pieceLocked(GameEngine engine, int playerID, int lines) {
-//		netLobby.netPlayerClient.send("game\teviline\tlocked\t" + netvsMySeatID + "\n");
-//	
-//		sync.addAndGet(netLobby.netPlayerClient.getPlayerCount() - 1);
-		
 		regenerate(engine);
 		super.pieceLocked(engine, playerID, lines);
 	}

@@ -36,6 +36,7 @@ import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.menu.AbstractMenuItem;
+import org.zeromeaner.gui.knet.KNetPanel;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
@@ -252,10 +253,10 @@ public abstract class AbstractMode implements GameMode {
 		return false;
 	}
 
-	public void netplayInit(Object obj) {
+	public void netplayInit(KNetPanel panel) {
 	}
 
-	public void netplayUnload(Object obj){
+	public void netplayUnload(KNetPanel panel){
 	}
 
 	public void netplayOnRetryKey(GameEngine engine, int playerID) {

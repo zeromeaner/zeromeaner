@@ -31,6 +31,7 @@ package org.zeromeaner.game.subsystem.mode;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.gui.knet.KNetPanel;
 import org.zeromeaner.util.CustomProperties;
 
 /**
@@ -379,13 +380,13 @@ public interface GameMode {
 	 * Initialization for netplay.
 	 * @param obj Any object (Currently NetLobbyFrame)
 	 */
-	public void netplayInit(Object obj);
+	public void netplayInit(KNetPanel panel);
 
 	/**
 	 * When the mode unloads during netplay (Called when mode change happens)
 	 * @param obj Any object (Currently NetLobbyFrame)
 	 */
-	public void netplayUnload(Object obj);
+	public void netplayUnload(KNetPanel panel);
 
 	/**
 	 * Called when retry key is pressed during netplay

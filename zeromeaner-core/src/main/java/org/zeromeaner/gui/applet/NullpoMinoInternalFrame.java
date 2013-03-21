@@ -80,17 +80,14 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.RuleOptions;
-import org.zeromeaner.game.net.NetObserverClient;
-import org.zeromeaner.game.net.NetPlayerClient;
-import org.zeromeaner.game.net.NetRoomInfo;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
-import org.zeromeaner.gui.net.NetLobbyFrame;
-import org.zeromeaner.gui.net.NetLobbyListener;
+import org.zeromeaner.gui.knet.KNetPanelEvent;
+import org.zeromeaner.gui.knet.KNetPanelListener;
 import org.zeromeaner.gui.net.UpdateChecker;
 import org.zeromeaner.gui.net.UpdateCheckerListener;
 import org.zeromeaner.util.CustomProperties;
@@ -103,7 +100,7 @@ import org.zeromeaner.util.ModeManager;
 /**
  * zeromeaner SwingVersion
  */
-public class NullpoMinoInternalFrame extends JInternalFrame implements ActionListener, NetLobbyListener, UpdateCheckerListener {
+public class NullpoMinoInternalFrame extends JInternalFrame implements ActionListener, KNetPanelListener, UpdateCheckerListener {
 	/** Serial version ID */
 	private static final long serialVersionUID = 1L;
 
@@ -130,9 +127,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 	/** Tuning Settings screen frame */
 	public static GameTuningInternalFrame gameTuningFrame;
-
-	/** Update check Setting screen frame */
-	public static UpdateCheckInternalFrame updateCheckFrame;
 
 	/** Command that was passed to the programLinesArgumentcount */
 	public static String[] programArgs;
@@ -187,9 +181,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 	/** Lobby screen */
 	public static NetLobbyInternalFrame netLobby;
-
-	/** ObserverClient */
-	public static NetObserverClient netObserverClient;
 
 	/** Mode Select the on-screen label(NewVersionIf there is it switches) */
 	public static JLabel lModeSelect;
@@ -710,13 +701,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		miKeyConfig2P.setActionCommand("Menu_KeyConfig2P");
 		menuConfig.add(miKeyConfig2P);
 
-		// Update check Setting
-		JMenuItem miUpdateCheck = new JMenuItem(getUIText("Menu_UpdateCheck"));
-		miUpdateCheck.setMnemonic('D');
-		miUpdateCheck.addActionListener(this);
-		miUpdateCheck.setActionCommand("Menu_UpdateCheck");
-		menuConfig.add(miUpdateCheck);
-
 		// Other Settings
 		JMenuItem miGeneralConfig = new JMenuItem(getUIText("Menu_GeneralConfig"));
 		miGeneralConfig.setMnemonic('G');
@@ -967,14 +951,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			gameTuningFrame.load(1);
 			gameTuningFrame.setVisible(true);
 		}
-		// Update check Setting
-		else if(e.getActionCommand() == "Menu_UpdateCheck") {
-			if(updateCheckFrame == null) {
-				updateCheckFrame = new UpdateCheckInternalFrame(this);
-			}
-			updateCheckFrame.load();
-			updateCheckFrame.setVisible(true);
-		}
 		// Other Settings
 		else if(e.getActionCommand() == "Menu_GeneralConfig") {
 			if(generalConfigFrame == null) {
@@ -998,7 +974,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		if(aiSelectFrame != null) aiSelectFrame.setVisible(false);
 		if(generalConfigFrame != null) generalConfigFrame.setVisible(false);
 		if(gameTuningFrame != null) gameTuningFrame.setVisible(false);
-		if(updateCheckFrame != null) updateCheckFrame.setVisible(false);
 	}
 
 	/**
@@ -1171,7 +1146,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 		// Lobby Initialization
 		netLobby = new NetLobbyInternalFrame();
-		netLobby.addListener(this);
+		netLobby.getKnetPanel().addKNetPanelListener(this);
 
 		// Mode initialization
 		enterNewMode(null);
@@ -1202,7 +1177,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 				if(gameManager.engine[0].ai != null) {
 					gameManager.engine[0].ai.shutdown(gameManager.engine[0], 0);
 				}
-				previousMode.netplayUnload(netLobby.frame);
+				previousMode.netplayUnload(netLobby.getKnetPanel());
 			}
 			gameManager.mode = newMode;
 			gameManager.init();
@@ -1265,7 +1240,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 				gameManager.engine[i].init();
 			}
 
-			newMode.netplayInit(netLobby.frame);
+			newMode.netplayInit(netLobby.getKnetPanel());
 		} else {
 			log.error("This mode does not support netplay:" + modeName);
 		}
@@ -1273,86 +1248,39 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		if(gameFrame != null) gameFrame.updateTitleBarCaption();
 	}
 
-	/**
-	 * ObserverStart the client
-	 */
-	public synchronized static void startObserverClient() {
-		log.debug("startObserverClient called");
-
-		propObserver = new CustomProperties();
-		try {
-			ResourceInputStream in = new ResourceInputStream("config/setting/netobserver.cfg");
-			propObserver.load(in);
-			in.close();
-		} catch (IOException e) {}
-
-		if(propObserver.getProperty("observer.enable", false) == false) return;
-		if((netObserverClient != null) && netObserverClient.isConnected()) return;
-
-		String host = propObserver.getProperty("observer.host", "");
-		int port = propObserver.getProperty("observer.port", NetObserverClient.DEFAULT_PORT);
-
-		if((host.length() > 0) && (port > 0)) {
-			netObserverClient = new NetObserverClient(host, port);
-			netObserverClient.start();
-			log.debug("Observer started");
-		}
+	@Override
+	public void knetPanelInit(KNetPanelEvent e) {
 	}
-
-	/**
-	 * ObserverStop the client
-	 */
-	public synchronized static void stopObserverClient() {
-		log.debug("stopObserverClient called");
-
-		if(netObserverClient != null) {
-			if(netObserverClient.isConnected()) {
-				netObserverClient.send("disconnect\n");
-			}
-			netObserverClient.threadRunning = false;
-			netObserverClient.connectedFlag = false;
-			netObserverClient = null;
-			log.debug("Observer stoped");
-		}
+	
+	@Override
+	public void knetPanelDisconnected(KNetPanelEvent e) {
+		if(gameFrame != null) 
+			gameFrame.strModeToEnter = null;
 	}
-
-	/**
-	 * ObserverClient acquisition
-	 * @return ObserverClient
-	 */
-	public synchronized static NetObserverClient getObserverClient() {
-		return netObserverClient;
-	}
-
-	public void netlobbyOnDisconnect(NetLobbyFrame lobby, NetPlayerClient client, Throwable ex) {
-		if(gameFrame != null) gameFrame.strModeToEnter = null;
-	}
-
-	public void netlobbyOnExit(NetLobbyFrame lobby) {
+	
+	@Override
+	public void knetPanelShutdown(KNetPanelEvent e) {
 		if(gameManager != null) {
 			gameManager.engine[0].quitflag = true;
 		}
 	}
 
-	public void netlobbyOnInit(NetLobbyFrame lobby) {
+	@Override
+	public void knetPanelConnected(KNetPanelEvent e) {
 	}
 
-	public void netlobbyOnLoginOK(NetLobbyFrame lobby, NetPlayerClient client) {
+	@Override
+	public void knetPanelJoined(KNetPanelEvent e) {
+		if(gameFrame != null)
+			gameFrame.strModeToEnter = e.getChannel().getMode();
 	}
 
-	public void netlobbyOnMessage(NetLobbyFrame lobby, NetPlayerClient client, String[] message) throws IOException {
+	@Override
+	public void knetPanelParted(KNetPanelEvent e) {
+		if(gameFrame != null) 
+			gameFrame.strModeToEnter = null;
 	}
-
-	public void netlobbyOnRoomJoin(NetLobbyFrame lobby, NetPlayerClient client, NetRoomInfo roomInfo) {
-		//enterNewMode(roomInfo.strMode);
-		if(gameFrame != null) gameFrame.strModeToEnter = roomInfo.strMode;
-	}
-
-	public void netlobbyOnRoomLeave(NetLobbyFrame lobby, NetPlayerClient client) {
-		//enterNewMode(null);
-		if(gameFrame != null) gameFrame.strModeToEnter = null;
-	}
-
+	
 	public void onUpdateCheckerStart() {
 	}
 

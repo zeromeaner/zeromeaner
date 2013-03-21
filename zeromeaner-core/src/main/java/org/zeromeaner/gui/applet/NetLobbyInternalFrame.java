@@ -4,26 +4,20 @@ import java.awt.BorderLayout;
 
 import javax.swing.JInternalFrame;
 
-import org.zeromeaner.gui.net.NetLobbyAdapter;
-import org.zeromeaner.gui.net.NetLobbyFrame;
-import org.zeromeaner.gui.net.NetLobbyListener;
+import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.zeromeaner.gui.knet.KNetPanel;
+import org.zeromeaner.gui.knet.KNetPanelAdapter;
+import org.zeromeaner.gui.knet.KNetPanelEvent;
+import org.zeromeaner.gui.knet.KNetPanelListener;
 
 public class NetLobbyInternalFrame extends JInternalFrame {
-	public NetLobbyFrame frame;
+	private KNetPanel knetPanel;
 	
 	public NetLobbyInternalFrame() {
-		this.frame = new NetLobbyFrame();
-		
-		frame.addListener(new NetLobbyAdapter() {
-			public void netlobbyOnExit(NetLobbyFrame lobby) {
-				NetLobbyInternalFrame.this.setVisible(false);
-			}
-		});
-		
-		setTitle(frame.getTitle());
+		knetPanel = new KNetPanel();
 		
 		setLayout(new BorderLayout());
-		add(frame.getContentPane(), BorderLayout.CENTER);
+		add(knetPanel, BorderLayout.CENTER);
 
 		setSize(800, 300);
 		
@@ -34,14 +28,25 @@ public class NetLobbyInternalFrame extends JInternalFrame {
 	}
 	
 	public void init() {
-		frame.init();
+		knetPanel.init();
+		knetPanel.addKNetPanelListener(new KNetPanelAdapter() {
+			@Override
+			public void knetPanelJoined(KNetPanelEvent e) {
+				KNetChannelInfo ci = e.getSource().getChannels().get(e.getChannel().getId()).getChannel();
+				NullpoMinoInternalFrame.gameFrame.strModeToEnter = ci.getMode();
+			}
+			@Override
+			public void knetPanelParted(KNetPanelEvent e) {
+				NullpoMinoInternalFrame.gameFrame.strModeToEnter = null;
+			}
+		});
 	}
 	
 	public void shutdown() {
-		frame.shutdown();
+		knetPanel.shutdown();
 	}
 	
-	public void addListener(NetLobbyListener l) {
-		frame.addListener(l);
+	public KNetPanel getKnetPanel() {
+		return knetPanel;
 	}
 }

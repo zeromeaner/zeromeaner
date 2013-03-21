@@ -32,16 +32,182 @@ import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Piece;
+import org.zeromeaner.game.component.SpeedParam;
+import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
-import org.zeromeaner.game.net.NetUtil;
+import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
+
+import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
 /**
  * COMBO RACE Mode
  */
 public class ComboRaceMode extends AbstractNetMode {
+	public static class Stats {
+		private Statistics stats;
+		private int goalType;
+		private boolean gameActive;
+		private boolean timerActive;
+		private int meterColor;
+		private int meterValue;
+		private int bg;
+		private int scGetTime;
+		private int lastEvent;
+		private boolean lastB2b;
+		private int lastCombo;
+		private int lastPiece;
+		private int combo;
+		
+		public Statistics getStats() {
+			return stats;
+		}
+		public void setStats(Statistics stats) {
+			this.stats = stats;
+		}
+		public int getGoalType() {
+			return goalType;
+		}
+		public void setGoalType(int goalType) {
+			this.goalType = goalType;
+		}
+		public boolean isGameActive() {
+			return gameActive;
+		}
+		public void setGameActive(boolean gameActive) {
+			this.gameActive = gameActive;
+		}
+		public boolean isTimerActive() {
+			return timerActive;
+		}
+		public void setTimerActive(boolean timerActive) {
+			this.timerActive = timerActive;
+		}
+		public int getMeterColor() {
+			return meterColor;
+		}
+		public void setMeterColor(int meterColor) {
+			this.meterColor = meterColor;
+		}
+		public int getMeterValue() {
+			return meterValue;
+		}
+		public void setMeterValue(int meterValue) {
+			this.meterValue = meterValue;
+		}
+		public int getBg() {
+			return bg;
+		}
+		public void setBg(int bg) {
+			this.bg = bg;
+		}
+		public int getScGetTime() {
+			return scGetTime;
+		}
+		public void setScGetTime(int scGetTime) {
+			this.scGetTime = scGetTime;
+		}
+		public int getLastEvent() {
+			return lastEvent;
+		}
+		public void setLastEvent(int lastEvent) {
+			this.lastEvent = lastEvent;
+		}
+		public boolean isLastB2b() {
+			return lastB2b;
+		}
+		public void setLastB2b(boolean lastB2b) {
+			this.lastB2b = lastB2b;
+		}
+		public int getLastCombo() {
+			return lastCombo;
+		}
+		public void setLastCombo(int lastCombo) {
+			this.lastCombo = lastCombo;
+		}
+		public int getLastPiece() {
+			return lastPiece;
+		}
+		public void setLastPiece(int lastPiece) {
+			this.lastPiece = lastPiece;
+		}
+		public int getCombo() {
+			return combo;
+		}
+		public void setCombo(int combo) {
+			this.combo = combo;
+		}
+	}
+	
+	public static class Options {
+		private SpeedParam speed;
+		private int bgmno;
+		private int goalType;
+		private int presetNumber;
+		private int shapeType;
+		private int comboColumn;
+		private int comboWidth;
+		private int ceilingAdjust;
+		private boolean spawnAboveField;
+		
+		public SpeedParam getSpeed() {
+			return speed;
+		}
+		public void setSpeed(SpeedParam speed) {
+			this.speed = speed;
+		}
+		public int getBgmno() {
+			return bgmno;
+		}
+		public void setBgmno(int bgmno) {
+			this.bgmno = bgmno;
+		}
+		public int getGoalType() {
+			return goalType;
+		}
+		public void setGoalType(int goalType) {
+			this.goalType = goalType;
+		}
+		public int getPresetNumber() {
+			return presetNumber;
+		}
+		public void setPresetNumber(int presetNumber) {
+			this.presetNumber = presetNumber;
+		}
+		public int getShapeType() {
+			return shapeType;
+		}
+		public void setShapeType(int shapeType) {
+			this.shapeType = shapeType;
+		}
+		public int getComboColumn() {
+			return comboColumn;
+		}
+		public void setComboColumn(int comboColumn) {
+			this.comboColumn = comboColumn;
+		}
+		public int getComboWidth() {
+			return comboWidth;
+		}
+		public void setComboWidth(int comboWidth) {
+			this.comboWidth = comboWidth;
+		}
+		public int getCeilingAdjust() {
+			return ceilingAdjust;
+		}
+		public void setCeilingAdjust(int ceilingAdjust) {
+			this.ceilingAdjust = ceilingAdjust;
+		}
+		public boolean isSpawnAboveField() {
+			return spawnAboveField;
+		}
+		public void setSpawnAboveField(boolean spawnAboveField) {
+			this.spawnAboveField = spawnAboveField;
+		}
+	}
+	
 	/** Current version */
 	private static final int CURRENT_VERSION = 1;
 
@@ -296,12 +462,8 @@ public class ComboRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
-		// NET: Net Ranking
-		if(netIsNetRankingDisplayMode) {
-			netOnUpdateNetPlayRanking(engine, goaltype);
-		}
 		// Menu
-		else if(engine.getOwner().replayMode == false) {
+		if(engine.getOwner().replayMode == false) {
 			// Configuration changes
 			int change = updateCursor(engine, 15);
 
@@ -417,7 +579,9 @@ public class ComboRaceMode extends AbstractNetMode {
 					receiver.saveModeConfig(owner.modeConfig);
 
 					// NET: Signal start of the game
-					if(netIsNetPlay) netLobby.netPlayerClient.send("start1p\n");
+					if(netIsNetPlay) 
+//						netLobby.netPlayerClient.send("start1p\n");
+						knetClient.fireTCP(START_1P, true);
 
 					return false;
 				}
@@ -426,11 +590,6 @@ public class ComboRaceMode extends AbstractNetMode {
 			// Cancel
 			if(engine.ctrl.isPush(Controller.BUTTON_B) && !netIsNetPlay) {
 				engine.quitflag = true;
-			}
-
-			// NET: Netplay Ranking
-			if(engine.ctrl.isPush(Controller.BUTTON_D) && netIsNetPlay && netIsNetRankingViewOK(engine)) {
-				netEnterNetPlayRankingScreen(engine, playerID, goaltype);
 			}
 
 			engine.statc[3]++;
@@ -453,10 +612,7 @@ public class ComboRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		if(netIsNetRankingDisplayMode) {
-			// NET: Netplay Ranking
-			netOnRenderNetPlayRanking(engine, playerID, receiver);
-		} else if(engine.statc[2] < 6) {
+		if(engine.statc[2] < 6) {
 			String strSpawn = spawnAboveField ? "ABOVE" : "BELOW";
 
 			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
@@ -661,7 +817,6 @@ public class ComboRaceMode extends AbstractNetMode {
 		netDrawSpectatorsCount(engine, 0, 18);
 		// NET: All number of players
 		if(playerID == getPlayers() - 1) {
-			netDrawAllPlayersCount(engine);
 			netDrawGameRate(engine);
 		}
 		// NET: Player name (It may also appear in offline replay)
@@ -899,41 +1054,44 @@ public class ComboRaceMode extends AbstractNetMode {
 	@Override
 	protected void netSendStats(GameEngine engine) {
 		int bg = owner.backgroundStatus.fadesw ? owner.backgroundStatus.fadebg : owner.backgroundStatus.bg;
-		String msg = "game\tstats\t";
-		msg += engine.statistics.lines + "\t" + engine.statistics.totalPieceLocked + "\t";
-		msg += engine.statistics.time + "\t" + engine.statistics.lpm + "\t";
-		msg += engine.statistics.pps + "\t" + goaltype + "\t";
-		msg += engine.gameActive + "\t" + engine.timerActive + "\t";
-		msg += engine.meterColor + "\t" + engine.meterValue + "\t";
-		msg += bg + "\t";
-		msg += scgettime + "\t" + lastevent + "\t" + lastb2b + "\t" + lastcombo + "\t" + lastpiece + "\t";
-		msg += engine.statistics.maxCombo + "\t" + engine.combo + "\n";
-		netLobby.netPlayerClient.send(msg);
+		Stats stats = new Stats();
+		stats.setStats(engine.statistics);
+		stats.setGoalType(goaltype);
+		stats.setGameActive(engine.gameActive);
+		stats.setTimerActive(engine.timerActive);
+		stats.setMeterColor(engine.meterColor);
+		stats.setMeterValue(engine.meterValue);
+		stats.setBg(bg);
+		stats.setScGetTime(scgettime);
+		stats.setLastEvent(lastevent);
+		stats.setLastB2b(lastb2b);
+		stats.setLastCombo(lastcombo);
+		stats.setLastPiece(lastpiece);
+		stats.setCombo(engine.combo);
+		knetClient.fireUDP(GAME, true, GAME_STATS, stats);
 	}
 
 	/**
 	 * NET: Receive various in-game stats (as well as goaltype)
 	 */
 	@Override
-	protected void netRecvStats(GameEngine engine, String[] message) {
-		engine.statistics.lines = Integer.parseInt(message[4]);
-		engine.statistics.totalPieceLocked = Integer.parseInt(message[5]);
-		engine.statistics.time = Integer.parseInt(message[6]);
-		engine.statistics.lpm = Float.parseFloat(message[7]);
-		engine.statistics.pps = Float.parseFloat(message[8]);
-		goaltype = Integer.parseInt(message[9]);
-		engine.gameActive = Boolean.parseBoolean(message[10]);
-		engine.timerActive = Boolean.parseBoolean(message[11]);
-		engine.meterColor = Integer.parseInt(message[12]);
-		engine.meterValue = Integer.parseInt(message[13]);
-		owner.backgroundStatus.bg = Integer.parseInt(message[14]);
-		scgettime = Integer.parseInt(message[15]);
-		lastevent = Integer.parseInt(message[16]);
-		lastb2b = Boolean.parseBoolean(message[17]);
-		lastcombo = Integer.parseInt(message[18]);
-		lastpiece = Integer.parseInt(message[19]);
-		engine.statistics.maxCombo = Integer.parseInt(message[20]);
-		engine.combo = Integer.parseInt(message[21]);
+	protected void netRecvStats(GameEngine engine, KNetEvent e) {
+		Stats stats = (Stats) e.get(GAME_STATS);
+		
+		engine.statistics.copy(stats.getStats());
+		
+		goaltype = stats.getGoalType();
+		engine.gameActive = stats.isGameActive();
+		engine.timerActive = stats.isTimerActive();
+		engine.meterColor = stats.getMeterColor();
+		engine.meterValue = stats.getMeterValue();
+		owner.backgroundStatus.bg = stats.getBg();
+		scgettime = stats.getScGetTime();
+		lastevent = stats.getLastEvent();
+		lastb2b = stats.isLastB2b();
+		lastcombo = stats.getLastCombo();
+		lastpiece = stats.getLastPiece();
+		engine.combo = stats.getCombo();
 	}
 
 	/**
@@ -942,15 +1100,7 @@ public class ComboRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		String subMsg = "";
-		subMsg += "MAX COMBO;" + (engine.statistics.maxCombo - 1) + "\t";
-		subMsg += "TIME;" + GeneralUtil.getTime(engine.statistics.time) + "\t";
-		subMsg += "LINE;" + engine.statistics.lines + "\t";
-		subMsg += "PIECE;" + engine.statistics.totalPieceLocked + "\t";
-		subMsg += "LINE/MIN;" + engine.statistics.lpm + "\t";
-		subMsg += "PIECE/SEC;" + engine.statistics.pps + "\t";
-		String msg = "gstat1p\t" + NetUtil.urlEncode(subMsg) + "\n";
-		netLobby.netPlayerClient.send(msg);
+		knetClient.fireTCP(GAME_END_STATS, engine.statistics);
 	}
 
 	/**
@@ -959,34 +1109,34 @@ public class ComboRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendOptions(GameEngine engine) {
-		String msg = "game\toption\t";
-		msg += engine.speed.gravity + "\t" + engine.speed.denominator + "\t" + engine.speed.are + "\t";
-		msg += engine.speed.areLine + "\t" + engine.speed.lineDelay + "\t" + engine.speed.lockDelay + "\t";
-		msg += engine.speed.das + "\t" + bgmno + "\t" + goaltype + "\t" + presetNumber + "\t";
-		msg += shapetype + "\t" + comboColumn + "\t" + comboWidth + "\t" + ceilingAdjust + "\t" + spawnAboveField + "\n";
-		netLobby.netPlayerClient.send(msg);
+		Options o = new Options();
+		o.setSpeed(engine.speed);
+		o.setBgmno(bgmno);
+		o.setGoalType(goaltype);
+		o.setPresetNumber(presetNumber);
+		o.setShapeType(shapetype);
+		o.setComboColumn(comboColumn);
+		o.setComboWidth(comboWidth);
+		o.setCeilingAdjust(ceilingAdjust);
+		o.setSpawnAboveField(spawnAboveField);
+		knetClient.fireTCP(GAME_OPTIONS, o);
 	}
 
 	/**
 	 * NET: Receive game options
 	 */
 	@Override
-	protected void netRecvOptions(GameEngine engine, String[] message) {
-		engine.speed.gravity = Integer.parseInt(message[4]);
-		engine.speed.denominator = Integer.parseInt(message[5]);
-		engine.speed.are = Integer.parseInt(message[6]);
-		engine.speed.areLine = Integer.parseInt(message[7]);
-		engine.speed.lineDelay = Integer.parseInt(message[8]);
-		engine.speed.lockDelay = Integer.parseInt(message[9]);
-		engine.speed.das = Integer.parseInt(message[10]);
-		bgmno = Integer.parseInt(message[11]);
-		goaltype = Integer.parseInt(message[12]);
-		presetNumber = Integer.parseInt(message[13]);
-		shapetype = Integer.parseInt(message[14]);
-		comboColumn = Integer.parseInt(message[15]);
-		comboWidth = Integer.parseInt(message[16]);
-		ceilingAdjust = Integer.parseInt(message[17]);
-		spawnAboveField = Boolean.parseBoolean(message[18]);
+	protected void netRecvOptions(GameEngine engine, KNetEvent e) {
+		Options o = (Options) e.get(GAME_OPTIONS);
+		engine.speed.copy(o.getSpeed());
+		bgmno = o.getBgmno();
+		goaltype = o.getGoalType();
+		presetNumber = o.getPresetNumber();
+		shapetype = o.getShapeType();
+		comboColumn = o.getComboColumn();
+		comboWidth = o.getComboWidth();
+		ceilingAdjust = o.getCeilingAdjust();
+		spawnAboveField = o.isSpawnAboveField();
 	}
 
 	/**
