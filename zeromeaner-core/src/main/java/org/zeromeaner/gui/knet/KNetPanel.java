@@ -123,6 +123,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 			p.add(remove);
 			add(p, BorderLayout.EAST);
 			
+			connectionsModel.addElement("www.zeromeaner.org:61897");
 			connectionsModel.addElement("localhost:61897");
 			connectionsList.setSelectedIndex(0);
 		}
