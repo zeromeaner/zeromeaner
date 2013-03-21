@@ -5,6 +5,8 @@ import java.awt.BorderLayout;
 import javax.swing.JInternalFrame;
 
 import org.zeromeaner.gui.knet.KNetPanel;
+import org.zeromeaner.gui.knet.KNetPanelAdapter;
+import org.zeromeaner.gui.knet.KNetPanelEvent;
 import org.zeromeaner.gui.knet.KNetPanelListener;
 
 public class NetLobbyInternalFrame extends JInternalFrame {
@@ -26,6 +28,16 @@ public class NetLobbyInternalFrame extends JInternalFrame {
 	
 	public void init() {
 		knetPanel.init();
+		knetPanel.addKNetPanelListener(new KNetPanelAdapter() {
+			@Override
+			public void knetPanelJoined(KNetPanelEvent e) {
+				NullpoMinoInternalFrame.gameFrame.strModeToEnter = e.getChannel().getMode();
+			}
+			@Override
+			public void knetPanelParted(KNetPanelEvent e) {
+				NullpoMinoInternalFrame.gameFrame.strModeToEnter = null;
+			}
+		});
 	}
 	
 	public void shutdown() {

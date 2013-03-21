@@ -84,7 +84,7 @@ public class KNetChannelInfoPanel extends JPanel {
 	{{
 		DefaultComboBoxModel model = new DefaultComboBoxModel();
 		mode.setModel(model);
-		Predicate<Class<? extends AbstractNetMode>> VS_MODE = new AbstractPredicate<Class<? extends AbstractNetMode>>((Class) AbstractNetMode.class) {
+		Predicate<Class<? extends AbstractNetMode>> VS_MODE = new AbstractPredicate<Class<? extends AbstractNetMode>>((Class) Class.class) {
 			@Override
 			public boolean test0(Class<? extends AbstractNetMode> obj, Integer index) {
 				int maxPlayers = (Integer) KNetChannelInfoPanel.this.maxPlayers.getValue();

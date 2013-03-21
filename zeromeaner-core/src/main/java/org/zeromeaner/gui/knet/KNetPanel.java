@@ -282,6 +282,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 					connectedPanel.channels.indexOfComponent(this),
 					new ImageIcon(KNetPanel.class.getClassLoader().getResource("org/zeromeaner/game/knet/active-channel.png")));
 			revalidate();
+			fireKnetPanelJoined(getChannel());
 		}
 		
 		public void leave() {
@@ -294,6 +295,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 					null);
 			activeChannel = null;
 			revalidate();
+			fireKnetPanelParted(getChannel());
 		}
 
 		private void update() {
@@ -574,5 +576,9 @@ public class KNetPanel extends JPanel implements KNetListener {
 			}
 			revalidate();
 		}
+	}
+
+	public KNetClient getClient() {
+		return client;
 	}
 }

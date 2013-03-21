@@ -24,6 +24,7 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.gui.knet.KNetPanel;
+import org.zeromeaner.gui.knet.KNetPanelListener;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
@@ -229,14 +230,18 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 * NET: Netplay Initialization. NetDummyMode will set the lobby's current mode to this.
 	 */
 	@Override
-	public void netplayInit(Object obj) {
+	public void netplayInit(KNetPanel obj) {
+		if(obj.getClient() != null)
+			obj.getClient().addKNetListener(this);
 	}
 
 	/**
 	 * NET: Netplay Unload. NetDummyMode will set the lobby's current mode to null.
 	 */
 	@Override
-	public void netplayUnload(Object obj) {
+	public void netplayUnload(KNetPanel obj) {
+		if(obj.getClient() != null)
+			obj.getClient().removeKNetListener(this);
 	}
 
 	/**
