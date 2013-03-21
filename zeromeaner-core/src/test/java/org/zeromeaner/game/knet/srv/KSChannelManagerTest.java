@@ -9,6 +9,7 @@ import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.knet.KNetListener;
 import org.zeromeaner.game.knet.KNetServer;
+import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 
 import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
@@ -34,7 +35,7 @@ public class KSChannelManagerTest {
 			@Override
 			public void knetEvented(KNetClient client, KNetEvent e) {
 				System.out.println(e);
-				if(e.is(CHANNEL_LIST) && e.is(PAYLOAD))
+				if(e.is(CHANNEL_LIST) && (e.get(CHANNEL_INFO) instanceof KNetChannelInfo[]) )
 					sync.release();
 			}
 		});
