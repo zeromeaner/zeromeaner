@@ -233,6 +233,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	public void netplayInit(KNetPanel obj) {
 		if(obj.getClient() != null)
 			obj.getClient().addKNetListener(this);
+		if(obj.getActiveChannel() != null)
+			channelInfo = obj.getActiveChannel().getChannel();
 	}
 
 	/**

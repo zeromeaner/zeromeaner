@@ -261,6 +261,8 @@ public class AbstractNetVSMode extends AbstractNetMode {
 	 * @return true if watch mode
 	 */
 	protected boolean netvsIsWatch() {
+		if(channelInfo == null || knetClient == null)
+			return true;
 		return !channelInfo.getPlayers().contains(knetClient.getSource());
 	}
 

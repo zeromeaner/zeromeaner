@@ -581,4 +581,12 @@ public class KNetPanel extends JPanel implements KNetListener {
 	public KNetClient getClient() {
 		return client;
 	}
+
+	public Map<Integer, ChannelPanel> getChannels() {
+		return channels;
+	}
+
+	public ChannelPanel getActiveChannel() {
+		return activeChannel;
+	}
 }

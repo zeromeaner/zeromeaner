@@ -147,9 +147,11 @@ public class KNetChannelInfoPanel extends JPanel {
 	
 	public void updateChannel() {
 		channel.setName(name.getText());
+		channel.setMode((String) mode.getSelectedItem());
 	}
 	
 	public void updateEditor() {
 		name.setText(channel.getName());
+		mode.setSelectedItem(channel.getMode());
 	}
 }

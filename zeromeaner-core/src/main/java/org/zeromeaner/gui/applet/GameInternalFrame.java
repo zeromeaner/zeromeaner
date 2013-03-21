@@ -620,6 +620,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 				}
 			} catch (Throwable e2) {}
 		} catch (Exception e) {
+			e.printStackTrace();
 			try {
 				if((NullpoMinoInternalFrame.gameManager != null) && NullpoMinoInternalFrame.gameManager.getQuitFlag()) {
 					shutdown();
