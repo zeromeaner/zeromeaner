@@ -18,7 +18,7 @@ public class KSChannelManagerTest {
 	
 	@BeforeClass
 	public static void beforeClass() throws Exception {
-		server = new KNetServer(61897);
+		server = new KNetServer(61899);
 	}
 	
 	@AfterClass
