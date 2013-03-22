@@ -39,6 +39,10 @@ public class NetLobbyInternalFrame extends JInternalFrame {
 			public void knetPanelParted(KNetPanelEvent e) {
 				NullpoMinoInternalFrame.gameFrame.strModeToEnter = null;
 			}
+			@Override
+			public void knetPanelShutdown(KNetPanelEvent e) {
+				setVisible(false);
+			}
 		});
 	}
 	
