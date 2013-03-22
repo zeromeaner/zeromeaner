@@ -92,6 +92,7 @@ import org.zeromeaner.gui.net.UpdateChecker;
 import org.zeromeaner.gui.net.UpdateCheckerListener;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
+import org.zeromeaner.util.ResourceFileSystemView;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
@@ -626,12 +627,14 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		miOpen.setActionCommand("Menu_Open");
 		menuFile.add(miOpen);
 
-		// NetPlay start
-		JMenuItem miNetPlay = new JMenuItem(getUIText("Menu_NetPlay"));
-		miNetPlay.setMnemonic('N');
-		miNetPlay.addActionListener(this);
-		miNetPlay.setActionCommand("Menu_NetPlay");
-		menuFile.add(miNetPlay);
+		if(GameManager.DEV_BUILD) {
+			// NetPlay start
+			JMenuItem miNetPlay = new JMenuItem(getUIText("Menu_NetPlay"));
+			miNetPlay.setMnemonic('N');
+			miNetPlay.addActionListener(this);
+			miNetPlay.setActionCommand("Menu_NetPlay");
+			menuFile.add(miNetPlay);
+		}
 
 		// End
 //		JMenuItem miExit = new JMenuItem(getUIText("Menu_Exit"));
@@ -853,12 +856,23 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		// Open Replay
 		else if(e.getActionCommand() == "Menu_Open") {
 			if(replayFileChooser == null) {
-				File dir = new File(propGlobal.getProperty("custom.replay.directory", "replay"));
-				replayFileChooser = new JFileChooser(dir);
+//				File dir = new File(propGlobal.getProperty("custom.replay.directory", "replay"));
+				replayFileChooser = new JFileChooser(new ResourceFileSystemView() {
+					@Override
+					protected String url() {
+						return super.url() + "replay/";
+					}
+					@Override
+					public Boolean isTraversable(File f) {
+						if(f.getName().endsWith(".rep"))
+							return false;
+						return super.isTraversable(f);
+					}
+				});
 				replayFileChooser.addChoosableFileFilter(new ReplayFileFilter());
 			}
 			if(replayFileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-				startReplayGame(replayFileChooser.getSelectedFile().getPath());
+				startReplayGame("replay/" + replayFileChooser.getSelectedFile().getPath());
 				if(gameFrame == null) {
 					gameFrame = new GameInternalFrame(this);
 				}
