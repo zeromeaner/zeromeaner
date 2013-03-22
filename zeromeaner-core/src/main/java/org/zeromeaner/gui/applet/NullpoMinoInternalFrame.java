@@ -867,7 +867,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 				});
 				replayFileChooser.addChoosableFileFilter(new ReplayFileFilter());
 			}
-			if(replayFileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			if(replayFileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION && replayFileChooser.getSelectedFile().getName().endsWith(".rep")) {
 				startReplayGame("replay/" + replayFileChooser.getSelectedFile().getPath());
 				if(gameFrame == null) {
 					gameFrame = new GameInternalFrame(this);
