@@ -37,6 +37,7 @@ import org.zeromeaner.game.knet.KNetEventSource;
 import org.zeromeaner.game.knet.KNetListener;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 import org.zeromeaner.game.knet.obj.KNetGameInfo;
+import org.zeromeaner.game.play.GameManager;
 
 import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
@@ -89,19 +90,10 @@ public class KNetPanel extends JPanel implements KNetListener {
 			}
 		});
 		
-		private JButton add = new JButton(new AbstractAction("Add Server") {
+		private JButton exit = new JButton(new AbstractAction("Exit NetPlay") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		
-		private JButton remove = new JButton(new AbstractAction("Remove Server") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				shutdown();
 			}
 		});
 		
@@ -119,12 +111,15 @@ public class KNetPanel extends JPanel implements KNetListener {
 			add(p, BorderLayout.CENTER);
 			p = new JPanel(new GridLayout(0, 1));
 			p.add(connect);
-			p.add(add);
-			p.add(remove);
+			p.add(exit);
 			add(p, BorderLayout.EAST);
 			
-			connectionsModel.addElement("www.zeromeaner.org:61897");
-			connectionsModel.addElement("localhost:61897");
+			if(!GameManager.DEV_BUILD)
+				connectionsModel.addElement("www.zeromeaner.org:61897");
+			else {
+				connectionsModel.addElement("www.zeromeaner.org:61898");
+				connectionsModel.addElement("localhost:61897");
+			}
 			connectionsList.setSelectedIndex(0);
 		}
 		
