@@ -88,8 +88,6 @@ import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.gui.knet.KNetPanelEvent;
 import org.zeromeaner.gui.knet.KNetPanelListener;
-import org.zeromeaner.gui.net.UpdateChecker;
-import org.zeromeaner.gui.net.UpdateCheckerListener;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 import org.zeromeaner.util.ResourceFileSystemView;
@@ -101,7 +99,7 @@ import org.zeromeaner.util.ModeManager;
 /**
  * zeromeaner SwingVersion
  */
-public class NullpoMinoInternalFrame extends JInternalFrame implements ActionListener, KNetPanelListener, UpdateCheckerListener {
+public class NullpoMinoInternalFrame extends JInternalFrame implements ActionListener, KNetPanelListener {
 	/** Serial version ID */
 	private static final long serialVersionUID = 1L;
 
@@ -491,8 +489,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 			if(startupCount >= startupMax) {
 				String strURL = propGlobal.getProperty("updatechecker.url", "");
-				UpdateChecker.addListener(this);
-				UpdateChecker.startCheckForUpdates(strURL);
 				startupCount = 0;
 			} else {
 				startupCount++;
@@ -1295,23 +1291,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			gameFrame.strModeToEnter = null;
 	}
 	
-	public void onUpdateCheckerStart() {
-	}
-
-	public void onUpdateCheckerEnd(int status) {
-		if(UpdateChecker.isNewVersionAvailable(GameManager.getVersionMajor(), GameManager.getVersionMinor())) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					if(lModeSelect != null) {
-						String strTemp = String.format(getUIText("Top_NewVersion"),
-								UpdateChecker.getLatestVersionFullString(), UpdateChecker.getStrReleaseDate());
-						lModeSelect.setText(strTemp);
-					}
-				}
-			});
-		}
-	}
-
 	/**
 	 * Filter for selecting files replay
 	 */
