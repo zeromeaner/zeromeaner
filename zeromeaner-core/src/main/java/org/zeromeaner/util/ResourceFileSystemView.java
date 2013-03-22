@@ -156,6 +156,8 @@ public class ResourceFileSystemView extends FileSystemView {
 		List<File> ret = new ArrayList<File>();
 		try {
 			for(DavResource d : s.getResources(toSardine(dir))) {
+				if(d.getNameDecoded().isEmpty())
+					continue;
 				ret.add(fromSardine(d.getBaseUrl() + d.getNameDecoded()));
 			}
 		} catch(Exception ex) {
