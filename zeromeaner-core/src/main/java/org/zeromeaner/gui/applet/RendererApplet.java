@@ -192,7 +192,7 @@ public class RendererApplet extends EventRenderer {
 	@Override
 	public void startGame(GameEngine engine, int playerID) {
 		super.startGame(engine, playerID);
-		AppletMain.instance.notifyUser(null, null);
+		AppletMain.instance.notifyUser(null, null, null);
 	}
 	
 	/*
@@ -362,7 +362,10 @@ public class RendererApplet extends EventRenderer {
 //				"Replay URL saved to clipboard.  Paste into another app to save.", 
 //				"Replay URL Copied", 
 //				JOptionPane.INFORMATION_MESSAGE);
-		AppletMain.instance.notifyUser(UIManager.getIcon("OptionPane.informationIcon"), "Replay URL saved to clipboard.  Paste into another app to save.");
+		AppletMain.instance.notifyUser(
+				UIManager.getIcon("OptionPane.informationIcon"), 
+				"Replay URL saved to clipboard.  Paste into another app to save.",
+				replayUrl);
 	}
 
 	/*

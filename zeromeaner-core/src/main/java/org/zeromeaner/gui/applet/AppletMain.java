@@ -26,9 +26,19 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
+import javax.swing.text.PlainDocument;
+import javax.swing.text.Position;
+import javax.swing.text.Segment;
 
 import org.eviline.Block;
 import org.eviline.Shape;
@@ -38,6 +48,91 @@ import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.gui.knet.KNetPanel;
 
 public class AppletMain extends Applet {
+	private static class ReadOnlyDocument implements Document {
+		private Document delegate;
+		
+		public ReadOnlyDocument(String text) {
+			delegate = new JTextField(text).getDocument();
+		}
+
+		public int getLength() {
+			return delegate.getLength();
+		}
+
+		public void addDocumentListener(DocumentListener listener) {
+			delegate.addDocumentListener(listener);
+		}
+
+		public void removeDocumentListener(DocumentListener listener) {
+			delegate.removeDocumentListener(listener);
+		}
+
+		public void addUndoableEditListener(UndoableEditListener listener) {
+			delegate.addUndoableEditListener(listener);
+		}
+
+		public void removeUndoableEditListener(UndoableEditListener listener) {
+			delegate.removeUndoableEditListener(listener);
+		}
+
+		public Object getProperty(Object key) {
+			return delegate.getProperty(key);
+		}
+
+		public String getText(int offset, int length)
+				throws BadLocationException {
+			return delegate.getText(offset, length);
+		}
+
+		public void getText(int offset, int length, Segment txt)
+				throws BadLocationException {
+			delegate.getText(offset, length, txt);
+		}
+
+		public Position getStartPosition() {
+			return delegate.getStartPosition();
+		}
+
+		public Position getEndPosition() {
+			return delegate.getEndPosition();
+		}
+
+		public Position createPosition(int offs) throws BadLocationException {
+			return delegate.createPosition(offs);
+		}
+
+		public Element[] getRootElements() {
+			return delegate.getRootElements();
+		}
+
+		public Element getDefaultRootElement() {
+			return delegate.getDefaultRootElement();
+		}
+
+		public void render(Runnable r) {
+			delegate.render(r);
+		}
+
+		@Override
+		public void putProperty(Object key, Object value) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void remove(int offs, int len) throws BadLocationException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void insertString(int offset, String str, AttributeSet a)
+				throws BadLocationException {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+	
 	public static AppletMain instance;
 
 	public static String userId;
@@ -53,13 +148,9 @@ public class AppletMain extends Applet {
 	public Component notification;
 
 	public AppletMain() {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch(Exception e) {
-		}
 	}
 	
-	public void notifyUser(Icon icon, String message) {
+	public void notifyUser(Icon icon, String message, String copyable) {
 		if(notification != null)
 			remove(notification);
 		JPanel p = new JPanel(new BorderLayout());
@@ -67,10 +158,13 @@ public class AppletMain extends Applet {
 			p.add(new JLabel(icon), BorderLayout.WEST);
 		if(message != null)
 			p.add(new JLabel(message), BorderLayout.CENTER);
+		if(copyable != null) {
+			p.add(new JTextField(new ReadOnlyDocument(copyable), copyable, copyable.length()), BorderLayout.SOUTH);
+		}
 		p.add(new JButton(new AbstractAction("X") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				notifyUser(null, null);
+				notifyUser(null, null, null);
 			}
 		}), BorderLayout.EAST);
 		if(icon != null || message != null)
@@ -104,7 +198,15 @@ public class AppletMain extends Applet {
 		
 		setLayout(new BorderLayout());
 		
-		desktop = new JDesktopPane();
+		desktop = new JDesktopPane() {
+			@Override
+			protected void addImpl(Component comp, Object constraints, int index) {
+				if(comp instanceof JInternalFrame) {
+					((JInternalFrame) comp).setFrameIcon(null);
+				}
+				super.addImpl(comp, constraints, index);
+			}
+		};
 		desktop.setBackground(Color.decode("0x444488"));
 		desktop.setDoubleBuffered(true);
 		add(desktop, BorderLayout.CENTER);
