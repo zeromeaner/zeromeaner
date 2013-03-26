@@ -26,7 +26,6 @@ import org.zeromeaner.game.subsystem.mode.ComboRaceMode;
 import org.zeromeaner.game.subsystem.mode.DigChallengeMode;
 import org.zeromeaner.game.subsystem.mode.DigRaceMode;
 import org.zeromeaner.game.subsystem.mode.ExtremeMode;
-import org.zeromeaner.game.subsystem.mode.LineRaceMode;
 import org.zeromeaner.game.subsystem.mode.MarathonMode;
 import org.zeromeaner.game.subsystem.mode.MarathonPlusMode;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;

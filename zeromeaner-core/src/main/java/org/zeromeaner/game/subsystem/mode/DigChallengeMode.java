@@ -9,7 +9,6 @@ import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.knet.KNetEvent;
-import org.zeromeaner.game.knet.KNetEventArgs;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;

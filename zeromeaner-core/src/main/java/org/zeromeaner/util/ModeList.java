@@ -1,7 +1,6 @@
 package org.zeromeaner.util;
 
 import java.io.BufferedReader;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import org.funcish.core.Predicates;
 import org.funcish.core.coll.ArrayFunctionalList;
 import org.funcish.core.fn.Mappicator;
 import org.funcish.core.impl.AbstractMappicator;
-import org.zeromeaner.game.subsystem.mode.AbstractMode;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 
 

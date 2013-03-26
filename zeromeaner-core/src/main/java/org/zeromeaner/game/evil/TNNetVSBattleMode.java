@@ -1,25 +1,14 @@
 package org.zeromeaner.game.evil;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.eviline.randomizer.MaliciousRandomizer.MaliciousRandomizerProperties;
-import org.eviline.randomizer.Randomizer;
-import org.eviline.randomizer.RandomizerFactory;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
 import org.zeromeaner.game.subsystem.wallkick.StandardWallkick;
-import org.zeromeaner.util.GeneralUtil;
 
 public class TNNetVSBattleMode extends NetVSBattleMode {
 	protected EventRenderer receiver;

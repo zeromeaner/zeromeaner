@@ -2,16 +2,9 @@ package org.zeromeaner.gui.knet;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.dnd.DragSourceMotionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -20,26 +13,19 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.ListDataListener;
-
 import org.funcish.core.fn.Mappicator;
 import org.funcish.core.fn.Predicate;
 import org.funcish.core.impl.AbstractMappicator;
 import org.funcish.core.impl.AbstractPredicate;
-import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
-import org.zeromeaner.game.knet.obj.KNetGameInfo;
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.AbstractNetVSMode;
 import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.LstResourceMap;
 import org.zeromeaner.util.ModeList;
-import org.zeromeaner.util.ResourceInputStream;
-import org.zeromeaner.util.RuleMap;
 
 
 public class KNetChannelInfoPanel extends JPanel {

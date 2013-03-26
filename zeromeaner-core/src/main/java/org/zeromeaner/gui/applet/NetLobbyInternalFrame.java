@@ -8,7 +8,6 @@ import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 import org.zeromeaner.gui.knet.KNetPanel;
 import org.zeromeaner.gui.knet.KNetPanelAdapter;
 import org.zeromeaner.gui.knet.KNetPanelEvent;
-import org.zeromeaner.gui.knet.KNetPanelListener;
 
 public class NetLobbyInternalFrame extends JInternalFrame {
 	private KNetPanel knetPanel;

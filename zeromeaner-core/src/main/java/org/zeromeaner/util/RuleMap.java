@@ -2,7 +2,6 @@ package org.zeromeaner.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Map;
 import java.util.TreeMap;
 
 import org.zeromeaner.game.component.RuleOptions;

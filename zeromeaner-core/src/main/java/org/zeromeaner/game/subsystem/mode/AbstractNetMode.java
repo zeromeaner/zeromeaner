@@ -24,7 +24,6 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.gui.knet.KNetPanel;
-import org.zeromeaner.gui.knet.KNetPanelListener;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 

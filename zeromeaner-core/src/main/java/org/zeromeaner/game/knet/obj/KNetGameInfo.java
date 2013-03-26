@@ -1,12 +1,6 @@
 package org.zeromeaner.game.knet.obj;
 
 import org.zeromeaner.game.component.Field;
-import org.zeromeaner.game.play.GameEngine;
-
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.KryoSerializable;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
 
 public class KNetGameInfo {
 	public static enum TSpinEnableType {

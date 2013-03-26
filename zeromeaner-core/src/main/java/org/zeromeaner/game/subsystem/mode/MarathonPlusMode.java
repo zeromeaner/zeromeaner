@@ -28,8 +28,6 @@
 */
 package org.zeromeaner.game.subsystem.mode;
 
-import java.io.IOException;
-
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
