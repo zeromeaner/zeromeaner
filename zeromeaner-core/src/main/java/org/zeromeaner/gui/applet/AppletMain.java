@@ -52,11 +52,10 @@ public class AppletMain extends Applet {
 	public Component notification;
 
 	public AppletMain() {
-		if(!GameManager.DEV_BUILD)
-			try {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch(Exception e) {
-			}
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch(Exception e) {
+		}
 	}
 	
 	public void notifyUser(Icon icon, String message) {
