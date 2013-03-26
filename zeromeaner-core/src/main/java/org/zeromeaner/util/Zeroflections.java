@@ -40,6 +40,10 @@ public class Zeroflections {
 		return Sequences.sequencator(String.class, lines).list();
 	}
 	
+	public static Set<String> getResources(Pattern fullPattern) {
+		return Predicates.patternFind(fullPattern).filter(classes.getResources(ALL), new TreeSet<String>());
+	}
+	
 	public static List<Class<? extends AbstractAI>> getAIs() {
 		List<Class<? extends AbstractAI>> ret = new ArrayList<Class<? extends AbstractAI>>();
 		ret.addAll(Mappings.classForName(AbstractAI.class).map(list("ai.lst")));
@@ -80,7 +84,7 @@ public class Zeroflections {
 	}
 
 	public static Set<String> getRules() {
-		return Predicates.patternFind(RULE).filter(classes.getResources(ALL), new TreeSet<String>());
+		return getResources(RULE);
 	}
 
 }
