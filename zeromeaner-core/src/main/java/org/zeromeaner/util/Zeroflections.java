@@ -28,8 +28,7 @@ import static org.reflections.ReflectionUtils.*;
 import static com.google.common.base.Predicates.*;
 
 public class Zeroflections {
-	private static Reflections classes = new Reflections("org.zeromeaner", new SubTypesScanner());
-	private static Reflections config = new Reflections("org.zeromeaner.config", new ResourcesScanner());
+	private static Reflections classes = Reflections.collect();
 	
 	private static List<String> list(String listName) {
 		InputStream rsrc = Zeroflections.class.getClassLoader().getResourceAsStream("org/zeromeaner/config/list/" + listName);
@@ -77,7 +76,7 @@ public class Zeroflections {
 	}
 
 	public static Set<String> getRules() {
-		return config.getResources(Pattern.compile(".*\\.rul"));
+		return classes.getResources(Pattern.compile(".*\\.rul"));
 	}
 
 }
