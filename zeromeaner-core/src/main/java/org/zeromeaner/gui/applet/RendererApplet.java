@@ -33,8 +33,13 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
 
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
@@ -341,7 +346,12 @@ public class RendererApplet extends EventRenderer {
 	public void saveReplay(GameManager owner, CustomProperties prop) {
 		if(owner.mode.isNetplayMode()) return;
 
-		saveReplay(owner, prop, NullpoMinoInternalFrame.propGlobal.getProperty("custom.replay.directory", "replay"));
+		String filename = saveReplay(owner, prop, NullpoMinoInternalFrame.propGlobal.getProperty("custom.replay.directory", "replay"));
+		
+		String replayUrl = AppletMain.url + "?../" + AppletMain.userId + "/" + filename;
+		StringSelection ss = new StringSelection(replayUrl);
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, ss);
+		JOptionPane.showInternalMessageDialog(AppletMain.instance.desktop, "Replay URL saved to clipboard.  Paste into another app to save.", "Replay URL Copied", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/*

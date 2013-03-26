@@ -591,7 +591,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			public void actionPerformed(ActionEvent e) {
 				String userId = (String) JOptionPane.showInternalInputDialog(NullpoMinoInternalFrame.this, "Enter Config ID", "Enter Config ID", JOptionPane.QUESTION_MESSAGE, null, null, AppletMain.userId);
 				if(userId != null)
-					CookieAccess.set("userId", AppletMain.userId = userId);
+					CookieAccess.put("userId", AppletMain.userId = userId);
 			}
 		});
 		JMenuItem saveConfig = new JMenuItem(new AbstractAction("Save Config") {
@@ -600,7 +600,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 				while("default".equals(AppletMain.userId)) {
 					String userId = (String) JOptionPane.showInternalInputDialog(NullpoMinoInternalFrame.this, "Enter Config ID", "Enter Config ID", JOptionPane.QUESTION_MESSAGE, null, null, AppletMain.userId);
 					if(userId != null)
-						CookieAccess.set("userId", AppletMain.userId = userId);
+						CookieAccess.put("userId", AppletMain.userId = userId);
 					else
 						return;
 				}

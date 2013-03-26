@@ -1230,8 +1230,8 @@ public class EventRenderer {
 	 * @param prop CustomProperties where the replay is going to stored
 	 * @param foldername Replay folder name
 	 */
-	public void saveReplay(GameManager owner, CustomProperties prop, String foldername) {
-		if(owner.mode.isNetplayMode()) return;
+	public String saveReplay(GameManager owner, CustomProperties prop, String foldername) {
+		if(owner.mode.isNetplayMode()) return null;
 
 		String filename = foldername + "/" + GeneralUtil.getReplayFilename();
 		try {
@@ -1251,5 +1251,6 @@ public class EventRenderer {
 		} catch(IOException e) {
 			log.error("Couldn't save replay file to " + filename, e);
 		}
+		return filename;
 	}
 }
