@@ -52,7 +52,7 @@ public class AppletMain extends Applet {
 	}
 	
 	public static URL url;
-
+	
 	public JDesktopPane desktop;
 
 	@Override
@@ -73,6 +73,11 @@ public class AppletMain extends Applet {
 		instance = this;
 
 		url = getDocumentBase();
+		if(System.getProperty("zero_url") != null)
+			try {
+				url = new URL(System.getProperty("zero_url"));
+			} catch(Exception ex) {
+			}
 		
 		setLayout(new BorderLayout());
 		desktop = new JDesktopPane();
