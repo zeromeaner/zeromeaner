@@ -104,13 +104,8 @@ public class AppletMain extends Applet {
 		
 		setLayout(new BorderLayout());
 		
-		desktop = new JDesktopPane() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				
-			}
-		};
-		desktop.setBackground(new Color(64, 64, 128, 0));
+		desktop = new JDesktopPane();
+		desktop.setBackground(Color.decode("0x444488"));
 		desktop.setDoubleBuffered(true);
 		add(desktop, BorderLayout.CENTER);
 
