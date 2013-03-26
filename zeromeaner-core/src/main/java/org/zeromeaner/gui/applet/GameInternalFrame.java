@@ -180,7 +180,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
 		setTitle(NullpoMinoInternalFrame.getUIText("Title_Game"));
 		setBackground(Color.black);
-		setResizable(true);
+		setResizable(false);
 		
 		setDoubleBuffered(true);
 		setIgnoreRepaint(true);
@@ -214,8 +214,15 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	 * Display the game window
 	 */
 	public void displayWindow() {
-		setVisible(true);
 		
+		int screenWidth = NullpoMinoInternalFrame.propConfig.getProperty("option.screenwidth", 640);
+		int screenHeight = NullpoMinoInternalFrame.propConfig.getProperty("option.screenheight", 480);
+
+		imageBuffer = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);
+		imageBufferLabel.setIcon(new ImageIcon(imageBuffer));
+		
+		pack();
+		setVisible(true);
 		
 		if(!running) {
 			thread = new Thread(this, "Game Thread");
@@ -690,7 +697,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 			if(ssflag) saveScreenShot();
 
 			Graphics g2 = imageBuffer.getGraphics();
-			g2.drawImage(gameBuffer, 0, 0, null);
+			g2.drawImage(gameBuffer, 0, 0, imageBuffer.getWidth(), imageBuffer.getHeight(), null);
 			g2.dispose();
 			Runnable r = new Runnable() {
 				@Override
@@ -758,7 +765,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 			if(ssflag) saveScreenShot();
 
 				Graphics g2 = imageBuffer.getGraphics();
-				g2.drawImage(gameBuffer, 0, 0, null);
+				g2.drawImage(gameBuffer, 0, 0, imageBuffer.getWidth(), imageBuffer.getHeight(), null);
 				g2.dispose();
 				Runnable r = new Runnable() {
 					@Override
