@@ -88,8 +88,6 @@ import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.gui.knet.KNetPanelEvent;
 import org.zeromeaner.gui.knet.KNetPanelListener;
-import org.zeromeaner.gui.net.UpdateChecker;
-import org.zeromeaner.gui.net.UpdateCheckerListener;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 import org.zeromeaner.util.ResourceFileSystemView;
@@ -101,7 +99,7 @@ import org.zeromeaner.util.ModeManager;
 /**
  * zeromeaner SwingVersion
  */
-public class NullpoMinoInternalFrame extends JInternalFrame implements ActionListener, KNetPanelListener, UpdateCheckerListener {
+public class NullpoMinoInternalFrame extends JInternalFrame implements ActionListener, KNetPanelListener {
 	/** Serial version ID */
 	private static final long serialVersionUID = 1L;
 
@@ -491,8 +489,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 			if(startupCount >= startupMax) {
 				String strURL = propGlobal.getProperty("updatechecker.url", "");
-				UpdateChecker.addListener(this);
-				UpdateChecker.startCheckForUpdates(strURL);
 				startupCount = 0;
 			} else {
 				startupCount++;
@@ -595,7 +591,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			public void actionPerformed(ActionEvent e) {
 				String userId = (String) JOptionPane.showInternalInputDialog(NullpoMinoInternalFrame.this, "Enter Config ID", "Enter Config ID", JOptionPane.QUESTION_MESSAGE, null, null, AppletMain.userId);
 				if(userId != null)
-					CookieAccess.set("userId", AppletMain.userId = userId);
+					CookieAccess.put("userId", AppletMain.userId = userId);
 			}
 		});
 		JMenuItem saveConfig = new JMenuItem(new AbstractAction("Save Config") {
@@ -604,7 +600,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 				while("default".equals(AppletMain.userId)) {
 					String userId = (String) JOptionPane.showInternalInputDialog(NullpoMinoInternalFrame.this, "Enter Config ID", "Enter Config ID", JOptionPane.QUESTION_MESSAGE, null, null, AppletMain.userId);
 					if(userId != null)
-						CookieAccess.set("userId", AppletMain.userId = userId);
+						CookieAccess.put("userId", AppletMain.userId = userId);
 					else
 						return;
 				}
@@ -871,7 +867,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 				});
 				replayFileChooser.addChoosableFileFilter(new ReplayFileFilter());
 			}
-			if(replayFileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			if(replayFileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION && replayFileChooser.getSelectedFile().getName().endsWith(".rep")) {
 				startReplayGame("replay/" + replayFileChooser.getSelectedFile().getPath());
 				if(gameFrame == null) {
 					gameFrame = new GameInternalFrame(this);
@@ -1295,23 +1291,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			gameFrame.strModeToEnter = null;
 	}
 	
-	public void onUpdateCheckerStart() {
-	}
-
-	public void onUpdateCheckerEnd(int status) {
-		if(UpdateChecker.isNewVersionAvailable(GameManager.getVersionMajor(), GameManager.getVersionMinor())) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					if(lModeSelect != null) {
-						String strTemp = String.format(getUIText("Top_NewVersion"),
-								UpdateChecker.getLatestVersionFullString(), UpdateChecker.getStrReleaseDate());
-						lModeSelect.setText(strTemp);
-					}
-				}
-			});
-		}
-	}
-
 	/**
 	 * Filter for selecting files replay
 	 */

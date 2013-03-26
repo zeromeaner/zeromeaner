@@ -30,6 +30,8 @@ package org.zeromeaner.gui.applet;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.HeadlessException;
@@ -41,13 +43,17 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
@@ -68,10 +74,16 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 	/** Parent window */
 	protected NullpoMinoInternalFrame owner = null;
-
+	
 	/** The size of the border and title bar */
 	protected Insets insets = null;
 
+	protected BufferedImage imageBuffer;
+	
+	protected JLabel imageBufferLabel;
+	
+	protected BufferedImage gameBuffer;
+	
 //	/** BufferStrategy */
 //	protected BufferStrategy bufferStrategy = null;
 
@@ -117,12 +129,6 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	/** True if execute Toolkit.getDefaultToolkit().sync() at the end of each frame */
 	public boolean syncDisplay = true;
 
-	/** Screen width */
-	protected int screenWidth = 640;
-
-	/** Screen height */
-	protected int screenHeight = 480;
-
 	/** Pause state */
 	protected boolean pause = false;
 
@@ -140,9 +146,6 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 	/** ScreenshotCreating flag */
 	protected boolean ssflag = false;
-
-	/** ScreenshotUseImage */
-	protected Image ssImage = null;
 
 	/**  frame Step is enabled flag */
 	protected boolean enableframestep = false;
@@ -178,13 +181,19 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		setTitle(NullpoMinoInternalFrame.getUIText("Title_Game"));
 		setBackground(Color.black);
 		setResizable(false);
+		
+		setDoubleBuffered(true);
 		setIgnoreRepaint(true);
 
 		addInternalFrameListener(new GameFrameWindowEvent());
 		addKeyListener(new GameFrameKeyEvent());
 
+		imageBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB);
+		gameBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB);
+		
 		setLayout(new BorderLayout());
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(imageBufferLabel = new JLabel(new ImageIcon(imageBuffer)));
 		add(panel, BorderLayout.CENTER);
 		panel.setFocusable(true);
 		panel.addKeyListener(new GameFrameKeyEvent());
@@ -195,6 +204,8 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 		
 		log.debug("GameFrame created");
+		
+		pack();
 
 		AppletMain.instance.desktop.add(this);
 	}
@@ -203,15 +214,16 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	 * Display the game window
 	 */
 	public void displayWindow() {
+		
+		int screenWidth = NullpoMinoInternalFrame.propConfig.getProperty("option.screenwidth", 640);
+		int screenHeight = NullpoMinoInternalFrame.propConfig.getProperty("option.screenheight", 480);
+
+		imageBuffer = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);
+		imageBufferLabel.setIcon(new ImageIcon(imageBuffer));
+		
+		pack();
 		setVisible(true);
-
-		screenWidth = NullpoMinoInternalFrame.propConfig.getProperty("option.screenwidth", 640);
-		screenHeight = NullpoMinoInternalFrame.propConfig.getProperty("option.screenheight", 480);
-		insets = getInsets();
-		int width = screenWidth + insets.left + insets.right;
-		int height = screenHeight + insets.top + insets.bottom;
-		setSize(width, height);
-
+		
 		if(!running) {
 			thread = new Thread(this, "Game Thread");
 			thread.start();
@@ -222,10 +234,6 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	 * End processing
 	 */
 	public void shutdown() {
-		if(ssImage != null) {
-			ssImage.flush();
-			ssImage = null;
-		}
 		if(isNetPlay) {
 			if(NullpoMinoInternalFrame.netLobby != null) {
 				try {
@@ -639,21 +647,10 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		if(NullpoMinoInternalFrame.gameManager == null) return;
 
 		// Prepare the screen
-		if(ssImage == null) {
-			ssImage = createImage(640, 480);
-		}
-//		if((bufferStrategy == null) || bufferStrategy.contentsLost()) {
-//			try {
-//				createBufferStrategy(2);
-//				bufferStrategy = getBufferStrategy();
-//			} catch (Exception e) {
-//				return;
-//			}
-//		}
 
 		Graphics g = null;
 //		if(ssflag || (screenWidth != 640) || (screenHeight != 480)) {
-			g = ssImage.getGraphics();
+			g = gameBuffer.getGraphics();
 //		} else {
 //			g = bufferStrategy.getDrawGraphics();
 //			if(insets != null) g.translate(insets.left, insets.top);
@@ -699,16 +696,23 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 //		if(ssflag || (screenWidth != 640) || (screenHeight != 480)) {
 			if(ssflag) saveScreenShot();
 
-			if(insets != null) {
-				Graphics g2 = getGraphics();
-				if((screenWidth != 640) || (screenHeight != 480)) {
-					g2.drawImage(ssImage, insets.left, insets.top, screenWidth, screenHeight, null);
-				} else {
-					g2.drawImage(ssImage, insets.left, insets.top, null);
+			Graphics g2 = imageBuffer.getGraphics();
+			g2.drawImage(gameBuffer, 0, 0, imageBuffer.getWidth(), imageBuffer.getHeight(), null);
+			g2.dispose();
+			Runnable r = new Runnable() {
+				@Override
+				public void run() {
+					revalidate();
+					repaint();
 				}
-				g2.dispose();
-				if(syncDisplay) Toolkit.getDefaultToolkit().sync();
-			}
+			};
+			if(syncDisplay) 
+				try {
+					EventQueue.invokeAndWait(r);
+				} catch(Exception ex) {
+				}
+			else
+				EventQueue.invokeLater(r);
 
 			ssflag = false;
 //		} else if((bufferStrategy != null) && !bufferStrategy.contentsLost()) {
@@ -723,22 +727,9 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	protected void gameRenderNet() {
 		if(NullpoMinoInternalFrame.gameManager == null) return;
 
-		// Prepare the screen
-		if(ssImage == null) {
-			ssImage = createImage(640, 480);
-		}
-//		if((bufferStrategy == null) || bufferStrategy.contentsLost()) {
-//			try {
-//				createBufferStrategy(2);
-//				bufferStrategy = getBufferStrategy();
-//			} catch (Exception e) {
-//				return;
-//			}
-//		}
-
 		Graphics g = null;
 //		if(ssflag || (screenWidth != 640) || (screenHeight != 480)) {
-			g = ssImage.getGraphics();
+			g = gameBuffer.getGraphics();
 //		} else {
 //			g = bufferStrategy.getDrawGraphics();
 //			if(insets != null) g.translate(insets.left, insets.top);
@@ -773,16 +764,23 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 //		if(ssflag || (screenWidth != 640) || (screenHeight != 480)) {
 			if(ssflag) saveScreenShot();
 
-			if(insets != null) {
-				Graphics g2 = getGraphics();
-				if((screenWidth != 640) || (screenHeight != 480)) {
-					g2.drawImage(ssImage, insets.left, insets.top, screenWidth, screenHeight, null);
-				} else {
-					g2.drawImage(ssImage, insets.left, insets.top, null);
-				}
+				Graphics g2 = imageBuffer.getGraphics();
+				g2.drawImage(gameBuffer, 0, 0, imageBuffer.getWidth(), imageBuffer.getHeight(), null);
 				g2.dispose();
-				if(syncDisplay) Toolkit.getDefaultToolkit().sync();
-			}
+				Runnable r = new Runnable() {
+					@Override
+					public void run() {
+						revalidate();
+						repaint();
+					}
+				};
+				if(syncDisplay) 
+					try {
+						EventQueue.invokeAndWait(r);
+					} catch(Exception ex) {
+					}
+				else
+					EventQueue.invokeLater(r);
 
 			ssflag = false;
 //		} else if((bufferStrategy != null) && !bufferStrategy.contentsLost()) {
@@ -855,7 +853,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 		// Write
 		try {
-			javax.imageio.ImageIO.write((RenderedImage)ssImage, "PNG", new File(filename));
+			javax.imageio.ImageIO.write(gameBuffer, "PNG", new File(filename));
 		} catch (Exception e) {
 			log.warn("Failed to save screenshot to " + filename, e);
 		}

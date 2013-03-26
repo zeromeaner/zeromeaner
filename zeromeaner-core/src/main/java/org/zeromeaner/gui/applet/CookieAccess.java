@@ -17,13 +17,18 @@ import netscape.javascript.JSObject;
 
 
 public class CookieAccess {
-	public static URI uri;
+	public static String get(String key) {
+		String c = get().get(key);
+		if(c == null)
+			c = System.getProperty(key);
+		return c;
+	}
 	
-	public static Map<String, String> get() {
+	private static Map<String, String> get() {
 		return get(AppletMain.instance);
 	}
 	
-	public static Map<String, String> get(AppletMain applet) {
+	private static Map<String, String> get(AppletMain applet) {
 		try {
 			String data = "";
 			JSObject myBrowser = JSObject.getWindow(applet);
@@ -49,23 +54,21 @@ public class CookieAccess {
 			}
 			return (Map<String, String>) new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray())).readObject();
 		} catch(Exception ex) {
-//			JOptionPane.showMessageDialog(applet, ex.toString());
-			ex.printStackTrace();
 			return new TreeMap<String, String>();
 		}
 	}
 	
-	public static void set(Map<String, String> cookie) {
+	private static void set(Map<String, String> cookie) {
 		set(AppletMain.instance, cookie);
 	}
 	
-	public static void set(String key, String val) {
+	public static void put(String key, String val) {
 		Map<String, String> c = get();
 		c.put(key, val);
 		set(c);
 	}
 
-	public static void set(AppletMain applet, Map<String, String> cookie) {
+	private static void set(AppletMain applet, Map<String, String> cookie) {
 		try {
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();
 			ObjectOutputStream out = new ObjectOutputStream(bout);
@@ -82,7 +85,5 @@ public class CookieAccess {
 			String data = "c=" + value + "; path=/; expires=Thu, 31-Dec-2019 12:00:00 GMT";
 			doc.setMember("cookie", data);
 		} catch(Exception ex) {
-//			JOptionPane.showMessageDialog(applet, ex.toString());
-			ex.printStackTrace();
 		}
 	}}

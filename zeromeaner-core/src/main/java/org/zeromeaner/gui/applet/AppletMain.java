@@ -50,6 +50,8 @@ public class AppletMain extends Applet {
 	public static boolean isApplet() {
 		return instance != null;
 	}
+	
+	public static URL url;
 
 	public JDesktopPane desktop;
 
@@ -70,18 +72,14 @@ public class AppletMain extends Applet {
 
 		instance = this;
 
-		try {
-			CookieAccess.uri = getDocumentBase().toURI();
-		} catch(Throwable ue) {
-			ue.printStackTrace();
-		}
+		url = getDocumentBase();
 		
 		setLayout(new BorderLayout());
 		desktop = new JDesktopPane();
 		desktop.setBackground(Color.decode("0x444488"));
 		add(desktop, BorderLayout.CENTER);
 
-		userId = CookieAccess.get().get("userId");
+		userId = CookieAccess.get("userId");
 		if(userId == null)
 			userId = getParameter("userId");
 		while(userId == null || "default".equals(userId)) {
@@ -90,7 +88,7 @@ public class AppletMain extends Applet {
 			if(create == JOptionPane.YES_OPTION) {
 				userId = (String) JOptionPane.showInternalInputDialog(desktop, "Enter Config ID", "Enter Config ID", JOptionPane.QUESTION_MESSAGE, null, null, "");
 				if(userId != null)
-					CookieAccess.set("userId", userId);
+					CookieAccess.put("userId", userId);
 				else
 					userId = "default";
 			}
