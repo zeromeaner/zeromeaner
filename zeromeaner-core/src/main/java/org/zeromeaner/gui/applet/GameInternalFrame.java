@@ -171,7 +171,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		this.owner = owner;
 
 		setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
-		setTitle(NullpoMinoInternalFrame.getUIText("Title_Game"));
+		setTitle(NullpoMinoInternalFrame.lz.s("Title_Game"));
 		setBackground(Color.black);
 		setResizable(false);
 		

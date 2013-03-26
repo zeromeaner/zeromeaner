@@ -121,7 +121,7 @@ public class RuleSelectInternalFrame extends JInternalFrame implements ActionLis
 	public void load(int pl) {
 		this.playerID = pl;
 
-		setTitle(NullpoMinoInternalFrame.getUIText("Title_RuleSelect") + " (" + (playerID+1) + "P)");
+		setTitle(NullpoMinoInternalFrame.lz.s("Title_RuleSelect") + " (" + (playerID+1) + "P)");
 
 		strCurrentFileName = new String[GameEngine.MAX_GAMESTYLE];
 		strCurrentRuleName = new String[GameEngine.MAX_GAMESTYLE];
@@ -173,7 +173,7 @@ public class RuleSelectInternalFrame extends JInternalFrame implements ActionLis
 		}
 
 		//  default Back to button
-		JButton btnUseDefault = new JButton(NullpoMinoInternalFrame.getUIText("RuleSelect_UseDefault"));
+		JButton btnUseDefault = new JButton(NullpoMinoInternalFrame.lz.s("RuleSelect_UseDefault"));
 		btnUseDefault.setMnemonic('D');
 		btnUseDefault.addActionListener(this);
 		btnUseDefault.setActionCommand("RuleSelect_UseDefault");
@@ -188,7 +188,7 @@ public class RuleSelectInternalFrame extends JInternalFrame implements ActionLis
 		pButtons.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pButtons);
 
-		JButton btnOK = new JButton(NullpoMinoInternalFrame.getUIText("RuleSelect_OK"));
+		JButton btnOK = new JButton(NullpoMinoInternalFrame.lz.s("RuleSelect_OK"));
 		btnOK.setMnemonic('O');
 		btnOK.addActionListener(this);
 		btnOK.setActionCommand("RuleSelect_OK");
@@ -197,7 +197,7 @@ public class RuleSelectInternalFrame extends JInternalFrame implements ActionLis
 		pButtons.add(btnOK);
 		this.getRootPane().setDefaultButton(btnOK);
 
-		JButton btnCancel = new JButton(NullpoMinoInternalFrame.getUIText("RuleSelect_Cancel"));
+		JButton btnCancel = new JButton(NullpoMinoInternalFrame.lz.s("RuleSelect_Cancel"));
 		btnCancel.setMnemonic('C');
 		btnCancel.addActionListener(this);
 		btnCancel.setActionCommand("RuleSelect_Cancel");

@@ -142,7 +142,7 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 		this.owner = owner;
 
 		// GUIOfInitialization
-		setTitle(NullpoMinoInternalFrame.getUIText("Title_GeneralConfig"));
+		setTitle(NullpoMinoInternalFrame.lz.s("Title_GeneralConfig"));
 		setDefaultCloseOperation(JInternalFrame.HIDE_ON_CLOSE);
 		setResizable(false);
 		initUI();
@@ -163,79 +163,79 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 		// ** Basic Tab
 		JPanel pBasicTab = new JPanel();
 		pBasicTab.setLayout(new BoxLayout(pBasicTab, BoxLayout.Y_AXIS));
-		tabPane.addTab(NullpoMinoInternalFrame.getUIText("GeneralConfig_TabName_Basic"), pBasicTab);
+		tabPane.addTab(NullpoMinoInternalFrame.lz.s("GeneralConfig_TabName_Basic"), pBasicTab);
 
 		// ---------- Sound effectsVolume of ----------
 		JPanel pSEVolume = new JPanel();
 		pSEVolume.setAlignmentX(LEFT_ALIGNMENT);
 		pBasicTab.add(pSEVolume);
 
-		JLabel lSEVolume = new JLabel(NullpoMinoInternalFrame.getUIText("GeneralConfig_SEVolume"));
+		JLabel lSEVolume = new JLabel(NullpoMinoInternalFrame.lz.s("GeneralConfig_SEVolume"));
 		pSEVolume.add(lSEVolume);
 
 		txtfldSEVolume = new JTextField(5);
 		pSEVolume.add(txtfldSEVolume);
 
 		// ---------- checkBox ----------
-		chkboxShowBackground = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_ShowBackground"));
+		chkboxShowBackground = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_ShowBackground"));
 		chkboxShowBackground.setAlignmentX(LEFT_ALIGNMENT);
 		pBasicTab.add(chkboxShowBackground);
 
-		chkboxShowMeter = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_ShowMeter"));
+		chkboxShowMeter = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_ShowMeter"));
 		chkboxShowMeter.setAlignmentX(LEFT_ALIGNMENT);
 		pBasicTab.add(chkboxShowMeter);
 
-		chkboxShowFieldBlockGraphics = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_ShowFieldBlockGraphics"));
+		chkboxShowFieldBlockGraphics = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_ShowFieldBlockGraphics"));
 		chkboxShowFieldBlockGraphics.setAlignmentX(LEFT_ALIGNMENT);
 		pBasicTab.add(chkboxShowFieldBlockGraphics);
 
-		chkboxSimpleBlock = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_SimpleBlock"));
+		chkboxSimpleBlock = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_SimpleBlock"));
 		chkboxSimpleBlock.setAlignmentX(LEFT_ALIGNMENT);
 		pBasicTab.add(chkboxSimpleBlock);
 
-		chkboxSE = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_SE"));
+		chkboxSE = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_SE"));
 		chkboxSE.setAlignmentX(LEFT_ALIGNMENT);
 		pBasicTab.add(chkboxSE);
 
-		chkboxNextShadow = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_NextShadow"));
+		chkboxNextShadow = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_NextShadow"));
 		chkboxNextShadow.setAlignmentX(LEFT_ALIGNMENT);
 		pBasicTab.add(chkboxNextShadow);
 
-		chkboxOutlineGhost = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_OutlineGhost"));
+		chkboxOutlineGhost = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_OutlineGhost"));
 		chkboxOutlineGhost.setAlignmentX(LEFT_ALIGNMENT);
 		pBasicTab.add(chkboxOutlineGhost);
 
-		chkboxSideNext = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_SideNext"));
+		chkboxSideNext = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_SideNext"));
 		chkboxSideNext.setAlignmentX(LEFT_ALIGNMENT);
 		pBasicTab.add(chkboxSideNext);
 
-		chkboxBigSideNext = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_BigSideNext"));
+		chkboxBigSideNext = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_BigSideNext"));
 		chkboxBigSideNext.setAlignmentX(LEFT_ALIGNMENT);
 		pBasicTab.add(chkboxBigSideNext);
 
-		chkboxDarkNextArea = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_DarkNextArea"));
+		chkboxDarkNextArea = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_DarkNextArea"));
 		chkboxDarkNextArea.setAlignmentX(LEFT_ALIGNMENT);
 		pBasicTab.add(chkboxDarkNextArea);
 
-		chkboxShowFieldBGGrid = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_ShowFieldBGGrid"));
+		chkboxShowFieldBGGrid = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_ShowFieldBGGrid"));
 		chkboxShowFieldBGGrid.setAlignmentX(LEFT_ALIGNMENT);
 		pBasicTab.add(chkboxShowFieldBGGrid);
 
-		chkboxShowInput = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_ShowInput"));
+		chkboxShowInput = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_ShowInput"));
 		chkboxShowInput.setAlignmentX(LEFT_ALIGNMENT);
 		pBasicTab.add(chkboxShowInput);
 
 		// ** Advanced Tab
 		JPanel pAdvancedTab = new JPanel();
 		pAdvancedTab.setLayout(new BoxLayout(pAdvancedTab, BoxLayout.Y_AXIS));
-		tabPane.addTab(NullpoMinoInternalFrame.getUIText("GeneralConfig_TabName_Advanced"), pAdvancedTab);
+		tabPane.addTab(NullpoMinoInternalFrame.lz.s("GeneralConfig_TabName_Advanced"), pAdvancedTab);
 
 		// ---------- Screen size ----------
 		JPanel pScreenSize = new JPanel();
 		pScreenSize.setAlignmentX(LEFT_ALIGNMENT);
 		pAdvancedTab.add(pScreenSize);
 
-		JLabel lScreenSize = new JLabel(NullpoMinoInternalFrame.getUIText("GeneralConfig_ScreenSize"));
+		JLabel lScreenSize = new JLabel(NullpoMinoInternalFrame.lz.s("GeneralConfig_ScreenSize"));
 		pScreenSize.add(lScreenSize);
 
 		modelScreenSize = new DefaultComboBoxModel();
@@ -251,7 +251,7 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 		pMaxFPS.setAlignmentX(LEFT_ALIGNMENT);
 		pAdvancedTab.add(pMaxFPS);
 
-		JLabel lMaxFPS = new JLabel(NullpoMinoInternalFrame.getUIText("GeneralConfig_MaxFPS"));
+		JLabel lMaxFPS = new JLabel(NullpoMinoInternalFrame.lz.s("GeneralConfig_MaxFPS"));
 		pMaxFPS.add(lMaxFPS);
 
 		txtfldMaxFPS = new JTextField(5);
@@ -262,38 +262,38 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 		pLineClearEffectSpeed.setAlignmentX(LEFT_ALIGNMENT);
 		pAdvancedTab.add(pLineClearEffectSpeed);
 
-		JLabel lLineClearEffectSpeed = new JLabel(NullpoMinoInternalFrame.getUIText("GeneralConfig_LineClearEffectSpeed"));
+		JLabel lLineClearEffectSpeed = new JLabel(NullpoMinoInternalFrame.lz.s("GeneralConfig_LineClearEffectSpeed"));
 		pLineClearEffectSpeed.add(lLineClearEffectSpeed);
 
 		txtfldLineClearEffectSpeed = new JTextField(5);
 		pLineClearEffectSpeed.add(txtfldLineClearEffectSpeed);
 
 		// ---------- Checkboxes ----------
-		chkboxShowFPS = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_ShowFPS"));
+		chkboxShowFPS = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_ShowFPS"));
 		chkboxShowFPS.setAlignmentX(LEFT_ALIGNMENT);
 		pAdvancedTab.add(chkboxShowFPS);
 
-		chkboxUseNativeLookAndFeel = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_UseNativeLookAndFeel"));
+		chkboxUseNativeLookAndFeel = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_UseNativeLookAndFeel"));
 		chkboxUseNativeLookAndFeel.setAlignmentX(LEFT_ALIGNMENT);
 		pAdvancedTab.add(chkboxUseNativeLookAndFeel);
 
-		chkboxEnableFrameStep = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_EnableFrameStep"));
+		chkboxEnableFrameStep = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_EnableFrameStep"));
 		chkboxEnableFrameStep.setAlignmentX(LEFT_ALIGNMENT);
 		pAdvancedTab.add(chkboxEnableFrameStep);
 
-		chkboxPerfectFPSMode = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_PerfectFPSMode"));
+		chkboxPerfectFPSMode = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_PerfectFPSMode"));
 		chkboxPerfectFPSMode.setAlignmentX(LEFT_ALIGNMENT);
 		pAdvancedTab.add(chkboxPerfectFPSMode);
 
-		chkboxPerfectYield = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_PerfectYield"));
+		chkboxPerfectYield = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_PerfectYield"));
 		chkboxPerfectYield.setAlignmentX(LEFT_ALIGNMENT);
 		pAdvancedTab.add(chkboxPerfectYield);
 
-		chkboxSyncDisplay = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_SyncDisplay"));
+		chkboxSyncDisplay = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_SyncDisplay"));
 		chkboxSyncDisplay.setAlignmentX(LEFT_ALIGNMENT);
 		pAdvancedTab.add(chkboxSyncDisplay);
 
-		chkboxShowLineClearEffect = new JCheckBox(NullpoMinoInternalFrame.getUIText("GeneralConfig_ShowLineClearEffect"));
+		chkboxShowLineClearEffect = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_ShowLineClearEffect"));
 		chkboxShowLineClearEffect.setAlignmentX(LEFT_ALIGNMENT);
 		pAdvancedTab.add(chkboxShowLineClearEffect);
 
@@ -302,13 +302,13 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 		pButtons.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pButtons, BorderLayout.SOUTH);
 
-		JButton buttonOK = new JButton(NullpoMinoInternalFrame.getUIText("GeneralConfig_OK"));
+		JButton buttonOK = new JButton(NullpoMinoInternalFrame.lz.s("GeneralConfig_OK"));
 		buttonOK.setMnemonic('O');
 		buttonOK.addActionListener(this);
 		buttonOK.setActionCommand("GeneralConfig_OK");
 		pButtons.add(buttonOK);
 
-		JButton buttonCancel = new JButton(NullpoMinoInternalFrame.getUIText("GeneralConfig_Cancel"));
+		JButton buttonCancel = new JButton(NullpoMinoInternalFrame.lz.s("GeneralConfig_Cancel"));
 		buttonCancel.setMnemonic('C');
 		buttonCancel.addActionListener(this);
 		buttonCancel.setActionCommand("GeneralConfig_Cancel");

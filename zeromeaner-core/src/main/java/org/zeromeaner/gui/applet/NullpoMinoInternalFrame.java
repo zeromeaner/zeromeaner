@@ -86,6 +86,7 @@ import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.gui.knet.KNetPanelEvent;
 import org.zeromeaner.gui.knet.KNetPanelListener;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.ResourceFileSystemView;
@@ -138,11 +139,9 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	/** ObserverFor the functionProperty file */
 	public static CustomProperties propObserver;
 
-	/** Default language file */
-	public static CustomProperties propLangDefault;
-
-	/** Language file */
-	public static CustomProperties propLang;
+	
+	public static Localization lz = new Localization();
+	
 
 	/** Default game mode description file */
 	public static CustomProperties propDefaultModeDesc;
@@ -213,23 +212,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		// ModeRead
 		modeManager = ModeList.getModes();
 		modeList = modeManager.getIsNetplay(false).names().toArray(new String[0]);
-
-		// Read language file
-		propLangDefault = new CustomProperties();
-		try {
-			ResourceInputStream in = new ResourceInputStream("config/lang/swing_default.properties");
-			propLangDefault.load(in);
-			in.close();
-		} catch (IOException e) {
-			log.error("Couldn't load default UI language file", e);
-		}
-
-		propLang = new CustomProperties();
-		try {
-			ResourceInputStream in = new ResourceInputStream("config/lang/swing_" + Locale.getDefault().getCountry() + ".properties");
-			propLang.load(in);
-			in.close();
-		} catch(IOException e) {}
 
 		// Game mode description
 		propDefaultModeDesc = new CustomProperties();
@@ -315,19 +297,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 				mainFrame = new NullpoMinoInternalFrame();
 //			}
 //		});
-	}
-
-	/**
-	 * PosttranslationalUIGets a string of
-	 * @param str String
-	 * @return PosttranslationalUIString (If you do not acceptstrReturns)
-	 */
-	public static String getUIText(String str) {
-		String result = propLang.getProperty(str);
-		if(result == null) {
-			result = propLangDefault.getProperty(str, str);
-		}
-		return result;
 	}
 
 	/**
@@ -448,7 +417,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			}
 		});
 
-		setTitle(getUIText("Title_Main") + " version" + GameManager.getVersionString());
+		setTitle(lz.s("Title_Main") + " version" + GameManager.getVersionString());
 		loadRecommendedRuleList();
 
 		initUI();
@@ -506,7 +475,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 
 		// Label
-		lModeSelect = new JLabel(getUIText("Top_ModeSelect"));
+		lModeSelect = new JLabel(lz.s("Top_ModeSelect"));
 		lModeSelect.setAlignmentX(0f);
 		p.add(lModeSelect);
 
@@ -544,7 +513,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		prepareRuleList((String)listboxMode.getSelectedValue());
 
 		// Start button
-		JButton buttonStartOffline = new JButton(getUIText("Top_StartOffline"));
+		JButton buttonStartOffline = new JButton(lz.s("Top_StartOffline"));
 		buttonStartOffline.setMnemonic('S');
 		buttonStartOffline.addActionListener(this);
 		buttonStartOffline.setActionCommand("Top_StartOffline");
@@ -591,12 +560,12 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		menubar.add(configMenu);
 		
 		// FileMenu
-		JMenu menuFile = new JMenu(getUIText("Menu_File"));
+		JMenu menuFile = new JMenu(lz.s("Menu_File"));
 		menuFile.setMnemonic('F');
 		menubar.add(menuFile);
 
 		// Open the replay
-		JMenuItem miOpen = new JMenuItem(getUIText("Menu_Open"));
+		JMenuItem miOpen = new JMenuItem(lz.s("Menu_Open"));
 		miOpen.setMnemonic('O');
 		miOpen.addActionListener(this);
 		miOpen.setActionCommand("Menu_Open");
@@ -604,7 +573,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 		if(GameManager.DEV_BUILD) {
 			// NetPlay start
-			JMenuItem miNetPlay = new JMenuItem(getUIText("Menu_NetPlay"));
+			JMenuItem miNetPlay = new JMenuItem(lz.s("Menu_NetPlay"));
 			miNetPlay.setMnemonic('N');
 			miNetPlay.addActionListener(this);
 			miNetPlay.setActionCommand("Menu_NetPlay");
@@ -612,75 +581,75 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		}
 
 		// End
-//		JMenuItem miExit = new JMenuItem(getUIText("Menu_Exit"));
+//		JMenuItem miExit = new JMenuItem(lz.s("Menu_Exit"));
 //		miExit.setMnemonic('X');
 //		miExit.addActionListener(this);
 //		miExit.setActionCommand("Menu_Exit");
 //		menuFile.add(miExit);
 
 		// SettingMenu
-		JMenu menuConfig = new JMenu(getUIText("Menu_Config"));
+		JMenu menuConfig = new JMenu(lz.s("Menu_Config"));
 		menuConfig.setMnemonic('C');
 		menubar.add(menuConfig);
 
 		// Selection rules
-		JMenuItem miRuleSelect = new JMenuItem(getUIText("Menu_RuleSelect"));
+		JMenuItem miRuleSelect = new JMenuItem(lz.s("Menu_RuleSelect"));
 		miRuleSelect.setMnemonic('R');
 		miRuleSelect.addActionListener(this);
 		miRuleSelect.setActionCommand("Menu_RuleSelect");
 		menuConfig.add(miRuleSelect);
 
 		// Selection rules(2P)
-		JMenuItem miRuleSelect2P = new JMenuItem(getUIText("Menu_RuleSelect2P"));
+		JMenuItem miRuleSelect2P = new JMenuItem(lz.s("Menu_RuleSelect2P"));
 		miRuleSelect2P.setMnemonic('S');
 		miRuleSelect2P.addActionListener(this);
 		miRuleSelect2P.setActionCommand("Menu_RuleSelect2P");
 		menuConfig.add(miRuleSelect2P);
 
 		// Tuning settings
-		JMenuItem miGameTuning = new JMenuItem(getUIText("Menu_GameTuning"));
+		JMenuItem miGameTuning = new JMenuItem(lz.s("Menu_GameTuning"));
 		miGameTuning.setMnemonic('T');
 		miGameTuning.addActionListener(this);
 		miGameTuning.setActionCommand("Menu_GameTuning");
 		menuConfig.add(miGameTuning);
 
 		// Tuning settings(2P)
-		JMenuItem miGameTuning2P = new JMenuItem(getUIText("Menu_GameTuning2P"));
+		JMenuItem miGameTuning2P = new JMenuItem(lz.s("Menu_GameTuning2P"));
 		miGameTuning2P.setMnemonic('U');
 		miGameTuning2P.addActionListener(this);
 		miGameTuning2P.setActionCommand("Menu_GameTuning2P");
 		menuConfig.add(miGameTuning2P);
 
 		// AISetting
-		JMenuItem miAIConfig = new JMenuItem(getUIText("Menu_AIConfig"));
+		JMenuItem miAIConfig = new JMenuItem(lz.s("Menu_AIConfig"));
 		miAIConfig.setMnemonic('A');
 		miAIConfig.addActionListener(this);
 		miAIConfig.setActionCommand("Menu_AIConfig");
 		menuConfig.add(miAIConfig);
 
 		// AISetting(2P)
-		JMenuItem miAIConfig2P = new JMenuItem(getUIText("Menu_AIConfig2P"));
+		JMenuItem miAIConfig2P = new JMenuItem(lz.s("Menu_AIConfig2P"));
 		miAIConfig2P.setMnemonic('Z');
 		miAIConfig2P.addActionListener(this);
 		miAIConfig2P.setActionCommand("Menu_AIConfig2P");
 		menuConfig.add(miAIConfig2P);
 
 		// Key settings
-		JMenuItem miKeyConfig = new JMenuItem(getUIText("Menu_KeyConfig"));
+		JMenuItem miKeyConfig = new JMenuItem(lz.s("Menu_KeyConfig"));
 		miKeyConfig.setMnemonic('K');
 		miKeyConfig.addActionListener(this);
 		miKeyConfig.setActionCommand("Menu_KeyConfig");
 		menuConfig.add(miKeyConfig);
 
 		// Key settings(2P)
-		JMenuItem miKeyConfig2P = new JMenuItem(getUIText("Menu_KeyConfig2P"));
+		JMenuItem miKeyConfig2P = new JMenuItem(lz.s("Menu_KeyConfig2P"));
 		miKeyConfig2P.setMnemonic('E');
 		miKeyConfig2P.addActionListener(this);
 		miKeyConfig2P.setActionCommand("Menu_KeyConfig2P");
 		menuConfig.add(miKeyConfig2P);
 
 		// Other Settings
-		JMenuItem miGeneralConfig = new JMenuItem(getUIText("Menu_GeneralConfig"));
+		JMenuItem miGeneralConfig = new JMenuItem(lz.s("Menu_GeneralConfig"));
 		miGeneralConfig.setMnemonic('G');
 		miGeneralConfig.addActionListener(this);
 		miGeneralConfig.setActionCommand("Menu_GeneralConfig");
@@ -741,7 +710,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	 */
 	protected void prepareRuleList(String strCurrentMode) {
 		listmodelRule.clear();
-		listmodelRule.addElement(getUIText("Top_CurrentRule"));
+		listmodelRule.addElement(lz.s("Top_CurrentRule"));
 
 		if(strCurrentMode != null) {
 			RuleEntry entry = mapRuleEntries.get(strCurrentMode);
@@ -787,7 +756,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			gameFrame = new GameInternalFrame(this);
 		}
 		if((gameManager != null) && (gameManager.mode != null)) {
-			gameFrame.setTitle(getUIText("Title_Game") + " - " + gameManager.mode.getName());
+			gameFrame.setTitle(lz.s("Title_Game") + " - " + gameManager.mode.getName());
 			gameFrame.maxfps = propConfig.getProperty("option.maxfps", 60);
 			gameFrame.isNetPlay = false;
 		}
@@ -852,7 +821,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 					gameFrame = new GameInternalFrame(this);
 				}
 				if((gameManager != null) && (gameManager.mode != null)) {
-					gameFrame.setTitle(getUIText("Title_Game") + " - " + gameManager.mode.getName() + " (Replay)");
+					gameFrame.setTitle(lz.s("Title_Game") + " - " + gameManager.mode.getName() + " (Replay)");
 					gameFrame.maxfps = propConfig.getProperty("option.maxfps", 60);
 					gameFrame.isNetPlay = false;
 				}
@@ -868,7 +837,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 				gameFrame = new GameInternalFrame(this);
 			}
 			if((gameManager != null) && (gameManager.mode != null)) {
-				gameFrame.setTitle(getUIText("Title_Game") + " - " + gameManager.mode.getName());
+				gameFrame.setTitle(lz.s("Title_Game") + " - " + gameManager.mode.getName());
 				gameFrame.maxfps = 60;
 				gameFrame.isNetPlay = true;
 			}
@@ -1290,7 +1259,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		 */
 		@Override
 		public String getDescription() {
-			return getUIText("FileChooser_ReplayFile");
+			return lz.s("FileChooser_ReplayFile");
 		}
 	}
 
