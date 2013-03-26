@@ -31,6 +31,8 @@ public class ZeroJnlp extends HttpServlet {
 		String codebase = url.replaceAll("/[^/]*$", "");
 		jnlp = jnlp.replaceAll("\\$\\{codebase\\}", codebase);
 		
+		response.setDateHeader("lastModified", System.currentTimeMillis());
+		
 		IOUtils.write(jnlp, response.getWriter());
 	}
 
