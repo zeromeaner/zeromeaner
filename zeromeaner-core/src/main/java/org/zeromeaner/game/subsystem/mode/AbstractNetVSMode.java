@@ -18,6 +18,7 @@ import org.zeromeaner.game.knet.obj.KNetGameInfo;
 import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.game.subsystem.mode.ModeTypes.ModeType;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.util.GeneralUtil;
 
@@ -26,7 +27,8 @@ import static org.zeromeaner.game.knet.KNetEventArgs.*;
 /**
  * Special base class for netplay VS modes. Up to 6 players supported.
  */
-public class AbstractNetVSMode extends AbstractNetMode {
+@ModeTypes(ModeType.HIDDEN)
+public abstract class AbstractNetVSMode extends AbstractNetMode {
 	/* -------------------- Constants -------------------- */
 	/** NET-VS: Max number of players */
 	protected static final int NETVS_MAX_PLAYERS = 6;

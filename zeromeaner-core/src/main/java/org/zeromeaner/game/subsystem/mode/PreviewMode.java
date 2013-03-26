@@ -1,10 +1,12 @@
 package org.zeromeaner.game.subsystem.mode;
 
 import org.zeromeaner.game.play.GameEngine;
+import org.zeromeaner.game.subsystem.mode.ModeTypes.ModeType;
 
 /**
  * PREVIEW mode - A game mode for Tuning preview
  */
+@ModeTypes(ModeType.HIDDEN)
 public class PreviewMode extends AbstractMode {
 	/*
 	 * Mode name

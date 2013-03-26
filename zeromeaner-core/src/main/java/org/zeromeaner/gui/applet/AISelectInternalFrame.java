@@ -37,6 +37,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -51,7 +52,9 @@ import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.subsystem.ai.AIPlayer;
+import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.util.ResourceInputStream;
+import org.zeromeaner.util.Zeroflections;
 
 /**
  * AISelection screen frame
@@ -124,14 +127,12 @@ public class AISelectInternalFrame extends JInternalFrame implements ActionListe
 		super();
 		this.owner = owner;
 
-		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/list/ai.lst")));
-			aiPathList = loadAIList(in);
-			aiNameList = loadAINames(aiPathList);
-			in.close();
-		} catch (IOException e) {
-			log.warn("Failed to load AI list", e);
+		List<String> aipaths = new ArrayList<String>();
+		for(Class<? extends AbstractAI> aic : Zeroflections.getAIs()) {
+			aipaths.add(aic.getName());
 		}
+		aiPathList = aipaths.toArray(new String[0]);
+		aiNameList = loadAINames(aiPathList);
 
 		// GUIOfInitialization
 		setDefaultCloseOperation(JInternalFrame.HIDE_ON_CLOSE);
@@ -173,34 +174,6 @@ public class AISelectInternalFrame extends JInternalFrame implements ActionListe
 		chkBoxAIShowHint.setSelected(aiShowHint);
 		chkBoxAIPrethink.setSelected(aiPrethink);
 		chkBoxAIShowState.setSelected(aiShowState);
-	}
-
-	/**
-	 * AIReads the list
-	 * @param bf To read from a text file
-	 * @return AIList
-	 */
-	public String[] loadAIList(BufferedReader bf) {
-		ArrayList<String> aiArrayList = new ArrayList<String>();
-
-		while(true) {
-			String name = null;
-			try {
-				name = bf.readLine();
-			} catch (Exception e) {
-				break;
-			}
-			if(name == null) break;
-			if(name.length() == 0) break;
-
-			if(!name.startsWith("#"))
-				aiArrayList.add(name);
-		}
-
-		String[] aiStringList = new String[aiArrayList.size()];
-		for(int i = 0; i < aiArrayList.size(); i++) aiStringList[i] = aiArrayList.get(i);
-
-		return aiStringList;
 	}
 
 	/**

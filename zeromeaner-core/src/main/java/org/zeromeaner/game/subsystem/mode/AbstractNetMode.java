@@ -22,6 +22,7 @@ import org.zeromeaner.game.knet.obj.PieceMovement;
 import org.zeromeaner.game.knet.obj.Replay;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.game.subsystem.mode.ModeTypes.ModeType;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.gui.knet.KNetPanel;
 import org.zeromeaner.util.CustomProperties;
@@ -32,6 +33,7 @@ import static org.zeromeaner.game.knet.KNetEventArgs.*;
 /**
  * Special base class for netplay
  */
+@ModeTypes(ModeType.HIDDEN)
 public class AbstractNetMode extends AbstractMode implements KNetListener {
 	public static class DefaultStats {
 		private Statistics statistics;

@@ -16,6 +16,8 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import org.funcish.core.Predicates;
 import org.funcish.core.fn.Mappicator;
 import org.funcish.core.fn.Predicate;
 import org.funcish.core.impl.AbstractMappicator;
@@ -23,6 +25,7 @@ import org.funcish.core.impl.AbstractPredicate;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.AbstractNetVSMode;
+import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.LstResourceMap;
 import org.zeromeaner.util.ModeList;
@@ -41,17 +44,10 @@ public class KNetChannelInfoPanel extends JPanel {
 				DefaultComboBoxModel model = (DefaultComboBoxModel) mode.getModel();
 				model.removeAllElements();
 				mode.setModel(model);
-				Predicate<Class<? extends AbstractNetMode>> VS_MODE = new AbstractPredicate<Class<? extends AbstractNetMode>>((Class)AbstractNetMode.class) {
-					@Override
-					public boolean test0(Class<? extends AbstractNetMode> obj, Integer index) {
-						int maxPlayers = (Integer) KNetChannelInfoPanel.this.maxPlayers.getValue();
-						if(maxPlayers == 1)
-							return !AbstractNetVSMode.class.isAssignableFrom(obj);
-						else
-							return AbstractNetVSMode.class.isAssignableFrom(obj);
-					}
-				};
-				for(String modeName : ModeList.getModes().accept(AbstractNetMode.class).filter(VS_MODE).map(ModeList.MODE_NAME)) {
+				Predicate<GameMode> vs = ModeList.IS_VSMODE;
+				if(1 == (Integer)KNetChannelInfoPanel.this.maxPlayers.getValue())
+					vs = Predicates.not(vs);
+				for(String modeName : ModeList.getModes().getIsNetplay(true).filter(vs).names()) {
 					model.addElement(modeName);
 				}
 				mode.setSelectedIndex(0);
@@ -70,17 +66,10 @@ public class KNetChannelInfoPanel extends JPanel {
 	{{
 		DefaultComboBoxModel model = new DefaultComboBoxModel();
 		mode.setModel(model);
-		Predicate<Class<? extends AbstractNetMode>> VS_MODE = new AbstractPredicate<Class<? extends AbstractNetMode>>((Class) Class.class) {
-			@Override
-			public boolean test0(Class<? extends AbstractNetMode> obj, Integer index) {
-				int maxPlayers = (Integer) KNetChannelInfoPanel.this.maxPlayers.getValue();
-				if(maxPlayers == 1)
-					return !AbstractNetVSMode.class.isAssignableFrom(obj);
-				else
-					return AbstractNetVSMode.class.isAssignableFrom(obj);
-			}
-		};
-		for(String modeName : ModeList.getModes().accept(AbstractNetMode.class).filter(VS_MODE).map(ModeList.MODE_NAME)) {
+		Predicate<GameMode> vs = ModeList.IS_VSMODE;
+		if(1 == (Integer)KNetChannelInfoPanel.this.maxPlayers.getValue())
+			vs = Predicates.not(vs);
+		for(String modeName : ModeList.getModes().getIsNetplay(true).filter(vs).map(ModeList.MODE_NAME)) {
 			model.addElement(modeName);
 		}
 		mode.addActionListener(new ActionListener() {

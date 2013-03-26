@@ -74,6 +74,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.funcish.core.Mappings;
 import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameEngine;
@@ -86,11 +87,13 @@ import org.zeromeaner.gui.knet.KNetPanelEvent;
 import org.zeromeaner.gui.knet.KNetPanelListener;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
+import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.ResourceFileSystemView;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
-import org.zeromeaner.util.ModeManager;
+
+import org.zeromeaner.util.Zeroflections;
 
 /**
  * zeromeaner SwingVersion
@@ -148,7 +151,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	public static CustomProperties propModeDesc;
 
 	/** Mode Management */
-	public static ModeManager modeManager;
+	public static ModeList<GameMode> modeManager;
 
 	/** Layout manager of the main screen */
 	public static CardLayout mainLayout;
@@ -208,18 +211,8 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		loadGlobalConfig();
 
 		// ModeRead
-		modeManager = new ModeManager();
-		try {
-			BufferedReader txtMode = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/list/mode.lst")));
-			modeManager.loadGameModes(txtMode);
-			txtMode.close();
-			modeList = modeManager.getModeNames(false);
-		} catch (IOException e) {
-			log.error("Mode list load failed", e);
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw, true));
-			JOptionPane.showMessageDialog(null, sw);
-		}
+		modeManager = ModeList.getModes();
+		modeList = modeManager.getIsNetplay(false).names().toArray(new String[0]);
 
 		// Read language file
 		propLangDefault = new CustomProperties();
@@ -989,7 +982,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 		// Mode
 		String modeName = propGlobal.getProperty("name.mode", "");
-		GameMode modeObj = modeManager.getMode(modeName);
+		GameMode modeObj = modeManager.get(modeName);
 		if(modeObj == null) {
 			log.error("Couldn't find mode:" + modeName);
 		} else {
@@ -1085,7 +1078,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 		// Mode
 		String modeName = prop.getProperty("name.mode", "");
-		GameMode modeObj = modeManager.getMode(modeName);
+		GameMode modeObj = modeManager.get(modeName);
 		if(modeObj == null) {
 			log.error("Couldn't find mode:" + modeName);
 		} else {
@@ -1160,7 +1153,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		loadGlobalConfig();	// Reload global config file
 
 		GameMode previousMode = gameManager.mode;
-		GameMode newModeTemp = (modeName == null) ? new AbstractNetMode() : NullpoMinoInternalFrame.modeManager.getMode(modeName);
+		GameMode newModeTemp = (modeName == null) ? new AbstractNetMode() : NullpoMinoInternalFrame.modeManager.get(modeName);
 
 		if(newModeTemp == null) {
 			log.error("Cannot find a mode:" + modeName);
