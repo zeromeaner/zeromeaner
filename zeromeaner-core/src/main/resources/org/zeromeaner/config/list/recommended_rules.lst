@@ -1,5 +1,8 @@
 #Recommended Rules List
 
+:NET-EVILINE-VS-BATTLE
+config/rule/EvilineNetplayRude.rul
+
 :MARATHON
 config/rule/Standard.rul
 config/rule/StandardFastB.rul

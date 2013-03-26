@@ -273,6 +273,7 @@ public class GeneralUtil {
 		}
 
 		RuleOptions ruleopt = new RuleOptions();
+		ruleopt.resourceName = filename;
 		ruleopt.readProperty(prop, 0);
 
 		return ruleopt;

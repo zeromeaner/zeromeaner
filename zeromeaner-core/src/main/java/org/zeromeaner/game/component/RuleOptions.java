@@ -49,6 +49,8 @@ public class RuleOptions implements Serializable {
 	/** Lateral motion counterOrrotation counterI exceeded theWallkickDisable */
 	public static final int LOCKRESET_LIMIT_OVER_NOWALLKICK = 2;
 
+	public String resourceName;
+	
 	/** Of this ruleName */
 	public String strRuleName;
 

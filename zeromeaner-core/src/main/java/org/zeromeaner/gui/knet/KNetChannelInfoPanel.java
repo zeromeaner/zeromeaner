@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -23,6 +24,7 @@ import org.funcish.core.fn.Mappicator;
 import org.funcish.core.fn.Predicate;
 import org.funcish.core.impl.AbstractMappicator;
 import org.funcish.core.impl.AbstractPredicate;
+import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.AbstractNetVSMode;
@@ -31,6 +33,8 @@ import org.zeromeaner.gui.tool.RuleEditorPanel;
 import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.LstResourceMap;
 import org.zeromeaner.util.ModeList;
+import org.zeromeaner.util.RuleList;
+
 
 
 public class KNetChannelInfoPanel extends JPanel {
@@ -62,6 +66,17 @@ public class KNetChannelInfoPanel extends JPanel {
 	{{
 		DefaultComboBoxModel model = new DefaultComboBoxModel();
 		rule.setModel(model);
+		rule.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String ruleName = (String) rule.getSelectedItem();
+				RuleOptions ropt;
+				if(ruleName == null)
+					ropt = new RuleOptions();
+				;
+				// FIXME: finish me
+			}
+		});
 	}}
 
 	private JComboBox mode = new JComboBox();
@@ -85,8 +100,9 @@ public class KNetChannelInfoPanel extends JPanel {
 				
 				LstResourceMap recdRules = new LstResourceMap("config/list/recommended_rules.lst");
 				List<String> ruleResources = recdRules.get(mode.getSelectedItem());
-				if(ruleResources == null)
-					return;
+				if(ruleResources == null || ruleResources.size() == 0) {
+					ruleResources = RuleList.getRules().getResourceNames();
+				}
 				Mappicator<String, String> RULE_NAME = new AbstractMappicator<String, String>(String.class, String.class) {
 					@Override
 					public String map0(String obj, Integer index) {
@@ -130,10 +146,16 @@ public class KNetChannelInfoPanel extends JPanel {
 	public void updateChannel() {
 		channel.setName(name.getText());
 		channel.setMode((String) mode.getSelectedItem());
+		if(channel.getRule() == null)
+			channel.setRule(new RuleOptions());
+		ruleEditor.writeRuleFromUI(channel.getRule());
 	}
 	
 	public void updateEditor() {
 		name.setText(channel.getName());
 		mode.setSelectedItem(channel.getMode());
+		if(channel.getRule() == null)
+			channel.setRule(new RuleOptions());
+		ruleEditor.readRuleToUI(channel.getRule());
 	}
 }
