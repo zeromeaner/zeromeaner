@@ -30,6 +30,9 @@
 						<goals>
 							<goal>reflections</goal>
 						</goals>
+						<configuration>
+							<scanners>ResourcesScanner,SubTypesScanner</scanners>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

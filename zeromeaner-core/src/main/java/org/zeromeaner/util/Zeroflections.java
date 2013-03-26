@@ -8,10 +8,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.funcish.core.Comparisons;
 import org.funcish.core.Mappings;
+import org.funcish.core.Predicates;
 import org.funcish.core.Sequences;
 import org.funcish.core.fn.Predicator;
 import org.funcish.core.fn.Sequence;
@@ -24,10 +26,12 @@ import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.game.subsystem.mode.ModeTypes.ModeType;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 
-import static org.reflections.ReflectionUtils.*;
-import static com.google.common.base.Predicates.*;
+import com.google.common.base.Predicate;
+
 
 public class Zeroflections {
+	private static final Pattern ALL = Pattern.compile(".*");
+	private static final Pattern RULE = Pattern.compile("org/zeromeaner/config/rule/.*\\.rul");
 	private static Reflections classes = Reflections.collect();
 	
 	private static List<String> list(String listName) {
@@ -76,7 +80,7 @@ public class Zeroflections {
 	}
 
 	public static Set<String> getRules() {
-		return classes.getResources(Pattern.compile(".*\\.rul"));
+		return Predicates.patternFind(RULE).filter(classes.getResources(ALL), new TreeSet<String>());
 	}
 
 }
