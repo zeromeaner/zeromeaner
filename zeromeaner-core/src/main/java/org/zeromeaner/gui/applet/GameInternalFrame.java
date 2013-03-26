@@ -186,6 +186,8 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		setLayout(new BorderLayout());
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(imageBufferLabel = new JLabel(new ImageIcon(imageBuffer)));
+		imageBufferLabel.setFocusable(true);
+		imageBufferLabel.addKeyListener(new GameFrameKeyEvent());
 		add(panel, BorderLayout.CENTER);
 		panel.setFocusable(true);
 		panel.addKeyListener(new GameFrameKeyEvent());
