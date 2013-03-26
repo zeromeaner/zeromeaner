@@ -26,7 +26,7 @@
     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
 */
-package org.zeromeaner.tool.ruleeditor;
+package org.zeromeaner.gui.tool;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -44,6 +44,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -81,17 +82,19 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
+import org.zeromeaner.util.Zeroflections;
+
 import java.io.InputStreamReader;
 
 /**
  * Rule Editor
  */
-public class RuleEditor extends JFrame implements ActionListener {
+public class RuleEditorPanel extends JPanel implements ActionListener {
 	/** Serial version */
 	private static final long serialVersionUID = 1L;
 
 	/** Log */
-	static Logger log = Logger.getLogger(RuleEditor.class);
+	static Logger log = Logger.getLogger(RuleEditorPanel.class);
 
 	/** SwingVersion ofSave settingsUseProperty file */
 	public CustomProperties propConfig;
@@ -449,44 +452,18 @@ public class RuleEditor extends JFrame implements ActionListener {
 	/** BlockImage */
 	private BufferedImage[] imgBlockSkins;
 
+	public JTabbedPane getTabPane() {
+		return tabPane;
+	}
+	
 	/**
 	 * Constructor
 	 */
-	public RuleEditor() {
+	public RuleEditorPanel() {
 		super();
 
 		init();
 		readRuleToUI(new RuleOptions());
-
-		setVisible(true);
-	}
-
-	/**
-	 * Reads a specific fileConstructor
-	 * @param filename Filename (Empty string ornullIt without parameters and toConstructorThe same behavior)
-	 */
-	public RuleEditor(String filename) {
-		super();
-
-		init();
-
-		RuleOptions ruleopt = new RuleOptions();
-
-		if((filename != null) && (filename.length() > 0)) {
-			try {
-				ruleopt = load(filename);
-				strNowFile = filename;
-				setTitle(getUIText("Title_RuleEditor") + ":" + strNowFile);
-			} catch (IOException e) {
-				log.error("Failed to load rule data from " + filename, e);
-				JOptionPane.showMessageDialog(this, getUIText("Message_FileLoadFailed")+"\n"+e, getUIText("Title_FileLoadFailed"),
-											  JOptionPane.ERROR_MESSAGE);
-			}
-		}
-
-		readRuleToUI(ruleopt);
-
-		setVisible(true);
 	}
 
 	/**
@@ -518,84 +495,22 @@ public class RuleEditor extends JFrame implements ActionListener {
 			in.close();
 		} catch(IOException e) {}
 
-		// Look&FeelSetting
-		if(propConfig.getProperty("option.usenativelookandfeel", true) == true) {
-			try {
-				UIManager.getInstalledLookAndFeels();
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch(Exception e) {
-				log.warn("Failed to set native look&feel", e);
-			}
-		}
-
 		strNowFile = null;
-
-		setTitle(getUIText("Title_RuleEditor"));
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 		loadBlockSkins();
 
 		initUI();
-		pack();
 	}
 
 	/**
 	 * ScreenInitialization
 	 */
 	private void initUI() {
-		getContentPane().setLayout(new BorderLayout());
-
-		// MenuBar --------------------------------------------------
-		JMenuBar menuBar = new JMenuBar();
-		setJMenuBar(menuBar);
-
-		// FileMenu
-		JMenu mFile = new JMenu(getUIText("JMenu_File"));
-		mFile.setMnemonic('F');
-		menuBar.add(mFile);
-
-		// New
-		JMenuItem miNew = new JMenuItem(getUIText("JMenuItem_New"));
-		miNew.setMnemonic('N');
-		miNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK));
-		miNew.setActionCommand("New");
-		miNew.addActionListener(this);
-		mFile.add(miNew);
-
-		// Open
-		JMenuItem miOpen = new JMenuItem(getUIText("JMenuItem_Open"));
-		miOpen.setMnemonic('O');
-		miOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
-		miOpen.setActionCommand("Open");
-		miOpen.addActionListener(this);
-		mFile.add(miOpen);
-
-		// UpDisclaimer save
-		JMenuItem miSave = new JMenuItem(getUIText("JMenuItem_Save"));
-		miSave.setMnemonic('S');
-		miSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
-		miSave.setActionCommand("Save");
-		miSave.addActionListener(this);
-		mFile.add(miSave);
-
-		// NameSave
-		JMenuItem miSaveAs = new JMenuItem(getUIText("JMenuItem_SaveAs"));
-		miSaveAs.setMnemonic('A');
-		miSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK));
-		miSaveAs.setActionCommand("SaveAs");
-		miSaveAs.addActionListener(this);
-		mFile.add(miSaveAs);
-
-		// End
-		JMenuItem miExit = new JMenuItem(getUIText("JMenuItem_Exit"));
-		miExit.setMnemonic('X');
-		miExit.setActionCommand("Exit");
-		miExit.addActionListener(this);
-		mFile.add(miExit);
+		setLayout(new BorderLayout());
 
 		// Entire tab --------------------------------------------------
 		tabPane = new JTabbedPane();
-		getContentPane().add(tabPane, BorderLayout.NORTH);
+		add(tabPane, BorderLayout.NORTH);
 
 		// Preferences tab --------------------------------------------------
 		JPanel panelBasic = new JPanel();
@@ -1316,15 +1231,8 @@ public class RuleEditor extends JFrame implements ActionListener {
 		String skindir = propConfig.getProperty("custom.skin.directory", "res");
 
 		int numBlocks = 0;
-		File file = null;
-		while(true) {
-			file = new File(skindir + "/graphics/blockskin/normal/n" + numBlocks + ".png");
-			if(file.canRead()) {
-				numBlocks++;
-			} else {
-				break;
-			}
-		}
+		numBlocks = Zeroflections.getResources(Pattern.compile("^org/zeromeaner/res/graphics/blockskin/normal/n\\d+\\.png$")).size();
+		
 		log.debug(numBlocks + " block skins found");
 
 		imgBlockSkins = new BufferedImage[numBlocks];
@@ -1369,24 +1277,7 @@ public class RuleEditor extends JFrame implements ActionListener {
 	public URL getURL(String str) {
 		URL url = null;
 
-		try {
-			char sep = File.separator.charAt(0);
-			String file = str.replace(sep, '/');
-
-			// Note:http://www.asahi-net.or.jp/~DP8T-ASM/java/tips/HowToMakeURL.html
-			if(file.charAt(0) != '/') {
-				String dir = System.getProperty("user.dir");
-				dir = dir.replace(sep, '/') + '/';
-				if(dir.charAt(0) != '/') {
-					dir = "/" + dir;
-				}
-				file = dir + file;
-			}
-			url = new URL("file", "", file);
-		} catch(MalformedURLException e) {
-			log.warn("Invalid URL:" + str, e);
-			return null;
-		}
+		url = RuleEditorPanel.class.getClassLoader().getResource("org/zeromeaner/" + str);
 
 		return url;
 	}
@@ -1672,45 +1563,6 @@ public class RuleEditor extends JFrame implements ActionListener {
 		}
 	}
 
-	/**
-	 * Rules stored in a file
-	 * @param filename Filename
-	 * @throws IOException When I failed to save
-	 */
-	public void save(String filename) throws IOException {
-		RuleOptions ruleopt = new RuleOptions();
-		writeRuleFromUI(ruleopt);
-
-		CustomProperties prop = new CustomProperties();
-		ruleopt.writeProperty(prop, 0);
-
-		ResourceOutputStream out = new ResourceOutputStream(filename);
-		prop.store(out, "zeromeaner RuleData");
-		out.close();
-
-		log.debug("Saved rule file to " + filename);
-	}
-
-	/**
-	 * Reading rules from a file
-	 * @param filename Filename
-	 * @return Rule data
-	 * @throws IOException Failed to loadWhen it was
-	 */
-	public RuleOptions load(String filename) throws IOException {
-		CustomProperties prop = new CustomProperties();
-
-		ResourceInputStream in = new ResourceInputStream(filename);
-		prop.load(in);
-		in.close();
-
-		RuleOptions ruleopt = new RuleOptions();
-		ruleopt.readProperty(prop, 0);
-
-		log.debug("Loaded rule file from " + filename);
-
-		return ruleopt;
-	}
 
 	/**
 	 * PosttranslationalUIGets a string of
@@ -1759,86 +1611,9 @@ public class RuleEditor extends JFrame implements ActionListener {
 	 * Processing at the time of occurrence of action
 	 */
 	public void actionPerformed(ActionEvent e) {
-		if(e.getActionCommand() == "New") {
-			// New
-			strNowFile = null;
-			setTitle(getUIText("Title_RuleEditor"));
-			readRuleToUI(new RuleOptions());
-		} else if(e.getActionCommand() == "Open") {
-			// Open
-			JFileChooser c = new JFileChooser(System.getProperty("user.dir") + "/config/rule");
-			c.setFileFilter(new FileFilterRUL());
-
-			if(c.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-				File file = c.getSelectedFile();
-				RuleOptions ruleopt = new RuleOptions();
-
-				strNowFile = file.getPath();
-				setTitle(getUIText("Title_RuleEditor") + ":" + strNowFile);
-
-				try {
-					ruleopt = load(file.getPath());
-				} catch (IOException e2) {
-					log.error("Failed to load rule data from " + strNowFile, e2);
-					JOptionPane.showMessageDialog(this, getUIText("Message_FileLoadFailed")+"\n"+e2, getUIText("Title_FileLoadFailed"),
-												  JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-
-				readRuleToUI(ruleopt);
-			}
-		} else if((e.getActionCommand() == "Save") && (strNowFile != null)) {
-			// UpDisclaimer save
-			try {
-				save(strNowFile);
-			} catch (IOException e2) {
-				log.error("Failed to save rule data to " + strNowFile, e2);
-				JOptionPane.showMessageDialog(this, getUIText("Message_FileSaveFailed")+"\n"+e2, getUIText("Title_FileSaveFailed"),
-											  JOptionPane.ERROR_MESSAGE);
-			}
-		} else if((e.getActionCommand() == "Save") || (e.getActionCommand() == "SaveAs")) {
-			// NameSave
-			JFileChooser c = new JFileChooser(System.getProperty("user.dir") + "/config/rule");
-			c.setFileFilter(new FileFilterRUL());
-
-			if(c.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-				File file = c.getSelectedFile();
-				String filename = file.getPath();
-				if(!filename.endsWith(".rul")) filename = filename + ".rul";
-
-				try {
-					save(filename);
-				} catch (Exception e2) {
-					log.error("Failed to save rule data to " + filename, e2);
-					JOptionPane.showMessageDialog(this, getUIText("Message_FileSaveFailed")+"\n"+e2, getUIText("Title_FileSaveFailed"),
-												  JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-
-				strNowFile = filename;
-				setTitle(getUIText("Title_RuleEditor") + ":" + strNowFile);
-			}
-		} else if(e.getActionCommand() == "ResetRandomizer") {
+		if(e.getActionCommand() == "ResetRandomizer") {
 			// NEXTReset selection of order generation algorithm
 			comboboxRandomizer.setSelectedItem(null);
-		} else if(e.getActionCommand() == "Exit") {
-			// End
-			dispose();
-		}
-	}
-
-	/**
-	 * Main functioncount
-	 * @param args CommandLinesArgumentcount
-	 */
-	public static void main(String[] args) {
-		PropertyConfigurator.configure("config/etc/log.cfg");
-		log.debug("RuleEditor start");
-
-		if(args.length > 0) {
-			new RuleEditor(args[0]);
-		} else {
-			new RuleEditor();
 		}
 	}
 

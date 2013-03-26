@@ -10,6 +10,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
@@ -26,6 +27,7 @@ import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.AbstractNetVSMode;
 import org.zeromeaner.game.subsystem.mode.GameMode;
+import org.zeromeaner.gui.tool.RuleEditorPanel;
 import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.LstResourceMap;
 import org.zeromeaner.util.ModeList;
@@ -101,6 +103,8 @@ public class KNetChannelInfoPanel extends JPanel {
 	
 	private JCheckBox syncPlay = new JCheckBox();
 	
+	private RuleEditorPanel ruleEditor = new RuleEditorPanel();
+	
 	public KNetChannelInfoPanel(KNetChannelInfo channel) {
 		this.channel = channel;
 
@@ -118,6 +122,9 @@ public class KNetChannelInfoPanel extends JPanel {
 		p.add(new JLabel("Synchronous Play:")); p.add(syncPlay);
 		tabs.addTab("General", p);
 		
+		for(int i = 0; i < ruleEditor.getTabPane().getTabCount(); i++) {
+			tabs.addTab(ruleEditor.getTabPane().getTitleAt(i), new JScrollPane(ruleEditor.getTabPane().getComponentAt(i)));
+		}
 	}
 	
 	public void updateChannel() {
