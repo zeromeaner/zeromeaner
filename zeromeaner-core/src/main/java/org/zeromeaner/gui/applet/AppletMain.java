@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -103,8 +104,13 @@ public class AppletMain extends Applet {
 		
 		setLayout(new BorderLayout());
 		
-		desktop = new JDesktopPane();
-		desktop.setBackground(Color.decode("0x444488"));
+		desktop = new JDesktopPane() {
+			@Override
+			protected void paintComponent(Graphics g) {
+				
+			}
+		};
+		desktop.setBackground(new Color(64, 64, 128, 0));
 		desktop.setDoubleBuffered(true);
 		add(desktop, BorderLayout.CENTER);
 
