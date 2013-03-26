@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -73,8 +74,10 @@ public class KNetChannelInfoPanel extends JPanel {
 				RuleOptions ropt;
 				if(ruleName == null)
 					ropt = new RuleOptions();
-				;
-				// FIXME: finish me
+				else
+					ropt = RuleList.getRules().getNamed(ruleName);
+				if(ruleEditor != null)
+					ruleEditor.readRuleToUI(ropt);
 			}
 		});
 	}}
@@ -101,15 +104,10 @@ public class KNetChannelInfoPanel extends JPanel {
 				LstResourceMap recdRules = new LstResourceMap("config/list/recommended_rules.lst");
 				List<String> ruleResources = recdRules.get(mode.getSelectedItem());
 				if(ruleResources == null || ruleResources.size() == 0) {
-					ruleResources = RuleList.getRules().getResourceNames();
+					ruleResources = Arrays.asList("config/rule/Standard.rul");
 				}
-				Mappicator<String, String> RULE_NAME = new AbstractMappicator<String, String>(String.class, String.class) {
-					@Override
-					public String map0(String obj, Integer index) {
-						return GeneralUtil.loadRule(obj).strRuleName;
-					}
-				};
-				for(String ruleName : RULE_NAME.map(ruleResources)) {
+				RuleList rules = RuleList.FROM_RESOURCE.map(ruleResources, new RuleList());
+				for(String ruleName : rules.getNames()) {
 					ruleModel.addElement(ruleName);
 				}
 			}

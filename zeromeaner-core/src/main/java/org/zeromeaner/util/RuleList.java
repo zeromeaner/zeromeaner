@@ -27,11 +27,37 @@ public class RuleList extends ArrayFunctionalList<RuleOptions> {
 		}
 	};
 	
-	private RuleList() {
+	public static Mappicator<String, RuleOptions> FROM_RESOURCE = new AbstractMappicator<String, RuleOptions>(String.class, RuleOptions.class) {
+		@Override
+		public RuleOptions map0(String key, Integer index) throws Exception {
+			return GeneralUtil.loadRule(key);
+		}
+	};
+	
+	public static Mappicator<RuleOptions, String> RULE_NAME = new AbstractMappicator<RuleOptions, String>(RuleOptions.class, String.class) {
+		@Override
+		public String map0(RuleOptions key, Integer index) throws Exception {
+			return key.strRuleName;
+		}
+	};
+	
+	public RuleList() {
 		super(RuleOptions.class);
 	}
 	
 	public FunctionalList<String> getResourceNames() {
 		return map(RESOURCE_NAME);
+	}
+	
+	public FunctionalList<String> getNames() {
+		return map(RULE_NAME);
+	}
+	
+	public RuleOptions get(String resourceName) {
+		return get(getResourceNames().indexOf(resourceName));
+	}
+	
+	public RuleOptions getNamed(String name) {
+		return get(getNames().indexOf(name));
 	}
 }

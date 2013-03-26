@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Vector;
 import java.util.regex.Pattern;
@@ -75,6 +76,9 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+
+import org.funcish.core.Mappings;
+import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
@@ -589,7 +593,9 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 		JLabel lRandomizer = new JLabel(getUIText("Basic_Randomizer"));
 		pRandomizer.add(lRandomizer);
 
-		vectorRandomizer = getTextFileVector("config/list/randomizer.lst");
+//		vectorRandomizer = getTextFileVector("config/list/randomizer.lst");
+		vectorRandomizer = new Vector<String>(Mappings.classSimpleName().map(Zeroflections.getRandomizers()));
+		Collections.sort(vectorRandomizer);
 		comboboxRandomizer = new JComboBox(createShortStringVector(vectorRandomizer));
 		comboboxRandomizer.setPreferredSize(new Dimension(200, 30));
 		pRandomizer.add(comboboxRandomizer);
@@ -1340,7 +1346,7 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 		chkboxGhost.setSelected(r.ghost);
 		chkboxEnterAboveField.setSelected(r.pieceEnterAboveField);
 		txtfldEnterMaxDistanceY.setText(String.valueOf(r.pieceEnterMaxDistanceY));
-		int indexRandomizer = vectorRandomizer.indexOf(r.strRandomizer);
+		int indexRandomizer = vectorRandomizer.indexOf(r.strRandomizer.substring(r.strRandomizer.lastIndexOf('.') + 1));
 		comboboxRandomizer.setSelectedIndex(indexRandomizer);
 
 		txtfldFieldWidth.setText(String.valueOf(r.fieldWidth));
@@ -1459,8 +1465,20 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 		r.pieceEnterAboveField = chkboxEnterAboveField.isSelected();
 		r.pieceEnterMaxDistanceY = getIntTextField(txtfldEnterMaxDistanceY);
 		int indexRandomizer = comboboxRandomizer.getSelectedIndex();
-		if(indexRandomizer >= 0) r.strRandomizer = vectorRandomizer.get(indexRandomizer);
-		else r.strRandomizer = "";
+		if(indexRandomizer >= 0) {
+			r.strRandomizer = vectorRandomizer.get(indexRandomizer);
+			boolean found = false;
+			for(Class<? extends Randomizer> c : Zeroflections.getRandomizers()) {
+				if(r.strRandomizer.equals(c.getSimpleName())) {
+					r.strRandomizer = c.getName();
+					found = true;
+					break;
+				}
+			}
+			if(!found)
+				r.strRandomizer = "";
+		} else 
+			r.strRandomizer = "";
 
 		r.fieldWidth = getIntTextField(txtfldFieldWidth);
 		r.fieldHeight = getIntTextField(txtfldFieldHeight);
