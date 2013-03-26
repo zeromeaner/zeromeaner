@@ -48,90 +48,6 @@ import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.gui.knet.KNetPanel;
 
 public class AppletMain extends Applet {
-	private static class ReadOnlyDocument implements Document {
-		private Document delegate;
-		
-		public ReadOnlyDocument(String text) {
-			delegate = new JTextField(text).getDocument();
-		}
-
-		public int getLength() {
-			return delegate.getLength();
-		}
-
-		public void addDocumentListener(DocumentListener listener) {
-			delegate.addDocumentListener(listener);
-		}
-
-		public void removeDocumentListener(DocumentListener listener) {
-			delegate.removeDocumentListener(listener);
-		}
-
-		public void addUndoableEditListener(UndoableEditListener listener) {
-			delegate.addUndoableEditListener(listener);
-		}
-
-		public void removeUndoableEditListener(UndoableEditListener listener) {
-			delegate.removeUndoableEditListener(listener);
-		}
-
-		public Object getProperty(Object key) {
-			return delegate.getProperty(key);
-		}
-
-		public String getText(int offset, int length)
-				throws BadLocationException {
-			return delegate.getText(offset, length);
-		}
-
-		public void getText(int offset, int length, Segment txt)
-				throws BadLocationException {
-			delegate.getText(offset, length, txt);
-		}
-
-		public Position getStartPosition() {
-			return delegate.getStartPosition();
-		}
-
-		public Position getEndPosition() {
-			return delegate.getEndPosition();
-		}
-
-		public Position createPosition(int offs) throws BadLocationException {
-			return delegate.createPosition(offs);
-		}
-
-		public Element[] getRootElements() {
-			return delegate.getRootElements();
-		}
-
-		public Element getDefaultRootElement() {
-			return delegate.getDefaultRootElement();
-		}
-
-		public void render(Runnable r) {
-			delegate.render(r);
-		}
-
-		@Override
-		public void putProperty(Object key, Object value) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void remove(int offs, int len) throws BadLocationException {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void insertString(int offset, String str, AttributeSet a)
-				throws BadLocationException {
-			// TODO Auto-generated method stub
-			
-		}
-	}
 	
 	public static AppletMain instance;
 
@@ -159,7 +75,9 @@ public class AppletMain extends Applet {
 		if(message != null)
 			p.add(new JLabel(message), BorderLayout.CENTER);
 		if(copyable != null) {
-			p.add(new JTextField(new ReadOnlyDocument(copyable), copyable, copyable.length()), BorderLayout.SOUTH);
+			JTextField c = new JTextField(copyable);
+			c.setEditable(false);
+			p.add(c, BorderLayout.SOUTH);
 		}
 		p.add(new JButton(new AbstractAction("X") {
 			@Override
