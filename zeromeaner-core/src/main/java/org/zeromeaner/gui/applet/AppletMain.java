@@ -27,6 +27,8 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import org.eviline.Block;
 import org.eviline.Shape;
 import org.eviline.ShapeType;
+import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.gui.knet.KNetPanel;
 
 public class AppletMain extends Applet {
@@ -43,10 +45,11 @@ public class AppletMain extends Applet {
 	public JDesktopPane desktop;
 
 	public AppletMain() {
-//		try {
-//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//		} catch(Exception e) {
-//		}
+		if(!GameManager.DEV_BUILD)
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch(Exception e) {
+			}
 	}
 	
 	@Override
