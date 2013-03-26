@@ -12,12 +12,17 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JApplet;
+import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
 import javax.swing.UIDefaults;
@@ -43,6 +48,8 @@ public class AppletMain extends Applet {
 	public static URL url;
 	
 	public JDesktopPane desktop;
+	
+	public Component notification;
 
 	public AppletMain() {
 		if(!GameManager.DEV_BUILD)
@@ -50,6 +57,25 @@ public class AppletMain extends Applet {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			} catch(Exception e) {
 			}
+	}
+	
+	public void notifyUser(Icon icon, String message) {
+		if(notification != null)
+			remove(notification);
+		JPanel p = new JPanel(new BorderLayout());
+		if(icon != null)
+			p.add(new JLabel(icon), BorderLayout.WEST);
+		if(message != null)
+			p.add(new JLabel(message), BorderLayout.CENTER);
+		p.add(new JButton(new AbstractAction("X") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				notifyUser(null, null);
+			}
+		}), BorderLayout.EAST);
+		if(icon != null || message != null)
+			add(notification = p, BorderLayout.SOUTH);
+		validate();
 	}
 	
 	@Override

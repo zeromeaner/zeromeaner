@@ -39,6 +39,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
@@ -188,6 +189,12 @@ public class RendererApplet extends EventRenderer {
 		}
 	}
 
+	@Override
+	public void startGame(GameEngine engine, int playerID) {
+		super.startGame(engine, playerID);
+		AppletMain.instance.notifyUser(null, null);
+	}
+	
 	/*
 	 * Sound effectsPlayback
 	 */
@@ -350,7 +357,12 @@ public class RendererApplet extends EventRenderer {
 		String replayUrl = AppletMain.url + "?../" + AppletMain.userId + "/" + filename;
 		StringSelection ss = new StringSelection(replayUrl);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, ss);
-		JOptionPane.showInternalMessageDialog(AppletMain.instance.desktop, "Replay URL saved to clipboard.  Paste into another app to save.", "Replay URL Copied", JOptionPane.INFORMATION_MESSAGE);
+//		JOptionPane.showInternalMessageDialog(
+//				AppletMain.instance.desktop, 
+//				"Replay URL saved to clipboard.  Paste into another app to save.", 
+//				"Replay URL Copied", 
+//				JOptionPane.INFORMATION_MESSAGE);
+		AppletMain.instance.notifyUser(UIManager.getIcon("OptionPane.informationIcon"), "Replay URL saved to clipboard.  Paste into another app to save.");
 	}
 
 	/*
