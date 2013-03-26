@@ -25,7 +25,7 @@ public class ResourceFileSystemView extends FileSystemView {
 	}
 	
 	protected String url() {
-		return "http://www.0mino.org/webdav/" + AppletMain.userId + "/";
+		return "http://" + AppletMain.url.getHost() + "/webdav/" + AppletMain.userId + "/";
 	}
 	
 	protected String toSardine(File file) {

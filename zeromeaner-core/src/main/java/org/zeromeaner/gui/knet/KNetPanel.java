@@ -38,6 +38,7 @@ import org.zeromeaner.game.knet.KNetListener;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 import org.zeromeaner.game.knet.obj.KNetGameInfo;
 import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.gui.applet.AppletMain;
 
 import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
@@ -115,9 +116,9 @@ public class KNetPanel extends JPanel implements KNetListener {
 			add(p, BorderLayout.EAST);
 			
 			if(!GameManager.DEV_BUILD)
-				connectionsModel.addElement("www.0mino.org:61897");
+				connectionsModel.addElement("" + AppletMain.url.getHost() + ":61897");
 			else {
-				connectionsModel.addElement("www.0mino.org:61898");
+				connectionsModel.addElement("" + AppletMain.url.getHost() + ":61898");
 				connectionsModel.addElement("localhost:61897");
 			}
 			connectionsList.setSelectedIndex(0);
