@@ -75,7 +75,7 @@ public class ResourceInputStream extends FilterInputStream {
 			cache = new TreeMap<String, byte[]>();
 			try {
 				log.info("Loading resource cache");
-				URL url = new URL("http://www.zeromeaner.org/webdav/" + AppletMain.userId + "/cache.jdk");
+				URL url = new URL("http://www.0mino.org/webdav/" + AppletMain.userId + "/cache.jdk");
 				InputStream in = s.getInputStream(url.toString());
 				cache.putAll((Map<String, byte[]>) new ObjectInputStream(in).readObject());
 				in.close();
@@ -86,10 +86,10 @@ public class ResourceInputStream extends FilterInputStream {
 		}
 		
 		public static void commitCache() throws IOException {
-			URL url = new URL("http://www.zeromeaner.org/webdav/" + AppletMain.userId + "/cache.jdk");
+			URL url = new URL("http://www.0mino.org/webdav/" + AppletMain.userId + "/cache.jdk");
 			String dir = url.toString().substring(0, url.toString().lastIndexOf("/"));
 			List<String> dirs = new ArrayList<String>();
-			while(!dir.equals("http://www.zeromeaner.org/webdav")) {
+			while(!dir.equals("http://www.0mino.org/webdav")) {
 				dirs.add(0, dir);
 				dir = dir.substring(0, dir.lastIndexOf("/"));
 			}
@@ -114,7 +114,7 @@ public class ResourceInputStream extends FilterInputStream {
 				log.info("Returning cached copy of resource " + resource);
 				return new ByteArrayInputStream(getCache().get(resource));
 			}
-			final URL url = new URL("http://www.zeromeaner.org/webdav/" + AppletMain.userId + "/" + resource);
+			final URL url = new URL("http://www.0mino.org/webdav/" + AppletMain.userId + "/" + resource);
 			return s.getInputStream(url.toString());
 		}
 		

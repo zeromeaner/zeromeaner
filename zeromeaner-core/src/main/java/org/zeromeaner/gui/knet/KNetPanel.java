@@ -115,9 +115,9 @@ public class KNetPanel extends JPanel implements KNetListener {
 			add(p, BorderLayout.EAST);
 			
 			if(!GameManager.DEV_BUILD)
-				connectionsModel.addElement("www.zeromeaner.org:61897");
+				connectionsModel.addElement("www.0mino.org:61897");
 			else {
-				connectionsModel.addElement("www.zeromeaner.org:61898");
+				connectionsModel.addElement("www.0mino.org:61898");
 				connectionsModel.addElement("localhost:61897");
 			}
 			connectionsList.setSelectedIndex(0);

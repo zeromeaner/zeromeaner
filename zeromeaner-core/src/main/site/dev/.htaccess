@@ -1,5 +1,5 @@
 Options +FollowSymLinks
 RewriteEngine On
-RewriteRule ^launch(/.*)*(/.*\.(html|css|jar|jnlp))$ http://www.zeromeaner.org/dev/$2 [P]
-RewriteRule ^launch/net(/.*)?$ http://www.zeromeaner.org/dev/ [P]
-RewriteRule ^eviline$ http://www.zeromeaner.org/dev/?net/eviline/customize/mode/NET-EVILINE-VS-BATTLE/ok
+RewriteRule ^launch(/.*)*(/.*\.(html|css|jar|jnlp))$ http://www.0mino.org/dev/$2 [P]
+RewriteRule ^launch/net(/.*)?$ http://www.0mino.org/dev/ [P]
+RewriteRule ^eviline$ http://www.0mino.org/dev/?net/eviline/customize/mode/NET-EVILINE-VS-BATTLE/ok
