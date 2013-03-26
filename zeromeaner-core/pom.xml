@@ -86,11 +86,6 @@
 
 	<repositories>
 		<repository>
-			<id>slick</id>
-			<url>http://slick.cokeandcode.com/mavenrepo</url>
-		</repository>
-
-		<repository>
 			<id>b2s-repo</id>
 			<url>http://b2s-repo.googlecode.com/svn/trunk/mvn-repo</url>
 		</repository>
@@ -108,6 +103,11 @@
 		<repository>
 			<id>sonatype</id>
 			<url>https://oss.sonatype.org/content/groups/public/</url>
+		</repository>
+
+		<repository>
+			<id>slick</id>
+			<url>http://slick.cokeandcode.com/mavenrepo</url>
 		</repository>
 	</repositories>
 
