@@ -82,6 +82,7 @@ public class AppletMain extends Applet {
 		setLayout(new BorderLayout());
 		desktop = new JDesktopPane();
 		desktop.setBackground(Color.decode("0x444488"));
+		desktop.setDoubleBuffered(true);
 		add(desktop, BorderLayout.CENTER);
 
 		userId = CookieAccess.get("userId");
