@@ -80,16 +80,11 @@
 		<dependency>
 			<groupId>org.funcish</groupId>
 			<artifactId>funcish-core</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
+			<version>0.0.2</version>
 		</dependency>
 	</dependencies>
 
 	<repositories>
-		<repository>
-			<id>slick</id>
-			<url>http://slick.cokeandcode.com/mavenrepo</url>
-		</repository>
-
 		<repository>
 			<id>b2s-repo</id>
 			<url>http://b2s-repo.googlecode.com/svn/trunk/mvn-repo</url>
@@ -109,6 +104,12 @@
 			<id>sonatype</id>
 			<url>https://oss.sonatype.org/content/groups/public/</url>
 		</repository>
+<!-- 
+		<repository>
+			<id>slick</id>
+			<url>http://slick.cokeandcode.com/mavenrepo</url>
+		</repository>
+-->
 	</repositories>
 
 	<profiles>
@@ -238,7 +239,7 @@
 	<parent>
 		<groupId>org.zeromeaner</groupId>
 		<artifactId>zeromeaner-parent</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1-SNAPSHOT</version>
 		<relativePath>../zeromeaner-parent</relativePath>
 	</parent>
 	<name>Zeromeaner Core</name>
