@@ -288,16 +288,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		GameKeyApplet.gamekey[0].loadConfig(propConfig);
 		GameKeyApplet.gamekey[1].loadConfig(propConfig);
 
-		// Look&Feel
-		if(propConfig.getProperty("option.usenativelookandfeel", true) == true) {
-			try {
-				UIManager.getInstalledLookAndFeels();
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch(Exception e) {
-				log.warn("Failed to set native look&feel", e);
-			}
-		}
-
 		// Load images
 		try {
 			ResourceHolderApplet.load();

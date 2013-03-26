@@ -176,7 +176,6 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		setResizable(false);
 		
 		setDoubleBuffered(true);
-		setIgnoreRepaint(true);
 
 		addInternalFrameListener(new GameFrameWindowEvent());
 		addKeyListener(new GameFrameKeyEvent());

@@ -3,6 +3,7 @@ package org.zeromeaner.gui.applet;
 import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.net.MalformedURLException;
@@ -10,12 +11,22 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+
+import org.eviline.Block;
+import org.eviline.Shape;
+import org.eviline.ShapeType;
 import org.zeromeaner.gui.knet.KNetPanel;
 
 public class AppletMain extends Applet {
@@ -31,6 +42,13 @@ public class AppletMain extends Applet {
 	
 	public JDesktopPane desktop;
 
+	public AppletMain() {
+//		try {
+//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//		} catch(Exception e) {
+//		}
+	}
+	
 	@Override
 	public synchronized void init() {
 		if(!EventQueue.isDispatchThread()) {
@@ -56,6 +74,7 @@ public class AppletMain extends Applet {
 			}
 		
 		setLayout(new BorderLayout());
+		
 		desktop = new JDesktopPane();
 		desktop.setBackground(Color.decode("0x444488"));
 		desktop.setDoubleBuffered(true);
