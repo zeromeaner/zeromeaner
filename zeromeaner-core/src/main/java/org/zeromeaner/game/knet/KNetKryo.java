@@ -36,6 +36,8 @@ import com.esotericsoftware.kryo.serializers.FieldSerializer;
 
 public class KNetKryo {
 	public static void configure(Kryo kryo) {
+		kryo.setReferences(true);
+		
 		kryo.register(KNetEvent.class);
 		kryo.register(KNetEventSource.class);
 		kryo.register(KNetChannelInfo.class);

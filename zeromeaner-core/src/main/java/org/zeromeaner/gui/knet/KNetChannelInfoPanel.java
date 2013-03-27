@@ -143,17 +143,21 @@ public class KNetChannelInfoPanel extends JPanel {
 	
 	public void updateChannel() {
 		channel.setName(name.getText());
-		channel.setMode((String) mode.getSelectedItem());
+		channel.setMaxPlayers((Integer) maxPlayers.getValue());
+		channel.setAutoStart(autoStart.isSelected());
 		if(channel.getRule() == null)
 			channel.setRule(new RuleOptions());
 		ruleEditor.writeRuleFromUI(channel.getRule());
+		channel.setMode((String) mode.getSelectedItem());
 	}
 	
 	public void updateEditor() {
 		name.setText(channel.getName());
-		mode.setSelectedItem(channel.getMode());
+		maxPlayers.setValue(channel.getMaxPlayers());
+		autoStart.setSelected(channel.isAutoStart());
 		if(channel.getRule() == null)
 			channel.setRule(new RuleOptions());
 		ruleEditor.readRuleToUI(channel.getRule());
+		mode.setSelectedItem(channel.getMode());
 	}
 }
