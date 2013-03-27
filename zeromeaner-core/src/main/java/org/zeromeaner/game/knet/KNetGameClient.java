@@ -15,6 +15,7 @@ import static org.zeromeaner.game.knet.KNetEventArgs.*;
 public class KNetGameClient extends KNetClient implements KNetListener {
 	private List<Field> maps = new ArrayList<Field>();
 	private Set<KNetChannelInfo> channels = new HashSet<KNetChannelInfo>();
+	private Integer joinedId = -1;
 	
 	public KNetGameClient(String host, int port) {
 		this(KNetGameClient.class.getSimpleName(), host, port);
@@ -23,7 +24,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	public KNetGameClient(String type, String host, int port) {
 		super(type, host, port);
 	}
-
+	
 	@Override
 	protected KNetEvent process(KNetEvent e) {
 		for(Map.Entry<KNetEventArgs, Object> en : e.getArgs().entrySet()) {
@@ -32,7 +33,25 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 				break;
 			}
 		}
+		if(!e.is(CHANNEL_ID) && joinedId != null)
+			e.set(CHANNEL_ID, joinedId);
 		return super.process(e);
+	}
+	
+	@Override
+	protected void issue(KNetEvent e) {
+		boolean issue = false;
+		for(KNetEventArgs arg : e.getArgs().keySet()) {
+			try {
+				if(arg.getDeclaringClass().getField(arg.name()).isAnnotationPresent(Global.class))
+					issue = true;
+			} catch(Exception ex) {
+			}
+		}
+		if(e.is(CHANNEL_ID) && joinedId != null && (int) joinedId == (Integer) e.get(CHANNEL_ID))
+			issue = true;
+		if(issue)
+			super.issue(e);
 	}
 	
 	@Override
@@ -49,13 +68,21 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	public void setMaps(List<Field> maps) {
 		this.maps = maps;
 	}
-
+	
 	public Set<KNetChannelInfo> getChannels() {
 		return channels;
 	}
 
 	public void setChannels(Set<KNetChannelInfo> channels) {
 		this.channels = channels;
+	}
+
+	public Integer getJoinedId() {
+		return joinedId;
+	}
+
+	public void setJoinedId(Integer joinedId) {
+		this.joinedId = joinedId;
 	}
 
 }

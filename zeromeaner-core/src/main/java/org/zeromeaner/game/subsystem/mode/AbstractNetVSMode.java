@@ -1309,6 +1309,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			if((seatID != -1) && (netvsNumPlayers < 2)) {
 				owner.receiver.playSE("levelstop");
 			}
+			netUpdatePlayerExist();
 		}
 		// Someone leave here
 		if(e.is(PLAYER_LEAVE)) {

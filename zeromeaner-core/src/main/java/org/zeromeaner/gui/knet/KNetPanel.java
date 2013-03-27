@@ -275,6 +275,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 		}
 		
 		private void joined() {
+			client.setJoinedId(channel.getId());
 			activeChannel = this;
 			connectedPanel.channels.setIconAt(
 					connectedPanel.channels.indexOfComponent(this),
@@ -288,6 +289,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 		}
 		
 		private void left() {
+			client.setJoinedId(null);
 			connectedPanel.channels.setIconAt(
 					connectedPanel.channels.indexOfComponent(this),
 					null);
@@ -333,23 +335,20 @@ public class KNetPanel extends JPanel implements KNetListener {
 			}
 			if(e.is(CHANNEL_JOIN) 
 					&& e.is(PAYLOAD) 
-					&& client.getSource().equals(e.get(PAYLOAD))
-					&& channel.getId() == (Integer) e.get(CHANNEL_ID)
-					&& client.isMine(e)) {
-//				channel = ((KNetChannelInfo[]) e.get(CHANNEL_INFO))[0];
+					&& channel.getId() == (Integer) e.get(CHANNEL_ID)) {
 				KryoCopy.overwrite(((KNetChannelInfo[]) e.get(CHANNEL_INFO))[0], channel);
-				joined();
+				if(client.getSource().equals(e.get(PAYLOAD)) && client.isMine(e))
+					joined();
 			}
 			if(e.is(CHANNEL_LEAVE) 
 					&& e.is(PAYLOAD) 
-					&& client.getSource().equals(e.get(PAYLOAD)) 
-					&& channel.getId() == (Integer) e.get(CHANNEL_ID)
-					&& client.isMine(e)) {
-//				channel = ((KNetChannelInfo[]) e.get(CHANNEL_INFO))[0];
+					&& channel.getId() == (Integer) e.get(CHANNEL_ID)) {
 				KryoCopy.overwrite(((KNetChannelInfo[]) e.get(CHANNEL_INFO))[0], channel);
-				left();
-				if(channel.getMembers().size() == 0) {
-					client.fireTCP(CHANNEL_DELETE, channel.getId());
+				if(client.getSource().equals(e.get(PAYLOAD)) && client.isMine(e)) {
+					left();
+					if(channel.getMembers().size() == 0) {
+						client.fireTCP(CHANNEL_DELETE, channel.getId());
+					}
 				}
 			}
 			if(e.is(CHANNEL_CHAT)

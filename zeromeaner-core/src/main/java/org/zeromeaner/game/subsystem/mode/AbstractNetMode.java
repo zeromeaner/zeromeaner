@@ -167,6 +167,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	}
 	
 	protected KNetChannelInfo channelInfo() {
+		if(knetPanel.getActiveChannel() == null)
+			return null;
 		return knetPanel.getActiveChannel().getChannel();
 	}
 

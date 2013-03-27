@@ -59,18 +59,21 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				return;
 			}
 			info.getMembers().add(e.getSource());
+			KNetPlayerInfo newPlayer = null;
 			if(info.getPlayers().size() < info.getMaxPlayers()) {
 				info.getPlayers().add(e.getSource());
-				KNetPlayerInfo pi = new KNetPlayerInfo();
-				pi.setChannel(info);
-				pi.setPlayer(e.getSource());
-				info.getPlayerInfo().add(pi);
+				newPlayer = new KNetPlayerInfo();
+				newPlayer.setChannel(info);
+				newPlayer.setPlayer(e.getSource());
+				info.getPlayerInfo().add(newPlayer);
 			}
 			client.reply(e, 
 					CHANNEL_JOIN,
 					CHANNEL_ID, id,
 					PAYLOAD, e.getSource(),
 					CHANNEL_INFO, new KNetChannelInfo[] { info });
+			if(newPlayer != null)
+				client.fireTCP(PLAYER_ENTER, newPlayer, CHANNEL_ID, info.getId());
 		}
 		if(e.is(CHANNEL_CREATE)) {
 			KNetChannelInfo request = (KNetChannelInfo) e.get(CHANNEL_CREATE);
