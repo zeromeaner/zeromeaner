@@ -1137,6 +1137,9 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 				}
 				previousMode.netplayUnload(netLobby.getKnetPanel());
 			}
+			
+			newMode.netplayInit(netLobby.getKnetPanel());
+			
 			gameManager.mode = newMode;
 			gameManager.init();
 
@@ -1198,7 +1201,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 				gameManager.engine[i].init();
 			}
 
-			newMode.netplayInit(netLobby.getKnetPanel());
+			
 		} else {
 			log.error("This mode does not support netplay:" + modeName);
 		}

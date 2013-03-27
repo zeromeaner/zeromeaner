@@ -469,7 +469,7 @@ public class DigChallengeMode extends AbstractNetMode {
 
 				// NET: Signal start of the game
 				if(netIsNetPlay) 
-					knetClient.fireTCP(START_1P, true);
+					knetClient().fireTCP(START_1P, true);
 
 				return false;
 			}
@@ -1155,7 +1155,7 @@ public class DigChallengeMode extends AbstractNetMode {
 		s.setLastPiece(lastpiece);
 		s.setBg(bg);
 		s.setGarbagePending(garbagePending);
-		knetClient.fireUDP(GAME_STATS, s);
+		knetClient().fireUDP(GAME_STATS, s);
 	}
 
 	/**
@@ -1190,7 +1190,7 @@ public class DigChallengeMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		knetClient.fireTCP(GAME_END_STATS, engine.statistics);
+		knetClient().fireTCP(GAME_END_STATS, engine.statistics);
 	}
 
 	/**
@@ -1210,7 +1210,7 @@ public class DigChallengeMode extends AbstractNetMode {
 		o.setEnableB2B(enableB2B);
 		o.setEnableCombo(enableCombo);
 		o.setSpeed(engine.speed);
-		knetClient.fireTCP(GAME_OPTIONS, o);
+		knetClient().fireTCP(GAME_OPTIONS, o);
 	}
 
 	/**

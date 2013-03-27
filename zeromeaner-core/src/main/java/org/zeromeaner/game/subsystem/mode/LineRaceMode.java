@@ -268,7 +268,7 @@ public class LineRaceMode extends AbstractNetMode {
 
 					// NET: Signal start of the game
 					if(netIsNetPlay) 
-						knetClient.fire(START_1P);
+						knetClient().fire(START_1P);
 
 					return false;
 				}
@@ -559,7 +559,7 @@ public class LineRaceMode extends AbstractNetMode {
 		s.setGoalType(goaltype);
 		s.setGameActive(engine.gameActive);
 		s.setTimerActive(engine.timerActive);
-		knetClient.fireTCP(GAME_STATS, s);
+		knetClient().fireTCP(GAME_STATS, s);
 	}
 
 	/**
@@ -587,7 +587,7 @@ public class LineRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		knetClient.fireTCP(GAME_END_STATS, engine.statistics);
+		knetClient().fireTCP(GAME_END_STATS, engine.statistics);
 	}
 
 	/**
@@ -602,7 +602,7 @@ public class LineRaceMode extends AbstractNetMode {
 		o.setBig(big);
 		o.setGoalType(goaltype);
 		o.setPresetNumber(presetNumber);
-		knetClient.fireTCP(GAME_OPTIONS, o);
+		knetClient().fireTCP(GAME_OPTIONS, o);
 	}
 
 	/**

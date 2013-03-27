@@ -391,7 +391,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 
 				// NET: Signal start of the game
 				if(netIsNetPlay) 
-					knetClient.fireTCP(START_1P);
+					knetClient().fireTCP(START_1P);
 
 				return false;
 			}
@@ -867,7 +867,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 					netSendNextAndHold(engine);
 					netSendStats(engine);
 //					netLobby.netPlayerClient.send("game\tbonuslevelenter\n");
-					knetClient.fireTCP(GAME_BONUS_LEVEL_ENTER);
+					knetClient().fireTCP(GAME_BONUS_LEVEL_ENTER);
 				}
 			}
 		} else if(engine.statc[0] == 90) {
@@ -888,7 +888,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 					netSendNextAndHold(engine);
 					netSendStats(engine);
 //					netLobby.netPlayerClient.send("game\tbonuslevelstart\n");
-					knetClient.fireTCP(GAME_BONUS_LEVEL_START);
+					knetClient().fireTCP(GAME_BONUS_LEVEL_START);
 				}
 			}
 
@@ -1177,7 +1177,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 		s.setBonusFlashNow(bonusFlashNow);
 		s.setBonusPieceCount(bonusPieceCount);
 		s.setBonusTime(bonusTime);
-		knetClient.fireTCP(GAME_STATS, s);
+		knetClient().fireTCP(GAME_STATS, s);
 	}
 
 	/**
@@ -1239,7 +1239,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 //		String msg = "gstat1p\t" + NetUtil.urlEncode(subMsg) + "\n";
 //		netLobby.netPlayerClient.send(msg);
 		
-		knetClient.fireTCP(GAME_END_STATS, engine.statistics);
+		knetClient().fireTCP(GAME_END_STATS, engine.statistics);
 	}
 
 	/**
@@ -1261,7 +1261,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 		o.setBig(big);
 		o.setSpinCheckType(spinCheckType);
 		o.setTspinEnableEZ(tspinEnableEZ);
-		knetClient.fireTCP(GAME_OPTIONS, o);
+		knetClient().fireTCP(GAME_OPTIONS, o);
 	}
 
 	/**

@@ -33,11 +33,13 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.knet.KNetEventSource;
+import org.zeromeaner.game.knet.KNetGameClient;
 import org.zeromeaner.game.knet.KNetListener;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 import org.zeromeaner.game.knet.obj.KNetGameInfo;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.gui.applet.AppletMain;
+import org.zeromeaner.util.KryoCopy;
 
 import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
@@ -74,7 +76,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 	private Map<Integer, ChannelPanel> channels = new HashMap<Integer, ChannelPanel>();
 	private ChannelPanel activeChannel;
 	
-	private KNetClient client;
+	private KNetGameClient client;
 	
 	public class ConnectionListPanel extends JPanel {
 		private DefaultListModel connectionsModel = new DefaultListModel();
@@ -127,7 +129,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 			String host = ((String)connectionsList.getSelectedValue()).split(":")[0];
 			int port = Integer.parseInt(((String) connectionsList.getSelectedValue()).split(":")[1]);
 			
-			client = new KNetClient("Player", host, port);
+			client = new KNetGameClient("Player", host, port);
 			client.addKNetListener(KNetPanel.this);
 			client.addKNetListener(new KNetListener() {
 				@Override
@@ -323,7 +325,8 @@ public class KNetPanel extends JPanel implements KNetListener {
 				KNetChannelInfo[] ca = (KNetChannelInfo[]) e.get(CHANNEL_INFO);
 				for(KNetChannelInfo c : ca) {
 					if(c.getId() == channel.getId()) {
-						channel = c;
+//						channel = c;
+						KryoCopy.overwrite(c, channel);
 						update();
 					}
 				}
@@ -333,7 +336,8 @@ public class KNetPanel extends JPanel implements KNetListener {
 					&& client.getSource().equals(e.get(PAYLOAD))
 					&& channel.getId() == (Integer) e.get(CHANNEL_ID)
 					&& client.isMine(e)) {
-				channel = ((KNetChannelInfo[]) e.get(CHANNEL_INFO))[0];
+//				channel = ((KNetChannelInfo[]) e.get(CHANNEL_INFO))[0];
+				KryoCopy.overwrite(((KNetChannelInfo[]) e.get(CHANNEL_INFO))[0], channel);
 				joined();
 			}
 			if(e.is(CHANNEL_LEAVE) 
@@ -341,7 +345,8 @@ public class KNetPanel extends JPanel implements KNetListener {
 					&& client.getSource().equals(e.get(PAYLOAD)) 
 					&& channel.getId() == (Integer) e.get(CHANNEL_ID)
 					&& client.isMine(e)) {
-				channel = ((KNetChannelInfo[]) e.get(CHANNEL_INFO))[0];
+//				channel = ((KNetChannelInfo[]) e.get(CHANNEL_INFO))[0];
+				KryoCopy.overwrite(((KNetChannelInfo[]) e.get(CHANNEL_INFO))[0], channel);
 				left();
 				if(channel.getMembers().size() == 0) {
 					client.fireTCP(CHANNEL_DELETE, channel.getId());
@@ -574,7 +579,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 		}
 	}
 
-	public KNetClient getClient() {
+	public KNetGameClient getClient() {
 		return client;
 	}
 

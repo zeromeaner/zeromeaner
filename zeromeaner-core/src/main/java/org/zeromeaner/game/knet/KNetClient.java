@@ -159,4 +159,12 @@ public class KNetClient {
 		issue(e);
 		client.sendUDP(e);
 	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public int getPort() {
+		return port;
+	}
 }

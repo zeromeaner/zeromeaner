@@ -49,7 +49,7 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netvsApplyRoomSettings(GameEngine engine) {
-		if(channelInfo != null) {
+		if(channelInfo() != null) {
 			KNetGameInfo game = currentGame();
 			engine.speed.gravity = game.getGravity();
 			engine.speed.denominator = game.getDenominator();
@@ -149,7 +149,7 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 					}
 				}
 
-				knetClient.fireTCP(RACE_WIN, true);
+				knetClient().fireTCP(RACE_WIN, true);
 
 				// Wait until everyone dies
 				engine.stat = GameEngine.STAT_NOTHING;
@@ -273,7 +273,7 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 	@Override
 	protected void netSendStats(GameEngine engine) {
 		if((engine.getPlayerID() == 0) && !netvsIsPractice && !netvsIsWatch()) {
-			knetClient.fireUDP(GAME_STATS, engine.statistics);
+			knetClient().fireUDP(GAME_STATS, engine.statistics);
 		}
 	}
 
@@ -291,7 +291,7 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		knetClient.fireTCP(GAME_END_STATS, engine.statistics);
+		knetClient().fireTCP(GAME_END_STATS, engine.statistics);
 	}
 
 	/*
@@ -299,7 +299,7 @@ public class NetVSLineRaceMode extends AbstractNetVSMode {
 	 */
 	@Override
 	protected void netvsRecvEndGameStats(KNetEvent e) {
-		int seatID = channelInfo.getSeatId(e);
+		int seatID = channelInfo().getSeatId(e);
 		int playerID = netvsGetPlayerIDbySeatID(seatID);
 
 		if((playerID != 0) || (netvsIsWatch())) {

@@ -457,7 +457,7 @@ public class ExtremeMode extends AbstractNetMode {
 
 				// NET: Signal start of the game
 				if(netIsNetPlay) 
-					knetClient.fireTCP(START_1P, true);
+					knetClient().fireTCP(START_1P, true);
 
 				return false;
 			}
@@ -1042,7 +1042,7 @@ public class ExtremeMode extends AbstractNetMode {
 		s.setRollTime(rolltime);
 		s.setMeterColor(engine.meterColor);
 		s.setMeterValue(engine.meterValue);
-		knetClient.fireUDP(GAME_STATS, s);
+		knetClient().fireUDP(GAME_STATS, s);
 	}
 
 	/**
@@ -1074,7 +1074,7 @@ public class ExtremeMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		knetClient.fireTCP(GAME_END_STATS, engine.statistics);
+		knetClient().fireTCP(GAME_END_STATS, engine.statistics);
 	}
 
 	/**
@@ -1093,7 +1093,7 @@ public class ExtremeMode extends AbstractNetMode {
 		o.setBig(big);
 		o.setSpinCheckType(spinCheckType);
 		o.setTspinEnableEZ(tspinEnableEZ);
-		knetClient.fireTCP(GAME_OPTIONS, o);
+		knetClient().fireTCP(GAME_OPTIONS, o);
 	}
 
 	/**

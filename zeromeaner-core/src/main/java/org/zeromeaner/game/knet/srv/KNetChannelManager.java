@@ -9,6 +9,7 @@ import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.knet.KNetListener;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
 
 
 import static org.zeromeaner.game.knet.KNetEventArgs.*;
@@ -58,6 +59,13 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				return;
 			}
 			info.getMembers().add(e.getSource());
+			if(info.getPlayers().size() < info.getMaxPlayers()) {
+				info.getPlayers().add(e.getSource());
+				KNetPlayerInfo pi = new KNetPlayerInfo();
+				pi.setChannel(info);
+				pi.setPlayer(e.getSource());
+				info.getPlayerInfo().add(pi);
+			}
 			client.reply(e, 
 					CHANNEL_JOIN,
 					CHANNEL_ID, id,
