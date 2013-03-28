@@ -51,6 +51,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 	private static final String CONNECTION_LIST_PANEL_CARD = ConnectionListPanel.class.getName();
 	private static final String CONNECTED_PANEL_CARD = ConnectedPanel.class.getName();
 	private static final String CREATE_CHANNEL_PANEL_CARD = CreateChannelPanel.class.getName();
+	private static final String VIEW_CHANEL_CARD = KNetChannelInfoPanel.class.getName();
 	
 	public static void main(String[] args) {
 		try {
@@ -78,6 +79,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 	private ConnectionListPanel connectionsListPanel;
 	private ConnectedPanel connectedPanel;
 	private CreateChannelPanel createChannelPanel;
+	private ViewChannelPanel viewChannelPanel;
 	
 	private Map<Integer, ChannelPanel> channels = new HashMap<Integer, ChannelPanel>();
 	private ChannelPanel activeChannel;
@@ -173,6 +175,15 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			}
 		});
 		
+		private JButton view = new JButton(new AbstractAction("View Options") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cards.show(KNetPanel.this, VIEW_CHANEL_CARD);
+				viewChannelPanel.channelPanel.setChannel(getVisibleChannel().getChannel());
+				viewChannelPanel.channelPanel.updateEditor();
+			}
+		});
+		
 		private JButton join = new JButton(new AbstractAction("Join Channel") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -199,6 +210,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			add(channels, BorderLayout.CENTER);
 			JPanel p = new JPanel(new GridLayout(0, 1));
 			p.add(add);
+			p.add(view);
 			p.add(join);
 			p.add(leave);
 			p.add(disconnect);
@@ -436,6 +448,34 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 		}
 	}
 	
+	public class ViewChannelPanel extends JPanel {
+		KNetChannelInfoPanel channelPanel = new KNetChannelInfoPanel(new KNetChannelInfo());
+		
+		private JButton dismiss = new JButton(new AbstractAction("Dismiss") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
+			}
+		});
+		
+		public ViewChannelPanel() {
+			channelPanel.setEditable(false);
+			
+			setLayout(new BorderLayout());
+			
+			JPanel p;
+			
+			p = new JPanel(new GridLayout(0, 1));
+			p.add(dismiss);
+			add(p, BorderLayout.EAST);
+			
+			p = new JPanel(new BorderLayout());
+			p.add(channelPanel, BorderLayout.CENTER);
+			p.setBorder(BorderFactory.createTitledBorder("Channel Editor"));
+			add(p, BorderLayout.CENTER);
+		}
+	}
+	
 	public KNetPanel(String defaultUsername) {
 		this.defaultUsername = defaultUsername;
 		
@@ -444,6 +484,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 		add(connectionsListPanel = new ConnectionListPanel(), CONNECTION_LIST_PANEL_CARD);
 		add(connectedPanel = new ConnectedPanel(), CONNECTED_PANEL_CARD);
 		add(createChannelPanel = new CreateChannelPanel(), CREATE_CHANNEL_PANEL_CARD);
+		add(viewChannelPanel = new ViewChannelPanel(), VIEW_CHANEL_CARD);
 		
 		cards.show(this, CONNECTION_LIST_PANEL_CARD);
 	}

@@ -1,15 +1,21 @@
 package org.zeromeaner.gui.knet;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -153,6 +159,34 @@ public class KNetChannelInfoPanel extends JPanel {
 		}
 	}
 	
+	public void setEditable(boolean editable) {
+		setEditable(this, editable);
+	}
+	
+	protected void setEditable(JComponent c, boolean editable) {
+		if(c != this) {
+			if(c instanceof JComboBox)
+				c.setEnabled(editable);
+			else {
+				try {
+					Method sed = c.getClass().getMethod("setEditable", boolean.class);
+					sed.invoke(c, editable);
+				} catch(NoSuchMethodException nsme) {
+					if(c instanceof AbstractButton)
+						c.setEnabled(editable);
+				} catch(Exception ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+		}
+		
+		for(int i = 0; i < c.getComponentCount(); i++) {
+			Component cc = c.getComponent(i);
+			if(cc instanceof JComponent)
+				setEditable((JComponent) cc, editable);
+		}
+	}
+	
 	public void updateChannel() {
 		channel.setName(name.getText());
 		channel.setMaxPlayers((Integer) maxPlayers.getValue());
@@ -180,5 +214,13 @@ public class KNetChannelInfoPanel extends JPanel {
 			channel.setGame(new KNetGameInfo());
 		gameEditor.load(channel.getGame());
 		mode.setSelectedItem(channel.getMode() == null ? "NET-VS-BATTLE" : channel.getMode());
+	}
+
+	public KNetChannelInfo getChannel() {
+		return channel;
+	}
+
+	public void setChannel(KNetChannelInfo channel) {
+		this.channel = channel;
 	}
 }
