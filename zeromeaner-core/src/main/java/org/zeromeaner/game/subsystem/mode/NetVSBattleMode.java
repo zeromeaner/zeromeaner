@@ -619,7 +619,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 				attack.setGarbage(garbage[playerID]);
 				attack.setLastPiece(lastpiece[playerID]);
 				attack.setTargetSeatId(targetSeatID);
-				knetClient().fireTCP(NETVSBATTLE_GAME_ATTACK, attack);
+				knetClient().fireTCP(GAME, NETVSBATTLE_GAME_ATTACK, attack);
 			}
 		}
 
@@ -1048,7 +1048,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 //			netLobby.netPlayerClient.send("game\tstats\t" + garbage[engine.getPlayerID()] + "\n");
 			StatsInfo stats = new StatsInfo();
 			stats.setGarbage(garbage[engine.getPlayerID()]);
-			knetClient().fireTCP(NETVSBATTLE_GAME_STATS, stats);
+			knetClient().fireTCP(GAME, NETVSBATTLE_GAME_STATS, stats);
 		}
 	}
 
