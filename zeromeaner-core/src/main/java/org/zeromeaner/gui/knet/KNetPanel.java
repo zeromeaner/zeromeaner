@@ -242,6 +242,8 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			
 			JPanel p = new JPanel(new BorderLayout());
 //			p.add(new JLabel("Chat Messages:"), BorderLayout.NORTH);
+			history.setLineWrap(true);
+			history.setWrapStyleWord(true);
 			p.add(new JScrollPane(history), BorderLayout.CENTER);
 			p.setBorder(BorderFactory.createTitledBorder("Chat Messages"));
 			add(p, BorderLayout.CENTER);
