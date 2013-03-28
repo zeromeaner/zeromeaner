@@ -241,6 +241,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	public void netplayInit(KNetPanel obj) {
 		knetPanel = obj;
 		knetPanel.addKNetPanelListener(this);
+		if(knetPanel.getClient() != null)
+			knetPanel.getClient().addKNetListener(this);
 	}
 
 	/**

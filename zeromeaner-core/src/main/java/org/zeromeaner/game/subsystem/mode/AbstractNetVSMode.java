@@ -279,7 +279,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 		netPlayerName = knetClient().getSource().getName();
 		netIsWatch = netvsIsWatch();
 
-		for(int i = 0; i < NETVS_MAX_PLAYERS; i++) {
+		for(int i = 0; i < netvsNumPlayers(); i++) {
 			netvsPlayerExist[i] = false;
 			netvsPlayerReady[i] = false;
 			netvsPlayerActive[i] = false;

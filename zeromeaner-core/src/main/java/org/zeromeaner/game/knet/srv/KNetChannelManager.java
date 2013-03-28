@@ -65,6 +65,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				newPlayer = new KNetPlayerInfo();
 				newPlayer.setChannel(info);
 				newPlayer.setPlayer(e.getSource());
+				newPlayer.setTeam(e.getSource().getName() + e.getSource().getId());
 				info.getPlayerInfo().add(newPlayer);
 			}
 			client.reply(e, 
