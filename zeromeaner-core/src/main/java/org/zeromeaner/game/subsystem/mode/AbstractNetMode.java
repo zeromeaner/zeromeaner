@@ -164,11 +164,13 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	
 	/** NET: Lobby (Declared in NetDummyMode) */
 	protected KNetGameClient knetClient() {
+		if(knetPanel == null)
+			return null;
 		return knetPanel.getClient();
 	}
 	
 	protected KNetChannelInfo channelInfo() {
-		if(knetPanel.getClient() == null)
+		if(knetClient() == null)
 			return null;
 		return knetPanel.getClient().getCurrentChannel();
 	}
@@ -303,7 +305,6 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 		netRankingRank[1] = -1;
 		netIsPB = false;
 		netAlwaysSendFieldAttributes = false;
-		netIsNetPlay = true;
 
 		if(netIsWatch) {
 			engine.isNextVisible = false;
