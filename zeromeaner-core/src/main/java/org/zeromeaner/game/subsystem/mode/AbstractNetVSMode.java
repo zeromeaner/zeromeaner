@@ -965,7 +965,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			netSendNextAndHold(engine);
 			netSendStats(engine);
 
-			knetClient().fireTCP(DEAD, DEAD_KO, netvsLastAttackerUID, DEAD_PLACE, 0);
+			knetClient().fireTCP(DEAD, channelInfo().getPlayers().indexOf(knetClient().getSource()), DEAD_KO, netvsLastAttackerUID, DEAD_PLACE, 0);
 
 			netvsPlayerResultReceived[playerID] = true;
 			netvsIsDeadPending = true;
