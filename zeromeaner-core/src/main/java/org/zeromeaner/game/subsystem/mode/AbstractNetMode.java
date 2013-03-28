@@ -936,8 +936,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	 * @param message Message array
 	 */
 	protected void netRecvField(GameEngine engine, KNetEvent e) {
-//		engine.field = (Field) e.get(GAME_FIELD);
-		engine.field.copy(e.get(GAME_FIELD, Field.class));
+		engine.field = (Field) e.get(GAME_FIELD);
+//		engine.field.copy(e.get(GAME_FIELD, Field.class));
 	}
 
 	/**
