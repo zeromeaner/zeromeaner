@@ -15,8 +15,11 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
 import org.zeromeaner.game.knet.obj.KNetGameInfo;
+import org.zeromeaner.util.Localization;
 
 public class KNetGameInfoEditor extends JTabbedPane {
+	private static Localization lz = new Localization();
+	
 	private static JSpinner numberSpinner(int dv, int low, int high, int step) {
 		return new JSpinner(new SpinnerNumberModel(dv, low, high, step));
 	}
@@ -53,14 +56,14 @@ public class KNetGameInfoEditor extends JTabbedPane {
 			for(Field f : KNetGameInfoEditor.class.getDeclaredFields()) {
 				if(!JComponent.class.isAssignableFrom(f.getType()))
 					continue;
-				p.add(new JLabel(f.getName()));
+				p.add(new JLabel(lz.s(f.getName())));
 				p.add((JComponent) f.get(this));
 			}
 		} catch(Exception ex) {
 			throw new RuntimeException(ex);
 		}
 		
-		addTab("JUNK", p);
+		addTab("Misc", p);
 	}
 	
 	public void load(KNetGameInfo g) {
