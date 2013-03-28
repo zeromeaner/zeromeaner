@@ -35,6 +35,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.HeadlessException;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -703,6 +704,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 			if(syncDisplay) 
 				try {
 					EventQueue.invokeAndWait(r);
+					Toolkit.getDefaultToolkit().sync();
 				} catch(Exception ex) {
 				}
 			else
@@ -771,6 +773,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 				if(syncDisplay) 
 					try {
 						EventQueue.invokeAndWait(r);
+						Toolkit.getDefaultToolkit().sync();
 					} catch(Exception ex) {
 					}
 				else

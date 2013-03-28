@@ -573,6 +573,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 		if(e.getChannel().getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
 			client.fireTCP(CHANNEL_JOIN, CHANNEL_ID, KNetChannelInfo.LOBBY_CHANNEL_ID);
 		revalidate();
+		repaint();
 	}
 
 	@Override
@@ -582,6 +583,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 		ChannelPanel chanPan = channels.remove(e.getChannel().getId());
 		connectedPanel.channels.removeTabAt(connectedPanel.channels.indexOfComponent(chanPan));
 		revalidate();
+		repaint();
 	}
 
 	@Override
