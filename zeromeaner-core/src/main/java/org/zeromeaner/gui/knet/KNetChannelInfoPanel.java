@@ -65,6 +65,8 @@ public class KNetChannelInfoPanel extends JPanel {
 	}}
 	private JCheckBox autoStart = new JCheckBox();
 	
+	private JCheckBox ruleLock = new JCheckBox();
+	
 	private JComboBox rule = new JComboBox();
 	{{
 		DefaultComboBoxModel model = new DefaultComboBoxModel();
@@ -138,6 +140,7 @@ public class KNetChannelInfoPanel extends JPanel {
 		p.add(new JLabel("Automatic Start:")); p.add(autoStart);
 		p.add(new JLabel("Game Mode:")); p.add(mode);
 		p.add(new JLabel("Game Mode Rule:")); p.add(rule);
+		p.add(new JLabel("Rule Lock:")); p.add(ruleLock);
 		p.add(new JLabel("Synchronous Play:")); p.add(syncPlay);
 		tabs.addTab("General", p);
 		
@@ -157,6 +160,7 @@ public class KNetChannelInfoPanel extends JPanel {
 		if(channel.getRule() == null)
 			channel.setRule(new RuleOptions());
 		ruleEditor.writeRuleFromUI(channel.getRule());
+		channel.setRuleLock(ruleLock.isSelected());
 		if(channel.getGame() == null)
 			channel.setGame(new KNetGameInfo());
 		gameEditor.store(channel.getGame());
@@ -171,6 +175,7 @@ public class KNetChannelInfoPanel extends JPanel {
 		if(channel.getRule() == null)
 			channel.setRule(new RuleOptions());
 		ruleEditor.readRuleToUI(channel.getRule());
+		ruleLock.setSelected(channel.isRuleLock());
 		if(channel.getGame() == null)
 			channel.setGame(new KNetGameInfo());
 		gameEditor.load(channel.getGame());

@@ -1357,6 +1357,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			netvsIsGameFinished = false;
 			netvsPlayTimer = 0;
 
+			netvsApplyRoomSettings();
 			netvsSetLockedRule();	// Set locked rule/Restore rule
 
 			for(int i = 0; i < getPlayers(); i++) {

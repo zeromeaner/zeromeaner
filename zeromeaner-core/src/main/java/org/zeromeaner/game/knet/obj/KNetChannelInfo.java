@@ -22,7 +22,7 @@ public class KNetChannelInfo implements KryoSerializable {
 	private List<KNetPlayerInfo> playerInfo = new ArrayList<KNetPlayerInfo>();
 	private int maxPlayers;
 	private String mode;
-	private boolean ruleLock;
+	private boolean ruleLock = true;
 	private RuleOptions rule;
 	private boolean playing;
 	private boolean autoStart;
