@@ -18,12 +18,12 @@ public class NetLobbyInternalFrame extends JInternalFrame {
 		setLayout(new BorderLayout());
 		add(knetPanel, BorderLayout.CENTER);
 
-		setSize(800, 400);
+		setSize(800, 300);
 		
 		AppletMain.instance.desktop.add(this);
 		setVisible(true);
 		
-		setLocation(0, 400);
+		setLocation(0, 500);
 	}
 	
 	public void init() {
