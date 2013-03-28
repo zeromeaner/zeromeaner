@@ -167,9 +167,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	}
 	
 	protected KNetChannelInfo channelInfo() {
-		if(knetPanel.getActiveChannel() == null)
-			return null;
-		return knetPanel.getActiveChannel().getChannel();
+		return knetPanel.getClient().getCurrentChannel();
 	}
 
 	/** NET: GameManager (Declared in NetDummyMode; Don't override it!) */
@@ -1072,7 +1070,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 
 	@Override
 	public void knetPanelJoined(KNetPanelEvent e) {
-		netOnJoin(e.getClient(), e.getSource().getActiveChannel().getChannel());
+		netOnJoin(e.getClient(), e.getChannel());
 	}
 
 	@Override

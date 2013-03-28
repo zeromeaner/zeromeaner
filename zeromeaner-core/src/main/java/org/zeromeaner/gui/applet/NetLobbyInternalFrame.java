@@ -31,7 +31,7 @@ public class NetLobbyInternalFrame extends JInternalFrame {
 		knetPanel.addKNetPanelListener(new KNetPanelAdapter() {
 			@Override
 			public void knetPanelJoined(KNetPanelEvent e) {
-				KNetChannelInfo ci = e.getSource().getActiveChannel().getChannel();
+				KNetChannelInfo ci = e.getSource().getClient().getCurrentChannel();
 				NullpoMinoInternalFrame.gameFrame.strModeToEnter = ci.getMode();
 			}
 			@Override

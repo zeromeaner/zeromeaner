@@ -30,6 +30,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import org.zeromeaner.game.knet.KNetChannelEvent;
+import org.zeromeaner.game.knet.KNetChannelListener;
 import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.knet.KNetEventSource;
@@ -43,7 +45,7 @@ import org.zeromeaner.util.KryoCopy;
 
 import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
-public class KNetPanel extends JPanel implements KNetListener {
+public class KNetPanel extends JPanel implements KNetChannelListener {
 	private static final String CONNECTION_LIST_PANEL_CARD = ConnectionListPanel.class.getName();
 	private static final String CONNECTED_PANEL_CARD = ConnectedPanel.class.getName();
 	private static final String CREATE_CHANNEL_PANEL_CARD = CreateChannelPanel.class.getName();
@@ -130,7 +132,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 			int port = Integer.parseInt(((String) connectionsList.getSelectedValue()).split(":")[1]);
 			
 			client = new KNetGameClient("Player", host, port);
-			client.addKNetListener(KNetPanel.this);
+			client.addKNetChannelListener(KNetPanel.this);
 			client.addKNetListener(new KNetListener() {
 				@Override
 				public void knetEvented(KNetClient client, KNetEvent e) {
@@ -218,7 +220,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 		}
 	}
 	
-	public class ChannelPanel extends JPanel implements KNetListener {
+	public class ChannelPanel extends JPanel implements KNetChannelListener {
 		private KNetChannelInfo channel;
 		
 		private DefaultListModel membersModel = new DefaultListModel();
@@ -258,7 +260,7 @@ public class KNetPanel extends JPanel implements KNetListener {
 				}
 			});
 			
-			client.addKNetListener(this);
+			client.addKNetChannelListener(this);
 			
 			update();
 		}
@@ -268,14 +270,16 @@ public class KNetPanel extends JPanel implements KNetListener {
 		}
 		
 		public void join() {
-			if(activeChannel != null) {
-				activeChannel.leave();
-			}
-			client.fireTCP(CHANNEL_JOIN, CHANNEL_ID, channel.getId());
+//			if(activeChannel != null) {
+//				activeChannel.leave();
+//			}
+//			client.fireTCP(CHANNEL_JOIN, CHANNEL_ID, channel.getId());
+			client.joinChannel(channel.getId());
 		}
 		
 		private void joined() {
-			client.setJoinedId(channel.getId());
+			if(getChannel().getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
+				return;
 			activeChannel = this;
 			connectedPanel.channels.setIconAt(
 					connectedPanel.channels.indexOfComponent(this),
@@ -285,11 +289,11 @@ public class KNetPanel extends JPanel implements KNetListener {
 		}
 		
 		public void leave() {
-			client.fireTCP(CHANNEL_LEAVE, CHANNEL_ID, channel.getId());
+//			client.fireTCP(CHANNEL_LEAVE, CHANNEL_ID, channel.getId());
+			client.leaveChannel();
 		}
 		
 		private void left() {
-			client.setJoinedId(null);
 			connectedPanel.channels.setIconAt(
 					connectedPanel.channels.indexOfComponent(this),
 					null);
@@ -313,52 +317,42 @@ public class KNetPanel extends JPanel implements KNetListener {
 		}
 		
 		@Override
-		public void knetEvented(final KNetClient client, final KNetEvent e) {
-			if(!EventQueue.isDispatchThread()) {
-				EventQueue.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						knetEvented(client, e);
-					}
-				});
-				return;
-			}
-			if(e.get(CHANNEL_INFO) instanceof KNetChannelInfo[]) {
-				KNetChannelInfo[] ca = (KNetChannelInfo[]) e.get(CHANNEL_INFO);
-				for(KNetChannelInfo c : ca) {
-					if(c.getId() == channel.getId()) {
-//						channel = c;
-						KryoCopy.overwrite(c, channel);
-						update();
-					}
-				}
-			}
-			if(e.is(CHANNEL_JOIN) 
-					&& e.is(PAYLOAD) 
-					&& channel.getId() == (Integer) e.get(CHANNEL_ID)) {
-				KryoCopy.overwrite(((KNetChannelInfo[]) e.get(CHANNEL_INFO))[0], channel);
-				if(client.getSource().equals(e.get(PAYLOAD)) && client.isMine(e))
-					joined();
-			}
-			if(e.is(CHANNEL_LEAVE) 
-					&& e.is(PAYLOAD) 
-					&& channel.getId() == (Integer) e.get(CHANNEL_ID)) {
-				KryoCopy.overwrite(((KNetChannelInfo[]) e.get(CHANNEL_INFO))[0], channel);
-				if(client.getSource().equals(e.get(PAYLOAD)) && client.isMine(e)) {
-					left();
-					if(channel.getMembers().size() == 0) {
-						client.fireTCP(CHANNEL_DELETE, channel.getId());
-					}
-				}
-			}
-			if(e.is(CHANNEL_CHAT)
-					&& channel.getId() == (Integer) e.get(CHANNEL_ID)) {
-				String text = history.getText();
-				text += text.isEmpty() ? "" : "\n";
-				text += e.getSource().getName() + ": ";
-				text += (String) e.get(CHANNEL_CHAT);
-				history.setText(text);
-			}
+		public void channelJoined(KNetChannelEvent e) {
+			if(getChannel().equals(e.getChannel()))
+				joined();
+		}
+
+		@Override
+		public void channelUpdated(KNetChannelEvent e) {
+			if(getChannel().equals(e.getChannel()))
+				update();
+		}
+
+		@Override
+		public void channelLeft(KNetChannelEvent e) {
+			if(getChannel().equals(e.getChannel()))
+				left();
+		}
+
+		@Override
+		public void channelCreated(KNetChannelEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void channelDeleted(KNetChannelEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void channelChat(KNetChannelEvent e) {
+			String text = history.getText();
+			text += text.isEmpty() ? "" : "\n";
+			text += e.getEvent().getSource().getName() + ": ";
+			text += (String) e.getEvent().get(CHANNEL_CHAT);
+			history.setText(text);
 		}
 	}
 	
@@ -534,50 +528,6 @@ public class KNetPanel extends JPanel implements KNetListener {
 	}
 
 	
-	@Override
-	public void knetEvented(final KNetClient client, final KNetEvent e) {
-		if(!EventQueue.isDispatchThread()) {
-			EventQueue.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					knetEvented(client, e);
-				}
-			});
-			return;
-		}
-		System.out.println(e);
-		if(e.is(CONNECTED)) {
-			client.fireTCP(CHANNEL_LIST, true);
-			return;
-		}
-		if(e.is(CHANNEL_LIST) && (e.get(CHANNEL_INFO) instanceof KNetChannelInfo[])) {
-			List<KNetChannelInfo> channels = Arrays.asList((KNetChannelInfo[]) e.get(CHANNEL_INFO));
-			// Add new channels
-			for(KNetChannelInfo channel : channels) {
-				if(this.channels.containsKey(channel.getId()))
-					continue;
-				ChannelPanel chanPan = new ChannelPanel(channel);
-				connectedPanel.channels.addTab(channel.getName(), chanPan);
-				this.channels.put(channel.getId(), chanPan);
-				if(channel.getId() == KNetChannelInfo.LOBBY_CHANNEL_ID) { // Autojoin the lobby
-					client.fireTCP(CHANNEL_JOIN, CHANNEL_ID, channel.getId());
-				}
-			}
-			// Remove expired channels
-			Iterator<Map.Entry<Integer, ChannelPanel>> ci = this.channels.entrySet().iterator();
-			while(ci.hasNext()) {
-				Map.Entry<Integer, ChannelPanel> ce = ci.next();
-				if(!channels.contains(ce.getValue().channel)) {
-					int index = connectedPanel.channels.indexOfComponent(ce.getValue());
-					if(index != -1)
-						connectedPanel.channels.removeTabAt(index);
-					ci.remove();
-				}
-			}
-			revalidate();
-		}
-	}
-
 	public KNetGameClient getClient() {
 		return client;
 	}
@@ -586,7 +536,61 @@ public class KNetPanel extends JPanel implements KNetListener {
 		return channels;
 	}
 
-	public ChannelPanel getActiveChannel() {
-		return activeChannel;
+	@Override
+	public void channelJoined(KNetChannelEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void channelUpdated(KNetChannelEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void channelLeft(KNetChannelEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void channelCreated(final KNetChannelEvent e) {
+		if(!EventQueue.isDispatchThread()) {
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					channelCreated(e);
+				}
+			});
+			return;
+		}
+		ChannelPanel chanPan = new ChannelPanel(e.getChannel());
+		connectedPanel.channels.addTab(e.getChannel().getName(), chanPan);
+		channels.put(e.getChannel().getId(), chanPan);
+		if(e.getChannel().getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
+			client.fireTCP(CHANNEL_JOIN, CHANNEL_ID, KNetChannelInfo.LOBBY_CHANNEL_ID);
+		revalidate();
+	}
+
+	@Override
+	public void channelDeleted(final KNetChannelEvent e) {
+		if(!EventQueue.isDispatchThread()) {
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					channelDeleted(e);
+				}
+			});
+		}
+		ChannelPanel chanPan = channels.remove(e.getChannel().getId());
+		connectedPanel.channels.removeTabAt(connectedPanel.channels.indexOfComponent(chanPan));
+		revalidate();
+	}
+
+	@Override
+	public void channelChat(KNetChannelEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

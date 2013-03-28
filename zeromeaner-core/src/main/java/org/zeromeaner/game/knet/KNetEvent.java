@@ -4,6 +4,8 @@ import java.util.EnumMap;
 import java.util.EventObject;
 import java.util.Map;
 
+import org.funcish.core.fn.Predicate;
+
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
@@ -44,6 +46,18 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 	
 	public boolean is(KNetEventArgs arg) {
 		return args.containsKey(arg);
+	}
+	
+	public boolean is(KNetEventArgs arg, Class<?> cls) {
+		return cls.isInstance(get(arg));
+	}
+	
+	public boolean is(Predicate<KNetEvent> p) {
+		return p.test(this, null);
+	}
+	
+	public <T> T get(KNetEventArgs arg, Class<T> cls) {
+		return cls.cast(get(arg));
 	}
 	
 	public void set(KNetEventArgs arg, Object value) {
