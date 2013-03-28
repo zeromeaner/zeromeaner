@@ -1478,7 +1478,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 				}
 			} else {
 				// Normal player won
-				int seatID = channelInfo().getPlayers().indexOf(e.getSource());
+				int seatID = channelInfo().getPlayers().indexOf(e.get(FINISH_WINNER));
 				if(seatID != -1) {
 					int playerID = netvsGetPlayerIDbySeatID(seatID);
 					if(netvsPlayerExist[playerID]) {

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.zeromeaner.game.knet.KNetClient;
@@ -22,6 +23,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 	protected class ChannelState {
 		protected KNetChannelInfo channel;
 		protected int requiredAutostartResponses = 0;
+		protected Set<KNetEventSource> living = new HashSet<KNetEventSource>();
 		
 		public ChannelState(KNetChannelInfo channel) {
 			this.channel = channel;
@@ -175,6 +177,16 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				startInfo.setPlayerCount(c.getPlayers().size());
 				startInfo.setSeed(Double.doubleToRawLongBits(Math.random()));
 				client.fireTCP(START, startInfo, CHANNEL_ID, c.getId());
+				s.living.clear();
+				s.living.addAll(c.getPlayers());
+			}
+		}
+		if(e.is(DEAD)) {
+			KNetChannelInfo c = channels.get(e.get(CHANNEL_ID));
+			ChannelState s = states.get(c);
+			s.living.remove(c.getPlayers().get(e.get(DEAD, Integer.class)));
+			if(s.living.size() == 1) {
+				fireTCP(FINISH, false, FINISH_WINNER, s.living.iterator().next(), CHANNEL_ID, c.getId());
 			}
 		}
 		if(e.is(GAME_ENDING)) {

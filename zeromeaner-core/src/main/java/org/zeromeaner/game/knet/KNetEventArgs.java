@@ -212,6 +212,8 @@ public enum KNetEventArgs {
 	 */
 	FINISH(Boolean.class),
 	
+	FINISH_WINNER(KNetEventSource.class),
+	
 	HURRY_UP,
 
 	RACE_WIN,
