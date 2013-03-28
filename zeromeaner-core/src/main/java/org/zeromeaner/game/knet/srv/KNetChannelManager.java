@@ -2,11 +2,14 @@ package org.zeromeaner.game.knet.srv;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
+import org.zeromeaner.game.knet.KNetEventSource;
 import org.zeromeaner.game.knet.KNetListener;
 import org.zeromeaner.game.knet.obj.KNStartInfo;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
@@ -113,6 +116,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				client.reply(e, ERROR, "Cannot delete lobby");
 			} else if(info.getMembers().size() == 0) {
 				channels.remove(id);
+				states.remove(info);
 				client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
 			} else
 				client.reply(e, ERROR, "Cannot delete channel with members");
@@ -135,6 +139,11 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 					CHANNEL_ID, id,
 					PAYLOAD, e.getSource(),
 					CHANNEL_INFO, new KNetChannelInfo[] { info });
+			if(info.getId() != KNetChannelInfo.LOBBY_CHANNEL_ID && info.getMembers().size() == 0) {
+				channels.remove(info.getId());
+				states.remove(info);
+				client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
+			}
 		}
 		if(e.is(DISCONNECTED)) {
 			boolean deleted = false;
@@ -166,6 +175,15 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				startInfo.setPlayerCount(c.getPlayers().size());
 				startInfo.setSeed(Double.doubleToRawLongBits(Math.random()));
 				client.fireTCP(START, startInfo, CHANNEL_ID, c.getId());
+			}
+		}
+		if(e.is(GAME_ENDING)) {
+			KNetChannelInfo c = channels.get(e.get(CHANNEL_ID));
+			c.setPlaying(false);
+			client.fireTCP(CHANNEL_UPDATE, c);
+			if(c.getPlayers().size() >= 2 && c.isAutoStart()) {
+				client.fireTCP(AUTOSTART_BEGIN, 10, CHANNEL_ID, c.getId());
+				states.get(c).requiredAutostartResponses = c.getPlayers().size();
 			}
 		}
 	}

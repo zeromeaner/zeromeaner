@@ -395,7 +395,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 				netSendField(engine);
 				netSendNextAndHold(engine);
 				netSendStats(engine);
-				knetClient().fire(GAME, true, GAME_ENDING, true);
+				knetClient().fire(GAME, true, GAME_ENDING, true, CHANNEL_ID, channelInfo().getId());
 			}
 		}
 		return false;
@@ -435,7 +435,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 						netSendStats(engine);
 					}
 					netSendEndGameStats(engine);
-					knetClient().fire(DEAD, true);
+					knetClient().fire(DEAD, true, DEAD_PLACE, 0);
 				} else if(engine.statc[0] >= engine.field.getHeight() + 1 + 180) {
 					// To results screen
 					knetClient().fire(GAME, true, GAME_RESULTS_SCREEN, true);
