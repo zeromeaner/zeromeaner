@@ -74,7 +74,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 					CHANNEL_INFO, new KNetChannelInfo[] { info });
 			if(newPlayer != null)
 				client.fireTCP(PLAYER_ENTER, newPlayer, CHANNEL_ID, info.getId());
-			if(info.getPlayers().size() >= 2)
+			if(info.getPlayers().size() >= 2 && info.isAutoStart())
 				client.fireTCP(AUTOSTART_BEGIN, 10, CHANNEL_ID, info.getId());
 		}
 		if(e.is(CHANNEL_CREATE)) {
