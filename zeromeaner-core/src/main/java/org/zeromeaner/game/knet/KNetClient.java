@@ -45,7 +45,7 @@ public class KNetClient {
 		this.port = port;
 		client = new Client();
 		KNetKryo.configure(client.getKryo());
-		client.addListener(new Listener.ThreadedListener(listener));
+		client.addListener(listener);
 	}
 	
 	public KNetClient start() throws IOException, InterruptedException {

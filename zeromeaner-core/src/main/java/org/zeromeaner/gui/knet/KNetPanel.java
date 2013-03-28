@@ -42,6 +42,7 @@ import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 import org.zeromeaner.game.knet.obj.KNetGameInfo;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.gui.applet.AppletMain;
+import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.KryoCopy;
 
 import static org.zeromeaner.game.knet.KNetEventArgs.*;
@@ -558,15 +559,8 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 
 	@Override
 	public void channelCreated(final KNetChannelEvent e) {
-		if(!EventQueue.isDispatchThread()) {
-			EventQueue.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					channelCreated(e);
-				}
-			});
+		if(EQInvoker.reinvoke(true, this, e))
 			return;
-		}
 		ChannelPanel chanPan = new ChannelPanel(e.getChannel());
 		connectedPanel.channels.addTab(e.getChannel().getName(), chanPan);
 		channels.put(e.getChannel().getId(), chanPan);
@@ -577,14 +571,8 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 
 	@Override
 	public void channelDeleted(final KNetChannelEvent e) {
-		if(!EventQueue.isDispatchThread()) {
-			EventQueue.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					channelDeleted(e);
-				}
-			});
-		}
+		if(EQInvoker.reinvoke(true, this, e))
+			return;
 		ChannelPanel chanPan = channels.remove(e.getChannel().getId());
 		connectedPanel.channels.removeTabAt(connectedPanel.channels.indexOfComponent(chanPan));
 		revalidate();
