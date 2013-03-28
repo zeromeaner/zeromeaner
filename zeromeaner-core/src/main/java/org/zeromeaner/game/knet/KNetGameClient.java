@@ -140,6 +140,9 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 				currentChannel = null;
 				fireChannelLeft(e, c);
 			}
+		} else if(e.is(CHANNEL_CHAT)) {
+			KNetChannelInfo c = channels.get(e.get(CHANNEL_ID, Integer.class));
+			fireChannelChat(e, c);
 		}
 	}
 	
