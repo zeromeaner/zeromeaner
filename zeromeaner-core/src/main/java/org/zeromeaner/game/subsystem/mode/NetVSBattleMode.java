@@ -851,7 +851,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		}
 
 		// Hurry Up
-		if((channelInfo() != null) && (playerID == 0)) {
+		if((currentGame() != null) && (playerID == 0)) {
 			if((currentGame().getHurryupSeconds() >= 0) && (hurryupShowFrames > 0) && (!netvsIsPractice) && (hurryupStarted)) {
 				owner.receiver.drawDirectFont(engine, 0, 256 - 8, 32, "HURRY UP!", (hurryupShowFrames % 2 == 0));
 			}

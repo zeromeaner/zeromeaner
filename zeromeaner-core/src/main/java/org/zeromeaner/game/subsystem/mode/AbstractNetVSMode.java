@@ -190,6 +190,8 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 	 */
 	@Override
 	public int getPlayers() {
+		if(channelInfo() == null)
+			return 0;
 		return channelInfo().getMaxPlayers();
 	}
 

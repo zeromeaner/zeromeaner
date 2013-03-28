@@ -232,6 +232,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	}
 
 	protected KNetGameInfo currentGame() {
+		if(channelInfo() == null)
+			return null;
 		return channelInfo().getGame();
 	}
 	
