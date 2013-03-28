@@ -356,7 +356,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 		if((engine.ending == 0) && (netIsNetPlay) && (!netIsWatch) && ((netNumSpectators > 0) || (netForceSendMovements))) {
 			netSendField(engine);
 			netSendStats(engine);
-			knetClient().fireTCP(GAME, true, GAME_PIECE_LOCKED, true);
+			knetClient().fireTCP(GAME, GAME_SYNCHRONOUS, GAME_SYNCHRONOUS_LOCKED, true);
 		}
 	}
 
@@ -651,7 +651,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 		
 		if(isSynchronousPlay()) {
 			GameEngine eng = owner.engine[0];
-			eng.synchronousIncrement = channelInfo().getPlayers().size();
+			eng.synchronousIncrement = getPlayers() - 1;
 			if(e.is(GAME)) {
 				if(e.is(GAME_SYNCHRONOUS)) {
 					if(e.is(GAME_SYNCHRONOUS_LOCKED)) {
@@ -711,7 +711,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 			// Set to locked rule
 			if(channelInfo().isRuleLock()) {
 				log.info("Set locked rule");
-				Randomizer randomizer = GeneralUtil.loadRandomizer(channelInfo().getRule().strRandomizer);
+				Randomizer randomizer = GeneralUtil.loadRandomizer(channelInfo().getRule().strRandomizer, owner.engine[0]);
 				Wallkick wallkick = GeneralUtil.loadWallkick(channelInfo().getRule().strWallkick);
 				if(owner == null)
 					return;

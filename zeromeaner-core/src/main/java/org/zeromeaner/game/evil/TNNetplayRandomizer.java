@@ -6,6 +6,13 @@ import org.eviline.randomizer.MaliciousRandomizer.MaliciousRandomizerProperties;
 import org.zeromeaner.game.play.GameEngine;
 
 public class TNNetplayRandomizer extends TNConcurrentRandomizer {
+	public TNNetplayRandomizer() {
+	}
+	
+	public TNNetplayRandomizer(GameEngine e) {
+		setEngine(e);
+	}
+	
 	@Override
 	public void setEngine(GameEngine engine) {
 		super.setEngine(engine);

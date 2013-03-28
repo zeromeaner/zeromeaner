@@ -83,6 +83,7 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameEngine;
+import org.zeromeaner.game.subsystem.wallkick.StandardWallkick;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
@@ -1382,8 +1383,10 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 		chkboxRotateButtonAllowReverse.setSelected(r.rotateButtonAllowReverse);
 		chkboxRotateButtonAllowDouble.setSelected(r.rotateButtonAllowDouble);
 		int indexWallkick = vectorWallkickSystem.indexOf(r.strWallkick);
+		if(indexWallkick == -1)
+			indexWallkick = vectorWallkickSystem.indexOf(StandardWallkick.class.getName());
 		comboboxWallkickSystem.setSelectedIndex(indexWallkick);
-
+		
 		txtfldLockDelayMin.setText(String.valueOf(r.minLockDelay));
 		txtfldLockDelayMax.setText(String.valueOf(r.maxLockDelay));
 		chkboxLockDelayLockResetFall.setSelected(r.lockresetFall);

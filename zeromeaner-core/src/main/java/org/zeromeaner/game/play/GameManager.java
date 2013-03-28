@@ -198,7 +198,11 @@ public class GameManager {
 			players = mode.getPlayers();
 		}
 		engine = new GameEngine[players];
-		for(int i = 0; i < engine.length; i++) engine[i] = new GameEngine(this, i);
+		for(int i = 0; i < engine.length; i++) {
+			engine[i] = new GameEngine(this, i);
+			if(mode != null)
+				mode.engineInit(engine[i], i);
+		}
 	}
 
 	/**

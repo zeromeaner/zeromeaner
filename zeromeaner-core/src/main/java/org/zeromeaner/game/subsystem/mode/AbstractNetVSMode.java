@@ -431,9 +431,9 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 	protected void netvsSetLockedRule() {
 		if((channelInfo() != null) && (channelInfo().isRuleLock())) {
 			// Set to locked rule
-			Randomizer randomizer = GeneralUtil.loadRandomizer(channelInfo().getRule().strRandomizer);
-			Wallkick wallkick = GeneralUtil.loadWallkick(channelInfo().getRule().strWallkick);
 			for(int i = 0; i < getPlayers(); i++) {
+				Randomizer randomizer = GeneralUtil.loadRandomizer(channelInfo().getRule().strRandomizer, owner.engine[i]);
+				Wallkick wallkick = GeneralUtil.loadWallkick(channelInfo().getRule().strWallkick);
 				owner.engine[i].ruleopt.copy(channelInfo().getRule());
 				owner.engine[i].randomizer = randomizer;
 				owner.engine[i].wallkick = wallkick;
@@ -441,7 +441,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 		} else if(!netvsIsWatch()) {
 			// Revert rules
 			owner.engine[0].ruleopt.copy(channelInfo().getRule());
-			owner.engine[0].randomizer = GeneralUtil.loadRandomizer(owner.engine[0].ruleopt.strRandomizer);
+			owner.engine[0].randomizer = GeneralUtil.loadRandomizer(owner.engine[0].ruleopt.strRandomizer, owner.engine[0]);
 			owner.engine[0].wallkick = GeneralUtil.loadWallkick(owner.engine[0].ruleopt.strWallkick);
 		}
 	}
@@ -1219,9 +1219,9 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 		if(knetClient().getSource().equals(e.getSource()))
 			return;
 		
-		if(isSynchronousPlay()) {
+		if(isSynchronousPlay() && channelInfo() != null) {
 			GameEngine eng = owner.engine[0];
-			eng.synchronousIncrement = channelInfo().getPlayers().size() - 1;
+			eng.synchronousIncrement = getPlayers() - 1;
 			if(e.is(GAME)) {
 				if(e.is(GAME_SYNCHRONOUS)) {
 					if(e.is(GAME_SYNCHRONOUS_LOCKED)) {

@@ -62,6 +62,8 @@ public interface GameMode {
 	 */
 	public void modeInit(GameManager manager);
 
+	public void engineInit(GameEngine engine, int playerID);
+	
 	/**
 	 * Initialization for each player.
 	 * @param engine GameEngine

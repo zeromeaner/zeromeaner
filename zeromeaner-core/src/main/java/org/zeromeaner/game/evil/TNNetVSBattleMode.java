@@ -7,6 +7,7 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
+import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
 import org.zeromeaner.game.subsystem.wallkick.StandardWallkick;
 
@@ -65,14 +66,19 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 	}
 
 	@Override
+	public void engineInit(GameEngine e, int playerID) {
+		super.engineInit(e, playerID);
+		
+		e.ruleopt = new TNRuleOptions(e.ruleopt);
+		e.randomizer = new TNNetplayRandomizer(e);
+		randomizers.put(e, (TNNetplayRandomizer) e.randomizer);
+		e.wallkick = new StandardWallkick();
+	}
+	
+	@Override
 	public void playerInit(GameEngine engine, int playerID) {
 		super.playerInit(engine, playerID);
 		receiver = engine.getOwner().receiver;
-		engine.ruleopt = new TNRuleOptions(engine.ruleopt);
-		engine.randomizer = new TNNetplayRandomizer();
-		randomizers.put(engine, (TNNetplayRandomizer) engine.randomizer);
-		((TNRandomizer) engine.randomizer).setEngine(engine);
-		engine.wallkick = new StandardWallkick();
 	}
 	
 	@Override

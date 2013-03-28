@@ -122,8 +122,6 @@ public class KNetChannelInfoPanel extends JPanel {
 		mode.setSelectedIndex(i);
 	}}
 	
-	private JCheckBox syncPlay = new JCheckBox();
-	
 	private KNetGameInfoEditor gameEditor = new KNetGameInfoEditor();
 	
 	private RuleEditorPanel ruleEditor = new RuleEditorPanel();
@@ -144,7 +142,6 @@ public class KNetChannelInfoPanel extends JPanel {
 		p.add(new JLabel("Game Mode:")); p.add(mode);
 		p.add(new JLabel("Game Mode Rule:")); p.add(rule);
 		p.add(new JLabel("Rule Lock:")); p.add(ruleLock);
-		p.add(new JLabel("Synchronous Play:")); p.add(syncPlay);
 		tabs.addTab("General", p);
 		
 		for(int i = 0; i < gameEditor.getTabCount(); i++) {

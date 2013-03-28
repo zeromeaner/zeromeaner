@@ -31,7 +31,7 @@ public class TNMode extends MarathonMode {
 		super.playerInit(engine, playerID);
 		receiver = engine.getOwner().receiver;
 		engine.ruleopt = new TNRuleOptions(engine.ruleopt);
-		engine.randomizer = GeneralUtil.loadRandomizer(engine.ruleopt.strRandomizer);
+		engine.randomizer = GeneralUtil.loadRandomizer(engine.ruleopt.strRandomizer, engine);
 		if(!(engine.randomizer instanceof TNRandomizer))
 			engine.randomizer = new TNConcurrentBipolarRandomizer();
 		engine.wallkick = GeneralUtil.loadWallkick(engine.ruleopt.strWallkick);

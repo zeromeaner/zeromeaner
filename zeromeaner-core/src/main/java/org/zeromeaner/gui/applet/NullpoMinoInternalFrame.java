@@ -994,7 +994,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 			// NEXTOrder generation algorithm
 			if((ruleopt.strRandomizer != null) && (ruleopt.strRandomizer.length() > 0)) {
-				Randomizer randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer);
+				Randomizer randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer, gameManager.engine[i]);
 				gameManager.engine[i].randomizer = randomizerObject;
 			}
 
@@ -1065,7 +1065,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 			// NEXTOrder generation algorithm
 			if((ruleopt.strRandomizer != null) && (ruleopt.strRandomizer.length() > 0)) {
-				Randomizer randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer);
+				Randomizer randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer, gameManager.engine[i]);
 				gameManager.engine[i].randomizer = randomizerObject;
 			}
 
@@ -1172,7 +1172,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 			// Randomizer
 			if((ruleopt.strRandomizer != null) && (ruleopt.strRandomizer.length() > 0)) {
-				Randomizer randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer);
+				Randomizer randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer, gameManager.engine[0]);
 				gameManager.engine[0].randomizer = randomizerObject;
 			}
 

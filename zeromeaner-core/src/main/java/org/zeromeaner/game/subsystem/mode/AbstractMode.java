@@ -125,6 +125,10 @@ public class AbstractMode implements GameMode {
 
 	public void modeInit(GameManager manager) {
 	}
+	
+	@Override
+	public void engineInit(GameEngine engine, int playerID) {
+	}
 
 	public boolean onARE(GameEngine engine, int playerID) {
 		return false;
