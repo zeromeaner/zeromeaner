@@ -25,7 +25,7 @@ public class KNetGameInfo {
 	private boolean useFractionalGarbage;
 	private boolean targettedGarbage;
 	private boolean rensaBlock;
-	private int garbagePercent;
+	private int garbagePercent = 100;
 	private boolean divideChangeRateByPlayers;
 	private boolean garbageChangePerAttack;
 	private int hurryupSeconds;

@@ -106,7 +106,6 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	
 	@Override
 	public void knetEvented(KNetClient client, KNetEvent e) {
-		System.out.println(e);
 		if(e.is(MAPS))
 			maps = Arrays.asList((Field[]) e.get(MAPS));
 		else if(e.is(CONNECTED)) {
