@@ -25,7 +25,7 @@ public class KNetChannelInfo implements KryoSerializable {
 	private boolean ruleLock = true;
 	private RuleOptions rule;
 	private boolean playing;
-	private boolean autoStart;
+	private boolean autoStart = true;
 	private KNetGameInfo game;
 	
 	public KNetChannelInfo() {}

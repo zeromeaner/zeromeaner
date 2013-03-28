@@ -116,7 +116,10 @@ public class KNetChannelInfoPanel extends JPanel {
 				}
 			}
 		});
-		mode.setSelectedIndex(0);
+		int i = model.getIndexOf("NET-VS-BATTLE");
+		if(i < 0)
+			i = 0;
+		mode.setSelectedIndex(i);
 	}}
 	
 	private JCheckBox syncPlay = new JCheckBox();
@@ -179,6 +182,6 @@ public class KNetChannelInfoPanel extends JPanel {
 		if(channel.getGame() == null)
 			channel.setGame(new KNetGameInfo());
 		gameEditor.load(channel.getGame());
-		mode.setSelectedItem(channel.getMode());
+		mode.setSelectedItem(channel.getMode() == null ? "NET-VS-BATTLE" : channel.getMode());
 	}
 }
