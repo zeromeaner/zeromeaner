@@ -39,6 +39,8 @@ public class NetLobbyInternalFrame extends JInternalFrame {
 			}
 			@Override
 			public void knetPanelParted(KNetPanelEvent e) {
+				if(e.getChannel().getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
+					return;
 				NullpoMinoInternalFrame.gameFrame.strModeToEnter = null;
 			}
 			@Override

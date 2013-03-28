@@ -9,13 +9,13 @@ public class KNetGameInfo {
 		ENABLE_WITH_BONUSES,
 	}
 	
-	private int gravity;
-	private int denominator;
-	private int are;
-	private int areLine;
-	private int lineDelay;
-	private int lockDelay;
-	private int das;
+	private int gravity = 4;
+	private int denominator = 256;
+	private int are = 24;
+	private int areLine = 24;
+	private int lineDelay = 40;
+	private int lockDelay = 30;
+	private int das = 14;
 	private boolean b2bEnable;
 	private int comboType;
 	private TSpinEnableType tspinEnableType = TSpinEnableType.ENABLE;

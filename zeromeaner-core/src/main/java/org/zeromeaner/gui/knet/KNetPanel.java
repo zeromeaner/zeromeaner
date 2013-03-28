@@ -208,6 +208,8 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			client = null;
 			cards.show(KNetPanel.this, CONNECTION_LIST_PANEL_CARD);
 			fireKnetPanelDisconnected();
+			KNetPanel.this.channels.clear();
+			channels.removeAll();
 		}
 		
 		public void add() {

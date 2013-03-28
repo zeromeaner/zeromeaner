@@ -209,7 +209,6 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 		super.modeInit(manager);
 		log.debug("modeInit() on NetDummyVSMode");
 		netForceSendMovements = true;
-		netvsMySeatID = -1;
 		netvsNumNowPlayers = 0;
 		netvsNumAlivePlayers = 0;
 		netvsPlayerExist = new boolean[NETVS_MAX_PLAYERS];
@@ -274,7 +273,6 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 	protected void netUpdatePlayerExist() {
 		if(knetClient() == null)
 			return;
-		netvsMySeatID = channelInfo().getPlayers().indexOf(knetClient().getSource());
 		netNumSpectators = 0;
 		netPlayerName = knetClient().getSource().getName();
 		netIsWatch = netvsIsWatch();
@@ -298,15 +296,15 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 		List<String> teamList = new LinkedList<String>();
 		
 		for(KNetEventSource player: players) {
+			netNumSpectators++;
 			if(!channelInfo().getPlayers().contains(player)) {
-				netNumSpectators++;
 			} else {
-				int playerID = players.indexOf(player);
+				int playerID = netvsGetPlayerIDbySeatID(players.indexOf(player));
 				KNetPlayerInfo info = playerInfo.get(playerID);
 				netvsPlayerExist[playerID] = true;
 				netvsPlayerReady[playerID] = info.isReady();
 				netvsPlayerActive[playerID] = info.isPlaying();
-				netvsPlayerSeatID[playerID] = playerID;
+				netvsPlayerSeatID[playerID] = players.indexOf(player);
 				netvsPlayerUID[playerID] = player.getId();
 				netvsPlayerWinCount[playerID] = info.getWinCount();
 				netvsPlayerPlayCount[playerID] = info.getPlayCount();
@@ -357,8 +355,8 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 	protected void netPlayerInit(GameEngine engine, int playerID) {
 		log.debug("netPlayerInit(engine, " + playerID + ") on NetDummyVSMode");
 
-		super.netPlayerInit(engine, playerID);
 
+		super.netPlayerInit(engine, playerID);
 		// Misc. variables
 		engine.fieldWidth = 10;
 		engine.fieldHeight = 20;
@@ -537,7 +535,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 	 * @return Player number
 	 */
 	protected int netvsGetPlayerIDbySeatID(int seat) {
-		return netvsGetPlayerIDbySeatID(seat, netvsMySeatID);
+		return netvsGetPlayerIDbySeatID(seat, netvsMySeatID());
 	}
 
 	/**
@@ -1216,6 +1214,9 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 	
 	@Override
 	public void knetEvented(KNetClient client, KNetEvent e) {
+		if(knetClient().getSource().equals(e.getSource()))
+			return;
+		
 		if(isSynchronousPlay()) {
 			GameEngine eng = owner.engine[0];
 			eng.synchronousIncrement = channelInfo().getPlayers().size() - 1;
@@ -1503,6 +1504,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 		if(e.is(GAME)) {
 			int seatID = channelInfo().getPlayers().indexOf(e.getSource());
 			int playerID = netvsGetPlayerIDbySeatID(seatID);
+//			int playerID = seatID;
 			GameEngine engine = owner.engine[playerID];
 
 			if(engine.field == null) {

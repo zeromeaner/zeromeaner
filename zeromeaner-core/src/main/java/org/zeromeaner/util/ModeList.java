@@ -38,6 +38,13 @@ public class ModeList<E extends GameMode> extends ArrayFunctionalList<E> {
 		}
 	};
 	
+	public static Predicator<GameMode> IS_SINGLEPLAY = new AbstractPredicator<GameMode>(GameMode.class) {
+		@Override
+		public boolean test0(GameMode value, Integer index) throws Exception {
+			return !value.isNetplayMode();
+		}
+	};
+	
 	public static Predicator<GameMode> IS_VSMODE = new AbstractPredicator<GameMode>(GameMode.class) {
 		@Override
 		public boolean test0(GameMode value, Integer index) throws Exception {
@@ -56,7 +63,7 @@ public class ModeList<E extends GameMode> extends ArrayFunctionalList<E> {
 	public ModeList<E> getIsNetplay(boolean isNetplay) {
 		Predicator<GameMode> p = IS_NETPLAY;
 		if(!isNetplay)
-			p = Predicates.not(p);
+			p = IS_SINGLEPLAY;
 		return p.filter(this, new ModeList<E>(e()));
 	}
 	

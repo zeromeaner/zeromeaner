@@ -65,7 +65,7 @@ public class KNetServer {
 		KNetKryo.configure(server.getKryo());
 		server.start();
 		server.bind(port, port);
-		server.addListener(new Listener.ThreadedListener(listener));
+		server.addListener(listener);
 	}
 	
 	public void stop() {

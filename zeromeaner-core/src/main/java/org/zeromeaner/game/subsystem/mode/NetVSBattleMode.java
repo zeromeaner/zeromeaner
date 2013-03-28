@@ -38,6 +38,7 @@ import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
+import org.zeromeaner.game.knet.KNetEventArgs;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.GeneralUtil;
@@ -618,7 +619,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 				attack.setGarbage(garbage[playerID]);
 				attack.setLastPiece(lastpiece[playerID]);
 				attack.setTargetSeatId(targetSeatID);
-				knetClient().fireTCP(attack);
+				knetClient().fireTCP(NETVSBATTLE_GAME_ATTACK, attack);
 			}
 		}
 

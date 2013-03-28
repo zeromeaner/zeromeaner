@@ -6,6 +6,7 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
+import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
@@ -167,6 +168,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	}
 	
 	protected KNetChannelInfo channelInfo() {
+		if(knetPanel.getClient() == null)
+			return null;
 		return knetPanel.getClient().getCurrentChannel();
 	}
 
@@ -207,7 +210,11 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	protected boolean netIsPB;
 
 	/** NET-VS: Local player's seat ID (-1:Spectator) */
-	protected int netvsMySeatID;
+	protected int netvsMySeatID() {
+		if(channelInfo() == null)
+			return -1;
+		return channelInfo().getPlayers().indexOf(knetClient().getSource());
+	}
 
 	protected boolean synchronousPlay;
 	
@@ -265,6 +272,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 		netNumSpectators = 0;
 		netForceSendMovements = false;
 		netPlayerName = "";
+		if(knetClient() != null)
+			netIsNetPlay = true;
 	}
 
 	/**
@@ -294,6 +303,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 		netRankingRank[1] = -1;
 		netIsPB = false;
 		netAlwaysSendFieldAttributes = false;
+		netIsNetPlay = true;
 
 		if(netIsWatch) {
 			engine.isNextVisible = false;
@@ -516,6 +526,9 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	 */
 	@Override
 	public void knetEvented(KNetClient client, KNetEvent e) {
+		if(knetClient().getSource().equals(e.getSource()))
+			return;
+		
 		if(e.is(DISCONNECTED))
 			netlobbyOnDisconnect(client, e);
 		
@@ -697,6 +710,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 				log.info("Set locked rule");
 				Randomizer randomizer = GeneralUtil.loadRandomizer(channelInfo().getRule().strRandomizer);
 				Wallkick wallkick = GeneralUtil.loadWallkick(channelInfo().getRule().strWallkick);
+				if(owner == null)
+					return;
 				owner.engine[0].ruleopt.copy(channelInfo().getRule());
 				owner.engine[0].randomizer = randomizer;
 				owner.engine[0].wallkick = wallkick;
@@ -733,7 +748,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 //		}
 		
 		if(channelInfo() != null)
-			netNumSpectators = channelInfo().getMembers().size() - channelInfo().getPlayers().size();
+			netNumSpectators = channelInfo().getMembers().size();
 		if(knetClient() != null)
 			netPlayerName = knetClient().getSource().getName();
 	}
@@ -918,7 +933,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	 * @param message Message array
 	 */
 	protected void netRecvField(GameEngine engine, KNetEvent e) {
-		engine.field = (Field) e.get(PAYLOAD);
+//		engine.field = (Field) e.get(GAME_FIELD);
+		engine.field.copy(e.get(GAME_FIELD, Field.class));
 	}
 
 	/**

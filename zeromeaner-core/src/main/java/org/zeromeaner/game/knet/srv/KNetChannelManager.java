@@ -137,7 +137,8 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 					CHANNEL_INFO, new KNetChannelInfo[] { info });
 		}
 		if(e.is(DISCONNECTED)) {
-			for(KNetChannelInfo info : channels.values()) {
+			boolean deleted = false;
+			for(KNetChannelInfo info : channels.values().toArray(new KNetChannelInfo[channels.size()])) {
 				if(!info.getMembers().contains(e.getSource()))
 					continue;
 				info.depart(e.getSource());
@@ -146,7 +147,13 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 						CHANNEL_ID, info.getId(),
 						PAYLOAD, e.getSource(),
 						CHANNEL_INFO, new KNetChannelInfo[] { info });
+				if(info.getMembers().size() == 0 && info.getId() != KNetChannelInfo.LOBBY_CHANNEL_ID) {
+					channels.remove(info.getId());
+					deleted = true;
+				}
 			}
+			if(deleted)
+				client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
 		}
 		if(e.is(AUTOSTART)) {
 //			client.fireTCP(START, CHANNEL_ID, e.get(CHANNEL_ID));

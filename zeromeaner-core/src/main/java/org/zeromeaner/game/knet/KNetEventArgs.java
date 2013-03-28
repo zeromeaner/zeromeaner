@@ -245,7 +245,10 @@ public enum KNetEventArgs {
 	public void write(Kryo kryo, Output output, Object argValue) {
 		if(type == null)
 			return;
-		type.cast(argValue);
+		if(!type.isInstance(argValue) && argValue != null) {
+			new Throwable("Invalid arg for " + this + ":" + argValue).printStackTrace();
+			throw new ClassCastException();
+		}
 		if(nullable)
 			kryo.writeClassAndObject(output, argValue);
 		else

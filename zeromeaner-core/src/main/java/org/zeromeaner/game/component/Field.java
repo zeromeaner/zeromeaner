@@ -220,10 +220,10 @@ public class Field implements Serializable {
 
 		for(int i = 0; i < width; i++) {
 			for(int j = 0; j < height; j++) {
-				block_field[j][i] = new Block(f.getBlock(i, j));
+				block_field[j][i] = f.getBlock(i, j) == null ? null : new Block(f.getBlock(i, j));
 			}
 			for(int j = 0; j < hidden_height; j++) {
-				block_hidden[j][i] = new Block(f.getBlock(i, -j-1));
+				block_hidden[j][i] = f.getBlock(i, -j-1) == null ? null : new Block(f.getBlock(i, -j-1));
 			}
 		}
 	}
@@ -451,7 +451,7 @@ public class Field implements Serializable {
 	 */
 	public int getBlockColorE(int x, int y) throws ArrayIndexOutOfBoundsException {
 		try {
-			return getBlockE(x,y).color;
+			return getBlockE(x,y) == null ? 0 : getBlockE(x,y).color;
 		} catch(ArrayIndexOutOfBoundsException e) {
 			throw e;
 		}
@@ -2633,6 +2633,7 @@ public class Field implements Serializable {
 	public String toString() {
 		String str = getClass().getName() + "@" + Integer.toHexString(hashCode()) + "\n";
 
+		/*
 		for(int i = (hidden_height * -1); i < height; i++) {
 			str += String.format("%3d:", i);
 
@@ -2650,7 +2651,8 @@ public class Field implements Serializable {
 
 			str += "\n";
 		}
-
+		*/
+		
 		return str;
 	}
 
