@@ -65,12 +65,14 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 		}
 		
 		JFrame f = new JFrame(KNetPanel.class.getName());
-		f.add(new KNetPanel());
+		f.add(new KNetPanel(""));
 		f.pack();
 		f.setSize(600, 400);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
 	}
+	
+	private String defaultUsername;
 	
 	private CardLayout cards;
 	private ConnectionListPanel connectionsListPanel;
@@ -103,7 +105,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			}
 		});
 		
-		private JTextField username = new JTextField();
+		private JTextField username = new JTextField(defaultUsername);
 		
 		public ConnectionListPanel() {
 			super(new BorderLayout());
@@ -422,7 +424,9 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 		}
 	}
 	
-	public KNetPanel() {
+	public KNetPanel(String defaultUsername) {
+		this.defaultUsername = defaultUsername;
+		
 		setLayout(cards = new CardLayout());
 		
 		add(connectionsListPanel = new ConnectionListPanel(), CONNECTION_LIST_PANEL_CARD);
