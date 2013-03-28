@@ -116,6 +116,9 @@ public enum KNetEventArgs {
 	@Global
 	CHANNEL_DELETE(Integer.class),
 	
+	@Global
+	CHANNEL_UPDATE(KNetChannelInfo.class),
+	
 	/** Issued for in-game events */
 	GAME,
 	
@@ -242,6 +245,7 @@ public enum KNetEventArgs {
 	public void write(Kryo kryo, Output output, Object argValue) {
 		if(type == null)
 			return;
+		type.cast(argValue);
 		if(nullable)
 			kryo.writeClassAndObject(output, argValue);
 		else

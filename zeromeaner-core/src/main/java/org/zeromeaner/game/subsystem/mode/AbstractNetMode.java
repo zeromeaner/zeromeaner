@@ -909,7 +909,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	 * @param engine GameEngine
 	 */
 	protected void netSendField(GameEngine engine) {
-		knetClient().fireUDP(GAME, true, GAME_FIELD, true, PAYLOAD, engine.field);
+		knetClient().fireUDP(GAME, true, GAME_FIELD, engine.field);
 	}
 
 	/**

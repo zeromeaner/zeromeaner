@@ -43,7 +43,7 @@ public class KNetClient {
 		this.type = type;
 		this.host = host;
 		this.port = port;
-		client = new Client();
+		client = new Client(1024 * 2, 1024 * 256);
 		KNetKryo.configure(client.getKryo());
 		client.addListener(listener);
 	}
@@ -80,11 +80,19 @@ public class KNetClient {
 	}
 	
 	protected void issue(KNetEvent e) {
-		Object[] ll = listenerList.getListenerList();
-		for(int i = ll.length - 2; i >= 0; i -= 2) {
-			if(ll[i] == KNetListener.class) {
-				((KNetListener) ll[i+1]).knetEvented(this, e);
+		try {
+			Object[] ll = listenerList.getListenerList();
+			for(int i = ll.length - 2; i >= 0; i -= 2) {
+				if(ll[i] == KNetListener.class) {
+					((KNetListener) ll[i+1]).knetEvented(this, e);
+				}
 			}
+		} catch(RuntimeException re) {
+			re.printStackTrace();
+			throw re;
+		} catch(Error er) {
+			er.printStackTrace();
+			throw er;
 		}
 	}
 	
