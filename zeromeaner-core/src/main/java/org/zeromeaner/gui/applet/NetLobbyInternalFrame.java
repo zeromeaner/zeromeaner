@@ -33,6 +33,9 @@ public class NetLobbyInternalFrame extends JInternalFrame {
 			public void knetPanelJoined(KNetPanelEvent e) {
 				KNetChannelInfo ci = e.getSource().getClient().getCurrentChannel();
 				NullpoMinoInternalFrame.gameFrame.strModeToEnter = ci.getMode();
+				// FIXME: busy-waiting is bad mojo
+				while(!NullpoMinoInternalFrame.gameFrame.strModeToEnter.isEmpty())
+					;
 			}
 			@Override
 			public void knetPanelParted(KNetPanelEvent e) {

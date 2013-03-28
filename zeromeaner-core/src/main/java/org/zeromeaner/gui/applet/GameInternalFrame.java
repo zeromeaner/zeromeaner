@@ -153,7 +153,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	public boolean isNetPlay = false;
 
 	/** Mode name to enter (null=Exit) */
-	public String strModeToEnter = "";
+	public volatile String strModeToEnter = "";
 
 	/** Previous ingame flag (Used by title-bar text change) */
 	protected boolean prevInGameFlag = false;

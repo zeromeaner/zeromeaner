@@ -1119,6 +1119,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	 * @param modeName Mode name
 	 */
 	public void enterNewMode(String modeName) {
+		Thread.dumpStack();
 		loadGlobalConfig();	// Reload global config file
 
 		GameMode previousMode = gameManager.mode;
@@ -1215,8 +1216,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	
 	@Override
 	public void knetPanelDisconnected(KNetPanelEvent e) {
-		if(gameFrame != null) 
-			gameFrame.strModeToEnter = null;
 	}
 	
 	@Override
@@ -1232,14 +1231,10 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 	@Override
 	public void knetPanelJoined(KNetPanelEvent e) {
-		if(gameFrame != null)
-			gameFrame.strModeToEnter = e.getChannel().getMode();
 	}
 
 	@Override
 	public void knetPanelParted(KNetPanelEvent e) {
-		if(gameFrame != null) 
-			gameFrame.strModeToEnter = null;
 	}
 	
 	/**
