@@ -51,10 +51,10 @@ public class KNetGameInfoEditor extends JTabbedPane {
 		JPanel p = new JPanel(new GridLayout(0, 2));
 		try {
 			for(Field f : KNetGameInfoEditor.class.getDeclaredFields()) {
-				if(JComponent.class.isAssignableFrom(f.getType())) {
-					p.add(new JLabel(f.getName()));
-					p.add((JComponent) f.get(this));
-				}
+				if(!JComponent.class.isAssignableFrom(f.getType()))
+					continue;
+				p.add(new JLabel(f.getName()));
+				p.add((JComponent) f.get(this));
 			}
 		} catch(Exception ex) {
 			throw new RuntimeException(ex);
@@ -64,11 +64,41 @@ public class KNetGameInfoEditor extends JTabbedPane {
 	}
 	
 	public void load(KNetGameInfo g) {
-		
+		try {
+			for(Field f : KNetGameInfoEditor.class.getDeclaredFields()) {
+				if(!JComponent.class.isAssignableFrom(f.getType()))
+					continue;
+				Field gf = KNetGameInfo.class.getDeclaredField(f.getName());
+				gf.setAccessible(true);
+				if(gf.getType() == int.class)
+					((JSpinner) f.get(this)).setValue(gf.get(g));
+				else if(gf.getType() == boolean.class)
+					((JCheckBox) f.get(this)).setSelected((Boolean) gf.get(g));
+				else if(Object.class.isAssignableFrom(gf.getType()))
+					((JComboBox) f.get(this)).setSelectedItem(gf.get(g));
+			}
+		} catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 	
 	public void store(KNetGameInfo g) {
-		
+		try {
+			for(Field f : KNetGameInfoEditor.class.getDeclaredFields()) {
+				if(!JComponent.class.isAssignableFrom(f.getType()))
+					continue;
+				Field gf = KNetGameInfo.class.getDeclaredField(f.getName());
+				gf.setAccessible(true);
+				if(gf.getType() == int.class)
+					gf.set(g, ((JSpinner) f.get(this)).getValue());
+				else if(gf.getType() == boolean.class)
+					gf.set(g, ((JCheckBox) f.get(this)).isSelected());
+				else if(Object.class.isAssignableFrom(gf.getType()))
+					gf.set(g, ((JComboBox) f.get(this)).getSelectedItem());
+			}
+		} catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 	
 }
