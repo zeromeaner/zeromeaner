@@ -56,11 +56,6 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 	}
 	
 	@Override
-	public boolean isSynchronousPlay() {
-		return true;
-	}
-	
-	@Override
 	public String getName() {
 		return "NET-EVILINE-VS-BATTLE";
 	}
