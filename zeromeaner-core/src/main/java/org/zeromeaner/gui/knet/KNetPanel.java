@@ -325,18 +325,24 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 		
 		@Override
 		public void channelJoined(KNetChannelEvent e) {
+			if(EQInvoker.reinvoke(false, this, e))
+				return;
 			if(getChannel().equals(e.getChannel()))
 				joined();
 		}
 
 		@Override
 		public void channelUpdated(KNetChannelEvent e) {
+			if(EQInvoker.reinvoke(false, this, e))
+				return;
 			if(getChannel().equals(e.getChannel()))
 				update();
 		}
 
 		@Override
 		public void channelLeft(KNetChannelEvent e) {
+			if(EQInvoker.reinvoke(false, this, e))
+				return;
 			if(getChannel().equals(e.getChannel()))
 				left();
 		}
@@ -355,6 +361,8 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 
 		@Override
 		public void channelChat(KNetChannelEvent e) {
+			if(EQInvoker.reinvoke(false, this, e))
+				return;
 			String text = history.getText();
 			text += text.isEmpty() ? "" : "\n";
 			text += e.getEvent().getSource().getName() + ": ";
