@@ -15,6 +15,7 @@ public class RuleList extends ArrayFunctionalList<RuleOptions> {
 	public static RuleList getRules() {
 		RuleList ret = new RuleList();
 		for(String rule : Zeroflections.getRules()) {
+			rule = rule.replaceAll("^org/zeromeaner/", "");
 			ret.add(GeneralUtil.loadRule(rule));
 		}
 		return ret;
