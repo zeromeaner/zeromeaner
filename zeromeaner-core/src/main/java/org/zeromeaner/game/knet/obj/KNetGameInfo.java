@@ -11,9 +11,9 @@ public class KNetGameInfo {
 	
 	private int gravity = 4;
 	private int denominator = 256;
-	private int are = 24;
-	private int areLine = 24;
-	private int lineDelay = 40;
+	private int are = 0;
+	private int areLine = 0;
+	private int lineDelay = 0;
 	private int lockDelay = 30;
 	private int das = 14;
 	private boolean b2bEnable;
