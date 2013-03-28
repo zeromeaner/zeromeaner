@@ -573,7 +573,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 
 	@Override
 	public void channelCreated(final KNetChannelEvent e) {
-		if(EQInvoker.reinvoke(true, this, e))
+		if(EQInvoker.reinvoke(false, this, e))
 			return;
 		ChannelPanel chanPan = new ChannelPanel(e.getChannel());
 		connectedPanel.channels.addTab(e.getChannel().getName(), chanPan);
@@ -586,7 +586,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 
 	@Override
 	public void channelDeleted(final KNetChannelEvent e) {
-		if(EQInvoker.reinvoke(true, this, e))
+		if(EQInvoker.reinvoke(false, this, e))
 			return;
 		ChannelPanel chanPan = channels.remove(e.getChannel().getId());
 		connectedPanel.channels.removeTabAt(connectedPanel.channels.indexOfComponent(chanPan));
