@@ -13,6 +13,7 @@ import org.funcish.core.fn.Predicate;
 import org.funcish.core.fn.Predicator;
 import org.funcish.core.impl.AbstractMappicator;
 import org.funcish.core.impl.AbstractPredicator;
+import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 
 
@@ -33,7 +34,7 @@ public class ModeList<E extends GameMode> extends ArrayFunctionalList<E> {
 	public static Predicator<GameMode> IS_NETPLAY = new AbstractPredicator<GameMode>(GameMode.class) {
 		@Override
 		public boolean test0(GameMode value, Integer index) throws Exception {
-			return value.isNetplayMode();
+			return value instanceof AbstractNetMode;
 		}
 	};
 	

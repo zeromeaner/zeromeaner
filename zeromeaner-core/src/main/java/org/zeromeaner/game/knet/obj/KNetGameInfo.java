@@ -18,7 +18,7 @@ public class KNetGameInfo {
 	private int das;
 	private boolean b2bEnable;
 	private int comboType;
-	private TSpinEnableType tspinEnableType;
+	private TSpinEnableType tspinEnableType = TSpinEnableType.ENABLE;
 	private boolean synchronousPlay;
 	private Field map;
 	private boolean reduceLineSend;

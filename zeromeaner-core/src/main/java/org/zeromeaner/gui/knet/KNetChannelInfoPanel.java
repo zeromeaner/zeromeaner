@@ -27,6 +27,7 @@ import org.funcish.core.impl.AbstractMappicator;
 import org.funcish.core.impl.AbstractPredicate;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.zeromeaner.game.knet.obj.KNetGameInfo;
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.AbstractNetVSMode;
 import org.zeromeaner.game.subsystem.mode.GameMode;
@@ -41,7 +42,7 @@ import org.zeromeaner.util.RuleList;
 public class KNetChannelInfoPanel extends JPanel {
 	private KNetChannelInfo channel;
 	
-	private JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
+	private JTabbedPane tabs = new JTabbedPane(JTabbedPane.LEFT);
 	
 	private JTextField name = new JTextField("");
 	private JSpinner maxPlayers = new JSpinner(new SpinnerNumberModel(2, 1, 6, 1)); {{
@@ -57,7 +58,8 @@ public class KNetChannelInfoPanel extends JPanel {
 				for(String modeName : ModeList.getModes().getIsNetplay(true).filter(vs).names()) {
 					model.addElement(modeName);
 				}
-				mode.setSelectedIndex(0);
+				if(model.getSize() > 0)
+					mode.setSelectedIndex(0);
 			}
 		});
 	}}
@@ -117,7 +119,10 @@ public class KNetChannelInfoPanel extends JPanel {
 	
 	private JCheckBox syncPlay = new JCheckBox();
 	
+	private KNetGameInfoEditor gameEditor = new KNetGameInfoEditor();
+	
 	private RuleEditorPanel ruleEditor = new RuleEditorPanel();
+	
 	
 	public KNetChannelInfoPanel(KNetChannelInfo channel) {
 		this.channel = channel;
@@ -136,8 +141,12 @@ public class KNetChannelInfoPanel extends JPanel {
 		p.add(new JLabel("Synchronous Play:")); p.add(syncPlay);
 		tabs.addTab("General", p);
 		
+		for(int i = 0; i < gameEditor.getTabCount(); i++) {
+			tabs.addTab("Game: " + gameEditor.getTitleAt(i), new JScrollPane(gameEditor.getComponentAt(i)));
+		}
+		
 		for(int i = 0; i < ruleEditor.getTabPane().getTabCount(); i++) {
-			tabs.addTab(ruleEditor.getTabPane().getTitleAt(i), new JScrollPane(ruleEditor.getTabPane().getComponentAt(i)));
+			tabs.addTab("Rule: " + ruleEditor.getTabPane().getTitleAt(i), new JScrollPane(ruleEditor.getTabPane().getComponentAt(i)));
 		}
 	}
 	
@@ -148,16 +157,23 @@ public class KNetChannelInfoPanel extends JPanel {
 		if(channel.getRule() == null)
 			channel.setRule(new RuleOptions());
 		ruleEditor.writeRuleFromUI(channel.getRule());
+		if(channel.getGame() == null)
+			channel.setGame(new KNetGameInfo());
+		gameEditor.store(channel.getGame());
 		channel.setMode((String) mode.getSelectedItem());
 	}
 	
 	public void updateEditor() {
 		name.setText(channel.getName());
-		maxPlayers.setValue(channel.getMaxPlayers());
+		if(channel.getMaxPlayers() != 0)
+			maxPlayers.setValue(channel.getMaxPlayers());
 		autoStart.setSelected(channel.isAutoStart());
 		if(channel.getRule() == null)
 			channel.setRule(new RuleOptions());
 		ruleEditor.readRuleToUI(channel.getRule());
+		if(channel.getGame() == null)
+			channel.setGame(new KNetGameInfo());
+		gameEditor.load(channel.getGame());
 		mode.setSelectedItem(channel.getMode());
 	}
 }

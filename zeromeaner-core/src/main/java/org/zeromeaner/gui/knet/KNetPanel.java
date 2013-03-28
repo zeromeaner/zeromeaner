@@ -21,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -151,7 +152,8 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			} catch(Exception ex) {
 				client.stop();
 				client = null;
-				throw new RuntimeException(ex);
+				JOptionPane.showMessageDialog(KNetPanel.this, ex.toString());
+				return;
 			}
 			cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
 			fireKnetPanelConnected();
