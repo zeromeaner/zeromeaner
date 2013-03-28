@@ -361,6 +361,8 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 
 		@Override
 		public void channelChat(KNetChannelEvent e) {
+			if(e.getChannel().getId() != getChannel().getId())
+				return;
 			if(EQInvoker.reinvoke(false, this, e))
 				return;
 			String text = history.getText();
