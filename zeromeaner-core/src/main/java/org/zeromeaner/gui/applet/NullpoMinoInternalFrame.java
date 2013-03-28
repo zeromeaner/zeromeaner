@@ -1119,7 +1119,6 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	 * @param modeName Mode name
 	 */
 	public void enterNewMode(String modeName) {
-		Thread.dumpStack();
 		loadGlobalConfig();	// Reload global config file
 
 		GameMode previousMode = gameManager.mode;
