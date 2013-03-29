@@ -184,6 +184,13 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			}
 		});
 		
+		private JButton spectate = new JButton(new AbstractAction("Spectate") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				client.spectateChannel(getVisibleChannel().getChannel().getId());
+			}
+		});
+		
 		private JButton join = new JButton(new AbstractAction("Join Channel") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -211,6 +218,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			JPanel p = new JPanel(new GridLayout(0, 1));
 			p.add(add);
 			p.add(view);
+			p.add(spectate);
 			p.add(join);
 			p.add(leave);
 			p.add(disconnect);
@@ -326,13 +334,17 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 
 		private void update() {
 			membersModel.clear();
-			line.setEnabled(false);
-			line.setText("Join channel to chat");
+			if("Join channel to chat".equals(line.getText())) {
+				line.setEnabled(false);
+				line.setText("Join channel to chat");
+			}
 			for(KNetEventSource s : channel.getMembers()) {
 				membersModel.addElement(s.getName());
-				if(s.equals(client.getSource())) {
-					line.setEnabled(true);
-					line.setText("");
+				if("Join channel to chat".equals(line.getText())) {
+					if(s.equals(client.getSource())) {
+						line.setEnabled(true);
+						line.setText("");
+					}
 				}
 			}
 			revalidate();

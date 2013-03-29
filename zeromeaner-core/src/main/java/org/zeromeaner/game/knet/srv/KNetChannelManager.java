@@ -8,8 +8,11 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.SpecialAction;
+
 import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
+import org.zeromeaner.game.knet.KNetEventArgs;
 import org.zeromeaner.game.knet.KNetEventSource;
 import org.zeromeaner.game.knet.KNetListener;
 import org.zeromeaner.game.knet.obj.KNStartInfo;
@@ -77,7 +80,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 			}
 			info.getMembers().add(e.getSource());
 			KNetPlayerInfo newPlayer = null;
-			if(info.getPlayers().size() < info.getMaxPlayers() && !info.isPlaying()) {
+			if(info.getPlayers().size() < info.getMaxPlayers() && !info.isPlaying() && !e.is(KNetEventArgs.CHANNEL_SPECTATE)) {
 				info.getPlayers().add(e.getSource());
 				newPlayer = new KNetPlayerInfo();
 				newPlayer.setChannel(info);

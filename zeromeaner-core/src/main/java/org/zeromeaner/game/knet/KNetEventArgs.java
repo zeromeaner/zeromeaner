@@ -106,6 +106,9 @@ public enum KNetEventArgs {
 	@Global
 	CHANNEL_JOIN,
 	
+	@Global
+	CHANNEL_SPECTATE,
+	
 	/** Issued when leaving a room */
 	@Global
 	CHANNEL_LEAVE,
