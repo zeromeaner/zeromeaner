@@ -190,6 +190,12 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 			s.living.remove(c.getPlayers().get(e.get(DEAD, Integer.class)));
 			if(s.living.size() == 1) {
 				fireTCP(FINISH, false, FINISH_WINNER, s.living.iterator().next(), CHANNEL_ID, c.getId());
+				c.setPlaying(false);
+				client.fireTCP(CHANNEL_UPDATE, c);
+				if(c.getPlayers().size() >= 2 && c.isAutoStart()) {
+					client.fireTCP(AUTOSTART_BEGIN, 10, CHANNEL_ID, c.getId());
+					states.get(c).requiredAutostartResponses = c.getPlayers().size();
+				}
 			}
 		}
 		if(e.is(GAME_ENDING)) {
