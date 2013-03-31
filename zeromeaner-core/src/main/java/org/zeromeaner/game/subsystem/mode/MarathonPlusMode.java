@@ -863,7 +863,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 			// NET: Send bonus level entered messages
 			if(netIsNetPlay && !netIsWatch) {
 				if(netNumSpectators > 0) {
-					netSendField(engine);
+					netSendField(engine, false);
 					netSendNextAndHold(engine);
 					netSendStats(engine);
 //					netLobby.netPlayerClient.send("game\tbonuslevelenter\n");
@@ -884,7 +884,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 			// NET: Send game restarted messages
 			if(netIsNetPlay && !netIsWatch) {
 				if(netNumSpectators > 0) {
-					netSendField(engine);
+					netSendField(engine, false);
 					netSendNextAndHold(engine);
 					netSendStats(engine);
 //					netLobby.netPlayerClient.send("game\tbonuslevelstart\n");

@@ -716,7 +716,7 @@ public class DigChallengeMode extends AbstractNetMode {
 
 				// NET: Send field and stats
 				if(netIsNetPlay && !netIsWatch && (netNumSpectators > 0)) {
-					netSendField(engine);
+					netSendField(engine, false);
 					netSendStats(engine);
 				}
 

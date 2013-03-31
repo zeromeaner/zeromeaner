@@ -655,7 +655,7 @@ public class ComboRaceMode extends AbstractNetMode {
 
 				// NET: Send field
 				if(netNumSpectators > 0) {
-					netSendField(engine);
+					netSendField(engine, false);
 				}
 			}
 		}

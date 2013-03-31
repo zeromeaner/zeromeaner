@@ -398,9 +398,9 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 	 * NET-VS: Send field to everyone. It won't do anything in practice game.
 	 */
 	@Override
-	protected void netSendField(GameEngine engine) {
+	protected void netSendField(GameEngine engine, boolean udp) {
 		if(!netvsIsPractice && (engine.getPlayerID() == 0) && (!netIsWatch)) {
-			super.netSendField(engine);
+			super.netSendField(engine, udp);
 		}
 	}
 
@@ -961,7 +961,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 
 		// 1P died
 		if((playerID == 0) && (!netvsPlayerDead[playerID]) && (!netvsIsDeadPending) && !netvsIsWatch()) {
-			netSendField(engine);
+			netSendField(engine, false);
 			netSendNextAndHold(engine);
 			netSendStats(engine);
 
@@ -1424,7 +1424,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 				if(seatID == channelInfo().getPlayers().indexOf(knetClient().getSource())) {
 					if(!netvsIsDeadPending) {
 						// Forced death
-						netSendField(owner.engine[0]);
+						netSendField(owner.engine[0], false);
 						netSendNextAndHold(owner.engine[0]);
 						netSendStats(owner.engine[0]);
 						netvsPlayerResultReceived[0] = true;

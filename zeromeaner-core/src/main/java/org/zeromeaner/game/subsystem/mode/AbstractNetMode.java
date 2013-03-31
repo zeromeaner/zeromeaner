@@ -323,7 +323,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 		if((engine.ending == 0) && (engine.statc[0] == 0) && (engine.holdDisable == false) &&
 		   (netIsNetPlay) && (!netIsWatch) && ((netNumSpectators > 0) || (netForceSendMovements)))
 		{
-			netSendField(engine);
+			netSendField(engine, true);
 			netSendStats(engine);
 		}
 		// NET: Send piece movement
@@ -354,7 +354,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	public void pieceLocked(GameEngine engine, int playerID, int lines) {
 		// NET: Send field and stats
 		if((engine.ending == 0) && (netIsNetPlay) && (!netIsWatch) && ((netNumSpectators > 0) || (netForceSendMovements))) {
-			netSendField(engine);
+			netSendField(engine, false);
 			netSendStats(engine);
 			knetClient().fireTCP(GAME, GAME_SYNCHRONOUS, GAME_SYNCHRONOUS_LOCKED, true);
 		}
@@ -367,7 +367,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	public boolean onLineClear(GameEngine engine, int playerID) {
 		// NET: Send field and stats
 		if((engine.statc[0] == 1) && (engine.ending == 0) && (netIsNetPlay) && (!netIsWatch) && ((netNumSpectators > 0) || (netForceSendMovements))) {
-			netSendField(engine);
+			netSendField(engine, false);
 			netSendStats(engine);
 		}
 		return false;
@@ -380,7 +380,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	public boolean onARE(GameEngine engine, int playerID) {
 		// NET: Send field, next, and stats
 		if((engine.statc[0] == 0) && (engine.ending == 0) && (netIsNetPlay) && (!netIsWatch) && ((netNumSpectators > 0) || (netForceSendMovements))) {
-			netSendField(engine);
+			netSendField(engine, true);
 			netSendNextAndHold(engine);
 			netSendStats(engine);
 		}
@@ -395,7 +395,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 		if(engine.statc[2] == 0) {
 			// NET: Send game completed messages
 			if(netIsNetPlay && !netIsWatch && ((netNumSpectators > 0) || (netForceSendMovements))) {
-				netSendField(engine);
+				netSendField(engine, false);
 				netSendNextAndHold(engine);
 				netSendStats(engine);
 				knetClient().fire(GAME, true, GAME_ENDING, true, CHANNEL_ID, channelInfo().getId());
@@ -412,7 +412,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 		if(engine.statc[0] == 0) {
 			// NET: Send game completed messages
 			if(netIsNetPlay && !netIsWatch && ((netNumSpectators > 0) || (netForceSendMovements))) {
-				netSendField(engine);
+				netSendField(engine, false);
 				netSendNextAndHold(engine);
 				netSendStats(engine);
 //				netLobby.netPlayerClient.send("game\texcellent\n");
@@ -433,7 +433,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 				if(engine.statc[0] == 0) {
 					// Send end-of-game messages
 					if((netNumSpectators > 0) || (netForceSendMovements)) {
-						netSendField(engine);
+						netSendField(engine, false);
 						netSendNextAndHold(engine);
 						netSendStats(engine);
 					}
@@ -926,8 +926,11 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	 * NET: Send field to all spectators
 	 * @param engine GameEngine
 	 */
-	protected void netSendField(GameEngine engine) {
-		knetClient().fireUDP(GAME, true, GAME_FIELD, engine.field);
+	protected void netSendField(GameEngine engine, boolean udp) {
+		if(udp)
+			knetClient().fireUDP(GAME, GAME_FIELD, engine.field);
+		else
+			knetClient().fireTCP(GAME, GAME_FIELD, engine.field);
 	}
 
 	/**

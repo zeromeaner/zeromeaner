@@ -43,7 +43,7 @@ public class KNetClient {
 		this.type = type;
 		this.host = host;
 		this.port = port;
-		client = new Client(1024 * 2, 1024 * 256);
+		client = new Client(1024 * 16, 1024 * 256);
 		KNetKryo.configure(client.getKryo());
 		client.addListener(listener);
 	}
