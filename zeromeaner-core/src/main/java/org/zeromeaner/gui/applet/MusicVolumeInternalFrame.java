@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBox;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 
 import org.zeromeaner.util.MusicList;
 
@@ -29,6 +30,7 @@ public class MusicVolumeInternalFrame extends JInternalFrame {
 			sel = Boolean.parseBoolean(CookieAccess.get("bgm.enable"));
 		cb.setSelected(sel);
 		add(cb, BorderLayout.CENTER);
+		add(new JLabel("<html>Music<br>courtesy<br>of<br>10X</html>"), BorderLayout.SOUTH);
 		pack();
 	}
 }
