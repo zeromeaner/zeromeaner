@@ -89,6 +89,7 @@ import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 import org.zeromeaner.util.ModeList;
+import org.zeromeaner.util.MusicList;
 import org.zeromeaner.util.ResourceFileSystemView;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
@@ -453,6 +454,10 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			startReplayGame(programArgs[0]);
 		}
 		AppletMain.instance.desktop.add(this);
+		MusicVolumeInternalFrame mv = new MusicVolumeInternalFrame();
+		AppletMain.instance.desktop.add(mv);
+		mv.setLocation(AppletMain.instance.desktop.getWidth() - mv.getWidth(), 0);
+		mv.setVisible(true);
 	}
 
 	/**

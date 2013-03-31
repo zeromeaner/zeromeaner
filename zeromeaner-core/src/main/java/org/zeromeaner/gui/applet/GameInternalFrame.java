@@ -55,6 +55,7 @@ import javax.swing.event.InternalFrameEvent;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.util.MusicList;
 
 /**
  * Game screen frame
@@ -229,6 +230,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	 * End processing
 	 */
 	public void shutdown() {
+		MusicList.getInstance().stop();
 		if(isNetPlay) {
 			if(NullpoMinoInternalFrame.netLobby != null) {
 				try {
@@ -377,6 +379,8 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 			if(prevInGame != isInGame[i]) {
 				GameKeyApplet.gamekey[i].clear();
+				if(isInGame[i])
+					MusicList.getInstance().play();
 			}
 		}
 
@@ -563,6 +567,8 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 			if(prevInGame != isInGame[0]) {
 				GameKeyApplet.gamekey[0].clear();
+				if(isInGame[0])
+					MusicList.getInstance().play();
 			}
 
 			// Update button inputs

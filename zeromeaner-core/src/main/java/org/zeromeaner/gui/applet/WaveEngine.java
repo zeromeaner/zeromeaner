@@ -31,7 +31,10 @@ package org.zeromeaner.gui.applet;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -45,6 +48,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.apache.log4j.Logger;
+import org.zeromeaner.util.MusicList;
 
 /**
  * Sound engine
@@ -52,13 +56,17 @@ import org.apache.log4j.Logger;
  */
 public class WaveEngine implements LineListener {
 	/** Log */
-	static Logger log = Logger.getLogger(WaveEngine.class);
+	private static Logger log = Logger.getLogger(WaveEngine.class);
 
+	private ExecutorService exec = Executors.newSingleThreadExecutor();
+	
 	/** You can registerWAVE file OfMaximumcount */
 	private int maxClips;
 
 	/** WAVE file  data (Name-> dataBody) */
 	private HashMap<String, Clip> clipMap;
+	
+	private Map<String, URL> clipUrls = new HashMap<String, URL>();
 
 	/** Was registeredWAVE file count */
 	private int counter = 0;
@@ -70,7 +78,7 @@ public class WaveEngine implements LineListener {
 	 * Constructor
 	 */
 	public WaveEngine() {
-		this(128);
+		this(30);
 	}
 
 	/**
@@ -95,15 +103,17 @@ public class WaveEngine implements LineListener {
 	 * @param vol New configuration volume (1.0The default )
 	 */
 	public void setVolume(double vol) {
-		volume = vol;
+		synchronized(WaveEngine.this) {
+			volume = vol;
 
-		Set<String> set = clipMap.keySet();
-		for(String name: set) {
-			try {
-				Clip clip = clipMap.get(name);
-				FloatControl ctrl = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
-				ctrl.setValue((float)Math.log10(volume) * 20);
-			} catch (Exception e) {}
+			Set<String> set = clipMap.keySet();
+			for(String name: set) {
+				try {
+					Clip clip = clipMap.get(name);
+					FloatControl ctrl = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
+					ctrl.setValue((float)Math.log10(volume) * 20);
+				} catch (Exception e) {}
+			}
 		}
 	}
 
@@ -113,7 +123,7 @@ public class WaveEngine implements LineListener {
 	 * @param filename Filename
 	 */
 	public void load(String name, String filename) {
-		load(name, ResourceHolderApplet.getURL(filename));
+		clipUrls.put(name, ResourceHolderApplet.getURL(filename));
 	}
 
 	/**
@@ -121,12 +131,7 @@ public class WaveEngine implements LineListener {
 	 * @param name Registered name
 	 * @param url URL
 	 */
-	public void load(String name, URL url) {
-		if(counter >= maxClips) {
-			log.warn(name + " : No more files can be loaded (Max:" + maxClips + ")");
-			return;
-		}
-
+	private void load(String name, URL url) {
 		try {
 			// Open the audio stream
 			AudioInputStream stream = AudioSystem.getAudioInputStream(url);
@@ -155,10 +160,15 @@ public class WaveEngine implements LineListener {
 			// Submit a clip
 			clipMap.put(name, clip);
 
+			counter++;
+			
 			// Close the stream
 			stream.close();
+			
+			FloatControl ctrl = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
+			ctrl.setValue((float)Math.log10(volume) * 20);
 		} catch (LineUnavailableException e) {
-//			log.warn(name + " : Failed to open line", e);
+			log.warn(name + " : Failed to open line", e);
 		} catch (UnsupportedAudioFileException e) {
 			log.warn(name + " : This is not a wave file", e);
 		} catch (IOException e) {
@@ -170,29 +180,50 @@ public class WaveEngine implements LineListener {
 	 * Playback
 	 * @param name Registered name
 	 */
-	public void play(String name) {
-		Clip clip = clipMap.get(name);
+	public void play(final String name) {
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {
+				synchronized(WaveEngine.this) {
+					Clip clip = clipMap.get(name);
 
-		if(clip != null) {
-			// Stop
-			clip.stop();
-			// Playback position back to the beginning
-			clip.setFramePosition(0);
-			// Playback
-			clip.start();
-		}
+					if(clip == null && clipUrls.containsKey(name)) {
+						load(name, clipUrls.get(name));
+						clip = clipMap.get(name);
+					}
+
+					if(clip != null) {
+						// Stop
+						clip.stop();
+						// Playback position back to the beginning
+						clip.setFramePosition(0);
+						// Playback
+						clip.start();
+					}
+				}
+			}
+		};
+		exec.execute(r);
 	}
 
 	/**
 	 * Stop
 	 * @param name Registered name
 	 */
-	public void stop(String name) {
-		Clip clip = clipMap.get(name);
+	public void stop(final String name) {
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {
+				synchronized(WaveEngine.this) {
+					Clip clip = clipMap.get(name);
 
-		if(clip != null) {
-			clip.stop();
-		}
+					if(clip != null) {
+						clip.stop();
+					}
+				}
+			}
+		};
+		exec.execute(r);
 	}
 
 	/*
@@ -201,9 +232,16 @@ public class WaveEngine implements LineListener {
 	public void update(LineEvent event) {
 		// If you stop playback or to the end
 		if(event.getType() == LineEvent.Type.STOP) {
-			Clip clip = (Clip) event.getSource();
-			clip.stop();
-			clip.setFramePosition(0); // Playback position back to the beginning
+			synchronized(WaveEngine.this) {
+				Clip clip = (Clip) event.getSource();
+				clip.stop();
+				clip.setFramePosition(0); // Playback position back to the beginning
+				if(counter > maxClips) {
+					clip.close();
+					clipMap.values().remove(clip);
+					counter--;
+				}
+			}
 		}
 	}
 }
