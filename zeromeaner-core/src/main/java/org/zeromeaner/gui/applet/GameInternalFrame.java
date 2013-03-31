@@ -224,8 +224,6 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 			thread = new Thread(this, "Game Thread");
 			thread.start();
 		}
-		
-		MusicList.getInstance().play();
 	}
 
 	/**
@@ -381,6 +379,8 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 			if(prevInGame != isInGame[i]) {
 				GameKeyApplet.gamekey[i].clear();
+				if(isInGame[i])
+					MusicList.getInstance().play();
 			}
 		}
 
@@ -567,6 +567,8 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 			if(prevInGame != isInGame[0]) {
 				GameKeyApplet.gamekey[0].clear();
+				if(isInGame[0])
+					MusicList.getInstance().play();
 			}
 
 			// Update button inputs
