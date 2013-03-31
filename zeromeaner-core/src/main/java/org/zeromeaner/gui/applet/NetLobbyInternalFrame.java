@@ -8,13 +8,12 @@ import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 import org.zeromeaner.gui.knet.KNetPanel;
 import org.zeromeaner.gui.knet.KNetPanelAdapter;
 import org.zeromeaner.gui.knet.KNetPanelEvent;
-import org.zeromeaner.gui.knet.KNetPanelListener;
 
 public class NetLobbyInternalFrame extends JInternalFrame {
 	private KNetPanel knetPanel;
 	
 	public NetLobbyInternalFrame() {
-		knetPanel = new KNetPanel();
+		knetPanel = new KNetPanel(AppletMain.userId);
 		
 		setLayout(new BorderLayout());
 		add(knetPanel, BorderLayout.CENTER);
@@ -24,7 +23,7 @@ public class NetLobbyInternalFrame extends JInternalFrame {
 		AppletMain.instance.desktop.add(this);
 		setVisible(true);
 		
-		setLocation(0, 510);
+		setLocation(0, 500);
 	}
 	
 	public void init() {
@@ -32,13 +31,24 @@ public class NetLobbyInternalFrame extends JInternalFrame {
 		knetPanel.addKNetPanelListener(new KNetPanelAdapter() {
 			@Override
 			public void knetPanelJoined(KNetPanelEvent e) {
-				KNetChannelInfo ci = e.getSource().getChannels().get(e.getChannel().getId()).getChannel();
+				KNetChannelInfo ci = e.getSource().getClient().getCurrentChannel();
 				NullpoMinoInternalFrame.gameFrame.strModeToEnter = ci.getMode();
+				// FIXME: busy-waiting is bad mojo
+				while(!NullpoMinoInternalFrame.gameFrame.strModeToEnter.isEmpty())
+					;
 			}
 			@Override
 			public void knetPanelParted(KNetPanelEvent e) {
+				if(e.getChannel().getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
+					return;
 				NullpoMinoInternalFrame.gameFrame.strModeToEnter = null;
 			}
+			
+			@Override
+			public void knetPanelDisconnected(KNetPanelEvent e) {
+				NullpoMinoInternalFrame.gameFrame.strModeToEnter = null;
+			}
+			
 			@Override
 			public void knetPanelShutdown(KNetPanelEvent e) {
 				setVisible(false);

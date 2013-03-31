@@ -38,6 +38,7 @@ import org.apache.log4j.Logger;
 import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
+import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 
@@ -273,6 +274,7 @@ public class GeneralUtil {
 		}
 
 		RuleOptions ruleopt = new RuleOptions();
+		ruleopt.resourceName = filename;
 		ruleopt.readProperty(prop, 0);
 
 		return ruleopt;
@@ -283,13 +285,15 @@ public class GeneralUtil {
 	 * @param filename Classpath of the randomizer
 	 * @return Randomizer (null if something fails)
 	 */
-	public static Randomizer loadRandomizer(String filename) {
+	public static Randomizer loadRandomizer(String filename, GameEngine engine) {
 		Class<?> randomizerClass = null;
 		Randomizer randomizerObject = null;
 
 		try {
 			randomizerClass = Class.forName(filename);
 			randomizerObject = (Randomizer) randomizerClass.newInstance();
+			if(engine != null)
+				randomizerObject.setEngine(engine);
 		} catch (Exception e) {
 			log.warn("Failed to load Randomizer from " + filename, e);
 		}

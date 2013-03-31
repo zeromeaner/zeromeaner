@@ -954,11 +954,11 @@ public class GameEngine {
 		endTime = 0;
 
 		//  event Occurrence
-//		if(owner.mode != null) {
-//			owner.mode.playerInit(this, playerID);
-//			if(owner.replayMode) owner.mode.loadReplay(this, playerID, owner.replayProp);
-//		}
-//		owner.receiver.playerInit(this, playerID);
+		if(owner.mode != null) {
+			owner.mode.playerInit(this, playerID);
+			if(owner.replayMode) owner.mode.loadReplay(this, playerID, owner.replayProp);
+		}
+		owner.receiver.playerInit(this, playerID);
 		
 		eventManager.enginePlayerInit();
 		if(owner.replayMode)

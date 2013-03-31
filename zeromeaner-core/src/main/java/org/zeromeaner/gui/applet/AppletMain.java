@@ -5,44 +5,50 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
+import javax.swing.text.PlainDocument;
+import javax.swing.text.Position;
+import javax.swing.text.Segment;
 
-import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.eviline.Block;
+import org.eviline.Shape;
+import org.eviline.ShapeType;
+import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.gui.knet.KNetPanel;
 
 public class AppletMain extends Applet {
+	
 	public static AppletMain instance;
 
 	public static String userId;
@@ -54,7 +60,36 @@ public class AppletMain extends Applet {
 	public static URL url;
 	
 	public JDesktopPane desktop;
+	
+	public Component notification;
 
+	public AppletMain() {
+	}
+	
+	public void notifyUser(Icon icon, String message, String copyable) {
+		if(notification != null)
+			remove(notification);
+		JPanel p = new JPanel(new BorderLayout());
+		if(icon != null)
+			p.add(new JLabel(icon), BorderLayout.WEST);
+		if(message != null)
+			p.add(new JLabel(message), BorderLayout.CENTER);
+		if(copyable != null) {
+			JTextField c = new JTextField(copyable);
+			c.setEditable(false);
+			p.add(c, BorderLayout.SOUTH);
+		}
+		p.add(new JButton(new AbstractAction("X") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				notifyUser(null, null, null);
+			}
+		}), BorderLayout.EAST);
+		if(icon != null || message != null)
+			add(notification = p, BorderLayout.SOUTH);
+		validate();
+	}
+	
 	@Override
 	public synchronized void init() {
 		if(!EventQueue.isDispatchThread()) {
@@ -80,7 +115,16 @@ public class AppletMain extends Applet {
 			}
 		
 		setLayout(new BorderLayout());
-		desktop = new JDesktopPane();
+		
+		desktop = new JDesktopPane() {
+			@Override
+			protected void addImpl(Component comp, Object constraints, int index) {
+				if(comp instanceof JInternalFrame) {
+					((JInternalFrame) comp).setFrameIcon(null);
+				}
+				super.addImpl(comp, constraints, index);
+			}
+		};
 		desktop.setBackground(Color.decode("0x444488"));
 		desktop.setDoubleBuffered(true);
 		add(desktop, BorderLayout.CENTER);

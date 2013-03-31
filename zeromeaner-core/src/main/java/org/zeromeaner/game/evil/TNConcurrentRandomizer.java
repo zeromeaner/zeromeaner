@@ -5,6 +5,7 @@ import org.eviline.randomizer.ConcurrentRandomizer;
 import org.eviline.randomizer.Randomizer;
 import org.eviline.randomizer.RandomizerFactory;
 import org.eviline.randomizer.RandomizerPresets;
+import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.play.GameEngine;
 
 public class TNConcurrentRandomizer extends TNRandomizer {

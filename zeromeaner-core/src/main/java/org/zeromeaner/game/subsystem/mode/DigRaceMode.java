@@ -375,7 +375,7 @@ public class DigRaceMode extends AbstractNetMode {
 
 					// NET: Signal start of the game
 					if(netIsNetPlay) 
-						knetClient.fireTCP(START_1P, true);
+						knetClient().fireTCP(START_1P, true);
 
 					// Start game
 					return false;
@@ -442,7 +442,7 @@ public class DigRaceMode extends AbstractNetMode {
 
 				// NET: Send field
 				if(netNumSpectators > 0) {
-					netSendField(engine);
+					netSendField(engine, false);
 				}
 			}
 		}
@@ -754,7 +754,7 @@ public class DigRaceMode extends AbstractNetMode {
 		s.setTimerActive(engine.timerActive);
 		s.setMeterColor(engine.meterColor);
 		s.setMeterValue(engine.meterValue);
-		knetClient.fireUDP(GAME_STATS, s);
+		knetClient().fireUDP(GAME_STATS, s);
 	}
 
 	/**
@@ -782,7 +782,7 @@ public class DigRaceMode extends AbstractNetMode {
 		egs.setStatistics(engine.statistics);
 		egs.setGarbageRemaining(GOAL_TABLE[goaltype] - getRemainGarbageLines(engine, goaltype));
 		egs.setGarbageGoal(GOAL_TABLE[goaltype]);
-		knetClient.fireTCP(GAME_END_STATS, egs);
+		knetClient().fireTCP(GAME_END_STATS, egs);
 	}
 	
 	/**
@@ -796,7 +796,7 @@ public class DigRaceMode extends AbstractNetMode {
 		o.setBgmno(bgmno);
 		o.setGoalType(goaltype);
 		o.setPresetNumber(presetNumber);
-		knetClient.fireTCP(GAME_OPTIONS, o);
+		knetClient().fireTCP(GAME_OPTIONS, o);
 	}
 
 	/**

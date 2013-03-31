@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Icon;
 import javax.swing.filechooser.FileSystemView;
 
 import org.zeromeaner.gui.applet.AppletMain;

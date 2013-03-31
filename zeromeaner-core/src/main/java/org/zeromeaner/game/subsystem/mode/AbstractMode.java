@@ -35,6 +35,7 @@ import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.game.subsystem.mode.ModeTypes.ModeType;
 import org.zeromeaner.game.subsystem.mode.menu.AbstractMenuItem;
 import org.zeromeaner.gui.knet.KNetPanel;
 import org.zeromeaner.util.CustomProperties;
@@ -44,7 +45,8 @@ import org.zeromeaner.util.GeneralUtil;
 /**
  * Dummy implementation of game mode. Used as a base of most game modes.
  */
-public abstract class AbstractMode implements GameMode {
+@ModeTypes(ModeType.HIDDEN)
+public class AbstractMode implements GameMode {
 
 	/** Total score */
 	protected static final int STAT_SCORE = 1, STAT_LINES = 2, STAT_TIME = 3,
@@ -122,6 +124,10 @@ public abstract class AbstractMode implements GameMode {
 	}
 
 	public void modeInit(GameManager manager) {
+	}
+	
+	@Override
+	public void engineInit(GameEngine engine, int playerID) {
 	}
 
 	public boolean onARE(GameEngine engine, int playerID) {

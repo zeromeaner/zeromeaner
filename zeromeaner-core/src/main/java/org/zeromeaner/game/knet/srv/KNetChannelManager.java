@@ -2,19 +2,39 @@ package org.zeromeaner.game.knet.srv;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.swing.text.html.HTMLDocument.HTMLReader.SpecialAction;
 
 import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
+import org.zeromeaner.game.knet.KNetEventArgs;
+import org.zeromeaner.game.knet.KNetEventSource;
 import org.zeromeaner.game.knet.KNetListener;
+import org.zeromeaner.game.knet.obj.KNStartInfo;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
 
 
 import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
 public class KNetChannelManager extends KNetClient implements KNetListener {
+	protected class ChannelState {
+		protected KNetChannelInfo channel;
+		protected int requiredAutostartResponses = 0;
+		protected Set<KNetEventSource> living = new HashSet<KNetEventSource>();
+		
+		public ChannelState(KNetChannelInfo channel) {
+			this.channel = channel;
+		}
+	}
+	
 	protected Map<Integer, KNetChannelInfo> channels = new HashMap<Integer, KNetChannelInfo>();
+	protected Map<KNetChannelInfo, ChannelState> states = new HashMap<KNetChannelInfo, ChannelState>();
 	protected AtomicInteger nextChannelId = new AtomicInteger(-1);
 	protected KNetChannelInfo lobby;
 	
@@ -28,6 +48,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 		lobby = new KNetChannelInfo(nextChannelId.incrementAndGet(), "lobby");
 		
 		channels.put(lobby.getId(), lobby);
+		states.put(lobby, new ChannelState(lobby));
 		
 		addKNetListener(this);
 	}
@@ -58,11 +79,27 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				return;
 			}
 			info.getMembers().add(e.getSource());
+			KNetPlayerInfo newPlayer = null;
+			if(info.getPlayers().size() < info.getMaxPlayers() && !info.isPlaying() && !e.is(KNetEventArgs.CHANNEL_SPECTATE)) {
+				info.getPlayers().add(e.getSource());
+				newPlayer = new KNetPlayerInfo();
+				newPlayer.setChannel(info);
+				newPlayer.setPlayer(e.getSource());
+				newPlayer.setTeam(e.getSource().getName() + e.getSource().getId());
+				info.getPlayerInfo().add(newPlayer);
+			}
 			client.reply(e, 
 					CHANNEL_JOIN,
 					CHANNEL_ID, id,
 					PAYLOAD, e.getSource(),
 					CHANNEL_INFO, new KNetChannelInfo[] { info });
+			if(newPlayer != null) {
+				client.fireTCP(PLAYER_ENTER, newPlayer, CHANNEL_ID, info.getId());
+				if(info.getPlayers().size() >= 2 && info.isAutoStart()) {
+					client.fireTCP(AUTOSTART_BEGIN, 10, CHANNEL_ID, info.getId());
+					states.get(info).requiredAutostartResponses = info.getPlayers().size();
+				}
+			}
 		}
 		if(e.is(CHANNEL_CREATE)) {
 			KNetChannelInfo request = (KNetChannelInfo) e.get(CHANNEL_CREATE);
@@ -72,9 +109,9 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 					return;
 				}
 			}
-//			KNetChannelInfo create = new KNetChannelInfo(nextChannelId.incrementAndGet(), request.getName());
 			request.setId(nextChannelId.incrementAndGet());
 			channels.put(request.getId(), request);
+			states.put(request, new ChannelState(request));
 			client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
 		}
 		if(e.is(CHANNEL_DELETE)) {
@@ -84,6 +121,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				client.reply(e, ERROR, "Cannot delete lobby");
 			} else if(info.getMembers().size() == 0) {
 				channels.remove(id);
+				states.remove(info);
 				client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
 			} else
 				client.reply(e, ERROR, "Cannot delete channel with members");
@@ -106,9 +144,15 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 					CHANNEL_ID, id,
 					PAYLOAD, e.getSource(),
 					CHANNEL_INFO, new KNetChannelInfo[] { info });
+			if(info.getId() != KNetChannelInfo.LOBBY_CHANNEL_ID && info.getMembers().size() == 0) {
+				channels.remove(info.getId());
+				states.remove(info);
+				client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
+			}
 		}
 		if(e.is(DISCONNECTED)) {
-			for(KNetChannelInfo info : channels.values()) {
+			boolean deleted = false;
+			for(KNetChannelInfo info : channels.values().toArray(new KNetChannelInfo[channels.size()])) {
 				if(!info.getMembers().contains(e.getSource()))
 					continue;
 				info.depart(e.getSource());
@@ -117,6 +161,50 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 						CHANNEL_ID, info.getId(),
 						PAYLOAD, e.getSource(),
 						CHANNEL_INFO, new KNetChannelInfo[] { info });
+				if(info.getMembers().size() == 0 && info.getId() != KNetChannelInfo.LOBBY_CHANNEL_ID) {
+					channels.remove(info.getId());
+					deleted = true;
+				}
+			}
+			if(deleted)
+				client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
+		}
+		if(e.is(AUTOSTART)) {
+//			client.fireTCP(START, CHANNEL_ID, e.get(CHANNEL_ID));
+			KNetChannelInfo c = channels.get(e.get(CHANNEL_ID));
+			ChannelState s = states.get(c);
+			if(--s.requiredAutostartResponses == 0) {
+				c.setPlaying(true);
+				client.fireTCP(CHANNEL_UPDATE, c);
+				KNStartInfo startInfo = new KNStartInfo();
+				startInfo.setPlayerCount(c.getPlayers().size());
+				startInfo.setSeed(Double.doubleToRawLongBits(Math.random()));
+				client.fireTCP(START, startInfo, CHANNEL_ID, c.getId());
+				s.living.clear();
+				s.living.addAll(c.getPlayers());
+			}
+		}
+		if(e.is(DEAD)) {
+			KNetChannelInfo c = channels.get(e.get(CHANNEL_ID));
+			ChannelState s = states.get(c);
+			s.living.remove(c.getPlayers().get(e.get(DEAD, Integer.class)));
+			if(s.living.size() == 1) {
+				fireTCP(FINISH, false, FINISH_WINNER, s.living.iterator().next(), CHANNEL_ID, c.getId());
+				c.setPlaying(false);
+				client.fireTCP(CHANNEL_UPDATE, c);
+				if(c.getPlayers().size() >= 2 && c.isAutoStart()) {
+					client.fireTCP(AUTOSTART_BEGIN, 10, CHANNEL_ID, c.getId());
+					states.get(c).requiredAutostartResponses = c.getPlayers().size();
+				}
+			}
+		}
+		if(e.is(GAME_ENDING)) {
+			KNetChannelInfo c = channels.get(e.get(CHANNEL_ID));
+			c.setPlaying(false);
+			client.fireTCP(CHANNEL_UPDATE, c);
+			if(c.getPlayers().size() >= 2 && c.isAutoStart()) {
+				client.fireTCP(AUTOSTART_BEGIN, 10, CHANNEL_ID, c.getId());
+				states.get(c).requiredAutostartResponses = c.getPlayers().size();
 			}
 		}
 	}

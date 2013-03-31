@@ -26,7 +26,6 @@ import org.zeromeaner.game.subsystem.mode.ComboRaceMode;
 import org.zeromeaner.game.subsystem.mode.DigChallengeMode;
 import org.zeromeaner.game.subsystem.mode.DigRaceMode;
 import org.zeromeaner.game.subsystem.mode.ExtremeMode;
-import org.zeromeaner.game.subsystem.mode.LineRaceMode;
 import org.zeromeaner.game.subsystem.mode.MarathonMode;
 import org.zeromeaner.game.subsystem.mode.MarathonPlusMode;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
@@ -37,6 +36,9 @@ import com.esotericsoftware.kryo.serializers.FieldSerializer;
 
 public class KNetKryo {
 	public static void configure(Kryo kryo) {
+		kryo.setReferences(true);
+		kryo.setAutoReset(true);
+		
 		kryo.register(KNetEvent.class);
 		kryo.register(KNetEventSource.class);
 		kryo.register(KNetChannelInfo.class);
@@ -44,7 +46,8 @@ public class KNetKryo {
 		fieldSerializer(kryo, KNetGameInfo.class);
 		kryo.register(KNetGameInfo.TSpinEnableType.class);
 		kryo.register(KNetPlayerInfo.class);
-		kryo.register(Field.class, new org.zeromeaner.game.knet.ser.FieldSerializer());
+//		kryo.register(Field.class, new org.zeromeaner.game.knet.ser.FieldSerializer());
+		fieldSerializer(kryo, Field.class);
 		kryo.register(Block[][].class);
 		kryo.register(Block[].class);
 		kryo.register(Block.class, new BlockSerializer());

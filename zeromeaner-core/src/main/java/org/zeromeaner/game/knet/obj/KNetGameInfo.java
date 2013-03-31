@@ -1,12 +1,6 @@
 package org.zeromeaner.game.knet.obj;
 
 import org.zeromeaner.game.component.Field;
-import org.zeromeaner.game.play.GameEngine;
-
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.KryoSerializable;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
 
 public class KNetGameInfo {
 	public static enum TSpinEnableType {
@@ -15,23 +9,23 @@ public class KNetGameInfo {
 		ENABLE_WITH_BONUSES,
 	}
 	
-	private int gravity;
-	private int denominator;
-	private int are;
-	private int areLine;
-	private int lineDelay;
-	private int lockDelay;
-	private int das;
+	private int gravity = 4;
+	private int denominator = 256;
+	private int are = 0;
+	private int areLine = 0;
+	private int lineDelay = 0;
+	private int lockDelay = 30;
+	private int das = 14;
 	private boolean b2bEnable;
 	private int comboType;
-	private TSpinEnableType tspinEnableType;
+	private TSpinEnableType tspinEnableType = TSpinEnableType.ENABLE;
 	private boolean synchronousPlay;
 	private Field map;
 	private boolean reduceLineSend;
 	private boolean useFractionalGarbage;
 	private boolean targettedGarbage;
 	private boolean rensaBlock;
-	private int garbagePercent;
+	private int garbagePercent = 100;
 	private boolean divideChangeRateByPlayers;
 	private boolean garbageChangePerAttack;
 	private int hurryupSeconds;

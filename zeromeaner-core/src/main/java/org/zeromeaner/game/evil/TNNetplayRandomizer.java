@@ -6,12 +6,19 @@ import org.eviline.randomizer.MaliciousRandomizer.MaliciousRandomizerProperties;
 import org.zeromeaner.game.play.GameEngine;
 
 public class TNNetplayRandomizer extends TNConcurrentRandomizer {
+	public TNNetplayRandomizer() {
+	}
+	
+	public TNNetplayRandomizer(GameEngine e) {
+		setEngine(e);
+	}
+	
 	@Override
 	public void setEngine(GameEngine engine) {
 		super.setEngine(engine);
-		MaliciousRandomizerProperties mp = new MaliciousRandomizerProperties(3, .01, true, 45);
+		MaliciousRandomizerProperties mp = new MaliciousRandomizerProperties(1, .01, true, 45);
 		mp.put(RandomizerFactory.CONCURRENT, "true");
-		mp.put(RandomizerFactory.NEXT, "1");
+		mp.put(RandomizerFactory.NEXT, "0");
 		Randomizer r = new RandomizerFactory().newRandomizer(mp);
 		field.setProvider(r);
 	}

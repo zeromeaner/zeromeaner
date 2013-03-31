@@ -34,12 +34,12 @@ import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
@@ -189,6 +189,12 @@ public class RendererApplet extends EventRenderer {
 		}
 	}
 
+	@Override
+	public void startGame(GameEngine engine, int playerID) {
+		super.startGame(engine, playerID);
+		AppletMain.instance.notifyUser(null, null, null);
+	}
+	
 	/*
 	 * Sound effectsPlayback
 	 */
@@ -351,7 +357,15 @@ public class RendererApplet extends EventRenderer {
 		String replayUrl = AppletMain.url + "?../" + AppletMain.userId + "/" + filename;
 		StringSelection ss = new StringSelection(replayUrl);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, ss);
-		JOptionPane.showInternalMessageDialog(AppletMain.instance.desktop, "Replay URL saved to clipboard.  Paste into another app to save.", "Replay URL Copied", JOptionPane.INFORMATION_MESSAGE);
+//		JOptionPane.showInternalMessageDialog(
+//				AppletMain.instance.desktop, 
+//				"Replay URL saved to clipboard.  Paste into another app to save.", 
+//				"Replay URL Copied", 
+//				JOptionPane.INFORMATION_MESSAGE);
+		AppletMain.instance.notifyUser(
+				UIManager.getIcon("OptionPane.informationIcon"), 
+				"Replay URL saved to clipboard.  Paste into another app to save.",
+				replayUrl);
 	}
 
 	/*
@@ -1152,7 +1166,7 @@ public class RendererApplet extends EventRenderer {
 			if(getNextDisplayType() == 2) {
 				if(engine.ruleopt.nextDisplay >= 1) {
 					int x2 = x + 8 + (fldWidth * fldBlkSize) + meterWidth;
-					NormalFontApplet.printFont(x2 + 16, y + 40, NullpoMinoInternalFrame.getUIText("InGame_Next"), COLOR_ORANGE, 0.5f);
+					NormalFontApplet.printFont(x2 + 16, y + 40, NullpoMinoInternalFrame.lz.s("InGame_Next"), COLOR_ORANGE, 0.5f);
 
 					for(int i = 0; i < engine.ruleopt.nextDisplay; i++) {
 						Piece piece = engine.getNextObject(engine.nextPieceCount + i);
@@ -1167,7 +1181,7 @@ public class RendererApplet extends EventRenderer {
 			} else if(getNextDisplayType() == 1) {
 				if(engine.ruleopt.nextDisplay >= 1) {
 					int x2 = x + 8 + (fldWidth * fldBlkSize) + meterWidth;
-					NormalFontApplet.printFont(x2, y + 40, NullpoMinoInternalFrame.getUIText("InGame_Next"), COLOR_ORANGE, 0.5f);
+					NormalFontApplet.printFont(x2, y + 40, NullpoMinoInternalFrame.lz.s("InGame_Next"), COLOR_ORANGE, 0.5f);
 
 					for(int i = 0; i < engine.ruleopt.nextDisplay; i++) {
 						Piece piece = engine.getNextObject(engine.nextPieceCount + i);
@@ -1183,7 +1197,7 @@ public class RendererApplet extends EventRenderer {
 				// NEXT1
 				if(engine.ruleopt.nextDisplay >= 1) {
 					Piece piece = engine.getNextObject(engine.nextPieceCount);
-					NormalFontApplet.printFont(x + 60, y, NullpoMinoInternalFrame.getUIText("InGame_Next"), COLOR_ORANGE, 0.5f);
+					NormalFontApplet.printFont(x + 60, y, NullpoMinoInternalFrame.lz.s("InGame_Next"), COLOR_ORANGE, 0.5f);
 
 					if(piece != null) {
 						//int x2 = x + 4 + ((-1 + (engine.field.getWidth() - piece.getWidth() + 1) / 2) * 16);
@@ -1230,14 +1244,14 @@ public class RendererApplet extends EventRenderer {
 				if(engine.holdDisable == true) tempColor = COLOR_WHITE;
 
 				if(engine.ruleopt.holdLimit < 0) {
-					NormalFontApplet.printFont(x2, y2, NullpoMinoInternalFrame.getUIText("InGame_Hold"), tempColor, 0.5f);
+					NormalFontApplet.printFont(x2, y2, NullpoMinoInternalFrame.lz.s("InGame_Hold"), tempColor, 0.5f);
 				} else {
 					if(!engine.holdDisable) {
 						if((holdRemain > 0) && (holdRemain <= 10)) tempColor = COLOR_YELLOW;
 						if((holdRemain > 0) && (holdRemain <= 5)) tempColor = COLOR_RED;
 					}
 
-					NormalFontApplet.printFont(x2, y2, NullpoMinoInternalFrame.getUIText("InGame_Hold") + "\ne " + holdRemain, tempColor, 0.5f);
+					NormalFontApplet.printFont(x2, y2, NullpoMinoInternalFrame.lz.s("InGame_Hold") + "\ne " + holdRemain, tempColor, 0.5f);
 				}
 
 				if(engine.holdPieceObject != null) {

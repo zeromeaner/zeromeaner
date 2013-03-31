@@ -43,9 +43,9 @@ public class KNetClient {
 		this.type = type;
 		this.host = host;
 		this.port = port;
-		client = new Client();
+		client = new Client(1024 * 16, 1024 * 256);
 		KNetKryo.configure(client.getKryo());
-		client.addListener(new Listener.ThreadedListener(listener));
+		client.addListener(listener);
 	}
 	
 	public KNetClient start() throws IOException, InterruptedException {
@@ -80,11 +80,19 @@ public class KNetClient {
 	}
 	
 	protected void issue(KNetEvent e) {
-		Object[] ll = listenerList.getListenerList();
-		for(int i = ll.length - 2; i >= 0; i -= 2) {
-			if(ll[i] == KNetListener.class) {
-				((KNetListener) ll[i+1]).knetEvented(this, e);
+		try {
+			Object[] ll = listenerList.getListenerList();
+			for(int i = ll.length - 2; i >= 0; i -= 2) {
+				if(ll[i] == KNetListener.class) {
+					((KNetListener) ll[i+1]).knetEvented(this, e);
+				}
 			}
+		} catch(RuntimeException re) {
+			re.printStackTrace();
+			throw re;
+		} catch(Error er) {
+			er.printStackTrace();
+			throw er;
 		}
 	}
 	
@@ -158,5 +166,13 @@ public class KNetClient {
 		e.getArgs().put(UDP, true);
 		issue(e);
 		client.sendUDP(e);
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public int getPort() {
+		return port;
 	}
 }

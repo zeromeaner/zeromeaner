@@ -106,7 +106,7 @@ public class KeyConfigInternalFrame extends JInternalFrame implements ActionList
 	 */
 	public void load(int pl) {
 		this.playerID = pl;
-		setTitle(NullpoMinoInternalFrame.getUIText("Title_KeyConfig") + " (" + (playerID+1) + "P)");
+		setTitle(NullpoMinoInternalFrame.lz.s("Title_KeyConfig") + " (" + (playerID+1) + "P)");
 
 		for(int i = 0; i < GameKeyApplet.MAX_BUTTON; i++) {
 			keyCodes[i] = GameKeyApplet.gamekey[playerID].keymap[i];
@@ -144,10 +144,10 @@ public class KeyConfigInternalFrame extends JInternalFrame implements ActionList
 		this.getContentPane().setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
 
 		// Hint labels
-		JLabel labelHelp1 = new JLabel(NullpoMinoInternalFrame.getUIText("KeyConfig_LabelHelp1"));
+		JLabel labelHelp1 = new JLabel(NullpoMinoInternalFrame.lz.s("KeyConfig_LabelHelp1"));
 		labelHelp1.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(labelHelp1);
-		JLabel labelHelp2 = new JLabel(NullpoMinoInternalFrame.getUIText("KeyConfig_LabelHelp2"));
+		JLabel labelHelp2 = new JLabel(NullpoMinoInternalFrame.lz.s("KeyConfig_LabelHelp2"));
 		labelHelp2.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(labelHelp2);
 
@@ -160,7 +160,7 @@ public class KeyConfigInternalFrame extends JInternalFrame implements ActionList
 		JPanel pKeySetting = new JPanel();
 		pKeySetting.setLayout(new BoxLayout(pKeySetting, BoxLayout.Y_AXIS));
 		pKeySetting.setAlignmentX(LEFT_ALIGNMENT);
-		tabKeySetting.addTab(NullpoMinoInternalFrame.getUIText("KeyConfig_Tab_Ingame"), pKeySetting);
+		tabKeySetting.addTab(NullpoMinoInternalFrame.lz.s("KeyConfig_Tab_Ingame"), pKeySetting);
 
 		txtfldGameKeys = new JTextField[GameKeyApplet.MAX_BUTTON];
 		for(int i = 0; i < GameKeyApplet.MAX_BUTTON; i++) {
@@ -168,7 +168,7 @@ public class KeyConfigInternalFrame extends JInternalFrame implements ActionList
 			pKeySetting.add(psKeyTemp);
 			psKeyTemp.setLayout(new BorderLayout());
 
-			psKeyTemp.add(new JLabel(NullpoMinoInternalFrame.getUIText("KeyConfig_LabelKey" + i)), BorderLayout.WEST);
+			psKeyTemp.add(new JLabel(NullpoMinoInternalFrame.lz.s("KeyConfig_LabelKey" + i)), BorderLayout.WEST);
 
 			txtfldGameKeys[i] = new JTextField(20);
 			txtfldGameKeys[i].addKeyListener(keyEventListener);
@@ -181,7 +181,7 @@ public class KeyConfigInternalFrame extends JInternalFrame implements ActionList
 		JPanel pKeySettingNav = new JPanel();
 		pKeySettingNav.setLayout(new BoxLayout(pKeySettingNav, BoxLayout.Y_AXIS));
 		pKeySettingNav.setAlignmentX(LEFT_ALIGNMENT);
-		tabKeySetting.addTab(NullpoMinoInternalFrame.getUIText("KeyConfig_Tab_Menu"), pKeySettingNav);
+		tabKeySetting.addTab(NullpoMinoInternalFrame.lz.s("KeyConfig_Tab_Menu"), pKeySettingNav);
 
 		txtfldGameKeysNav = new JTextField[GameKeyApplet.MAX_BUTTON];
 		for(int i = 0; i < GameKeyApplet.MAX_BUTTON; i++) {
@@ -189,7 +189,7 @@ public class KeyConfigInternalFrame extends JInternalFrame implements ActionList
 			pKeySettingNav.add(psKeyTemp);
 			psKeyTemp.setLayout(new BorderLayout());
 
-			psKeyTemp.add(new JLabel(NullpoMinoInternalFrame.getUIText("KeyConfig_LabelKey" + i)), BorderLayout.WEST);
+			psKeyTemp.add(new JLabel(NullpoMinoInternalFrame.lz.s("KeyConfig_LabelKey" + i)), BorderLayout.WEST);
 
 			txtfldGameKeysNav[i] = new JTextField(20);
 			txtfldGameKeysNav[i].addKeyListener(keyEventListener);
@@ -202,10 +202,10 @@ public class KeyConfigInternalFrame extends JInternalFrame implements ActionList
 		JPanel pKeyReset = new JPanel();
 		pKeyReset.setLayout(new BoxLayout(pKeyReset, BoxLayout.Y_AXIS));
 		pKeyReset.setAlignmentX(LEFT_ALIGNMENT);
-		tabKeySetting.addTab(NullpoMinoInternalFrame.getUIText("KeyConfig_Tab_Reset"), pKeyReset);
+		tabKeySetting.addTab(NullpoMinoInternalFrame.lz.s("KeyConfig_Tab_Reset"), pKeyReset);
 
 		for(int i = 0; i < 3; i++) {
-			JButton btnReset = new JButton(NullpoMinoInternalFrame.getUIText("KeyConfig_Reset" + i));
+			JButton btnReset = new JButton(NullpoMinoInternalFrame.lz.s("KeyConfig_Reset" + i));
 			btnReset.addActionListener(this);
 			btnReset.setActionCommand("KeyConfig_Reset" + i);
 			btnReset.setMaximumSize(new Dimension(Short.MAX_VALUE, 30));
@@ -218,13 +218,13 @@ public class KeyConfigInternalFrame extends JInternalFrame implements ActionList
 		pButtons.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pButtons);
 
-		JButton btnOK = new JButton(NullpoMinoInternalFrame.getUIText("KeyConfig_OK"));
+		JButton btnOK = new JButton(NullpoMinoInternalFrame.lz.s("KeyConfig_OK"));
 		btnOK.addActionListener(this);
 		btnOK.setActionCommand("KeyConfig_OK");
 		btnOK.setMaximumSize(new Dimension(Short.MAX_VALUE, 30));
 		pButtons.add(btnOK);
 
-		JButton btnCancel = new JButton(NullpoMinoInternalFrame.getUIText("KeyConfig_Cancel"));
+		JButton btnCancel = new JButton(NullpoMinoInternalFrame.lz.s("KeyConfig_Cancel"));
 		btnCancel.addActionListener(this);
 		btnCancel.setActionCommand("KeyConfig_Cancel");
 		btnCancel.setMaximumSize(new Dimension(Short.MAX_VALUE, 30));

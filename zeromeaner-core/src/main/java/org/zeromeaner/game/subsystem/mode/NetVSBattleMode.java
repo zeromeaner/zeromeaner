@@ -28,7 +28,6 @@
 */
 package org.zeromeaner.game.subsystem.mode;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Locale;
 
@@ -371,7 +370,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	 * Set new target
 	 */
 	private void setNewTarget() {
-		if((getNumberOfPossibleTargets() >= 1) && (channelInfo != null) && (currentGame().isTargettedGarbage()) &&
+		if((getNumberOfPossibleTargets() >= 1) && (channelInfo() != null) && (currentGame().isTargettedGarbage()) &&
 		   (!netvsIsWatch()) && (!netvsIsPractice))
 		{
 			do {
@@ -459,7 +458,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 
 			int numAliveTeams = netvsGetNumberOfTeamsAlive();
 			int attackNumPlayerIndex = numAliveTeams - 2;
-			if(netvsIsPractice || !channelInfo.getGame().isReduceLineSend()) attackNumPlayerIndex = 0;
+			if(netvsIsPractice || !channelInfo().getGame().isReduceLineSend()) attackNumPlayerIndex = 0;
 			if(attackNumPlayerIndex < 0) attackNumPlayerIndex = 0;
 			if(attackNumPlayerIndex > 4) attackNumPlayerIndex = 4;
 
@@ -620,7 +619,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 				attack.setGarbage(garbage[playerID]);
 				attack.setLastPiece(lastpiece[playerID]);
 				attack.setTargetSeatId(targetSeatID);
-				knetClient.fireTCP(attack);
+				knetClient().fireTCP(GAME, NETVSBATTLE_GAME_ATTACK, attack);
 			}
 		}
 
@@ -740,12 +739,12 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		if((playerID == 0) && (hurryupShowFrames > 0)) hurryupShowFrames--;
 
 		// HURRY UP!
-		if((playerID == 0) && (engine.timerActive) && (channelInfo != null) && (currentGame().getHurryupSeconds() >= 0) &&
+		if((playerID == 0) && (engine.timerActive) && (channelInfo() != null) && (currentGame().getHurryupSeconds() >= 0) &&
 		   (netvsPlayTimer == currentGame().getHurryupSeconds() * 60) && (!hurryupStarted))
 		{
 			if(!netvsIsWatch() && !netvsIsPractice) {
 //				netLobby.netPlayerClient.send("game\thurryup\n");
-				knetClient.fireUDP(HURRY_UP, true);
+				knetClient().fireUDP(HURRY_UP, true);
 				owner.receiver.playSE("hurryup");
 			}
 			hurryupStarted = true;
@@ -787,7 +786,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 
 		// Target
 		if((playerID == 0) && !netvsIsWatch() && (netvsPlayTimerActive) && (engine.gameActive) && (engine.timerActive) &&
-		   (getNumberOfPossibleTargets() >= 1) && (channelInfo != null) && (currentGame().isTargettedGarbage()))
+		   (getNumberOfPossibleTargets() >= 1) && (channelInfo() != null) && (currentGame().isTargettedGarbage()))
 		{
 			targetTimer++;
 
@@ -828,7 +827,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			}
 
 			// Target
-			if((playerID == targetID) && (channelInfo != null) && (currentGame().isTargettedGarbage()) && (netvsNumAlivePlayers >= 3) &&
+			if((playerID == targetID) && (channelInfo() != null) && (currentGame().isTargettedGarbage()) && (netvsNumAlivePlayers >= 3) &&
 			   (netvsIsGameActive) && netvsIsAttackable(playerID) && !netvsIsWatch())
 			{
 				int fontcolor = EventRenderer.COLOR_GREEN;
@@ -852,7 +851,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		}
 
 		// Hurry Up
-		if((channelInfo != null) && (playerID == 0)) {
+		if((currentGame() != null) && (playerID == 0)) {
 			if((currentGame().getHurryupSeconds() >= 0) && (hurryupShowFrames > 0) && (!netvsIsPractice) && (hurryupStarted)) {
 				owner.receiver.drawDirectFont(engine, 0, 256 - 8, 32, "HURRY UP!", (hurryupShowFrames % 2 == 0));
 			}
@@ -1049,7 +1048,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 //			netLobby.netPlayerClient.send("game\tstats\t" + garbage[engine.getPlayerID()] + "\n");
 			StatsInfo stats = new StatsInfo();
 			stats.setGarbage(garbage[engine.getPlayerID()]);
-			knetClient.fireTCP(NETVSBATTLE_GAME_STATS, stats);
+			knetClient().fireTCP(GAME, NETVSBATTLE_GAME_STATS, stats);
 		}
 	}
 
@@ -1086,7 +1085,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		egs.setPlayerAPL(playerAPL[playerID]);
 		egs.setPlayerAPM(playerAPM[playerID]);
 		egs.setStats(engine.statistics);
-		knetClient.fireTCP(GAME_END_STATS, egs);
+		knetClient().fireTCP(GAME_END_STATS, egs);
 	}
 
 	/*
@@ -1096,7 +1095,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	protected void netvsRecvEndGameStats(KNetEvent e) {
 		
 		
-		int seatID = channelInfo.getSeatId(e);
+		int seatID = channelInfo().getSeatId(e);
 		int playerID = netvsGetPlayerIDbySeatID(seatID);
 
 		if((playerID != 0) || (netvsIsWatch())) {
@@ -1126,7 +1125,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		// Dead
 //		if(message[0].equals("dead")) {
 		if(e.is(DEAD)) {
-			int seatID = channelInfo.getPlayers().indexOf(e.getSource());
+			int seatID = channelInfo().getPlayers().indexOf(e.getSource());
 			int playerID = netvsGetPlayerIDbySeatID(seatID);
 			int koUID = -1;
 //			if(message.length > 5) koUID = Integer.parseInt(message[5]);
@@ -1134,7 +1133,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 				koUID = (Integer) e.get(DEAD_KO);
 
 			// Increase KO count
-			if(koUID == knetClient.getSource().getId()) {
+			if(koUID == knetClient().getSource().getId()) {
 				playerKObyYou[playerID] = true;
 				currentKO++;
 			}
@@ -1143,7 +1142,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 //		if(message[0].equals("game")) {
 		if(e.is(GAME)) {
 			int uid = e.getSource().getId();
-			int seatID = channelInfo.getPlayers().indexOf(e.getSource());
+			int seatID = channelInfo().getPlayers().indexOf(e.getSource());
 			int playerID = netvsGetPlayerIDbySeatID(seatID);
 
 			// Attack
@@ -1189,7 +1188,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			}
 			// HurryUp
 			if(e.is(HURRY_UP)) {
-				if(!hurryupStarted && (channelInfo != null) && (currentGame().getHurryupSeconds() > 0)) {
+				if(!hurryupStarted && (channelInfo() != null) && (currentGame().getHurryupSeconds() > 0)) {
 					if(!netvsIsWatch() && !netvsIsPractice && owner.engine[0].timerActive) {
 						owner.receiver.playSE("hurryup");
 					}

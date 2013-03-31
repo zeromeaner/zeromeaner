@@ -1,31 +1,32 @@
 package org.zeromeaner.gui.knet;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.GridLayout;
-import java.awt.dnd.DragSourceMotionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.util.Collections;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
 
-import javax.swing.BorderFactory;
+import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.ListDataListener;
 
+import org.funcish.core.Predicates;
 import org.funcish.core.fn.Mappicator;
 import org.funcish.core.fn.Predicate;
 import org.funcish.core.impl.AbstractMappicator;
@@ -35,17 +36,19 @@ import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 import org.zeromeaner.game.knet.obj.KNetGameInfo;
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.AbstractNetVSMode;
+import org.zeromeaner.game.subsystem.mode.GameMode;
+import org.zeromeaner.gui.tool.RuleEditorPanel;
 import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.LstResourceMap;
 import org.zeromeaner.util.ModeList;
-import org.zeromeaner.util.ResourceInputStream;
-import org.zeromeaner.util.RuleMap;
+import org.zeromeaner.util.RuleList;
+
 
 
 public class KNetChannelInfoPanel extends JPanel {
 	private KNetChannelInfo channel;
 	
-	private JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
+	private JTabbedPane tabs = new JTabbedPane(JTabbedPane.LEFT);
 	
 	private JTextField name = new JTextField("");
 	private JSpinner maxPlayers = new JSpinner(new SpinnerNumberModel(2, 1, 6, 1)); {{
@@ -55,46 +58,48 @@ public class KNetChannelInfoPanel extends JPanel {
 				DefaultComboBoxModel model = (DefaultComboBoxModel) mode.getModel();
 				model.removeAllElements();
 				mode.setModel(model);
-				Predicate<Class<? extends AbstractNetMode>> VS_MODE = new AbstractPredicate<Class<? extends AbstractNetMode>>((Class)AbstractNetMode.class) {
-					@Override
-					public boolean test0(Class<? extends AbstractNetMode> obj, Integer index) {
-						int maxPlayers = (Integer) KNetChannelInfoPanel.this.maxPlayers.getValue();
-						if(maxPlayers == 1)
-							return !AbstractNetVSMode.class.isAssignableFrom(obj);
-						else
-							return AbstractNetVSMode.class.isAssignableFrom(obj);
-					}
-				};
-				for(String modeName : ModeList.getModes().accept(AbstractNetMode.class).filter(VS_MODE).map(ModeList.MODE_NAME)) {
+				Predicate<GameMode> vs = ModeList.IS_VSMODE;
+				if(1 == (Integer)KNetChannelInfoPanel.this.maxPlayers.getValue())
+					vs = Predicates.not(vs);
+				for(String modeName : ModeList.getModes().getIsNetplay(true).filter(vs).names()) {
 					model.addElement(modeName);
 				}
-				mode.setSelectedIndex(0);
+				if(model.getSize() > 0)
+					mode.setSelectedIndex(0);
 			}
 		});
 	}}
 	private JCheckBox autoStart = new JCheckBox();
 	
+	private JCheckBox ruleLock = new JCheckBox();
+	
 	private JComboBox rule = new JComboBox();
 	{{
 		DefaultComboBoxModel model = new DefaultComboBoxModel();
 		rule.setModel(model);
+		rule.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String ruleName = (String) rule.getSelectedItem();
+				RuleOptions ropt;
+				if(ruleName == null)
+					ropt = new RuleOptions();
+				else
+					ropt = RuleList.getRules().getNamed(ruleName);
+				if(ruleEditor != null)
+					ruleEditor.readRuleToUI(ropt);
+			}
+		});
 	}}
 
 	private JComboBox mode = new JComboBox();
 	{{
 		DefaultComboBoxModel model = new DefaultComboBoxModel();
 		mode.setModel(model);
-		Predicate<Class<? extends AbstractNetMode>> VS_MODE = new AbstractPredicate<Class<? extends AbstractNetMode>>((Class) Class.class) {
-			@Override
-			public boolean test0(Class<? extends AbstractNetMode> obj, Integer index) {
-				int maxPlayers = (Integer) KNetChannelInfoPanel.this.maxPlayers.getValue();
-				if(maxPlayers == 1)
-					return !AbstractNetVSMode.class.isAssignableFrom(obj);
-				else
-					return AbstractNetVSMode.class.isAssignableFrom(obj);
-			}
-		};
-		for(String modeName : ModeList.getModes().accept(AbstractNetMode.class).filter(VS_MODE).map(ModeList.MODE_NAME)) {
+		Predicate<GameMode> vs = ModeList.IS_VSMODE;
+		if(1 == (Integer)KNetChannelInfoPanel.this.maxPlayers.getValue())
+			vs = Predicates.not(vs);
+		for(String modeName : ModeList.getModes().getIsNetplay(true).filter(vs).map(ModeList.MODE_NAME)) {
 			model.addElement(modeName);
 		}
 		mode.addActionListener(new ActionListener() {
@@ -108,23 +113,25 @@ public class KNetChannelInfoPanel extends JPanel {
 				
 				LstResourceMap recdRules = new LstResourceMap("config/list/recommended_rules.lst");
 				List<String> ruleResources = recdRules.get(mode.getSelectedItem());
-				if(ruleResources == null)
-					return;
-				Mappicator<String, String> RULE_NAME = new AbstractMappicator<String, String>(String.class, String.class) {
-					@Override
-					public String map0(String obj, Integer index) {
-						return GeneralUtil.loadRule(obj).strRuleName;
-					}
-				};
-				for(String ruleName : RULE_NAME.map(ruleResources)) {
+				if(ruleResources == null || ruleResources.size() == 0) {
+					ruleResources = Arrays.asList("config/rule/Standard.rul");
+				}
+				RuleList rules = RuleList.FROM_RESOURCE.map(ruleResources, new RuleList());
+				for(String ruleName : rules.getNames()) {
 					ruleModel.addElement(ruleName);
 				}
 			}
 		});
-		mode.setSelectedIndex(0);
+		int i = model.getIndexOf("NET-VS-BATTLE");
+		if(i < 0)
+			i = 0;
+		mode.setSelectedIndex(i);
 	}}
 	
-	private JCheckBox syncPlay = new JCheckBox();
+	private KNetGameInfoEditor gameEditor = new KNetGameInfoEditor();
+	
+	private RuleEditorPanel ruleEditor = new RuleEditorPanel();
+	
 	
 	public KNetChannelInfoPanel(KNetChannelInfo channel) {
 		this.channel = channel;
@@ -140,18 +147,80 @@ public class KNetChannelInfoPanel extends JPanel {
 		p.add(new JLabel("Automatic Start:")); p.add(autoStart);
 		p.add(new JLabel("Game Mode:")); p.add(mode);
 		p.add(new JLabel("Game Mode Rule:")); p.add(rule);
-		p.add(new JLabel("Synchronous Play:")); p.add(syncPlay);
+		p.add(new JLabel("Rule Lock:")); p.add(ruleLock);
 		tabs.addTab("General", p);
 		
+		for(int i = 0; i < gameEditor.getTabCount(); i++) {
+			tabs.addTab("Game: " + gameEditor.getTitleAt(i), new JScrollPane(gameEditor.getComponentAt(i)));
+		}
+		
+		for(int i = 0; i < ruleEditor.getTabPane().getTabCount(); i++) {
+			tabs.addTab("Rule: " + ruleEditor.getTabPane().getTitleAt(i), new JScrollPane(ruleEditor.getTabPane().getComponentAt(i)));
+		}
+	}
+	
+	public void setEditable(boolean editable) {
+		setEditable(this, editable);
+	}
+	
+	protected void setEditable(JComponent c, boolean editable) {
+		if(c != this) {
+			if(c instanceof JComboBox)
+				c.setEnabled(editable);
+			else {
+				try {
+					Method sed = c.getClass().getMethod("setEditable", boolean.class);
+					sed.invoke(c, editable);
+				} catch(NoSuchMethodException nsme) {
+					if(c instanceof AbstractButton)
+						c.setEnabled(editable);
+				} catch(Exception ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+		}
+		
+		for(int i = 0; i < c.getComponentCount(); i++) {
+			Component cc = c.getComponent(i);
+			if(cc instanceof JComponent)
+				setEditable((JComponent) cc, editable);
+		}
 	}
 	
 	public void updateChannel() {
 		channel.setName(name.getText());
+		channel.setMaxPlayers((Integer) maxPlayers.getValue());
+		channel.setAutoStart(autoStart.isSelected());
+		if(channel.getRule() == null)
+			channel.setRule(new RuleOptions());
+		ruleEditor.writeRuleFromUI(channel.getRule());
+		channel.setRuleLock(ruleLock.isSelected());
+		if(channel.getGame() == null)
+			channel.setGame(new KNetGameInfo());
+		gameEditor.store(channel.getGame());
 		channel.setMode((String) mode.getSelectedItem());
 	}
 	
 	public void updateEditor() {
 		name.setText(channel.getName());
-		mode.setSelectedItem(channel.getMode());
+		if(channel.getMaxPlayers() != 0)
+			maxPlayers.setValue(channel.getMaxPlayers());
+		autoStart.setSelected(channel.isAutoStart());
+		if(channel.getRule() == null)
+			channel.setRule(new RuleOptions());
+		ruleEditor.readRuleToUI(channel.getRule());
+		ruleLock.setSelected(channel.isRuleLock());
+		if(channel.getGame() == null)
+			channel.setGame(new KNetGameInfo());
+		gameEditor.load(channel.getGame());
+		mode.setSelectedItem(channel.getMode() == null ? "NET-VS-BATTLE" : channel.getMode());
+	}
+
+	public KNetChannelInfo getChannel() {
+		return channel;
+	}
+
+	public void setChannel(KNetChannelInfo channel) {
+		this.channel = channel;
 	}
 }

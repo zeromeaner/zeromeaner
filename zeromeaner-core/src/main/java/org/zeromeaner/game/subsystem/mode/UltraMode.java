@@ -352,7 +352,7 @@
 //
 //					// NET: Signal start of the game
 //					if(netIsNetPlay)
-//						knetClient.fireTCP(START_1P);
+//						knetClient().fireTCP(START_1P);
 //
 //					return false;
 //				}

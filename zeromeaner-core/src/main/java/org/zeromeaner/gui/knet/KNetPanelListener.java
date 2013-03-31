@@ -2,8 +2,6 @@ package org.zeromeaner.gui.knet;
 
 import java.util.EventListener;
 
-import org.zeromeaner.game.knet.KNetClient;
-
 public interface KNetPanelListener extends EventListener {
 	public void knetPanelInit(KNetPanelEvent e);
 	public void knetPanelConnected(KNetPanelEvent e);

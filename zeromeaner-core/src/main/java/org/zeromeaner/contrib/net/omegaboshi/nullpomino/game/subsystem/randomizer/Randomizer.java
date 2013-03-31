@@ -3,6 +3,7 @@ package org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomiz
 import java.util.Random;
 
 import org.zeromeaner.game.component.Piece;
+import org.zeromeaner.game.play.GameEngine;
 
 
 public abstract class Randomizer {
@@ -16,6 +17,9 @@ public abstract class Randomizer {
 		setState(pieceEnable, seed);
 	}
 
+	public void setEngine(GameEngine e) {
+	}
+	
 	public void init() {}
 
 	public abstract int next();

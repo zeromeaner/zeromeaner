@@ -37,6 +37,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -51,7 +52,9 @@ import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.subsystem.ai.AIPlayer;
+import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.util.ResourceInputStream;
+import org.zeromeaner.util.Zeroflections;
 
 /**
  * AISelection screen frame
@@ -124,14 +127,12 @@ public class AISelectInternalFrame extends JInternalFrame implements ActionListe
 		super();
 		this.owner = owner;
 
-		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(new ResourceInputStream("config/list/ai.lst")));
-			aiPathList = loadAIList(in);
-			aiNameList = loadAINames(aiPathList);
-			in.close();
-		} catch (IOException e) {
-			log.warn("Failed to load AI list", e);
+		List<String> aipaths = new ArrayList<String>();
+		for(Class<? extends AbstractAI> aic : Zeroflections.getAIs()) {
+			aipaths.add(aic.getName());
 		}
+		aiPathList = aipaths.toArray(new String[0]);
+		aiNameList = loadAINames(aiPathList);
 
 		// GUIOfInitialization
 		setDefaultCloseOperation(JInternalFrame.HIDE_ON_CLOSE);
@@ -147,7 +148,7 @@ public class AISelectInternalFrame extends JInternalFrame implements ActionListe
 	public void load(int pl) {
 		this.playerID = pl;
 
-		setTitle(NullpoMinoInternalFrame.getUIText("Title_AISelect") + " (" + (playerID+1) + "P)");
+		setTitle(NullpoMinoInternalFrame.lz.s("Title_AISelect") + " (" + (playerID+1) + "P)");
 
 		currentAI = NullpoMinoInternalFrame.propGlobal.getProperty(playerID + ".ai", "");
 		aiMoveDelay = NullpoMinoInternalFrame.propGlobal.getProperty(playerID + ".aiMoveDelay", 0);
@@ -173,34 +174,6 @@ public class AISelectInternalFrame extends JInternalFrame implements ActionListe
 		chkBoxAIShowHint.setSelected(aiShowHint);
 		chkBoxAIPrethink.setSelected(aiPrethink);
 		chkBoxAIShowState.setSelected(aiShowState);
-	}
-
-	/**
-	 * AIReads the list
-	 * @param bf To read from a text file
-	 * @return AIList
-	 */
-	public String[] loadAIList(BufferedReader bf) {
-		ArrayList<String> aiArrayList = new ArrayList<String>();
-
-		while(true) {
-			String name = null;
-			try {
-				name = bf.readLine();
-			} catch (Exception e) {
-				break;
-			}
-			if(name == null) break;
-			if(name.length() == 0) break;
-
-			if(!name.startsWith("#"))
-				aiArrayList.add(name);
-		}
-
-		String[] aiStringList = new String[aiArrayList.size()];
-		for(int i = 0; i < aiArrayList.size(); i++) aiStringList[i] = aiArrayList.get(i);
-
-		return aiStringList;
 	}
 
 	/**
@@ -252,7 +225,7 @@ public class AISelectInternalFrame extends JInternalFrame implements ActionListe
 		scpaneAI.setPreferredSize(new Dimension(400, 250));
 		panelAIList.add(scpaneAI, BorderLayout.CENTER);
 
-		JButton btnNoUse = new JButton(NullpoMinoInternalFrame.getUIText("AISelect_NoUse"));
+		JButton btnNoUse = new JButton(NullpoMinoInternalFrame.lz.s("AISelect_NoUse"));
 		btnNoUse.setMnemonic('N');
 		btnNoUse.addActionListener(this);
 		btnNoUse.setActionCommand("AISelect_NoUse");
@@ -265,7 +238,7 @@ public class AISelectInternalFrame extends JInternalFrame implements ActionListe
 		panelTxtfldAIMoveDelay.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(panelTxtfldAIMoveDelay);
 
-		panelTxtfldAIMoveDelay.add(new JLabel(NullpoMinoInternalFrame.getUIText("AISelect_LabelAIMoveDelay")), BorderLayout.WEST);
+		panelTxtfldAIMoveDelay.add(new JLabel(NullpoMinoInternalFrame.lz.s("AISelect_LabelAIMoveDelay")), BorderLayout.WEST);
 
 		txtfldAIMoveDelay = new JTextField(20);
 		panelTxtfldAIMoveDelay.add(txtfldAIMoveDelay, BorderLayout.EAST);
@@ -276,28 +249,28 @@ public class AISelectInternalFrame extends JInternalFrame implements ActionListe
 		panelTxtfldAIThinkDelay.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(panelTxtfldAIThinkDelay);
 
-		panelTxtfldAIThinkDelay.add(new JLabel(NullpoMinoInternalFrame.getUIText("AISelect_LabelAIThinkDelay")), BorderLayout.WEST);
+		panelTxtfldAIThinkDelay.add(new JLabel(NullpoMinoInternalFrame.lz.s("AISelect_LabelAIThinkDelay")), BorderLayout.WEST);
 
 		txtfldAIThinkDelay = new JTextField(20);
 		panelTxtfldAIThinkDelay.add(txtfldAIThinkDelay, BorderLayout.EAST);
 
 		// AIThread use check Box
-		chkboxAIUseThread = new JCheckBox(NullpoMinoInternalFrame.getUIText("AISelect_CheckboxAIUseThread"));
+		chkboxAIUseThread = new JCheckBox(NullpoMinoInternalFrame.lz.s("AISelect_CheckboxAIUseThread"));
 		chkboxAIUseThread.setAlignmentX(LEFT_ALIGNMENT);
 		chkboxAIUseThread.setMnemonic('T');
 		this.add(chkboxAIUseThread);
 
-		chkBoxAIShowHint = new JCheckBox(NullpoMinoInternalFrame.getUIText("AISelect_CheckboxAIShowHint"));
+		chkBoxAIShowHint = new JCheckBox(NullpoMinoInternalFrame.lz.s("AISelect_CheckboxAIShowHint"));
 		chkBoxAIShowHint.setAlignmentX(LEFT_ALIGNMENT);
 		chkBoxAIShowHint.setMnemonic('H');
 		this.add(chkBoxAIShowHint);
 
-		chkBoxAIPrethink = new JCheckBox(NullpoMinoInternalFrame.getUIText("AISelect_CheckboxAIPrethink"));
+		chkBoxAIPrethink = new JCheckBox(NullpoMinoInternalFrame.lz.s("AISelect_CheckboxAIPrethink"));
 		chkBoxAIPrethink.setAlignmentX(LEFT_ALIGNMENT);
 		chkBoxAIPrethink.setMnemonic('P');
 		this.add(chkBoxAIPrethink);
 
-		chkBoxAIShowState = new JCheckBox(NullpoMinoInternalFrame.getUIText("AISelect_CheckboxAIShowState"));
+		chkBoxAIShowState = new JCheckBox(NullpoMinoInternalFrame.lz.s("AISelect_CheckboxAIShowState"));
 		chkBoxAIShowState.setAlignmentX(LEFT_ALIGNMENT);
 		chkBoxAIShowState.setMnemonic('S');
 		this.add(chkBoxAIShowState);
@@ -308,7 +281,7 @@ public class AISelectInternalFrame extends JInternalFrame implements ActionListe
 		panelButtons.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(panelButtons);
 
-		JButton btnOK = new JButton(NullpoMinoInternalFrame.getUIText("AISelect_OK"));
+		JButton btnOK = new JButton(NullpoMinoInternalFrame.lz.s("AISelect_OK"));
 		btnOK.setMnemonic('O');
 		btnOK.addActionListener(this);
 		btnOK.setActionCommand("AISelect_OK");
@@ -317,7 +290,7 @@ public class AISelectInternalFrame extends JInternalFrame implements ActionListe
 		panelButtons.add(btnOK);
 		this.getRootPane().setDefaultButton(btnOK);
 
-		JButton btnCancel = new JButton(NullpoMinoInternalFrame.getUIText("AISelect_Cancel"));
+		JButton btnCancel = new JButton(NullpoMinoInternalFrame.lz.s("AISelect_Cancel"));
 		btnCancel.setMnemonic('C');
 		btnCancel.addActionListener(this);
 		btnCancel.setActionCommand("AISelect_Cancel");

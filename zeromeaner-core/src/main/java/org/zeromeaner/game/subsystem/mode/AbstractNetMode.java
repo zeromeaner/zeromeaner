@@ -6,6 +6,7 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
+import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
@@ -22,8 +23,10 @@ import org.zeromeaner.game.knet.obj.PieceMovement;
 import org.zeromeaner.game.knet.obj.Replay;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.game.subsystem.mode.ModeTypes.ModeType;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.gui.knet.KNetPanel;
+import org.zeromeaner.gui.knet.KNetPanelEvent;
 import org.zeromeaner.gui.knet.KNetPanelListener;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
@@ -33,7 +36,8 @@ import static org.zeromeaner.game.knet.KNetEventArgs.*;
 /**
  * Special base class for netplay
  */
-public class AbstractNetMode extends AbstractMode implements KNetListener {
+@ModeTypes(ModeType.HIDDEN)
+public class AbstractNetMode extends AbstractMode implements KNetListener, KNetPanelListener {
 	public static class DefaultStats {
 		private Statistics statistics;
 		private int goalType;
@@ -156,8 +160,20 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	/** Log (Declared in NetDummyMode) */
 	static Logger log = Logger.getLogger(AbstractNetMode.class);
 
+	protected KNetPanel knetPanel;
+	
 	/** NET: Lobby (Declared in NetDummyMode) */
-	protected KNetGameClient knetClient;
+	protected KNetGameClient knetClient() {
+		if(knetPanel == null)
+			return null;
+		return knetPanel.getClient();
+	}
+	
+	protected KNetChannelInfo channelInfo() {
+		if(knetClient() == null)
+			return null;
+		return knetPanel.getClient().getCurrentChannel();
+	}
 
 	/** NET: GameManager (Declared in NetDummyMode; Don't override it!) */
 	protected GameManager owner;
@@ -167,9 +183,6 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 
 	/** NET: true if watch mode (Declared in NetDummyMode) */
 	protected boolean netIsWatch;
-
-	/** NET: Current room info. Sometimes null. (Declared in NetDummyMode) */
-	protected KNetChannelInfo channelInfo;
 
 	/** NET: Number of spectators (Declared in NetDummyMode) */
 	protected int netNumSpectators;
@@ -199,7 +212,11 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	protected boolean netIsPB;
 
 	/** NET-VS: Local player's seat ID (-1:Spectator) */
-	protected int netvsMySeatID;
+	protected int netvsMySeatID() {
+		if(channelInfo() == null)
+			return -1;
+		return channelInfo().getPlayers().indexOf(knetClient().getSource());
+	}
 
 	protected boolean synchronousPlay;
 	
@@ -208,14 +225,16 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	}
 	
 	protected KNetPlayerInfo currentPlayer() {
-		int index = channelInfo.getPlayers().indexOf(knetClient.getSource());
+		int index = channelInfo().getPlayers().indexOf(knetClient().getSource());
 		if(index == -1)
 			return null;
-		return channelInfo.getPlayerInfo().get(index);
+		return channelInfo().getPlayerInfo().get(index);
 	}
 
 	protected KNetGameInfo currentGame() {
-		return channelInfo.getGame();
+		if(channelInfo() == null)
+			return null;
+		return channelInfo().getGame();
 	}
 	
 	/*
@@ -231,10 +250,10 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 */
 	@Override
 	public void netplayInit(KNetPanel obj) {
-		if(obj.getClient() != null)
-			obj.getClient().addKNetListener(this);
-		if(obj.getActiveChannel() != null)
-			channelInfo = obj.getActiveChannel().getChannel();
+		knetPanel = obj;
+		knetPanel.addKNetPanelListener(this);
+		if(knetPanel.getClient() != null)
+			knetPanel.getClient().addKNetListener(this);
 	}
 
 	/**
@@ -242,8 +261,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 */
 	@Override
 	public void netplayUnload(KNetPanel obj) {
-		if(obj.getClient() != null)
-			obj.getClient().removeKNetListener(this);
+		obj.removeKNetPanelListener(this);
 	}
 
 	/**
@@ -258,6 +276,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 		netNumSpectators = 0;
 		netForceSendMovements = false;
 		netPlayerName = "";
+		if(knetClient() != null)
+			netIsNetPlay = true;
 	}
 
 	/**
@@ -303,7 +323,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 		if((engine.ending == 0) && (engine.statc[0] == 0) && (engine.holdDisable == false) &&
 		   (netIsNetPlay) && (!netIsWatch) && ((netNumSpectators > 0) || (netForceSendMovements)))
 		{
-			netSendField(engine);
+			netSendField(engine, true);
 			netSendStats(engine);
 		}
 		// NET: Send piece movement
@@ -334,9 +354,9 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	public void pieceLocked(GameEngine engine, int playerID, int lines) {
 		// NET: Send field and stats
 		if((engine.ending == 0) && (netIsNetPlay) && (!netIsWatch) && ((netNumSpectators > 0) || (netForceSendMovements))) {
-			netSendField(engine);
+			netSendField(engine, false);
 			netSendStats(engine);
-			knetClient.fireTCP(GAME, true, GAME_PIECE_LOCKED, true);
+			knetClient().fireTCP(GAME, GAME_SYNCHRONOUS, GAME_SYNCHRONOUS_LOCKED, true);
 		}
 	}
 
@@ -347,7 +367,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	public boolean onLineClear(GameEngine engine, int playerID) {
 		// NET: Send field and stats
 		if((engine.statc[0] == 1) && (engine.ending == 0) && (netIsNetPlay) && (!netIsWatch) && ((netNumSpectators > 0) || (netForceSendMovements))) {
-			netSendField(engine);
+			netSendField(engine, false);
 			netSendStats(engine);
 		}
 		return false;
@@ -360,7 +380,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	public boolean onARE(GameEngine engine, int playerID) {
 		// NET: Send field, next, and stats
 		if((engine.statc[0] == 0) && (engine.ending == 0) && (netIsNetPlay) && (!netIsWatch) && ((netNumSpectators > 0) || (netForceSendMovements))) {
-			netSendField(engine);
+			netSendField(engine, true);
 			netSendNextAndHold(engine);
 			netSendStats(engine);
 		}
@@ -375,10 +395,10 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 		if(engine.statc[2] == 0) {
 			// NET: Send game completed messages
 			if(netIsNetPlay && !netIsWatch && ((netNumSpectators > 0) || (netForceSendMovements))) {
-				netSendField(engine);
+				netSendField(engine, false);
 				netSendNextAndHold(engine);
 				netSendStats(engine);
-				knetClient.fire(GAME, true, GAME_ENDING, true);
+				knetClient().fire(GAME, true, GAME_ENDING, true, CHANNEL_ID, channelInfo().getId());
 			}
 		}
 		return false;
@@ -392,11 +412,11 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 		if(engine.statc[0] == 0) {
 			// NET: Send game completed messages
 			if(netIsNetPlay && !netIsWatch && ((netNumSpectators > 0) || (netForceSendMovements))) {
-				netSendField(engine);
+				netSendField(engine, false);
 				netSendNextAndHold(engine);
 				netSendStats(engine);
 //				netLobby.netPlayerClient.send("game\texcellent\n");
-				knetClient.fire(GAME, true, GAME_EXCELLENT, true);
+				knetClient().fire(GAME, true, GAME_EXCELLENT, true);
 			}
 		}
 		return false;
@@ -413,15 +433,15 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 				if(engine.statc[0] == 0) {
 					// Send end-of-game messages
 					if((netNumSpectators > 0) || (netForceSendMovements)) {
-						netSendField(engine);
+						netSendField(engine, false);
 						netSendNextAndHold(engine);
 						netSendStats(engine);
 					}
 					netSendEndGameStats(engine);
-					knetClient.fire(DEAD, true);
+					knetClient().fireTCP(DEAD, true, DEAD_PLACE, 0);
 				} else if(engine.statc[0] >= engine.field.getHeight() + 1 + 180) {
 					// To results screen
-					knetClient.fire(GAME, true, GAME_RESULTS_SCREEN, true);
+					knetClient().fireTCP(GAME, true, GAME_RESULTS_SCREEN, true);
 				}
 			} else {
 				if(engine.statc[0] < engine.field.getHeight() + 1 + 180) {
@@ -459,7 +479,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 			if(engine.ctrl.isPush(Controller.BUTTON_A) && !netIsWatch && (netReplaySendStatus == 2)) {
 				engine.playSE("decide");
 				if((netNumSpectators > 0) || (netForceSendMovements)) {
-					knetClient.fire(GAME, true, GAME_RETRY, true);
+					knetClient().fire(GAME, true, GAME_RETRY, true);
 					netSendOptions(engine);
 				}
 				owner.reset();
@@ -485,7 +505,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 		if((engine.ctrl.isMenuRepeatKey(Controller.BUTTON_UP) || engine.ctrl.isMenuRepeatKey(Controller.BUTTON_DOWN)) &&
 			netIsNetPlay && ((netNumSpectators > 0) || (netForceSendMovements)))
 		{
-			knetClient.fire(GAME, true, GAME_CURSOR, engine.statc[2]);
+			knetClient().fire(GAME, true, GAME_CURSOR, engine.statc[2]);
 		}
 
 		return change;
@@ -499,7 +519,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 		if(netIsNetPlay && !netIsWatch) {
 			owner.reset();
 //			netLobby.netPlayerClient.send("reset1p\n");
-			knetClient.fire(RESET_1P, true);
+			knetClient().fire(RESET_1P, true);
 			netSendOptions(engine);
 		}
 	}
@@ -509,6 +529,9 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 */
 	@Override
 	public void knetEvented(KNetClient client, KNetEvent e) {
+		if(knetClient().getSource().equals(e.getSource()))
+			return;
+		
 		if(e.is(DISCONNECTED))
 			netlobbyOnDisconnect(client, e);
 		
@@ -520,7 +543,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 		if(e.is(PLAYER_LOGOUT)) {
 			KNetEventSource pInfo = (KNetEventSource) e.get(PLAYER_LOGOUT);
 
-			if(channelInfo != null && channelInfo.getMembers().contains(pInfo)) {
+			if(channelInfo() != null && channelInfo().getMembers().contains(pInfo)) {
 				netUpdatePlayerExist();
 			}
 		}
@@ -628,7 +651,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 		
 		if(isSynchronousPlay()) {
 			GameEngine eng = owner.engine[0];
-			eng.synchronousIncrement = channelInfo.getPlayers().size();
+			eng.synchronousIncrement = getPlayers() - 1;
 			if(e.is(GAME)) {
 				if(e.is(GAME_SYNCHRONOUS)) {
 					if(e.is(GAME_SYNCHRONOUS_LOCKED)) {
@@ -674,9 +697,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	protected void netOnJoin(KNetClient client, KNetChannelInfo roomInfo) {
 		log.debug("onJoin on NetDummyMode");
 
-		channelInfo = roomInfo;
 		netIsNetPlay = true;
-		netIsWatch = !channelInfo.getPlayers().contains(knetClient.getSource());
+		netIsWatch = !channelInfo().getPlayers().contains(knetClient().getSource());
 		netNumSpectators = 0;
 		netUpdatePlayerExist();
 
@@ -687,11 +709,13 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 
 		if(roomInfo != null) {
 			// Set to locked rule
-			if(channelInfo.isRuleLock()) {
+			if(channelInfo().isRuleLock()) {
 				log.info("Set locked rule");
-				Randomizer randomizer = GeneralUtil.loadRandomizer(channelInfo.getRule().strRandomizer);
-				Wallkick wallkick = GeneralUtil.loadWallkick(channelInfo.getRule().strWallkick);
-				owner.engine[0].ruleopt.copy(channelInfo.getRule());
+				Randomizer randomizer = GeneralUtil.loadRandomizer(channelInfo().getRule().strRandomizer, owner.engine[0]);
+				Wallkick wallkick = GeneralUtil.loadWallkick(channelInfo().getRule().strWallkick);
+				if(owner == null)
+					return;
+				owner.engine[0].ruleopt.copy(channelInfo().getRule());
 				owner.engine[0].randomizer = randomizer;
 				owner.engine[0].wallkick = wallkick;
 				loadRanking(owner.modeConfig, owner.engine[0].ruleopt.strRuleName);
@@ -714,9 +738,9 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 		netNumSpectators = 0;
 		netPlayerName = "";
 
-//		if((channelInfo != null) && (channelInfo.roomID != -1) && (netLobby != null)) {
+//		if((channelInfo != null) && (channelInfo().roomID != -1) && (netLobby != null)) {
 //			for(NetPlayerInfo pInfo: netLobby.updateSameRoomPlayerInfoList()) {
-//				if(pInfo.roomID == channelInfo.roomID) {
+//				if(pInfo.roomID == channelInfo().roomID) {
 //					if(pInfo.seatID == 0) {
 //						netPlayerName = pInfo.strName;
 //					} else if(pInfo.seatID == -1) {
@@ -726,8 +750,10 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 //			}
 //		}
 		
-		netNumSpectators = channelInfo.getMembers().size() - channelInfo.getPlayers().size();
-		netPlayerName = knetClient.getSource().getName();
+		if(channelInfo() != null)
+			netNumSpectators = channelInfo().getMembers().size();
+		if(knetClient() != null)
+			netPlayerName = knetClient().getSource().getName();
 	}
 
 	/**
@@ -809,7 +835,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 			pm.setDirection(netPrevPieceDir);
 			pm.setSkin(engine.getSkin());
 			
-			knetClient.fireUDP(knetClient.event(
+			knetClient().fireUDP(knetClient().event(
 					GAME, true,
 					GAME_PIECE_MOVEMENT, pm));
 			
@@ -837,7 +863,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 			pm.setSkin(engine.getSkin());
 			pm.setBig(engine.nowPieceObject.big);
 			
-			knetClient.fireUDP(knetClient.event(
+			knetClient().fireUDP(knetClient().event(
 					GAME, true,
 					GAME_PIECE_MOVEMENT, pm));
 			
@@ -900,8 +926,11 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 * NET: Send field to all spectators
 	 * @param engine GameEngine
 	 */
-	protected void netSendField(GameEngine engine) {
-		knetClient.fireUDP(GAME, true, GAME_FIELD, true, PAYLOAD, engine.field);
+	protected void netSendField(GameEngine engine, boolean udp) {
+		if(udp)
+			knetClient().fireUDP(GAME, GAME_FIELD, engine.field);
+		else
+			knetClient().fireTCP(GAME, GAME_FIELD, engine.field);
 	}
 
 	/**
@@ -910,7 +939,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 * @param message Message array
 	 */
 	protected void netRecvField(GameEngine engine, KNetEvent e) {
-		engine.field = (Field) e.get(PAYLOAD);
+		engine.field = (Field) e.get(GAME_FIELD);
+//		engine.field.copy(e.get(GAME_FIELD, Field.class));
 	}
 
 	/**
@@ -927,7 +957,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 			next[i] = engine.getNextObject(engine.nextPieceCount + i);
 		}
 
-		knetClient.fireUDP(GAME, true, GAME_HOLD_PIECE, hold, GAME_NEXT_PIECE, next);
+		knetClient().fireUDP(GAME, true, GAME_HOLD_PIECE, hold, GAME_NEXT_PIECE, next);
 	}
 
 	/**
@@ -1011,7 +1041,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 			replay.setStatistics(engine.statistics);
 			replay.setGameType(netGetGoalType());
 			
-			knetClient.fireTCP(REPLAY_DATA, replay);
+			knetClient().fireTCP(REPLAY_DATA, replay);
 			
 		} else {
 			// TODO wtf does this magic constant mean?
@@ -1046,5 +1076,34 @@ public class AbstractNetMode extends AbstractMode implements KNetListener {
 	 */
 	protected boolean netIsNetRankingSendOK(GameEngine engine) {
 		return netIsNetRankingViewOK(engine);
+	}
+
+	@Override
+	public void knetPanelInit(KNetPanelEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void knetPanelConnected(KNetPanelEvent e) {
+	}
+
+	@Override
+	public void knetPanelDisconnected(KNetPanelEvent e) {
+	}
+
+	@Override
+	public void knetPanelJoined(KNetPanelEvent e) {
+		netOnJoin(e.getClient(), e.getChannel());
+	}
+
+	@Override
+	public void knetPanelParted(KNetPanelEvent e) {
+	}
+
+	@Override
+	public void knetPanelShutdown(KNetPanelEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

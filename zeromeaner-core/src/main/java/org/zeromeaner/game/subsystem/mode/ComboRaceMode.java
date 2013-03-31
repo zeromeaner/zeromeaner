@@ -581,7 +581,7 @@ public class ComboRaceMode extends AbstractNetMode {
 					// NET: Signal start of the game
 					if(netIsNetPlay) 
 //						netLobby.netPlayerClient.send("start1p\n");
-						knetClient.fireTCP(START_1P, true);
+						knetClient().fireTCP(START_1P, true);
 
 					return false;
 				}
@@ -655,7 +655,7 @@ public class ComboRaceMode extends AbstractNetMode {
 
 				// NET: Send field
 				if(netNumSpectators > 0) {
-					netSendField(engine);
+					netSendField(engine, false);
 				}
 			}
 		}
@@ -1068,7 +1068,7 @@ public class ComboRaceMode extends AbstractNetMode {
 		stats.setLastCombo(lastcombo);
 		stats.setLastPiece(lastpiece);
 		stats.setCombo(engine.combo);
-		knetClient.fireUDP(GAME, true, GAME_STATS, stats);
+		knetClient().fireUDP(GAME, true, GAME_STATS, stats);
 	}
 
 	/**
@@ -1100,7 +1100,7 @@ public class ComboRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		knetClient.fireTCP(GAME_END_STATS, engine.statistics);
+		knetClient().fireTCP(GAME_END_STATS, engine.statistics);
 	}
 
 	/**
@@ -1119,7 +1119,7 @@ public class ComboRaceMode extends AbstractNetMode {
 		o.setComboWidth(comboWidth);
 		o.setCeilingAdjust(ceilingAdjust);
 		o.setSpawnAboveField(spawnAboveField);
-		knetClient.fireTCP(GAME_OPTIONS, o);
+		knetClient().fireTCP(GAME_OPTIONS, o);
 	}
 
 	/**

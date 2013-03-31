@@ -1,25 +1,15 @@
 package org.zeromeaner.game.evil;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.eviline.randomizer.MaliciousRandomizer.MaliciousRandomizerProperties;
-import org.eviline.randomizer.Randomizer;
-import org.eviline.randomizer.RandomizerFactory;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
+import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
 import org.zeromeaner.game.subsystem.wallkick.StandardWallkick;
-import org.zeromeaner.util.GeneralUtil;
 
 public class TNNetVSBattleMode extends NetVSBattleMode {
 	protected EventRenderer receiver;
@@ -66,24 +56,24 @@ public class TNNetVSBattleMode extends NetVSBattleMode {
 	}
 	
 	@Override
-	public boolean isSynchronousPlay() {
-		return true;
-	}
-	
-	@Override
 	public String getName() {
 		return "NET-EVILINE-VS-BATTLE";
 	}
 
 	@Override
+	public void engineInit(GameEngine e, int playerID) {
+		super.engineInit(e, playerID);
+		
+		e.ruleopt = new TNRuleOptions(e.ruleopt);
+		e.randomizer = new TNNetplayRandomizer(e);
+		randomizers.put(e, (TNNetplayRandomizer) e.randomizer);
+		e.wallkick = new StandardWallkick();
+	}
+	
+	@Override
 	public void playerInit(GameEngine engine, int playerID) {
 		super.playerInit(engine, playerID);
 		receiver = engine.getOwner().receiver;
-		engine.ruleopt = new TNRuleOptions(engine.ruleopt);
-		engine.randomizer = new TNNetplayRandomizer();
-		randomizers.put(engine, (TNNetplayRandomizer) engine.randomizer);
-		((TNRandomizer) engine.randomizer).setEngine(engine);
-		engine.wallkick = new StandardWallkick();
 	}
 	
 	@Override

@@ -30,21 +30,15 @@ package org.zeromeaner.gui.applet;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.HeadlessException;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -61,6 +55,7 @@ import javax.swing.event.InternalFrameEvent;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.util.MusicList;
 
 /**
  * Game screen frame
@@ -160,7 +155,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	public boolean isNetPlay = false;
 
 	/** Mode name to enter (null=Exit) */
-	public String strModeToEnter = "";
+	public volatile String strModeToEnter = "";
 
 	/** Previous ingame flag (Used by title-bar text change) */
 	protected boolean prevInGameFlag = false;
@@ -178,12 +173,11 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		this.owner = owner;
 
 		setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
-		setTitle(NullpoMinoInternalFrame.getUIText("Title_Game"));
+		setTitle(NullpoMinoInternalFrame.lz.s("Title_Game"));
 		setBackground(Color.black);
 		setResizable(false);
 		
 		setDoubleBuffered(true);
-		setIgnoreRepaint(true);
 
 		addInternalFrameListener(new GameFrameWindowEvent());
 		addKeyListener(new GameFrameKeyEvent());
@@ -194,6 +188,8 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		setLayout(new BorderLayout());
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(imageBufferLabel = new JLabel(new ImageIcon(imageBuffer)));
+		imageBufferLabel.setFocusable(true);
+		imageBufferLabel.addKeyListener(new GameFrameKeyEvent());
 		add(panel, BorderLayout.CENTER);
 		panel.setFocusable(true);
 		panel.addKeyListener(new GameFrameKeyEvent());
@@ -234,6 +230,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	 * End processing
 	 */
 	public void shutdown() {
+		MusicList.getInstance().stop();
 		if(isNetPlay) {
 			if(NullpoMinoInternalFrame.netLobby != null) {
 				try {
@@ -382,6 +379,8 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 			if(prevInGame != isInGame[i]) {
 				GameKeyApplet.gamekey[i].clear();
+				if(isInGame[i])
+					MusicList.getInstance().play();
 			}
 		}
 
@@ -568,6 +567,8 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 			if(prevInGame != isInGame[0]) {
 				GameKeyApplet.gamekey[0].clear();
+				if(isInGame[0])
+					MusicList.getInstance().play();
 			}
 
 			// Update button inputs
@@ -704,15 +705,11 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 				public void run() {
 					revalidate();
 					repaint();
+					if(syncDisplay)
+						Toolkit.getDefaultToolkit().sync();
 				}
 			};
-			if(syncDisplay) 
-				try {
-					EventQueue.invokeAndWait(r);
-				} catch(Exception ex) {
-				}
-			else
-				EventQueue.invokeLater(r);
+			EventQueue.invokeLater(r);
 
 			ssflag = false;
 //		} else if((bufferStrategy != null) && !bufferStrategy.contentsLost()) {
@@ -772,15 +769,11 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 					public void run() {
 						revalidate();
 						repaint();
+						if(syncDisplay)
+							Toolkit.getDefaultToolkit().sync();
 					}
 				};
-				if(syncDisplay) 
-					try {
-						EventQueue.invokeAndWait(r);
-					} catch(Exception ex) {
-					}
-				else
-					EventQueue.invokeLater(r);
+				EventQueue.invokeLater(r);
 
 			ssflag = false;
 //		} else if((bufferStrategy != null) && !bufferStrategy.contentsLost()) {

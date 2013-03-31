@@ -22,10 +22,10 @@ public class KNetChannelInfo implements KryoSerializable {
 	private List<KNetPlayerInfo> playerInfo = new ArrayList<KNetPlayerInfo>();
 	private int maxPlayers;
 	private String mode;
-	private boolean ruleLock;
+	private boolean ruleLock = true;
 	private RuleOptions rule;
 	private boolean playing;
-	private boolean autoStart;
+	private boolean autoStart = true;
 	private KNetGameInfo game;
 	
 	public KNetChannelInfo() {}
@@ -131,15 +131,18 @@ public class KNetChannelInfo implements KryoSerializable {
 		id = input.readInt(true);
 		name = input.readString();
 		int msize = input.readInt(true);
+		members.clear();
 		for(int i = 0; i < msize; i++)
 			members.add(kryo.readObject(input, KNetEventSource.class));
 		int psize = input.readInt(true);
+		players.clear();
 		for(int i = 0; i < psize; i++)
 			players.add(kryo.readObject(input, KNetEventSource.class));
 		mode = input.readString();
 		ruleLock = input.readBoolean();
 		rule = kryo.readObjectOrNull(input, RuleOptions.class);
 		int pisize = input.readInt(true);
+		playerInfo.clear();
 		for(int i = 0; i < pisize; i++)
 			playerInfo.add(kryo.readObject(input, KNetPlayerInfo.class));
 		playing = input.readBoolean();

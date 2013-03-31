@@ -352,7 +352,7 @@ public class MarathonMode extends AbstractNetMode {
 
 				// NET: Signal start of the game
 				if(netIsNetPlay) 
-					knetClient.fireTCP(START_1P);
+					knetClient().fireTCP(START_1P);
 
 				return false;
 			}
@@ -911,7 +911,7 @@ public class MarathonMode extends AbstractNetMode {
 		s.setLastB2b(lastb2b);
 		s.setLastCombo(lastcombo);
 		s.setLastPiece(lastpiece);
-		knetClient.fireTCP(GAME_STATS, s);
+		knetClient().fireTCP(GAME_STATS, s);
 	}
 
 	/**
@@ -947,7 +947,7 @@ public class MarathonMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendEndGameStats(GameEngine engine) {
-		knetClient.fireTCP(GAME_END_STATS, engine.statistics);
+		knetClient().fireTCP(GAME_END_STATS, engine.statistics);
 	}
 
 	/**
@@ -966,7 +966,7 @@ public class MarathonMode extends AbstractNetMode {
 		o.setEnableCombo(enableCombo);
 		o.setGoalType(goaltype);
 		o.setBig(big);
-		knetClient.fireTCP(GAME_OPTIONS, o);
+		knetClient().fireTCP(GAME_OPTIONS, o);
 	}
 
 	/**
