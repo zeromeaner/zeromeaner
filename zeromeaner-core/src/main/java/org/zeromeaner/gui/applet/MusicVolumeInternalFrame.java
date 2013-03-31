@@ -21,9 +21,13 @@ public class MusicVolumeInternalFrame extends JInternalFrame {
 					MusicList.getInstance().setVolume(1f);
 				else
 					MusicList.getInstance().setVolume(0f);
+				CookieAccess.put("bgm.enable", "" + cb.isSelected());
 			}
 		});
-		cb.setSelected(true);
+		boolean sel = true;
+		if(CookieAccess.get("bgm.enable") != null)
+			sel = Boolean.parseBoolean(CookieAccess.get("bgm.enable"));
+		cb.setSelected(sel);
 		add(cb, BorderLayout.CENTER);
 		pack();
 	}
