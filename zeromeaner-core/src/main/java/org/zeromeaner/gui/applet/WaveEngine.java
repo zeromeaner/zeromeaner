@@ -70,7 +70,7 @@ public class WaveEngine implements LineListener {
 	 * Constructor
 	 */
 	public WaveEngine() {
-		this(128);
+		this(0);
 	}
 
 	/**

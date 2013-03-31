@@ -89,6 +89,7 @@ import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 import org.zeromeaner.util.ModeList;
+import org.zeromeaner.util.MusicList;
 import org.zeromeaner.util.ResourceFileSystemView;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;

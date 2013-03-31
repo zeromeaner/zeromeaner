@@ -55,6 +55,7 @@ import javax.swing.event.InternalFrameEvent;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.util.MusicList;
 
 /**
  * Game screen frame
@@ -223,12 +224,15 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 			thread = new Thread(this, "Game Thread");
 			thread.start();
 		}
+		
+		MusicList.getInstance().play();
 	}
 
 	/**
 	 * End processing
 	 */
 	public void shutdown() {
+		MusicList.getInstance().stop();
 		if(isNetPlay) {
 			if(NullpoMinoInternalFrame.netLobby != null) {
 				try {

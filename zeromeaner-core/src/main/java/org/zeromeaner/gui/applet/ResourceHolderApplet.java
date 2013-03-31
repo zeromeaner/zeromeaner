@@ -28,15 +28,24 @@
 */
 package org.zeromeaner.gui.applet;
 
+import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
+import org.zeromeaner.util.MusicList;
+import org.zeromeaner.util.Zeroflections;
 
 /**
  * Class to the management of image and sound
@@ -141,6 +150,9 @@ public class ResourceHolderApplet {
 			loadBackgroundImages();
 		}
 
+		// music
+		MusicList.getInstance();
+		
 		// Sound effects
 		soundManager = new WaveEngine();
 		if(NullpoMinoInternalFrame.propConfig.getProperty("option.se", true) == true) {
