@@ -454,6 +454,10 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			startReplayGame(programArgs[0]);
 		}
 		AppletMain.instance.desktop.add(this);
+		MusicVolumeInternalFrame mv = new MusicVolumeInternalFrame();
+		AppletMain.instance.desktop.add(mv);
+		mv.setLocation(AppletMain.instance.desktop.getWidth() - mv.getWidth(), 0);
+		mv.setVisible(true);
 	}
 
 	/**

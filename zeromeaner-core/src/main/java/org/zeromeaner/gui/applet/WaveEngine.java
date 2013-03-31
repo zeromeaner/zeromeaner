@@ -48,6 +48,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.apache.log4j.Logger;
+import org.zeromeaner.util.MusicList;
 
 /**
  * Sound engine
