@@ -1503,7 +1503,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			netUpdatePlayerExist();
 		}
 		// Game messages
-		if(e.is(GAME)) {
+		if(e.is(GAME) && channelInfo().getSeatId(e) != -1) {
 			int seatID = channelInfo().getPlayers().indexOf(e.getSource());
 			int playerID = netvsGetPlayerIDbySeatID(seatID);
 //			int playerID = seatID;
