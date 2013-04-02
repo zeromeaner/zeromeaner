@@ -183,6 +183,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 
 	/** NET: true if watch mode (Declared in NetDummyMode) */
 	protected boolean netIsWatch() {
+		if(!netIsNetPlay)
+			return false;
 		if(knetClient() == null || channelInfo() == null)
 			return true;
 		return !channelInfo().getPlayers().contains(knetClient().getSource());
@@ -258,6 +260,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	 */
 	@Override
 	public void netplayInit(KNetPanel obj) {
+		netIsNetPlay = true;
 		knetPanel = obj;
 		knetPanel.addKNetPanelListener(this);
 		if(knetPanel.getClient() != null)
