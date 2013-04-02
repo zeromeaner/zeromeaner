@@ -380,7 +380,7 @@ public class AppletMain extends Applet {
 		}
 
 	private static class MainCookieAccess extends CookieAccess {
-		private File prefs = new File(System.getProperty("user.home"), ".0minorc");
+		private File prefs = new File(System.getProperty("user.dir"), "0mino.properties");
 
 		@Override
 		protected Map<String, String> get(AppletMain applet) {
