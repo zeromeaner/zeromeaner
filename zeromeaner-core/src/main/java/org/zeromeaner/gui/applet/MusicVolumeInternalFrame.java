@@ -6,9 +6,11 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 
 import javax.swing.AbstractAction;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
@@ -58,7 +60,19 @@ public class MusicVolumeInternalFrame extends JInternalFrame {
 		c.gridy++; add(selection, c);
 		
 		JLabel l;
-		c.gridy++; add(l = new JLabel("<html><center>Music<br>courtesy<br>of<br>10X</center></html>"), c);
+		c.gridy++; add(l = new JLabel("<html><center>Music<br>courtesy<br>of</center></html>"), c);
+		JButton b;
+		c.gridy++; add(b = new JButton(new AbstractAction("10X") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					URL tenfold = new URL("https://soundcloud.com/10x");
+					AppletMain.instance.getAppletContext().showDocument(tenfold, "_blank");
+				} catch(Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		}), c);
 		l.setHorizontalAlignment(JLabel.CENTER);
 		pack();
 	}
