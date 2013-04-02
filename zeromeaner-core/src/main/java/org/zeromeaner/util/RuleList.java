@@ -6,8 +6,8 @@ import java.util.TreeMap;
 
 import org.funcish.core.coll.ArrayFunctionalList;
 import org.funcish.core.coll.FunctionalList;
-import org.funcish.core.fn.Mappicator;
-import org.funcish.core.impl.AbstractMappicator;
+import org.funcish.core.fn.Mapper;
+import org.funcish.core.impl.AbstractMapper;
 import org.zeromeaner.game.component.RuleOptions;
 
 public class RuleList extends ArrayFunctionalList<RuleOptions> {
@@ -21,21 +21,21 @@ public class RuleList extends ArrayFunctionalList<RuleOptions> {
 		return ret;
 	}
 	
-	public static Mappicator<RuleOptions, String> RESOURCE_NAME = new AbstractMappicator<RuleOptions, String>(RuleOptions.class, String.class) {
+	public static Mapper<RuleOptions, String> RESOURCE_NAME = new AbstractMapper<RuleOptions, String>(RuleOptions.class, String.class) {
 		@Override
 		public String map0(RuleOptions key, Integer index) throws Exception {
 			return key.resourceName.replaceAll("^org/zeromeaner/", "");
 		}
 	};
 	
-	public static Mappicator<String, RuleOptions> FROM_RESOURCE = new AbstractMappicator<String, RuleOptions>(String.class, RuleOptions.class) {
+	public static Mapper<String, RuleOptions> FROM_RESOURCE = new AbstractMapper<String, RuleOptions>(String.class, RuleOptions.class) {
 		@Override
 		public RuleOptions map0(String key, Integer index) throws Exception {
 			return GeneralUtil.loadRule(key);
 		}
 	};
 	
-	public static Mappicator<RuleOptions, String> RULE_NAME = new AbstractMappicator<RuleOptions, String>(RuleOptions.class, String.class) {
+	public static Mapper<RuleOptions, String> RULE_NAME = new AbstractMapper<RuleOptions, String>(RuleOptions.class, String.class) {
 		@Override
 		public String map0(RuleOptions key, Integer index) throws Exception {
 			return key.strRuleName;
