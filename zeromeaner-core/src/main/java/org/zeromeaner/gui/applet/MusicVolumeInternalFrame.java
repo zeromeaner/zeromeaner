@@ -62,7 +62,7 @@ public class MusicVolumeInternalFrame extends JInternalFrame {
 		JLabel l;
 		c.gridy++; add(l = new JLabel("<html><center>Music<br>courtesy<br>of</center></html>"), c);
 		JButton b;
-		c.gridy++; add(b = new JButton(new AbstractAction("10X") {
+		c.gridy++; add(b = new JButton(new AbstractAction("Tenfold") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
