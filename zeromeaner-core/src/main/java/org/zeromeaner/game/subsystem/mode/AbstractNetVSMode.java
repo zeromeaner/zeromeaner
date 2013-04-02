@@ -561,7 +561,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 		netvsIsPracticeExitAllowed = false;
 
 		engine.init();
-		engine.stat = GameEngine.STAT_READY;
+		engine.stat = GameEngine.Status.READY;
 		engine.resetStatc();
 		netUpdatePlayerExist();
 		netvsSetGameScreenLayout();
@@ -686,7 +686,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			engine.enableSE = true;
 			engine.isVisible = true;
 
-			if((!netvsIsReadyChangePending) && (netvsNumPlayers() >= 2) && (!netvsIsNewcomer) && (engine.statc[3] >= 5)) {
+			if((!netvsIsReadyChangePending) && (netvsNumPlayers() >= 2) && (!netvsIsNewcomer) && (menuTime >= 5)) {
 				// Ready ON
 				if(engine.ctrl.isPush(Controller.BUTTON_A) && !netvsPlayerReady[0]) {
 					engine.playSE("decide");
@@ -702,7 +702,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			}
 
 			// Practice Mode
-			if(engine.ctrl.isPush(Controller.BUTTON_F) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_F) && (menuTime >= 5)) {
 				engine.playSE("decide");
 				netvsStartPractice(engine);
 				return true;
@@ -712,7 +712,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 		// Random Map Preview
 		if((channelInfo() != null) && channelInfo().getGame().getMap() != null && !knetClient().getMaps().isEmpty()) {
 			if(netvsPlayerExist[playerID]) {
-				if(engine.statc[3] % 30 == 0) {
+				if(menuTime % 30 == 0) {
 					engine.statc[5]++;
 					if(engine.statc[5] >= knetClient().getMaps().size()) engine.statc[5] = 0;
 					engine.createFieldIfNeeded();
@@ -727,7 +727,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			}
 		}
 
-		engine.statc[3]++;
+		menuTime++;
 
 		return true;
 	}
@@ -765,7 +765,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			}
 		}
 
-		if((playerID == 0) && !netvsIsWatch() && (engine.statc[3] >= 5)) {
+		if((playerID == 0) && !netvsIsWatch() && (menuTime >= 5)) {
 			String strTemp = "F(" + owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_F) + " KEY):";
 			if(strTemp.length() > 10) strTemp = strTemp.substring(0, 10);
 			strTemp = strTemp.toUpperCase();
@@ -897,7 +897,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
 			engine.field.reset();
 			engine.gameEnded();
-			engine.stat = GameEngine.STAT_SETTING;
+			engine.stat = GameEngine.Status.SETTING;
 			engine.resetStatc();
 		}
 	}
@@ -953,7 +953,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 				return false;
 			} else {
 				engine.field.reset();
-				engine.stat = GameEngine.STAT_RESULT;
+				engine.stat = GameEngine.Status.RESULT;
 				engine.resetStatc();
 				return true;
 			}
@@ -975,7 +975,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 		// Player/Opponent died
 		if(netvsPlayerDead[playerID]) {
 			if(engine.field == null) {
-				engine.stat = GameEngine.STAT_SETTING;
+				engine.stat = GameEngine.Status.SETTING;
 				engine.resetStatc();
 				return true;
 			}
@@ -1005,7 +1005,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			} else if((netvsNumNowPlayers == 2) || (channelInfo().getMaxPlayers() == 2)) {
 				owner.receiver.drawDirectFont(engine, playerID, x + 52, y + 204, "LOSE", EventRenderer.COLOR_WHITE);
 			} else if(place == 1) {
-				//owner.receiver.drawDirectFont(engine, playerID, x + 12, y + 204, "GAME OVER", EventReceiver.COLOR_WHITE);
+				//owner.receiver.drawDirectFont(engine, playerID, x + 12, y + 204, "GAME OVER", EventRenderer.COLOR_WHITE);
 			} else if(place == 2) {
 				owner.receiver.drawDirectFont(engine, playerID, x + 12, y + 204, "2ND PLACE", EventRenderer.COLOR_WHITE);
 			} else if(place == 3) {
@@ -1023,7 +1023,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			} else if((netvsNumNowPlayers == 2) || (channelInfo().getMaxPlayers() == 2)) {
 				owner.receiver.drawDirectFont(engine, playerID, x + 28, y + 80, "LOSE", EventRenderer.COLOR_WHITE, 0.5f);
 			} else if(place == 1) {
-				//owner.receiver.drawDirectFont(engine, playerID, x + 8, y + 80, "GAME OVER", EventReceiver.COLOR_WHITE, 0.5f);
+				//owner.receiver.drawDirectFont(engine, playerID, x + 8, y + 80, "GAME OVER", EventRenderer.COLOR_WHITE, 0.5f);
 			} else if(place == 2) {
 				owner.receiver.drawDirectFont(engine, playerID, x + 8, y + 80, "2ND PLACE", EventRenderer.COLOR_WHITE, 0.5f);
 			} else if(place == 3) {
@@ -1061,7 +1061,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			if((!netvsIsGameActive) && (netvsPlayerResultReceived[playerID])) {
 				if(engine.field != null) engine.field.reset();
 				engine.resetStatc();
-				engine.stat = GameEngine.STAT_RESULT;
+				engine.stat = GameEngine.Status.RESULT;
 			}
 		} else {
 			engine.statc[0]++;
@@ -1115,7 +1115,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			if(engine.ctrl.isPush(Controller.BUTTON_A)) {
 				engine.playSE("decide");
 				netvsIsPractice = false;
-				engine.stat = GameEngine.STAT_SETTING;
+				engine.stat = GameEngine.Status.SETTING;
 				engine.resetStatc();
 				return true;
 			}
@@ -1206,7 +1206,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 	@Override
 	public void netlobbyOnDisconnect(KNetClient lobby, KNetEvent e) {
 		for(int i = 0; i < getPlayers(); i++) {
-			owner.engine[i].stat = GameEngine.STAT_NOTHING;
+			owner.engine[i].stat = GameEngine.Status.NOTHING;
 		}
 	}
 
@@ -1288,7 +1288,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 					netvsIsNewcomer = true;
 				}
 
-				owner.engine[0].stat = GameEngine.STAT_SETTING;
+				owner.engine[0].stat = GameEngine.Status.SETTING;
 
 				for(int i = 0; i < getPlayers(); i++) {
 					if(owner.engine[i].field != null) {
@@ -1296,8 +1296,8 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 					}
 					owner.engine[i].nowPieceObject = null;
 
-					if((owner.engine[i].stat == GameEngine.STAT_NOTHING) || (!netvsIsGameActive)) {
-						owner.engine[i].stat = GameEngine.STAT_SETTING;
+					if((owner.engine[i].stat == GameEngine.Status.NOTHING) || (!netvsIsGameActive)) {
+						owner.engine[i].stat = GameEngine.Status.SETTING;
 					}
 					owner.engine[i].resetStatc();
 				}
@@ -1369,7 +1369,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 
 				if(netvsPlayerExist[i]) {
 					netvsPlayerActive[i] = true;
-					engine.stat = GameEngine.STAT_READY;
+					engine.stat = GameEngine.Status.READY;
 					engine.randSeed = randseed;
 					engine.random = new Random(randseed);
 
@@ -1390,7 +1390,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 						}
 					}
 				} else if(i < channelInfo().getMaxPlayers()) {
-					engine.stat = GameEngine.STAT_SETTING;
+					engine.stat = GameEngine.Status.SETTING;
 					engine.isVisible = true;
 					engine.isNextVisible = false;
 					engine.isHoldVisible = false;
@@ -1399,7 +1399,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 						engine.isVisible = false;
 					}
 				} else {
-					engine.stat = GameEngine.STAT_SETTING;
+					engine.stat = GameEngine.Status.SETTING;
 					engine.isVisible = false;
 				}
 
@@ -1417,7 +1417,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			if(!netvsPlayerDead[playerID]) {
 				netvsPlayerDead[playerID] = true;
 				netvsPlayerPlace[playerID] = (Integer) e.get(DEAD_PLACE);
-				owner.engine[playerID].stat = GameEngine.STAT_GAMEOVER;
+				owner.engine[playerID].stat = GameEngine.Status.GAMEOVER;
 				owner.engine[playerID].resetStatc();
 				netvsNumAlivePlayers--;
 
@@ -1454,7 +1454,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 				netvsIsPracticeExitAllowed = false;
 				owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
 				owner.engine[0].gameEnded();
-				owner.engine[0].stat = GameEngine.STAT_SETTING;
+				owner.engine[0].stat = GameEngine.Status.SETTING;
 				owner.engine[0].resetStatc();
 			}
 
@@ -1466,7 +1466,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 					if(netvsPlayerExist[i] && !netvsPlayerDead[i]) {
 						netvsPlayerPlace[i] = 1;
 						owner.engine[i].gameEnded();
-						owner.engine[i].stat = GameEngine.STAT_EXCELLENT;
+						owner.engine[i].stat = GameEngine.Status.EXCELLENT;
 						owner.engine[i].resetStatc();
 						owner.engine[i].statistics.time = netvsPlayTimer;
 						netvsNumAlivePlayers--;
@@ -1484,7 +1484,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 					if(netvsPlayerExist[playerID]) {
 						netvsPlayerPlace[playerID] = 1;
 						owner.engine[playerID].gameEnded();
-						owner.engine[playerID].stat = GameEngine.STAT_EXCELLENT;
+						owner.engine[playerID].stat = GameEngine.Status.EXCELLENT;
 						owner.engine[playerID].resetStatc();
 						owner.engine[playerID].statistics.time = netvsPlayTimer;
 						netvsNumAlivePlayers--;
@@ -1533,7 +1533,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 
 				// Force start
 				if((!netvsIsWatch()) && (netvsPlayTimerActive) && (!netvsIsPractice) &&
-						(engine.stat == GameEngine.STAT_READY) && (engine.statc[0] < engine.goEnd))
+						(engine.stat == GameEngine.Status.READY) && (engine.statc[0] < engine.goEnd))
 				{
 					engine.statc[0] = engine.goEnd;
 				}

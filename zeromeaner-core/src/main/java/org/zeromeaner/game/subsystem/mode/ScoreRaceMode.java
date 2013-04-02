@@ -257,7 +257,7 @@ public class ScoreRaceMode extends AbstractNetMode {
 				if(engine.ctrl.isPress(Controller.BUTTON_E)) m = 100;
 				if(engine.ctrl.isPress(Controller.BUTTON_F)) m = 1000;
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					engine.speed.gravity += change * m;
 					if(engine.speed.gravity < -1) engine.speed.gravity = 99999;
@@ -344,10 +344,10 @@ public class ScoreRaceMode extends AbstractNetMode {
 			}
 
 			// Confirm
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				engine.playSE("decide");
 
-				if(engine.statc[2] == 16) {
+				if(menuCursor == 16) {
 					// Load preset
 					loadPreset(engine, owner.modeConfig, presetNumber);
 
@@ -355,7 +355,7 @@ public class ScoreRaceMode extends AbstractNetMode {
 					if(netIsNetPlay && (netNumSpectators > 0)) {
 						netSendOptions(engine);
 					}
-				} else if(engine.statc[2] == 17) {
+				} else if(menuCursor == 17) {
 					// Save preset
 					savePreset(engine, owner.modeConfig, presetNumber);
 					receiver.saveModeConfig(owner.modeConfig);
@@ -378,17 +378,17 @@ public class ScoreRaceMode extends AbstractNetMode {
 				engine.quitflag = true;
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		}
 		// Replay
 		else {
-			engine.statc[3]++;
-			engine.statc[2] = 0;
+			menuTime++;
+			menuCursor = 0;
 
-			if(engine.statc[3] >= 60) {
-				engine.statc[2] = 10;
+			if(menuTime >= 60) {
+				menuCursor = 10;
 			}
-			if(engine.statc[3] >= 120) {
+			if(menuTime >= 120) {
 				return false;
 			}
 		}
@@ -401,7 +401,7 @@ public class ScoreRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		if(engine.statc[2] < 10) {
+		if(menuCursor < 10) {
 			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
 					"GRAVITY", String.valueOf(engine.speed.gravity),
 					"G-MAX", String.valueOf(engine.speed.denominator),
@@ -479,7 +479,7 @@ public class ScoreRaceMode extends AbstractNetMode {
 		receiver.drawScoreFont(engine, playerID, 0, 0, "SCORE RACE", EventRenderer.COLOR_RED);
 		receiver.drawScoreFont(engine, playerID, 0, 1, "(" + GOAL_TABLE[goaltype] + " PTS GAME)", EventRenderer.COLOR_RED);
 
-		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
+		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
 			if(!owner.replayMode && !big && (engine.ai == null) && !netIsWatch) {
 				float scale = (receiver.getNextDisplayType() == 2) ? 0.5f : 1.0f;
 				int topY = (receiver.getNextDisplayType() == 2) ? 6 : 4;
@@ -742,7 +742,7 @@ public class ScoreRaceMode extends AbstractNetMode {
 		if((engine.statistics.score >= GOAL_TABLE[goaltype]) && (engine.timerActive == true)) {
 			engine.gameEnded();
 			engine.resetStatc();
-			engine.stat = GameEngine.STAT_ENDINGSTART;
+			engine.stat = GameEngine.Status.ENDINGSTART;
 		}
 
 		// BGM fadeout
@@ -762,13 +762,13 @@ public class ScoreRaceMode extends AbstractNetMode {
 
 		if(engine.statc[1] == 0) {
 			drawResultStats(engine, playerID, receiver, 2, EventRenderer.COLOR_BLUE,
-					STAT_SCORE, STAT_LINES, STAT_TIME, STAT_PIECE);
+					Statistic.SCORE, Statistic.LINES, Statistic.TIME, Statistic.PIECE);
 			drawResultRank(engine, playerID, receiver, 10, EventRenderer.COLOR_BLUE, rankingRank);
 			drawResultNetRank(engine, playerID, receiver, 12, EventRenderer.COLOR_BLUE, netRankingRank[0]);
 			drawResultNetRankDaily(engine, playerID, receiver, 14, EventRenderer.COLOR_BLUE, netRankingRank[1]);
 		} else if(engine.statc[1] == 1) {
 			drawResultStats(engine, playerID, receiver, 2, EventRenderer.COLOR_BLUE,
-					STAT_SPL, STAT_SPM, STAT_LPM, STAT_PPS);
+					Statistic.SPL, Statistic.SPM, Statistic.LPM, Statistic.PPS);
 		}
 
 		if(netIsPB) {

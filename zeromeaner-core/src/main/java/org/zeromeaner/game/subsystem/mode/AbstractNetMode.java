@@ -286,7 +286,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	 */
 	@Override
 	public void playerInit(GameEngine engine, int playerID) {
-		engine.stat = GameEngine.STAT_NOTHING;
+		engine.stat = GameEngine.Status.NOTHING;
 		engine.isVisible = false;
 	}
 
@@ -392,7 +392,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	 */
 	@Override
 	public boolean onEndingStart(GameEngine engine, int playerID) {
-		if(engine.statc[2] == 0) {
+		if(menuCursor == 0) {
 			// NET: Send game completed messages
 			if(netIsNetPlay && !netIsWatch && ((netNumSpectators > 0) || (netForceSendMovements))) {
 				netSendField(engine, false);
@@ -448,7 +448,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 					return false;
 				} else {
 					engine.field.reset();
-					engine.stat = GameEngine.STAT_RESULT;
+					engine.stat = GameEngine.Status.RESULT;
 					engine.resetStatc();
 					return true;
 				}
@@ -505,7 +505,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 		if((engine.ctrl.isMenuRepeatKey(Controller.BUTTON_UP) || engine.ctrl.isMenuRepeatKey(Controller.BUTTON_DOWN)) &&
 			netIsNetPlay && ((netNumSpectators > 0) || (netForceSendMovements)))
 		{
-			knetClient().fire(GAME, true, GAME_CURSOR, engine.statc[2]);
+			knetClient().fire(GAME, true, GAME_CURSOR, menuCursor);
 		}
 
 		return change;
@@ -553,7 +553,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 
 			if(netIsWatch) {
 				owner.reset();
-				owner.engine[0].stat = GameEngine.STAT_READY;
+				owner.engine[0].stat = GameEngine.Status.READY;
 				owner.engine[0].resetStatc();
 			}
 		}
@@ -564,8 +564,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 			if(netIsWatch) {
 				owner.engine[0].gameEnded();
 
-				if((owner.engine[0].stat != GameEngine.STAT_GAMEOVER) && (owner.engine[0].stat != GameEngine.STAT_RESULT)) {
-					owner.engine[0].stat = GameEngine.STAT_GAMEOVER;
+				if((owner.engine[0].stat != GameEngine.Status.GAMEOVER) && (owner.engine[0].stat != GameEngine.Status.RESULT)) {
+					owner.engine[0].stat = GameEngine.Status.GAMEOVER;
 					owner.engine[0].resetStatc();
 				}
 			}
@@ -595,8 +595,8 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 
 				// Move cursor
 				if(e.is(GAME_CURSOR)) {
-					if(engine.stat == GameEngine.STAT_SETTING) {
-						engine.statc[2] = (Integer) e.get(GAME_CURSOR);
+					if(engine.stat == GameEngine.Status.SETTING) {
+						menuCursor = (Integer) e.get(GAME_CURSOR);
 						engine.playSE("cursor");
 					}
 				}
@@ -624,26 +624,26 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 				if(e.is(GAME_ENDING)) {
 					engine.ending = 1;
 					if(!engine.staffrollEnable) engine.gameEnded();
-					engine.stat = GameEngine.STAT_ENDINGSTART;
+					engine.stat = GameEngine.Status.ENDINGSTART;
 					engine.resetStatc();
 				}
 				// Excellent
 				if(e.is(GAME_EXCELLENT)) {
-					engine.stat = GameEngine.STAT_EXCELLENT;
+					engine.stat = GameEngine.Status.EXCELLENT;
 					engine.resetStatc();
 				}
 				// Retry
 				if(e.is(GAME_RETRY)) {
 					engine.ending = 0;
 					engine.gameEnded();
-					engine.stat = GameEngine.STAT_SETTING;
+					engine.stat = GameEngine.Status.SETTING;
 					engine.resetStatc();
 					engine.playSE("decide");
 				}
 				// Display results screen
 				if(e.is(GAME_RESULTS_SCREEN)) {
 					engine.field.reset();
-					engine.stat = GameEngine.STAT_RESULT;
+					engine.stat = GameEngine.Status.RESULT;
 					engine.resetStatc();
 				}
 			}
@@ -793,7 +793,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 			owner.receiver.drawScoreFont(engine, engine.getPlayerID(), x, y+0, "SPECTATORS", fontcolor);
 			owner.receiver.drawScoreFont(engine, engine.getPlayerID(), x, y+1, "" + netNumSpectators, EventRenderer.COLOR_WHITE);
 
-			if(engine.stat == GameEngine.STAT_SETTING && !netIsWatch && netIsNetRankingViewOK(engine)) {
+			if(engine.stat == GameEngine.Status.SETTING && !netIsWatch && netIsNetRankingViewOK(engine)) {
 				int y2 = y + 2;
 				if(y2 > 24) y2 = 24;
 				String strBtnD = engine.getOwner().receiver.getKeyNameByButtonID(engine, Controller.BUTTON_D);
@@ -907,12 +907,12 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 			engine.nowPieceBottomY =
 				engine.nowPieceObject.getBottom(pieceX, pieceY, engine.field);
 
-			if((engine.stat != GameEngine.STAT_EXCELLENT) && (engine.stat != GameEngine.STAT_GAMEOVER) &&
-			   (engine.stat != GameEngine.STAT_RESULT))
+			if((engine.stat != GameEngine.Status.EXCELLENT) && (engine.stat != GameEngine.Status.GAMEOVER) &&
+			   (engine.stat != GameEngine.Status.RESULT))
 			{
 				engine.gameActive = true;
 				engine.timerActive = true;
-				engine.stat = GameEngine.STAT_MOVE;
+				engine.stat = GameEngine.Status.MOVE;
 				engine.statc[0] = 2;
 			}
 

@@ -297,7 +297,7 @@ public class ComboRaceMode extends AbstractNetMode {
 	};
 	
 
-	/** EventReceiver object (This receives many game events, can also be used for drawing the fonts.) */
+	/** EventRenderer object (This receives many game events, can also be used for drawing the fonts.) */
 
 	/** Elapsed time from last line clear (lastscore is displayed to screen until this reaches to 120) */
 	private int scgettime;
@@ -474,7 +474,7 @@ public class ComboRaceMode extends AbstractNetMode {
 				if(engine.ctrl.isPress(Controller.BUTTON_E)) m = 100;
 				if(engine.ctrl.isPress(Controller.BUTTON_F)) m = 1000;
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					goaltype += change;
 					if(goaltype < 0) goaltype = GOAL_TABLE.length - 1;
@@ -562,15 +562,15 @@ public class ComboRaceMode extends AbstractNetMode {
 			}
 
 			// Confirm
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				engine.playSE("decide");
 
-				if(engine.statc[2] == 14) {
+				if(menuCursor == 14) {
 					loadPreset(engine, owner.modeConfig, presetNumber);
 
 					// NET: Signal options change
 					if(netIsNetPlay && (netNumSpectators > 0)) netSendOptions(engine);
-				} else if(engine.statc[2] == 15) {
+				} else if(menuCursor == 15) {
 					savePreset(engine, owner.modeConfig, presetNumber);
 					receiver.saveModeConfig(owner.modeConfig);
 				} else {
@@ -592,14 +592,14 @@ public class ComboRaceMode extends AbstractNetMode {
 				engine.quitflag = true;
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		}
 		// Replay
 		else {
-			engine.statc[3]++;
-			engine.statc[2] = -1;
+			menuTime++;
+			menuCursor = -1;
 
-			if(engine.statc[3] >= 60) {
+			if(menuTime >= 60) {
 				return false;
 			}
 		}
@@ -612,7 +612,7 @@ public class ComboRaceMode extends AbstractNetMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		if(engine.statc[2] < 6) {
+		if(menuCursor < 6) {
 			String strSpawn = spawnAboveField ? "ABOVE" : "BELOW";
 
 			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
@@ -739,7 +739,7 @@ public class ComboRaceMode extends AbstractNetMode {
 		else
 			receiver.drawScoreFont(engine, playerID, 0, 1, "(" + GOAL_TABLE[goaltype] + " LINES GAME)", EventRenderer.COLOR_WHITE);
 
-		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
+		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
 			if(!owner.replayMode && !big && (engine.ai == null)) {
 				receiver.drawScoreFont(engine, playerID, 3, 3, "COMBO TIME", EventRenderer.COLOR_BLUE);
 
@@ -926,7 +926,7 @@ public class ComboRaceMode extends AbstractNetMode {
 			engine.gameEnded();
 			engine.resetStatc();
 			engine.stat = (engine.statistics.maxCombo > 40) ?
-					GameEngine.STAT_EXCELLENT : GameEngine.STAT_GAMEOVER;
+					GameEngine.Status.EXCELLENT : GameEngine.Status.GAMEOVER;
 		}
 	}
 
@@ -944,9 +944,9 @@ public class ComboRaceMode extends AbstractNetMode {
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
 		drawResultStats(engine, playerID, receiver, 0, EventRenderer.COLOR_CYAN,
-				STAT_MAXCOMBO, STAT_TIME);
+				Statistic.MAXCOMBO, Statistic.TIME);
 		drawResultStats(engine, playerID, receiver, 4, EventRenderer.COLOR_BLUE,
-				STAT_LINES, STAT_PIECE, STAT_LPM, STAT_PPS);
+				Statistic.LINES, Statistic.PIECE, Statistic.LPM, Statistic.PPS);
 		drawResultRank(engine, playerID, receiver, 12, EventRenderer.COLOR_BLUE, rankingRank);
 		drawResultNetRank(engine, playerID, receiver, 14, EventRenderer.COLOR_BLUE, netRankingRank[0]);
 		drawResultNetRankDaily(engine, playerID, receiver, 16, EventRenderer.COLOR_BLUE, netRankingRank[1]);

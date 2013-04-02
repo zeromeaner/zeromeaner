@@ -287,7 +287,7 @@ public class GameManager {
 		if(engine.length < 2) return -1;
 
 		for(int i = 0; i < engine.length; i++) {
-			if(engine[i].stat != GameEngine.STAT_GAMEOVER) {
+			if(engine[i].stat != GameEngine.Status.GAMEOVER) {
 				return i;
 			}
 		}

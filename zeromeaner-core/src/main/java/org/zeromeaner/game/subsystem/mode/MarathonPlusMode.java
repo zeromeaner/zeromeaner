@@ -341,7 +341,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 			if(change != 0) {
 				engine.playSE("change");
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					startlevel += change;
 					if(startlevel < 0) startlevel = 20;
@@ -384,7 +384,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 			}
 
 			// Confirm
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				engine.playSE("decide");
 				saveSetting(owner.modeConfig);
 				receiver.saveModeConfig(owner.modeConfig);
@@ -401,14 +401,14 @@ public class MarathonPlusMode extends AbstractNetMode {
 				engine.quitflag = true;
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		}
 		// Replay
 		else {
-			engine.statc[3]++;
-			engine.statc[2] = -1;
+			menuTime++;
+			menuCursor = -1;
 
-			if(engine.statc[3] >= 60) {
+			if(menuTime >= 60) {
 				return false;
 			}
 		}
@@ -501,7 +501,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 			receiver.drawScoreFont(engine, playerID, 0, 1, "(NORMAL GAME)", EventRenderer.COLOR_GREEN);
 		}
 
-		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
+		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
 			if( (owner.replayMode == false) && (big == false) && ((startlevel == 0) || (startlevel == 20)) && (engine.ai == null) ) {
 				float scale = (receiver.getNextDisplayType() == 2) ? 0.5f : 1.0f;
 				int topY = (receiver.getNextDisplayType() == 2) ? 6 : 4;
@@ -845,7 +845,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 	 */
 	@Override
 	public boolean onEndingStart(GameEngine engine, int playerID) {
-		engine.stat = GameEngine.STAT_CUSTOM;
+		engine.stat = GameEngine.Status.CUSTOM;
 		engine.resetStatc();
 		return true;
 	}
@@ -878,7 +878,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 			}
 		} else if(engine.statc[0] >= 480) {
 			engine.ending = 0;
-			engine.stat = GameEngine.STAT_READY;
+			engine.stat = GameEngine.Status.READY;
 			engine.resetStatc();
 
 			// NET: Send game restarted messages
@@ -932,12 +932,12 @@ public class MarathonPlusMode extends AbstractNetMode {
 		receiver.drawMenuFont(engine, playerID, 0, 0, "kn PAGE" + (engine.statc[1] + 1) + "/2", EventRenderer.COLOR_RED);
 
 		if(engine.statc[1] == 0) {
-			drawResultStats(engine, playerID, receiver, 2, EventRenderer.COLOR_BLUE, STAT_SCORE, STAT_LINES);
+			drawResultStats(engine, playerID, receiver, 2, EventRenderer.COLOR_BLUE, Statistic.SCORE, Statistic.LINES);
 			if(engine.statistics.level >= 20) {
 				drawResult(engine, playerID, receiver, 6, EventRenderer.COLOR_BLUE,
 						"BONUS LINE", String.format("%10d", bonusLines));
 			} else {
-				drawResultStats(engine, playerID, receiver, 6, EventRenderer.COLOR_BLUE, STAT_LEVEL);
+				drawResultStats(engine, playerID, receiver, 6, EventRenderer.COLOR_BLUE, Statistic.LEVEL);
 			}
 			drawResult(engine, playerID, receiver, 8, EventRenderer.COLOR_BLUE,
 					"TOTAL TIME", String.format("%10s", GeneralUtil.getTime(engine.statistics.time)),
@@ -949,7 +949,7 @@ public class MarathonPlusMode extends AbstractNetMode {
 			drawResultNetRankDaily(engine, playerID, receiver, 18, EventRenderer.COLOR_BLUE, netRankingRank[1]);
 		} else {
 			drawResultStats(engine, playerID, receiver, 2, EventRenderer.COLOR_BLUE,
-					STAT_SPL, STAT_SPM, STAT_LPM, STAT_PPS);
+					Statistic.SPL, Statistic.SPM, Statistic.LPM, Statistic.PPS);
 		}
 
 		if(netIsPB) {
@@ -1131,13 +1131,13 @@ public class MarathonPlusMode extends AbstractNetMode {
 				owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
 				engine.timerActive = false;
 				engine.ending = 1;
-				engine.stat = GameEngine.STAT_CUSTOM;
+				engine.stat = GameEngine.Status.CUSTOM;
 				engine.resetStatc();
 			}
 			// Bonus level started
 			else if(e.is(GAME_BONUS_LEVEL_START)) {
 				engine.ending = 0;
-				engine.stat = GameEngine.STAT_READY;
+				engine.stat = GameEngine.Status.READY;
 				engine.resetStatc();
 			}
 		}

@@ -87,7 +87,7 @@ public class RetroManiaMode extends AbstractMode {
 
 	/** GameManager object (Manages entire game status) */
 
-	/** EventReceiver object (This receives many game events, can also be used for drawing the fonts.) */
+	/** EventRenderer object (This receives many game events, can also be used for drawing the fonts.) */
 
 	/** Amount of points you just get from line clears */
 	private int lastscore;
@@ -204,7 +204,7 @@ public class RetroManiaMode extends AbstractMode {
 			if(change != 0) {
 				engine.playSE("change");
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					gametype += change;
 					if(gametype < 0) gametype = GAMETYPE_MAX - 1;
@@ -226,7 +226,7 @@ public class RetroManiaMode extends AbstractMode {
 			}
 
 			// Check for A button, when pressed this will begin the game
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				engine.playSE("decide");
 				saveSetting(owner.modeConfig);
 				receiver.saveModeConfig(owner.modeConfig);
@@ -238,12 +238,12 @@ public class RetroManiaMode extends AbstractMode {
 				engine.quitflag = true;
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		} else {
-			engine.statc[3]++;
-			engine.statc[2] = -1;
+			menuTime++;
+			menuCursor = -1;
 
-			if(engine.statc[3] >= 60) {
+			if(menuTime >= 60) {
 				return false;
 			}
 		}
@@ -298,7 +298,7 @@ public class RetroManiaMode extends AbstractMode {
 		receiver.drawScoreFont(engine, playerID, 0, 0, "RETRO MANIA", EventRenderer.COLOR_GREEN);
 		receiver.drawScoreFont(engine, playerID, 0, 1, "("+GAMETYPE_NAME[gametype]+" SPEED)", EventRenderer.COLOR_GREEN);
 
-		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
+		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
 			// Leaderboard
 			if((owner.replayMode == false) && (big == false) && (startlevel == 0) && (engine.ai == null)) {
 				float scale = (receiver.getNextDisplayType() == 2) ? 0.5f : 1.0f;
@@ -445,7 +445,7 @@ public class RetroManiaMode extends AbstractMode {
 		receiver.drawMenuFont(engine, playerID,  0, 1, "PLAY DATA", EventRenderer.COLOR_ORANGE);
 
 		drawResultStats(engine, playerID, receiver, 3, EventRenderer.COLOR_BLUE,
-				STAT_SCORE, STAT_LINES, STAT_LEVEL, STAT_TIME);
+				Statistic.SCORE, Statistic.LINES, Statistic.LEVEL, Statistic.TIME);
 		drawResultRank(engine, playerID, receiver, 11, EventRenderer.COLOR_BLUE, rankingRank);
 	}
 

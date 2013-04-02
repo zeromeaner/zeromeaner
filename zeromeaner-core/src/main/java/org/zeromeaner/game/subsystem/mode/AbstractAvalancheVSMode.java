@@ -486,9 +486,9 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 		}
 
 		engine.framecolor = PLAYER_COLOR_FRAME[playerID];
-		engine.clearMode = GameEngine.CLEAR_COLOR;
+		engine.clearMode = GameEngine.ClearType.COLOR;
 		engine.garbageColorClear = true;
-		engine.lineGravityType = GameEngine.LINE_GRAVITY_CASCADE;
+		engine.lineGravityType = GameEngine.LineGravity.CASCADE;
 		for(int i = 0; i < Piece.PIECE_COUNT; i++)
 			engine.nextPieceEnable[i] = (PIECE_ENABLE[i] == 1);
 		engine.blockColors = BLOCK_COLORS;
@@ -520,7 +520,7 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 
 	public boolean readyInit(GameEngine engine, int playerID) {
 		engine.numColors = numColors[playerID];
-		engine.lineGravityType = cascadeSlow[playerID] ? GameEngine.LINE_GRAVITY_CASCADE_SLOW : GameEngine.LINE_GRAVITY_CASCADE;
+		engine.lineGravityType = cascadeSlow[playerID] ? GameEngine.LineGravity.CASCADE_SLOW : GameEngine.LineGravity.CASCADE;
 		engine.displaysize = bigDisplay ? 1 : 0;
 		engine.sticky = 2;
 
@@ -742,11 +742,11 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 		if (big[playerID])
 		{
 			if (!engine.field.getBlockEmpty(1, 0))
-				engine.stat = GameEngine.STAT_GAMEOVER;
+				engine.stat = GameEngine.Status.GAMEOVER;
 		}
 		else if (!engine.field.getBlockEmpty(2, 0) ||
 				(dangerColumnDouble[playerID] && !engine.field.getBlockEmpty(3, 0)))
-			engine.stat = GameEngine.STAT_GAMEOVER;
+			engine.stat = GameEngine.Status.GAMEOVER;
 	}
 
 	protected void loadFeverMap(GameEngine engine, int playerID, int chain) {
@@ -780,23 +780,23 @@ public abstract class AbstractAvalancheVSMode extends AbstractMode {
 
 		// Settlement
 		if((playerID == 1) && (owner.engine[0].gameActive)) {
-			boolean p1Lose = (owner.engine[0].stat == GameEngine.STAT_GAMEOVER);
-			boolean p2Lose = (owner.engine[1].stat == GameEngine.STAT_GAMEOVER);
+			boolean p1Lose = (owner.engine[0].stat == GameEngine.Status.GAMEOVER);
+			boolean p2Lose = (owner.engine[1].stat == GameEngine.Status.GAMEOVER);
 			if(p1Lose && p2Lose) {
 				// Draw
 				winnerID = -1;
-				owner.engine[0].stat = GameEngine.STAT_GAMEOVER;
-				owner.engine[1].stat = GameEngine.STAT_GAMEOVER;
+				owner.engine[0].stat = GameEngine.Status.GAMEOVER;
+				owner.engine[1].stat = GameEngine.Status.GAMEOVER;
 			} else if(p2Lose && !p1Lose) {
 				// 1P win
 				winnerID = 0;
-				owner.engine[0].stat = GameEngine.STAT_EXCELLENT;
-				owner.engine[1].stat = GameEngine.STAT_GAMEOVER;
+				owner.engine[0].stat = GameEngine.Status.EXCELLENT;
+				owner.engine[1].stat = GameEngine.Status.GAMEOVER;
 			} else if(p1Lose && !p2Lose) {
 				// 2P win
 				winnerID = 1;
-				owner.engine[0].stat = GameEngine.STAT_GAMEOVER;
-				owner.engine[1].stat = GameEngine.STAT_EXCELLENT;
+				owner.engine[0].stat = GameEngine.Status.GAMEOVER;
+				owner.engine[1].stat = GameEngine.Status.EXCELLENT;
 			}
 			if (p1Lose || p2Lose) {
 				owner.engine[0].gameEnded();
