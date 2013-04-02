@@ -32,6 +32,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -522,11 +523,21 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		buttonStartOffline.setMnemonic('S');
 		buttonStartOffline.addActionListener(this);
 		buttonStartOffline.setActionCommand("Top_StartOffline");
-		buttonStartOffline.setAlignmentX(0f);
 		buttonStartOffline.setMaximumSize(new Dimension(Short.MAX_VALUE, buttonStartOffline.getMaximumSize().height));
-		p.add(buttonStartOffline);
-		this.getRootPane().setDefaultButton(buttonStartOffline);
+		
+		JButton startNetplay = new JButton(lz.s("Menu_NetPlay"));
+		startNetplay.setActionCommand("Menu_NetPlay");
+		startNetplay.addActionListener(this);
+		startNetplay.setMaximumSize(new Dimension(Short.MAX_VALUE, startNetplay.getMaximumSize().height));
 
+		JPanel gp = new JPanel(new GridLayout(1, 0));
+		gp.setAlignmentX(0f);
+		gp.add(buttonStartOffline);
+		gp.add(startNetplay);
+		p.add(gp);
+		
+		getRootPane().setDefaultButton(buttonStartOffline);
+		
 		// Menu
 		initMenu();
 	}
