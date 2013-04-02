@@ -1,4 +1,4 @@
-package org.zeromeaner.contrib.net.tetrisconcept.poochy.nullpomino.ai;
+package org.zeromeaner.game.subsystem.ai;
 
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;

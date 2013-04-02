@@ -1,4 +1,4 @@
-package org.zeromeaner.contrib.net.tetrisconcept.poochy.nullpomino.ai;
+package org.zeromeaner.game.subsystem.ai;
 
 
 import org.apache.log4j.Logger;
@@ -7,7 +7,6 @@ import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.game.subsystem.ai.AbstractAI;
 
 /**
  * Nohoho AI

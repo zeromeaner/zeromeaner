@@ -1,10 +1,10 @@
 org.zeromeaner.game.subsystem.ai.BasicAI
 org.zeromeaner.game.subsystem.ai.TSpinAI
-org.zeromeaner.contrib.net.tetrisconcept.poochy.nullpomino.ai.PoochyBot
-org.zeromeaner.contrib.net.tetrisconcept.poochy.nullpomino.ai.PoochyBotDefensive
+org.zeromeaner.game.subsystem.ai.PoochyBot
+org.zeromeaner.game.subsystem.ai.PoochyBotDefensive
 org.zeromeaner.game.subsystem.ai.RanksAI
-org.zeromeaner.contrib.net.tetrisconcept.poochy.nullpomino.ai.Nohoho
-org.zeromeaner.contrib.net.tetrisconcept.poochy.nullpomino.ai.ComboRaceBot
+org.zeromeaner.game.subsystem.ai.Nohoho
+org.zeromeaner.game.subsystem.ai.ComboRaceBot
 org.zeromeaner.game.evil.TNBot
 org.zeromeaner.game.evil.TNBot$Race
 org.zeromeaner.game.evil.TNBot$Dig
