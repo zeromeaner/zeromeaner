@@ -1,9 +1,15 @@
-package org.zeromeaner.game.knet;
+package org.zeromeaner.game.knet.srv;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.zeromeaner.game.knet.KNetEvent;
+import org.zeromeaner.game.knet.KNetEventArgs;
+import org.zeromeaner.game.knet.KNetEventSource;
+import org.zeromeaner.game.knet.KNetKryo;
 
 
 import com.esotericsoftware.kryonet.Connection;
@@ -17,15 +23,20 @@ public class KNetServer {
 	protected AtomicInteger nextClientId = new AtomicInteger(-1);
 	protected Server server;
 	
+	
 	protected Map<Integer, KNetEventSource> sourcesByConnectionId = new HashMap<Integer, KNetEventSource>();
+	protected Map<KNetEventSource, Integer> connectionIds = new HashMap<KNetEventSource, Integer>();
 	
 	protected KNetEventSource source;
+
+	protected KNetChannelManager chanman;
 	
 	protected Listener listener = new Listener() {
 		@Override
 		public void connected(Connection connection) {
 			KNetEventSource evs = new KNetEventSource(nextClientId.incrementAndGet());
 			sourcesByConnectionId.put(connection.getID(), evs);
+			connectionIds.put(evs, connection.getID());
 			connection.sendTCP(source.event(
 					ASSIGN_SOURCE, evs
 					));
@@ -44,10 +55,32 @@ public class KNetServer {
 				}
 				e.getSource().updateFrom(evs);
 			}
-			if(e.is(KNetEventArgs.UDP))
-				server.sendToAllExceptUDP(connection.getID(), object);
-			else
-				server.sendToAllExceptTCP(connection.getID(), object);
+
+			boolean global = true;
+			if(e.is(CHANNEL_ID))
+				global = false;
+			if(!global) {
+				for(KNetEventArgs arg : e.getArgs().keySet()) {
+					if(arg.isGlobal())
+						global = true;
+				}
+			}
+
+			if(global) {
+				if(e.is(KNetEventArgs.UDP))
+					server.sendToAllExceptUDP(connection.getID(), object);
+				else
+					server.sendToAllExceptTCP(connection.getID(), object);
+			} else {
+				List<KNetEventSource> recipients = chanman.getMembers(e.get(CHANNEL_ID, Integer.class));
+				recipients.add(chanman.getSource());
+				for(KNetEventSource r : recipients) {
+					if(e.is(UDP))
+						server.sendToUDP(connectionIds.get(r), object);
+					else
+						server.sendToTCP(connectionIds.get(r), object);
+				}
+			}
 		}
 		
 		@Override
@@ -58,7 +91,7 @@ public class KNetServer {
 		}
 	};
 	
-	public KNetServer(int port) throws IOException {
+	public KNetServer(int port) throws IOException, InterruptedException {
 		this.port = port;
 		source = new KNetEventSource(nextClientId.incrementAndGet());
 		server = new Server(1024 * 16, 1024 * 256);
@@ -66,10 +99,13 @@ public class KNetServer {
 		server.start();
 		server.bind(port, port);
 		server.addListener(listener);
+		chanman = new KNetChannelManager(port);
+		chanman.start();
 	}
 	
 	public void stop() {
 		server.stop();
+		chanman.stop();
 	}
 	
 	public int getPort() {

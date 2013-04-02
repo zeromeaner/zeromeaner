@@ -1,8 +1,10 @@
 package org.zeromeaner.game.knet.srv;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -58,8 +60,15 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 		return (KNetChannelManager) super.start();
 	}
 	
+	public synchronized List<KNetEventSource> getMembers(int channelId) {
+		List<KNetEventSource> ret = new ArrayList<KNetEventSource>();
+		if(channels.containsKey(channelId))
+			ret.addAll(channels.get(channelId).getMembers());
+		return ret;
+	}
+	
 	@Override
-	public void knetEvented(KNetClient client, KNetEvent e) {
+	public synchronized void knetEvented(KNetClient client, KNetEvent e) {
 		if(client.isLocal(e))
 			return;
 		if(e.is(CHANNEL_LIST)) {

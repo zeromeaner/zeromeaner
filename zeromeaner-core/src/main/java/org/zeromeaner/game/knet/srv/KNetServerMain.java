@@ -3,7 +3,6 @@ package org.zeromeaner.game.knet.srv;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
-import org.zeromeaner.game.knet.KNetServer;
 
 public class KNetServerMain {
 
@@ -30,7 +29,6 @@ public class KNetServerMain {
 		int port = Integer.parseInt(cli.getOptionValue("port", "61897"));
 		
 		KNetServer server = new KNetServer(port);
-		KNetChannelManager chanman = new KNetChannelManager("localhost", port).start();
 	}
 
 }

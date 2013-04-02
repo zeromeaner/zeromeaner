@@ -86,11 +86,8 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	protected void issue(KNetEvent e) {
 		boolean issue = false;
 		for(KNetEventArgs arg : e.getArgs().keySet()) {
-			try {
-				if(arg.getDeclaringClass().getField(arg.name()).isAnnotationPresent(Global.class))
-					issue = true;
-			} catch(Exception ex) {
-			}
+			if(arg.isGlobal())
+				issue = true;
 		}
 		if(e.is(CHANNEL_ID) && currentChannel != null && currentChannel.getId() == (Integer) e.get(CHANNEL_ID))
 			issue = true;
