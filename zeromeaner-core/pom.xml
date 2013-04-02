@@ -106,7 +106,8 @@
 			<groupId>sun.plugin</groupId>
 			<artifactId>plugin</artifactId>
 			<version>1.6</version>
-			<scope>provided</scope>
+			<scope>system</scope>
+			<systemPath>${java.home}/lib/plugin.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.eviline</groupId>
@@ -281,7 +282,7 @@
 									<transformers>
 										<transformer
 											implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-											<mainClass>org.zeromeaner.gui.swing.NullpoMinoSwing</mainClass>
+											<mainClass>org.zeromeaner.gui.applet.AppletMain</mainClass>
 										</transformer>
 									</transformers>
 									<filters>
@@ -305,7 +306,7 @@
 	<parent>
 		<groupId>org.zeromeaner</groupId>
 		<artifactId>zeromeaner-parent</artifactId>
-		<version>1.0.5</version>
+		<version>1.0.6-SNAPSHOT</version>
 		<relativePath>../zeromeaner-parent</relativePath>
 	</parent>
 	<name>Zeromeaner Core</name>

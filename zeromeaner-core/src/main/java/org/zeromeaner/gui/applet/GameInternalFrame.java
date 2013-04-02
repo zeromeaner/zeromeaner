@@ -5,12 +5,12 @@
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
 
-        * Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
           notice, this list of conditions and the following disclaimer.
-        * Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
           notice, this list of conditions and the following disclaimer in the
           documentation and/or other materials provided with the distribution.
-        * Neither the name of NullNoname nor the names of its
+ * Neither the name of NullNoname nor the names of its
           contributors may be used to endorse or promote products derived from
           this software without specific prior written permission.
 
@@ -25,7 +25,7 @@
     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.zeromeaner.gui.applet;
 
 import java.awt.BorderLayout;
@@ -69,18 +69,18 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 	/** Parent window */
 	protected NullpoMinoInternalFrame owner = null;
-	
+
 	/** The size of the border and title bar */
 	protected Insets insets = null;
 
 	protected BufferedImage imageBuffer;
-	
+
 	protected JLabel imageBufferLabel;
-	
+
 	protected BufferedImage gameBuffer;
-	
-//	/** BufferStrategy */
-//	protected BufferStrategy bufferStrategy = null;
+
+	//	/** BufferStrategy */
+	//	protected BufferStrategy bufferStrategy = null;
 
 	/** Game loop thread */
 	protected Thread thread = null;
@@ -176,7 +176,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		setTitle(NullpoMinoInternalFrame.lz.s("Title_Game"));
 		setBackground(Color.black);
 		setResizable(false);
-		
+
 		setDoubleBuffered(true);
 
 		addInternalFrameListener(new GameFrameWindowEvent());
@@ -184,7 +184,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 		imageBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB);
 		gameBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB);
-		
+
 		setLayout(new BorderLayout());
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(imageBufferLabel = new JLabel(new ImageIcon(imageBuffer)));
@@ -193,14 +193,14 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		add(panel, BorderLayout.CENTER);
 		panel.setFocusable(true);
 		panel.addKeyListener(new GameFrameKeyEvent());
-		
+
 		setFocusable(true);
-				
+
 		maxfps = NullpoMinoInternalFrame.propConfig.getProperty("option.maxfps", 60);
 
-		
+
 		log.debug("GameFrame created");
-		
+
 		pack();
 
 		AppletMain.instance.desktop.add(this);
@@ -210,16 +210,16 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	 * Display the game window
 	 */
 	public void displayWindow() {
-		
+
 		int screenWidth = NullpoMinoInternalFrame.propConfig.getProperty("option.screenwidth", 640);
 		int screenHeight = NullpoMinoInternalFrame.propConfig.getProperty("option.screenheight", 480);
 
 		imageBuffer = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);
 		imageBufferLabel.setIcon(new ImageIcon(imageBuffer));
-		
+
 		pack();
 		setVisible(true);
-		
+
 		if(!running) {
 			thread = new Thread(this, "Game Thread");
 			thread.start();
@@ -389,7 +389,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 		// Title bar update
 		if((NullpoMinoInternalFrame.gameManager != null) && (NullpoMinoInternalFrame.gameManager.engine != null) &&
-		   (NullpoMinoInternalFrame.gameManager.engine.length > 0) && (NullpoMinoInternalFrame.gameManager.engine[0] != null))
+				(NullpoMinoInternalFrame.gameManager.engine.length > 0) && (NullpoMinoInternalFrame.gameManager.engine[0] != null))
 		{
 			boolean nowInGame = NullpoMinoInternalFrame.gameManager.engine[0].isInGame;
 			if(prevInGameFlag != nowInGame) {
@@ -506,7 +506,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 			if(NullpoMinoInternalFrame.gameManager != null) {
 				for(int i = 0; i < Math.min(NullpoMinoInternalFrame.gameManager.getPlayers(), 2); i++) {
 					if(!NullpoMinoInternalFrame.gameManager.replayMode || NullpoMinoInternalFrame.gameManager.replayRerecord ||
-					   !NullpoMinoInternalFrame.gameManager.engine[i].gameActive)
+							!NullpoMinoInternalFrame.gameManager.engine[i].gameActive)
 					{
 						GameKeyApplet.gamekey[i].inputStatusUpdate(NullpoMinoInternalFrame.gameManager.engine[i].ctrl);
 					}
@@ -525,8 +525,8 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 			// Return to title
 			if(NullpoMinoInternalFrame.gameManager.getQuitFlag() ||
-			   GameKeyApplet.gamekey[0].isPushKey(GameKeyApplet.BUTTON_GIVEUP) ||
-			   GameKeyApplet.gamekey[1].isPushKey(GameKeyApplet.BUTTON_GIVEUP))
+					GameKeyApplet.gamekey[0].isPushKey(GameKeyApplet.BUTTON_GIVEUP) ||
+					GameKeyApplet.gamekey[1].isPushKey(GameKeyApplet.BUTTON_GIVEUP))
 			{
 				shutdown();
 				return;
@@ -540,7 +540,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 		// Quit button
 		if(GameKeyApplet.gamekey[0].isPushKey(GameKeyApplet.BUTTON_QUIT) ||
-		   GameKeyApplet.gamekey[1].isPushKey(GameKeyApplet.BUTTON_QUIT))
+				GameKeyApplet.gamekey[1].isPushKey(GameKeyApplet.BUTTON_QUIT))
 		{
 			shutdown();
 			owner.shutdown();
@@ -580,7 +580,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 			// Title bar update
 			if((NullpoMinoInternalFrame.gameManager != null) && (NullpoMinoInternalFrame.gameManager.engine != null) &&
-			   (NullpoMinoInternalFrame.gameManager.engine.length > 0) && (NullpoMinoInternalFrame.gameManager.engine[0] != null))
+					(NullpoMinoInternalFrame.gameManager.engine.length > 0) && (NullpoMinoInternalFrame.gameManager.engine[0] != null))
 			{
 				boolean nowInGame = NullpoMinoInternalFrame.gameManager.engine[0].isInGame;
 				if(prevInGameFlag != nowInGame) {
@@ -650,12 +650,12 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		// Prepare the screen
 
 		Graphics g = null;
-//		if(ssflag || (screenWidth != 640) || (screenHeight != 480)) {
-			g = gameBuffer.getGraphics();
-//		} else {
-//			g = bufferStrategy.getDrawGraphics();
-//			if(insets != null) g.translate(insets.left, insets.top);
-//		}
+		//		if(ssflag || (screenWidth != 640) || (screenHeight != 480)) {
+		g = gameBuffer.getGraphics();
+		//		} else {
+		//			g = bufferStrategy.getDrawGraphics();
+		//			if(insets != null) g.translate(insets.left, insets.top);
+		//		}
 
 		// Game screen
 		NormalFontApplet.graphics = (Graphics2D) g;
@@ -694,28 +694,32 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 		// Displayed on the screen /ScreenshotCreating
 		g.dispose();
-//		if(ssflag || (screenWidth != 640) || (screenHeight != 480)) {
-			if(ssflag) saveScreenShot();
+		//		if(ssflag || (screenWidth != 640) || (screenHeight != 480)) {
+		if(ssflag) saveScreenShot();
 
-			Graphics g2 = imageBuffer.getGraphics();
-			g2.drawImage(gameBuffer, 0, 0, imageBuffer.getWidth(), imageBuffer.getHeight(), null);
-			g2.dispose();
-			Runnable r = new Runnable() {
-				@Override
-				public void run() {
-					revalidate();
-					repaint();
-					if(syncDisplay)
-						Toolkit.getDefaultToolkit().sync();
-				}
-			};
-			EventQueue.invokeLater(r);
-
-			ssflag = false;
-//		} else if((bufferStrategy != null) && !bufferStrategy.contentsLost()) {
-//			bufferStrategy.show();
-//			if(syncDisplay) Toolkit.getDefaultToolkit().sync();
+		Graphics g2 = imageBuffer.getGraphics();
+		g2.drawImage(gameBuffer, 0, 0, imageBuffer.getWidth(), imageBuffer.getHeight(), null);
+		g2.dispose();
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {
+//				imageBufferLabel.revalidate();
+				imageBufferLabel.repaint();
+				if(syncDisplay)
+					Toolkit.getDefaultToolkit().sync();
+			}
+		};
+//		try {
+//			EventQueue.invokeAndWait(r);
+//		} catch(Exception ex) {
 //		}
+		r.run();
+
+		ssflag = false;
+		//		} else if((bufferStrategy != null) && !bufferStrategy.contentsLost()) {
+		//			bufferStrategy.show();
+		//			if(syncDisplay) Toolkit.getDefaultToolkit().sync();
+		//		}
 	}
 
 	/**
@@ -725,12 +729,12 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		if(NullpoMinoInternalFrame.gameManager == null) return;
 
 		Graphics g = null;
-//		if(ssflag || (screenWidth != 640) || (screenHeight != 480)) {
-			g = gameBuffer.getGraphics();
-//		} else {
-//			g = bufferStrategy.getDrawGraphics();
-//			if(insets != null) g.translate(insets.left, insets.top);
-//		}
+		//		if(ssflag || (screenWidth != 640) || (screenHeight != 480)) {
+		g = gameBuffer.getGraphics();
+		//		} else {
+		//			g = bufferStrategy.getDrawGraphics();
+		//			if(insets != null) g.translate(insets.left, insets.top);
+		//		}
 
 		// Game screen
 		try {
@@ -758,28 +762,32 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 		// Displayed on the screen /ScreenshotCreating
 		g.dispose();
-//		if(ssflag || (screenWidth != 640) || (screenHeight != 480)) {
-			if(ssflag) saveScreenShot();
+		//		if(ssflag || (screenWidth != 640) || (screenHeight != 480)) {
+		if(ssflag) saveScreenShot();
 
-				Graphics g2 = imageBuffer.getGraphics();
-				g2.drawImage(gameBuffer, 0, 0, imageBuffer.getWidth(), imageBuffer.getHeight(), null);
-				g2.dispose();
-				Runnable r = new Runnable() {
-					@Override
-					public void run() {
-						revalidate();
-						repaint();
-						if(syncDisplay)
-							Toolkit.getDefaultToolkit().sync();
-					}
-				};
-				EventQueue.invokeLater(r);
-
-			ssflag = false;
-//		} else if((bufferStrategy != null) && !bufferStrategy.contentsLost()) {
-//			bufferStrategy.show();
-//			if(syncDisplay) Toolkit.getDefaultToolkit().sync();
+		Graphics g2 = imageBuffer.getGraphics();
+		g2.drawImage(gameBuffer, 0, 0, imageBuffer.getWidth(), imageBuffer.getHeight(), null);
+		g2.dispose();
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {
+//				imageBufferLabel.revalidate();
+				imageBufferLabel.repaint();
+				if(syncDisplay)
+					Toolkit.getDefaultToolkit().sync();
+			}
+		};
+//		try {
+//			EventQueue.invokeAndWait(r);
+//		} catch(Exception ex) {
 //		}
+		r.run();
+
+		ssflag = false;
+		//		} else if((bufferStrategy != null) && !bufferStrategy.contentsLost()) {
+		//			bufferStrategy.show();
+		//			if(syncDisplay) Toolkit.getDefaultToolkit().sync();
+		//		}
 	}
 
 	/**

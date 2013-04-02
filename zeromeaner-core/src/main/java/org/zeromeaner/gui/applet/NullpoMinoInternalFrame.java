@@ -576,14 +576,12 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		miOpen.setActionCommand("Menu_Open");
 		menuFile.add(miOpen);
 
-		if(GameManager.DEV_BUILD) {
-			// NetPlay start
-			JMenuItem miNetPlay = new JMenuItem(lz.s("Menu_NetPlay"));
-			miNetPlay.setMnemonic('N');
-			miNetPlay.addActionListener(this);
-			miNetPlay.setActionCommand("Menu_NetPlay");
-			menuFile.add(miNetPlay);
-		}
+		// NetPlay start
+		JMenuItem miNetPlay = new JMenuItem(lz.s("Menu_NetPlay"));
+		miNetPlay.setMnemonic('N');
+		miNetPlay.addActionListener(this);
+		miNetPlay.setActionCommand("Menu_NetPlay");
+		menuFile.add(miNetPlay);
 
 		// End
 //		JMenuItem miExit = new JMenuItem(lz.s("Menu_Exit"));

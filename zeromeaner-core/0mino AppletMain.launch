@@ -12,5 +12,5 @@
 <intAttribute key="org.eclipse.jdt.launching.APPLET_WIDTH" value="800"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.zeromeaner.gui.applet.AppletMain"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="zeromeaner-core"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-DuserId=robin -Dzero_url=http://www.0mino.org/play"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-DuserId=${system_property:user.name} -Dzero_url=http://www.0mino.org/play"/>
 </launchConfiguration>

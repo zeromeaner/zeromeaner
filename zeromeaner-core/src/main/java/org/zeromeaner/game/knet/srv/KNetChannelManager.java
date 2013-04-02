@@ -95,10 +95,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 					CHANNEL_INFO, new KNetChannelInfo[] { info });
 			if(newPlayer != null) {
 				client.fireTCP(PLAYER_ENTER, newPlayer, CHANNEL_ID, info.getId());
-				if(info.getPlayers().size() >= 2 && info.isAutoStart()) {
-					client.fireTCP(AUTOSTART_BEGIN, 10, CHANNEL_ID, info.getId());
-					states.get(info).requiredAutostartResponses = info.getPlayers().size();
-				}
+				maybeAutostart(info);
 			}
 		}
 		if(e.is(CHANNEL_CREATE)) {
@@ -137,37 +134,14 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				client.reply(e, ERROR, "Not in channel with id " + id);
 				return;
 			}
-			if(info.getId() != KNetChannelInfo.LOBBY_CHANNEL_ID)
-				info.depart(e.getSource());
-			client.fireTCP(
-					CHANNEL_LEAVE, 
-					CHANNEL_ID, id,
-					PAYLOAD, e.getSource(),
-					CHANNEL_INFO, new KNetChannelInfo[] { info });
-			if(info.getId() != KNetChannelInfo.LOBBY_CHANNEL_ID && info.getMembers().size() == 0) {
-				channels.remove(info.getId());
-				states.remove(info);
-				client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
-			}
+			depart(info, e.getSource(), false);
 		}
 		if(e.is(DISCONNECTED)) {
-			boolean deleted = false;
 			for(KNetChannelInfo info : channels.values().toArray(new KNetChannelInfo[channels.size()])) {
 				if(!info.getMembers().contains(e.getSource()))
 					continue;
-				info.depart(e.getSource());
-				client.fireTCP(
-						CHANNEL_LEAVE,
-						CHANNEL_ID, info.getId(),
-						PAYLOAD, e.getSource(),
-						CHANNEL_INFO, new KNetChannelInfo[] { info });
-				if(info.getMembers().size() == 0 && info.getId() != KNetChannelInfo.LOBBY_CHANNEL_ID) {
-					channels.remove(info.getId());
-					deleted = true;
-				}
+				depart(info, e.getSource(), true);
 			}
-			if(deleted)
-				client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
 		}
 		if(e.is(AUTOSTART)) {
 //			client.fireTCP(START, CHANNEL_ID, e.get(CHANNEL_ID));
@@ -186,17 +160,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 		}
 		if(e.is(DEAD)) {
 			KNetChannelInfo c = channels.get(e.get(CHANNEL_ID));
-			ChannelState s = states.get(c);
-			s.living.remove(c.getPlayers().get(e.get(DEAD, Integer.class)));
-			if(s.living.size() == 1) {
-				fireTCP(FINISH, false, FINISH_WINNER, s.living.iterator().next(), CHANNEL_ID, c.getId());
-				c.setPlaying(false);
-				client.fireTCP(CHANNEL_UPDATE, c);
-				if(c.getPlayers().size() >= 2 && c.isAutoStart()) {
-					client.fireTCP(AUTOSTART_BEGIN, 10, CHANNEL_ID, c.getId());
-					states.get(c).requiredAutostartResponses = c.getPlayers().size();
-				}
-			}
+			dead(c, c.getPlayers().get(e.get(DEAD, Integer.class)));
 		}
 		if(e.is(GAME_ENDING)) {
 			KNetChannelInfo c = channels.get(e.get(CHANNEL_ID));
@@ -207,6 +171,48 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				states.get(c).requiredAutostartResponses = c.getPlayers().size();
 			}
 		}
+	}
+	
+	protected void maybeAutostart(KNetChannelInfo channel) {
+		if(channel.getPlayers().size() == channel.getMaxPlayers() && channel.isAutoStart()) {
+			fireTCP(AUTOSTART_BEGIN, 10, CHANNEL_ID, channel.getId());
+			states.get(channel).requiredAutostartResponses = channel.getPlayers().size();
+		} else {
+			fireTCP(AUTOSTART_STOP, CHANNEL_ID, channel.getId());
+		}
+	}
+	
+	protected void dead(KNetChannelInfo channel, KNetEventSource user) {
+		ChannelState s = states.get(channel);
+		s.living.remove(user);
+		if(s.living.size() == 1) {
+			fireTCP(FINISH, false, FINISH_WINNER, s.living.iterator().next(), CHANNEL_ID, channel.getId());
+			channel.setPlaying(false);
+			fireTCP(CHANNEL_UPDATE, channel);
+			maybeAutostart(channel);
+		}
+	}
+	
+	protected void depart(KNetChannelInfo channel, KNetEventSource user, boolean force) {
+		ChannelState s = states.get(channel);
+		boolean isPlayer = channel.getPlayers().contains(user);
+		// declare the player dead
+		if(isPlayer) {
+			fireTCP(DEAD, channel.getPlayers().indexOf(user), CHANNEL_ID, channel.getId(), DEAD_PLACE, channel.getPlayers().size());
+			dead(channel, user);
+		}
+		if(channel.getId() != KNetChannelInfo.LOBBY_CHANNEL_ID || force)
+			channel.depart(user);
+		fireTCP(CHANNEL_LEAVE, CHANNEL_ID, channel.getId(), PAYLOAD, user, CHANNEL_INFO, new KNetChannelInfo[] {channel});
+		if(isPlayer) {
+			maybeAutostart(channel);
+		}
+		if(channel.getId() != KNetChannelInfo.LOBBY_CHANNEL_ID && channel.getMembers().size() == 0) {
+			channels.remove(channel.getId());
+			states.remove(channel);
+			fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
+		}
+		
 	}
 
 }

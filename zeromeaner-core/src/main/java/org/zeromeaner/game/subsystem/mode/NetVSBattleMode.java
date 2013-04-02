@@ -1096,6 +1096,8 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		
 		
 		int seatID = channelInfo().getSeatId(e);
+		if(seatID == -1)
+			return;
 		int playerID = netvsGetPlayerIDbySeatID(seatID);
 
 		if((playerID != 0) || (netvsIsWatch())) {
@@ -1126,6 +1128,8 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 //		if(message[0].equals("dead")) {
 		if(e.is(DEAD)) {
 			int seatID = channelInfo().getPlayers().indexOf(e.getSource());
+			if(seatID == -1)
+				seatID = e.get(DEAD, Integer.class);
 			int playerID = netvsGetPlayerIDbySeatID(seatID);
 			int koUID = -1;
 //			if(message.length > 5) koUID = Integer.parseInt(message[5]);
@@ -1140,7 +1144,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		}
 		// Game messages
 //		if(message[0].equals("game")) {
-		if(e.is(GAME)) {
+		if(e.is(GAME) && channelInfo().getSeatId(e) != -1) {
 			int uid = e.getSource().getId();
 			int seatID = channelInfo().getPlayers().indexOf(e.getSource());
 			int playerID = netvsGetPlayerIDbySeatID(seatID);
