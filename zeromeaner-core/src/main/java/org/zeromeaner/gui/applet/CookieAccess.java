@@ -11,7 +11,7 @@ import netscape.javascript.JSObject;
 
 
 public class CookieAccess {
-	private static CookieAccess instance;
+	private static CookieAccess instance = new CookieAccess();
 	
 	public static CookieAccess getInstance() {
 		return instance;
