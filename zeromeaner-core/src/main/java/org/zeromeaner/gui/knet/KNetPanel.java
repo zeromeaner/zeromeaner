@@ -7,8 +7,10 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -355,6 +357,26 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 					}
 				}
 			}
+			
+			Collections.sort(new AbstractList<String>() {
+				@Override
+				public String get(int index) {
+					return (String) membersModel.get(index);
+				}
+
+				@Override
+				public int size() {
+					return membersModel.size();
+				}
+				
+				@Override
+				public String set(int index, String element) {
+					String old = get(index);
+					membersModel.set(index, element);
+					return old;
+				}
+			});
+			
 			List<String> newMembers = new ArrayList<String>();
 			for(Object m : membersModel.toArray()) {
 				newMembers.add((String) m);
