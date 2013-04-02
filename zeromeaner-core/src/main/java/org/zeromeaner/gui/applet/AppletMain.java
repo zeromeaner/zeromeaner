@@ -1,15 +1,22 @@
 package org.zeromeaner.gui.applet;
 
 import java.applet.Applet;
+import java.applet.AppletContext;
+import java.applet.AppletStub;
+import java.applet.AudioClip;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -54,8 +61,10 @@ public class AppletMain extends Applet {
 	public static String userId;
 
 	public static boolean isApplet() {
-		return instance != null;
+		return instance != null && isApplet;
 	}
+	
+	private static boolean isApplet = true;
 	
 	public static URL url;
 	
@@ -63,6 +72,114 @@ public class AppletMain extends Applet {
 	
 	public Component notification;
 
+	public static void main(String[] args) {
+		isApplet = false;
+		JFrame frame = new JFrame("Zeromeaner");
+		frame.setSize(800, 800);
+		frame.setLayout(new BorderLayout());
+		AppletMain applet = new AppletMain();
+		applet.setStub(new AppletStub() {
+			@Override
+			public boolean isActive() {
+				return true;
+			}
+			
+			@Override
+			public String getParameter(String name) {
+				return null;
+			}
+			
+			@Override
+			public URL getDocumentBase() {
+				try {
+					return new URL("http://www.0mino.org/play");
+				} catch (MalformedURLException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			
+			@Override
+			public URL getCodeBase() {
+				return null;
+			}
+			
+			@Override
+			public AppletContext getAppletContext() {
+				return new AppletContext() {
+					
+					@Override
+					public void showStatus(String status) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void showDocument(URL url, String target) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void showDocument(URL url) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void setStream(String key, InputStream stream) throws IOException {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public Iterator<String> getStreamKeys() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public InputStream getStream(String key) {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public Image getImage(URL url) {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public AudioClip getAudioClip(URL url) {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public Enumeration<Applet> getApplets() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+					
+					@Override
+					public Applet getApplet(String name) {
+						// TODO Auto-generated method stub
+						return null;
+					}
+				};
+			}
+			
+			@Override
+			public void appletResize(int width, int height) {
+			}
+		});
+		frame.add(applet, BorderLayout.CENTER);
+		frame.setVisible(true);
+		frame.setLocationRelativeTo(null);
+		applet.init();
+		applet.start();
+	}
+	
 	public AppletMain() {
 	}
 	
