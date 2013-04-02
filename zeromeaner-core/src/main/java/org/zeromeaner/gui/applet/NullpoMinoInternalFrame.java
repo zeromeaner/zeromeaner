@@ -194,7 +194,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 	public static void main(String[] args) {
 		programArgs = args;
 		try {
-			PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_swing.cfg"));
+			PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));
 		} catch(IOException ioe) {
 			ioe.printStackTrace();
 		}
