@@ -75,10 +75,10 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.funcish.core.Mappings;
-import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
@@ -804,22 +804,25 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		else if(e.getActionCommand() == "Menu_Open") {
 			if(replayFileChooser == null) {
 //				File dir = new File(propGlobal.getProperty("custom.replay.directory", "replay"));
-				replayFileChooser = new JFileChooser(new ResourceFileSystemView() {
-					@Override
-					protected String url() {
-						return super.url() + "replay/";
-					}
-					@Override
-					public Boolean isTraversable(File f) {
-						if(f.getName().endsWith(".rep"))
-							return false;
-						return super.isTraversable(f);
-					}
-				});
+				if(AppletMain.isApplet())
+					replayFileChooser = new JFileChooser(new ResourceFileSystemView() {
+						@Override
+						protected String url() {
+							return super.url() + "replay/";
+						}
+						@Override
+						public Boolean isTraversable(File f) {
+							if(f.getName().endsWith(".rep"))
+								return false;
+							return super.isTraversable(f);
+						}
+					});
+				else
+					replayFileChooser = new JFileChooser(System.getProperty("user.dir") + File.separator + "local-resources" + File.separator + "replay");
 				replayFileChooser.addChoosableFileFilter(new ReplayFileFilter());
 			}
 			if(replayFileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION && replayFileChooser.getSelectedFile().getName().endsWith(".rep")) {
-				startReplayGame("replay/" + replayFileChooser.getSelectedFile().getPath());
+				startReplayGame((AppletMain.isApplet() ? "replay/" : "") + replayFileChooser.getSelectedFile().getPath());
 				if(gameFrame == null) {
 					gameFrame = new GameInternalFrame(this);
 				}

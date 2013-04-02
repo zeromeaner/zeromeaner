@@ -1,7 +1,6 @@
 package org.zeromeaner.game.subsystem.mode;
 
 import org.apache.log4j.Logger;
-import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
@@ -23,6 +22,7 @@ import org.zeromeaner.game.knet.obj.PieceMovement;
 import org.zeromeaner.game.knet.obj.Replay;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.mode.ModeTypes.ModeType;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.gui.knet.KNetPanel;

@@ -233,6 +233,7 @@ public enum KNetEventArgs {
 	
 	private Class<?> type;
 	private boolean nullable;
+	private boolean global;
 	
 	private KNetEventArgs() {
 		this(null, false);
@@ -245,6 +246,20 @@ public enum KNetEventArgs {
 	private KNetEventArgs(Class<?> type, boolean nullable) {
 		this.type = type;
 		this.nullable = nullable;
+	}
+	
+	static {
+		for(KNetEventArgs arg : values()) {
+			try {
+				if(arg.getDeclaringClass().getField(arg.name()).isAnnotationPresent(Global.class))
+					arg.global = true;
+			} catch(Exception ex) {
+			}
+		}
+	}
+	
+	public boolean isGlobal() {
+		return global;
 	}
 	
 	public void write(Kryo kryo, Output output, Object argValue) {

@@ -27,9 +27,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.funcish.core.Predicates;
-import org.funcish.core.fn.Mappicator;
+import org.funcish.core.fn.Mapper;
 import org.funcish.core.fn.Predicate;
-import org.funcish.core.impl.AbstractMappicator;
+import org.funcish.core.impl.AbstractMapper;
 import org.funcish.core.impl.AbstractPredicate;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;

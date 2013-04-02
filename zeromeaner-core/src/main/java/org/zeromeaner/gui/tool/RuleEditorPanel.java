@@ -78,11 +78,11 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import org.funcish.core.Mappings;
-import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameEngine;
+import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.wallkick.StandardWallkick;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceOutputStream;

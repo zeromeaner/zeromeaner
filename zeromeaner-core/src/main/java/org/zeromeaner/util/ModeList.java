@@ -8,10 +8,10 @@ import org.funcish.core.Mappings;
 import org.funcish.core.Predicates;
 import org.funcish.core.coll.ArrayFunctionalList;
 import org.funcish.core.coll.FunctionalList;
-import org.funcish.core.fn.Mappicator;
+import org.funcish.core.fn.Mapper;
 import org.funcish.core.fn.Predicate;
 import org.funcish.core.fn.Predicator;
-import org.funcish.core.impl.AbstractMappicator;
+import org.funcish.core.impl.AbstractMapper;
 import org.funcish.core.impl.AbstractPredicator;
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.GameMode;
@@ -24,7 +24,7 @@ public class ModeList<E extends GameMode> extends ArrayFunctionalList<E> {
 		return ret;
 	}
 	
-	public static final Mappicator<GameMode, String> MODE_NAME = new AbstractMappicator<GameMode, String>(GameMode.class, String.class) {
+	public static final Mapper<GameMode, String> MODE_NAME = new AbstractMapper<GameMode, String>(GameMode.class, String.class) {
 		@Override	
 		public String map0(GameMode obj, Integer index) throws Exception {
 			return obj.getName();

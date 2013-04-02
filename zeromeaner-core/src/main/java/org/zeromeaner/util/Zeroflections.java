@@ -20,7 +20,7 @@ import org.funcish.core.fn.Sequence;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.SubTypesScanner;
-import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
+import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.game.subsystem.mode.ModeTypes.ModeType;
@@ -36,8 +36,8 @@ public class Zeroflections {
 	
 	private static List<String> list(String listName) {
 		InputStream rsrc = Zeroflections.class.getClassLoader().getResourceAsStream("org/zeromeaner/config/list/" + listName);
-				Sequence<String> lines = Sequences.lines(new InputStreamReader(rsrc));
-		return Sequences.sequencator(String.class, lines).list();
+		Sequence<String> lines = Sequences.lines(new InputStreamReader(rsrc));
+		return Sequences.sequencer(String.class, lines).list();
 	}
 	
 	public static Set<String> getResources(Pattern fullPattern) {

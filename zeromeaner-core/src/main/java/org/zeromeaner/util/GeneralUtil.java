@@ -35,10 +35,10 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
-import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameEngine;
+import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 

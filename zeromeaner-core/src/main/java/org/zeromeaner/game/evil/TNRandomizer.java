@@ -7,9 +7,9 @@ import org.apache.log4j.Logger;
 import org.eviline.Field;
 import org.eviline.Shape;
 import org.eviline.ai.AI;
-import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.play.GameEngine;
+import org.zeromeaner.game.randomizer.Randomizer;
 
 public class TNRandomizer extends Randomizer {
 	private static final Logger log = Logger.getLogger(TNRandomizer.class);

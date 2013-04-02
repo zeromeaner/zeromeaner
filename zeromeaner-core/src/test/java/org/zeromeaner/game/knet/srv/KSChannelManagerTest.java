@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.zeromeaner.game.knet.KNetClient;
 import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.knet.KNetListener;
-import org.zeromeaner.game.knet.KNetServer;
 import org.zeromeaner.game.knet.obj.KNetChannelInfo;
 
 import static org.zeromeaner.game.knet.KNetEventArgs.*;
@@ -28,7 +27,6 @@ public class KSChannelManagerTest {
 	
 	@Test
 	public void testChannelList() throws Exception {
-		KNetChannelManager chanman = new KNetChannelManager(server.getPort());
 		KNetClient c = new KNetClient("localhost", server.getPort());
 		final Semaphore sync = new Semaphore(0);
 		c.addKNetListener(new KNetListener() {
@@ -40,16 +38,11 @@ public class KSChannelManagerTest {
 			}
 		});
 		try {
-			chanman.start();
-			try {
-				c.start();
-				c.fire(CHANNEL_LIST, true);
-				sync.acquire();
-			} finally {
-				c.stop();
-			}
+			c.start();
+			c.fire(CHANNEL_LIST, true);
+			sync.acquire();
 		} finally {
-			chanman.stop();
+			c.stop();
 		}
 	}
 }

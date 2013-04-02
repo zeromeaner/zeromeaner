@@ -168,7 +168,7 @@ public class WaveEngine implements LineListener {
 			FloatControl ctrl = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
 			ctrl.setValue((float)Math.log10(volume) * 20);
 		} catch (LineUnavailableException e) {
-			log.warn(name + " : Failed to open line", e);
+//			log.warn(name + " : Failed to open line", e);
 		} catch (UnsupportedAudioFileException e) {
 			log.warn(name + " : This is not a wave file", e);
 		} catch (IOException e) {
@@ -187,9 +187,19 @@ public class WaveEngine implements LineListener {
 				synchronized(WaveEngine.this) {
 					Clip clip = clipMap.get(name);
 
-					if(clip == null && clipUrls.containsKey(name)) {
+					if(!clipMap.containsKey(name) && clipUrls.containsKey(name)) {
+						long start = System.currentTimeMillis();
 						load(name, clipUrls.get(name));
 						clip = clipMap.get(name);
+						clipMap.put(name, clip);
+						if(clip == null) {
+							counter--;
+							return;
+						}
+						long end = System.currentTimeMillis();
+						int skip = (int)(clip.getFormat().getFrameRate() * ((end - start) / 1000.));
+						if(skip < clip.getFrameLength())
+							clip.setFramePosition(skip);
 					}
 
 					if(clip != null) {
