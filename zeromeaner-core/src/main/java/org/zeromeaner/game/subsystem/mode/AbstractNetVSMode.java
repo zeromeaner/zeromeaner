@@ -259,6 +259,11 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 		netPlayerInit(engine, playerID);
 	}
 
+	@Override
+	protected boolean netIsWatch() {
+		return netvsIsWatch();
+	}
+	
 	/**
 	 * @return true if watch mode
 	 */
@@ -275,9 +280,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 	protected void netUpdatePlayerExist() {
 		if(knetClient() == null)
 			return;
-		netNumSpectators = 0;
 		netPlayerName = knetClient().getSource().getName();
-		netIsWatch = netvsIsWatch();
 
 		for(int i = 0; i < netvsNumPlayers(); i++) {
 			netvsPlayerExist[i] = false;
@@ -298,7 +301,6 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 		List<String> teamList = new LinkedList<String>();
 		
 		for(KNetEventSource player: players) {
-			netNumSpectators++;
 			if(!channelInfo().getPlayers().contains(player)) {
 			} else {
 				int playerID = netvsGetPlayerIDbySeatID(players.indexOf(player));
@@ -399,7 +401,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendField(GameEngine engine, boolean udp) {
-		if(!netvsIsPractice && (engine.getPlayerID() == 0) && (!netIsWatch)) {
+		if(!netvsIsPractice && (engine.getPlayerID() == 0) && (!netIsWatch())) {
 			super.netSendField(engine, udp);
 		}
 	}
@@ -409,7 +411,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 	 */
 	@Override
 	protected void netSendNextAndHold(GameEngine engine) {
-		if(!netvsIsPractice && (engine.getPlayerID() == 0) && (!netIsWatch)) {
+		if(!netvsIsPractice && (engine.getPlayerID() == 0) && (!netIsWatch())) {
 			super.netSendNextAndHold(engine);
 		}
 	}
@@ -419,7 +421,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 	 */
 	@Override
 	protected boolean netSendPieceMovement(GameEngine engine, boolean forceSend) {
-		if(!netvsIsPractice && (engine.getPlayerID() == 0) && (!netIsWatch)) {
+		if(!netvsIsPractice && (engine.getPlayerID() == 0) && (!netIsWatch())) {
 			return super.netSendPieceMovement(engine, forceSend);
 		}
 		return false;
@@ -660,7 +662,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			owner.receiver.drawDirectFont(engine, 0, x, y +  0, "PLAYERS", EventRenderer.COLOR_CYAN, 0.5f);
 			owner.receiver.drawDirectFont(engine, 0, x, y +  8, "" + netvsNumPlayers(), EventRenderer.COLOR_WHITE, 0.5f);
 			owner.receiver.drawDirectFont(engine, 0, x, y + 16, "SPECTATORS", EventRenderer.COLOR_CYAN, 0.5f);
-			owner.receiver.drawDirectFont(engine, 0, x, y + 24, "" + netNumSpectators, EventRenderer.COLOR_WHITE, 0.5f);
+			owner.receiver.drawDirectFont(engine, 0, x, y + 24, "" + netNumSpectators(), EventRenderer.COLOR_WHITE, 0.5f);
 
 			if(!netvsIsWatch()) {
 				owner.receiver.drawDirectFont(engine, 0, x, y + 32, "MATCHES", EventRenderer.COLOR_CYAN, 0.5f);

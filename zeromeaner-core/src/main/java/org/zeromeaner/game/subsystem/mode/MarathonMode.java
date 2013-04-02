@@ -281,7 +281,7 @@ public class MarathonMode extends AbstractNetMode {
 	@Override
 	public boolean onSetting(GameEngine engine, int playerID) {
 		// Menu
-		if(engine.getOwner().replayMode == false) {
+		if(engine.getOwner().replayMode == false && !netIsWatch()) {
 			// Configuration changes
 			int change = updateCursor(engine, 8, playerID);
 
@@ -339,7 +339,7 @@ public class MarathonMode extends AbstractNetMode {
 				}
 
 				// NET: Signal options change
-				if(netIsNetPlay && (netNumSpectators > 0)) {
+				if(netIsNetPlay && (netNumSpectators() > 0)) {
 					netSendOptions(engine);
 				}
 			}
@@ -436,7 +436,7 @@ public class MarathonMode extends AbstractNetMode {
 
 		setSpeed(engine);
 
-		if(netIsWatch) {
+		if(netIsWatch()) {
 			owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
 		}
 	}
@@ -753,7 +753,7 @@ public class MarathonMode extends AbstractNetMode {
 
 		if(netIsNetPlay && (netReplaySendStatus == 1)) {
 			receiver.drawMenuFont(engine, playerID, 0, 22, "SENDING...", EventRenderer.COLOR_PINK);
-		} else if(netIsNetPlay && !netIsWatch && (netReplaySendStatus == 2)) {
+		} else if(netIsNetPlay && !netIsWatch() && (netReplaySendStatus == 2)) {
 			receiver.drawMenuFont(engine, playerID, 1, 22, "A: RETRY", EventRenderer.COLOR_RED);
 		}
 	}

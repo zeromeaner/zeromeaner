@@ -328,7 +328,7 @@ public class TechnicianMode extends AbstractNetMode {
 				}
 
 				// NET: Signal options change
-				if(netIsNetPlay && (netNumSpectators > 0)) netSendOptions(engine);
+				if(netIsNetPlay && (netNumSpectators() > 0)) netSendOptions(engine);
 			}
 
 			// Confirm
@@ -427,7 +427,7 @@ public class TechnicianMode extends AbstractNetMode {
 
 		setSpeed(engine);
 
-		if(netIsWatch) {
+		if(netIsWatch()) {
 			owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
 		} else {
 			setStartBgmlv(engine);
@@ -617,7 +617,7 @@ public class TechnicianMode extends AbstractNetMode {
 			if(remainTime <= 30*60) engine.meterColor = GameEngine.METER_COLOR_ORANGE;
 			if(remainTime <= 10*60) engine.meterColor = GameEngine.METER_COLOR_RED;
 
-			if(!netIsWatch) {
+			if(!netIsWatch()) {
 				if(levelTimer >= TIMELIMIT_LEVEL) {
 					// Out of time
 					levelTimeOut = true;
@@ -652,7 +652,7 @@ public class TechnicianMode extends AbstractNetMode {
 				if(totalTimer <= 10*60) engine.meterColor = GameEngine.METER_COLOR_RED;
 			}
 
-			if(!netIsWatch) {
+			if(!netIsWatch()) {
 				if(totalTimer < 0) {
 					// Out of time
 					engine.gameEnded();
@@ -685,7 +685,7 @@ public class TechnicianMode extends AbstractNetMode {
 			if(remainRollTime <= 10*60) engine.meterColor = GameEngine.METER_COLOR_RED;
 
 			// Finished
-			if((rolltime >= TIMELIMIT_ROLL) && (!netIsWatch)) {
+			if((rolltime >= TIMELIMIT_ROLL) && (!netIsWatch())) {
 				scgettime = 0;
 				lastscore = totalTimer * 2;
 				engine.statistics.score += lastscore;
@@ -921,7 +921,7 @@ public class TechnicianMode extends AbstractNetMode {
 
 		if(netIsNetPlay && (netReplaySendStatus == 1)) {
 			receiver.drawMenuFont(engine, playerID, 0, 19, "SENDING...", EventRenderer.COLOR_PINK);
-		} else if(netIsNetPlay && !netIsWatch && (netReplaySendStatus == 2)) {
+		} else if(netIsNetPlay && !netIsWatch() && (netReplaySendStatus == 2)) {
 			receiver.drawMenuFont(engine, playerID, 1, 19, "A: RETRY", EventRenderer.COLOR_RED);
 		}
 	}

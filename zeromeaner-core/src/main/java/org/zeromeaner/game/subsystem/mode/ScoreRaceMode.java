@@ -338,7 +338,7 @@ public class ScoreRaceMode extends AbstractNetMode {
 				}
 
 				// NET: Signal options change
-				if(netIsNetPlay && (netNumSpectators > 0)) {
+				if(netIsNetPlay && (netNumSpectators() > 0)) {
 					netSendOptions(engine);
 				}
 			}
@@ -352,7 +352,7 @@ public class ScoreRaceMode extends AbstractNetMode {
 					loadPreset(engine, owner.modeConfig, presetNumber);
 
 					// NET: Signal options change
-					if(netIsNetPlay && (netNumSpectators > 0)) {
+					if(netIsNetPlay && (netNumSpectators() > 0)) {
 						netSendOptions(engine);
 					}
 				} else if(menuCursor == 17) {
@@ -445,7 +445,7 @@ public class ScoreRaceMode extends AbstractNetMode {
 		if(enableCombo) engine.comboType = GameEngine.COMBO_TYPE_NORMAL;
 		else engine.comboType = GameEngine.COMBO_TYPE_DISABLE;
 
-		if(netIsWatch) {
+		if(netIsWatch()) {
 			owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
 		} else {
 			owner.bgmStatus.bgm = bgmno;
@@ -480,7 +480,7 @@ public class ScoreRaceMode extends AbstractNetMode {
 		receiver.drawScoreFont(engine, playerID, 0, 1, "(" + GOAL_TABLE[goaltype] + " PTS GAME)", EventRenderer.COLOR_RED);
 
 		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
-			if(!owner.replayMode && !big && (engine.ai == null) && !netIsWatch) {
+			if(!owner.replayMode && !big && (engine.ai == null) && !netIsWatch()) {
 				float scale = (receiver.getNextDisplayType() == 2) ? 0.5f : 1.0f;
 				int topY = (receiver.getNextDisplayType() == 2) ? 6 : 4;
 				receiver.drawScoreFont(engine, playerID, 3, topY-1, "TIME     LINE SPL", EventRenderer.COLOR_BLUE, scale);
@@ -777,7 +777,7 @@ public class ScoreRaceMode extends AbstractNetMode {
 
 		if(netIsNetPlay && (netReplaySendStatus == 1)) {
 			receiver.drawMenuFont(engine, playerID, 0, 22, "SENDING...", EventRenderer.COLOR_PINK);
-		} else if(netIsNetPlay && !netIsWatch && (netReplaySendStatus == 2)) {
+		} else if(netIsNetPlay && !netIsWatch() && (netReplaySendStatus == 2)) {
 			receiver.drawMenuFont(engine, playerID, 1, 22, "A: RETRY", EventRenderer.COLOR_RED);
 		}
 	}

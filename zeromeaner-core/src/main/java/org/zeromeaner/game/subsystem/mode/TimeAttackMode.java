@@ -513,7 +513,7 @@ public class TimeAttackMode extends AbstractNetMode {
 				}
 
 				// NET: Signal options change
-				if(netIsNetPlay && (netNumSpectators > 0)) {
+				if(netIsNetPlay && (netNumSpectators() > 0)) {
 					netSendOptions(engine);
 				}
 			}
@@ -583,7 +583,7 @@ public class TimeAttackMode extends AbstractNetMode {
 	 */
 	@Override
 	public void startGame(GameEngine engine, int playerID) {
-		if(netIsWatch) {
+		if(netIsWatch()) {
 			owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
 		} else {
 			owner.bgmStatus.bgm = tableBGMNumber[goaltype][bgmlv];
@@ -601,7 +601,7 @@ public class TimeAttackMode extends AbstractNetMode {
 		receiver.drawScoreFont(engine, playerID, 0, 1, "("+GAMETYPE_NAME_LONG[goaltype]+")", EventRenderer.COLOR_PURPLE);
 
 		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
-			if((owner.replayMode == false) && (startlevel == 0) && (big == false) && (engine.ai == null) && (!netIsWatch)) {
+			if((owner.replayMode == false) && (startlevel == 0) && (big == false) && (engine.ai == null) && (!netIsWatch())) {
 				receiver.drawScoreFont(engine, playerID, 3, 3, "LINE TIME", EventRenderer.COLOR_BLUE);
 
 				for(int i = 0; i < RANKING_MAX; i++) {
@@ -645,7 +645,7 @@ public class TimeAttackMode extends AbstractNetMode {
 			}
 
 			// Section time
-			if((showsectiontime == true) && (sectiontime != null) && (!netIsWatch)) {
+			if((showsectiontime == true) && (sectiontime != null) && (!netIsWatch())) {
 				int y = (receiver.getNextDisplayType() == 2) ? 6 : 3;
 				int x = (receiver.getNextDisplayType() == 2) ? 22 : 12;
 				int x2 = (receiver.getNextDisplayType() == 2) ? 10 : 12;
@@ -667,7 +667,7 @@ public class TimeAttackMode extends AbstractNetMode {
 					}
 				}
 
-				if((sectionavgtime > 0) && (!netIsWatch)) {
+				if((sectionavgtime > 0) && (!netIsWatch())) {
 					receiver.drawScoreFont(engine, playerID, x2, 15, "AVERAGE", EventRenderer.COLOR_BLUE);
 					receiver.drawScoreFont(engine, playerID, x2, 16, GeneralUtil.getTime(sectionavgtime));
 				}
@@ -694,7 +694,7 @@ public class TimeAttackMode extends AbstractNetMode {
 			engine.timerActive = true;
 		}
 		// Ending start
-		if((engine.ending == 2) && (engine.staffrollEnable == true) && (rollstarted == false) && (!netIsWatch)) {
+		if((engine.ending == 2) && (engine.staffrollEnable == true) && (rollstarted == false) && (!netIsWatch())) {
 			rollstarted = true;
 			owner.bgmStatus.bgm = BGMStatus.BGM_ENDING1;
 			owner.bgmStatus.fadesw = false;
@@ -722,7 +722,7 @@ public class TimeAttackMode extends AbstractNetMode {
 				if((levelTimer <= 600) && (levelTimer % 60 == 0)) {
 					receiver.playSE("countdown");
 				}
-			} else if(!netIsWatch) {
+			} else if(!netIsWatch()) {
 				engine.gameEnded();
 				engine.resetStatc();
 				engine.stat = GameEngine.Status.GAMEOVER;
@@ -774,7 +774,7 @@ public class TimeAttackMode extends AbstractNetMode {
 			if(remainRollTime <= 10*60) engine.meterColor = GameEngine.METER_COLOR_RED;
 
 			// Completed
-			if((rolltime >= ROLLTIMELIMIT) && (!netIsWatch)) {
+			if((rolltime >= ROLLTIMELIMIT) && (!netIsWatch())) {
 				engine.statistics.rollclear = 2;
 				engine.gameEnded();
 				engine.resetStatc();
@@ -867,7 +867,7 @@ public class TimeAttackMode extends AbstractNetMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		if(!netIsWatch) {
+		if(!netIsWatch()) {
 			receiver.drawMenuFont(engine, playerID, 0, 0, "kn PAGE" + (engine.statc[1] + 1) + "/3", EventRenderer.COLOR_RED);
 		}
 
@@ -918,7 +918,7 @@ public class TimeAttackMode extends AbstractNetMode {
 		}
 		if(netIsNetPlay && (netReplaySendStatus == 1)) {
 			receiver.drawMenuFont(engine, playerID, 0, 21, "SENDING...", EventRenderer.COLOR_PINK);
-		} else if(netIsNetPlay && !netIsWatch && (netReplaySendStatus == 2)) {
+		} else if(netIsNetPlay && !netIsWatch() && (netReplaySendStatus == 2)) {
 			receiver.drawMenuFont(engine, playerID, 1, 21, "A: RETRY", EventRenderer.COLOR_RED);
 		}
 	}
@@ -928,7 +928,7 @@ public class TimeAttackMode extends AbstractNetMode {
 	 */
 	@Override
 	public boolean onResult(GameEngine engine, int playerID) {
-		if(!netIsWatch) {
+		if(!netIsWatch()) {
 			if(engine.ctrl.isMenuRepeatKey(Controller.BUTTON_UP)) {
 				engine.statc[1]--;
 				if(engine.statc[1] < 0) engine.statc[1] = 2;

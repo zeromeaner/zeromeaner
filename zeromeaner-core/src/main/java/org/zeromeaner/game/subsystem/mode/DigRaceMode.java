@@ -346,7 +346,7 @@ public class DigRaceMode extends AbstractNetMode {
 				}
 
 				// NET: Signal options change
-				if(netIsNetPlay && (netNumSpectators > 0)) {
+				if(netIsNetPlay && (netNumSpectators() > 0)) {
 					netSendOptions(engine);
 				}
 			}
@@ -360,7 +360,7 @@ public class DigRaceMode extends AbstractNetMode {
 					loadPreset(engine, owner.modeConfig, presetNumber);
 
 					// NET: Signal options change
-					if(netIsNetPlay && (netNumSpectators > 0)) {
+					if(netIsNetPlay && (netNumSpectators() > 0)) {
 						netSendOptions(engine);
 					}
 				} else if(menuCursor == 10) {
@@ -432,7 +432,7 @@ public class DigRaceMode extends AbstractNetMode {
 	@Override
 	public boolean onReady(GameEngine engine, int playerID) {
 		if(engine.statc[0] == 0) {
-			if((!netIsNetPlay) || (!netIsWatch)) {
+			if((!netIsNetPlay) || (!netIsWatch())) {
 				engine.createFieldIfNeeded();
 				fillGarbage(engine, goaltype);
 
@@ -441,7 +441,7 @@ public class DigRaceMode extends AbstractNetMode {
 				engine.meterColor = GameEngine.METER_COLOR_GREEN;
 
 				// NET: Send field
-				if(netNumSpectators > 0) {
+				if(netNumSpectators() > 0) {
 					netSendField(engine, false);
 				}
 			}
@@ -458,7 +458,7 @@ public class DigRaceMode extends AbstractNetMode {
 			engine.big = big;
 		}
 
-		if(netIsWatch) {
+		if(netIsWatch()) {
 			owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
 		} else {
 			owner.bgmStatus.bgm = bgmno;
@@ -545,7 +545,7 @@ public class DigRaceMode extends AbstractNetMode {
 		receiver.drawScoreFont(engine, playerID, 0, 1, "(" + GOAL_TABLE[goaltype] + " GARBAGE GAME)", EventRenderer.COLOR_GREEN);
 
 		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
-			if(!owner.replayMode && (engine.ai == null) && !netIsWatch) {
+			if(!owner.replayMode && (engine.ai == null) && !netIsWatch()) {
 				String strPieceTemp = (owner.receiver.getNextDisplayType() == 2) ? "P." : "PIECE";
 				receiver.drawScoreFont(engine, playerID, 3, 3, "TIME     LINE " + strPieceTemp, EventRenderer.COLOR_BLUE);
 
@@ -638,7 +638,7 @@ public class DigRaceMode extends AbstractNetMode {
 
 		if(netIsNetPlay && (netReplaySendStatus == 1)) {
 			receiver.drawMenuFont(engine, playerID, 0, 19, "SENDING...", EventRenderer.COLOR_PINK);
-		} else if(netIsNetPlay && !netIsWatch && (netReplaySendStatus == 2)) {
+		} else if(netIsNetPlay && !netIsWatch() && (netReplaySendStatus == 2)) {
 			receiver.drawMenuFont(engine, playerID, 1, 19, "A: RETRY", EventRenderer.COLOR_RED);
 		}
 	}
@@ -657,7 +657,7 @@ public class DigRaceMode extends AbstractNetMode {
 		}
 
 		// Update rankings
-		if((!owner.replayMode) && (getRemainGarbageLines(engine, goaltype) == 0) && (engine.ending != 0) && (engine.ai == null) && (!netIsWatch)) {
+		if((!owner.replayMode) && (getRemainGarbageLines(engine, goaltype) == 0) && (engine.ending != 0) && (engine.ai == null) && (!netIsWatch())) {
 			updateRanking(engine.statistics.time, engine.statistics.lines, engine.statistics.totalPieceLocked);
 
 			if(rankingRank != -1) {

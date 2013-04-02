@@ -558,7 +558,7 @@ public class ComboRaceMode extends AbstractNetMode {
 				}
 
 				// NET: Signal options change
-				if(netIsNetPlay && (netNumSpectators > 0)) netSendOptions(engine);
+				if(netIsNetPlay && (netNumSpectators() > 0)) netSendOptions(engine);
 			}
 
 			// Confirm
@@ -569,7 +569,7 @@ public class ComboRaceMode extends AbstractNetMode {
 					loadPreset(engine, owner.modeConfig, presetNumber);
 
 					// NET: Signal options change
-					if(netIsNetPlay && (netNumSpectators > 0)) netSendOptions(engine);
+					if(netIsNetPlay && (netNumSpectators() > 0)) netSendOptions(engine);
 				} else if(menuCursor == 15) {
 					savePreset(engine, owner.modeConfig, presetNumber);
 					receiver.saveModeConfig(owner.modeConfig);
@@ -650,11 +650,11 @@ public class ComboRaceMode extends AbstractNetMode {
 			engine.meterColor = GameEngine.METER_COLOR_GREEN;
 			engine.meterValue = (GOAL_TABLE[goaltype] == -1) ? 0 : receiver.getMeterMax(engine);
 
-			if(!netIsWatch) {
+			if(!netIsWatch()) {
 				fillStack(engine, goaltype);
 
 				// NET: Send field
-				if(netNumSpectators > 0) {
+				if(netNumSpectators() > 0) {
 					netSendField(engine, false);
 				}
 			}
@@ -670,7 +670,7 @@ public class ComboRaceMode extends AbstractNetMode {
 		if(version <= 0) {
 			engine.big = big;
 		}
-		if(netIsWatch) {
+		if(netIsWatch()) {
 			owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
 		} else {
 			owner.bgmStatus.bgm = bgmno;
@@ -957,7 +957,7 @@ public class ComboRaceMode extends AbstractNetMode {
 
 		if(netIsNetPlay && (netReplaySendStatus == 1)) {
 			receiver.drawMenuFont(engine, playerID, 0, 19, "SENDING...", EventRenderer.COLOR_PINK);
-		} else if(netIsNetPlay && !netIsWatch && (netReplaySendStatus == 2)) {
+		} else if(netIsNetPlay && !netIsWatch() && (netReplaySendStatus == 2)) {
 			receiver.drawMenuFont(engine, playerID, 1, 19, "A: RETRY", EventRenderer.COLOR_RED);
 		}
 	}

@@ -331,7 +331,7 @@ public class UltraMode extends AbstractNetMode {
 				}
 
 				// NET: Signal options change
-				if(netIsNetPlay && (netNumSpectators > 0)) netSendOptions(engine);
+				if(netIsNetPlay && (netNumSpectators() > 0)) netSendOptions(engine);
 			}
 
 			// Confirm
@@ -342,7 +342,7 @@ public class UltraMode extends AbstractNetMode {
 					loadPreset(engine, owner.modeConfig, presetNumber);
 
 					// NET: Signal options change
-					if(netIsNetPlay && (netNumSpectators > 0)) netSendOptions(engine);
+					if(netIsNetPlay && (netNumSpectators() > 0)) netSendOptions(engine);
 				} else if(menuCursor == 17) {
 					savePreset(engine, owner.modeConfig, presetNumber);
 					receiver.saveModeConfig(owner.modeConfig);
@@ -433,7 +433,7 @@ public class UltraMode extends AbstractNetMode {
 		engine.meterValue = 320;
 		engine.meterColor = GameEngine.METER_COLOR_GREEN;
 
-		if(netIsWatch) {
+		if(netIsWatch()) {
 			owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
 		} else {
 			owner.bgmStatus.bgm = bgmno;
@@ -733,7 +733,7 @@ public class UltraMode extends AbstractNetMode {
 			if(remainTime <= 20*60) engine.meterColor = GameEngine.METER_COLOR_ORANGE;
 			if(remainTime <= 10*60) engine.meterColor = GameEngine.METER_COLOR_RED;
 
-			if(!netIsWatch) {
+			if(!netIsWatch()) {
 				// Out of time
 				if(engine.statistics.time >= limitTime) {
 					engine.gameEnded();
@@ -793,7 +793,7 @@ public class UltraMode extends AbstractNetMode {
 
 		if(netIsNetPlay && (netReplaySendStatus == 1)) {
 			receiver.drawMenuFont(engine, playerID, 0, 22, "SENDING...", EventRenderer.COLOR_PINK);
-		} else if(netIsNetPlay && !netIsWatch && (netReplaySendStatus == 2)) {
+		} else if(netIsNetPlay && !netIsWatch() && (netReplaySendStatus == 2)) {
 			receiver.drawMenuFont(engine, playerID, 1, 22, "A: RETRY", EventRenderer.COLOR_RED);
 		}
 	}
