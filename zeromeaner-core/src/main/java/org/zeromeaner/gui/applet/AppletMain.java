@@ -77,6 +77,8 @@ public class AppletMain extends Applet {
 	public JDesktopPane desktop;
 	
 	public Component notification;
+	
+	private JPanel panel;
 
 	public static void main(String[] args) {
 		System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".0mino");
@@ -115,15 +117,15 @@ public class AppletMain extends Applet {
 		
 		JFrame frame = new JFrame("Zeromeaner");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(800, 800);
 		frame.setLayout(new BorderLayout());
 		AppletMain applet = new AppletMain();
 		applet.setStub(new MainAppletStub());
-		frame.add(applet, BorderLayout.CENTER);
+		frame.add(applet.panel = new JPanel(new BorderLayout()), BorderLayout.CENTER);
+		frame.pack();
+		frame.setSize(800, 800);
 		frame.setVisible(true);
 		frame.setLocationRelativeTo(null);
 		applet.init();
-		applet.start();
 	}
 	
 	public AppletMain() {
@@ -131,7 +133,7 @@ public class AppletMain extends Applet {
 	
 	public void notifyUser(Icon icon, String message, String copyable) {
 		if(notification != null)
-			remove(notification);
+			panel.remove(notification);
 		JPanel p = new JPanel(new BorderLayout());
 		if(icon != null)
 			p.add(new JLabel(icon), BorderLayout.WEST);
@@ -149,8 +151,8 @@ public class AppletMain extends Applet {
 			}
 		}), BorderLayout.EAST);
 		if(icon != null || message != null)
-			add(notification = p, BorderLayout.SOUTH);
-		validate();
+			panel.add(notification = p, BorderLayout.SOUTH);
+		panel.revalidate();
 	}
 	
 	@Override
@@ -178,6 +180,8 @@ public class AppletMain extends Applet {
 			}
 		
 		setLayout(new BorderLayout());
+		if(panel == null)
+			add(panel = new JPanel(new BorderLayout()), BorderLayout.CENTER);
 		
 		desktop = new JDesktopPane() {
 			@Override
@@ -190,7 +194,8 @@ public class AppletMain extends Applet {
 		};
 		desktop.setBackground(Color.decode("0x444488"));
 		desktop.setDoubleBuffered(true);
-		add(desktop, BorderLayout.CENTER);
+		panel.add(desktop, BorderLayout.CENTER);
+		panel.revalidate();
 
 		userId = CookieAccess.get("userId");
 		if(userId == null)
@@ -415,7 +420,7 @@ public class AppletMain extends Applet {
 	
 		@Override
 		public URL getCodeBase() {
-			return null;
+			return getDocumentBase();
 		}
 	
 		@Override
