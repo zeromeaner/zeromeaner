@@ -709,7 +709,10 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 						Toolkit.getDefaultToolkit().sync();
 				}
 			};
-			EventQueue.invokeLater(r);
+			try {
+				EventQueue.invokeAndWait(r);
+			} catch(Exception ex) {
+			}
 
 			ssflag = false;
 //		} else if((bufferStrategy != null) && !bufferStrategy.contentsLost()) {
@@ -773,7 +776,10 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 							Toolkit.getDefaultToolkit().sync();
 					}
 				};
-				EventQueue.invokeLater(r);
+				try {
+					EventQueue.invokeAndWait(r);
+				} catch(Exception ex) {
+				}
 
 			ssflag = false;
 //		} else if((bufferStrategy != null) && !bufferStrategy.contentsLost()) {
