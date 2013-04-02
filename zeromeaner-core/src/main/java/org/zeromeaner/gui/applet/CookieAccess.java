@@ -47,7 +47,7 @@ public class CookieAccess {
 				bout.write(Integer.parseInt(data.substring(i, i+2), 16));
 			}
 			return (Map<String, String>) new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray())).readObject();
-		} catch(Exception ex) {
+		} catch(Throwable t) {
 			return new TreeMap<String, String>();
 		}
 	}
@@ -78,6 +78,6 @@ public class CookieAccess {
 			JSObject doc = (JSObject) win.getMember("document");
 			String data = "c=" + value + "; path=/; expires=Thu, 31-Dec-2019 12:00:00 GMT";
 			doc.setMember("cookie", data);
-		} catch(Exception ex) {
+		} catch(Throwable t) {
 		}
 	}}
