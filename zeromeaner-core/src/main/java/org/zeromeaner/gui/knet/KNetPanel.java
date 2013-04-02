@@ -19,6 +19,7 @@ import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -314,12 +315,18 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 		}
 		
 		private void joined() {
-			if(getChannel().getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
+			if(channel.getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
 				return;
 			activeChannel = this;
+			Icon icon;
+			if(channel.getPlayers().contains(client.getSource())) {
+				icon = new ImageIcon(KNetPanel.class.getClassLoader().getResource("org/zeromeaner/game/knet/active-channel.png"));
+			} else {
+				icon = new ImageIcon(KNetPanel.class.getClassLoader().getResource("org/zeromeaner/game/knet/spectator-channel.png"));
+			}
 			connectedPanel.channels.setIconAt(
 					connectedPanel.channels.indexOfComponent(this),
-					new ImageIcon(KNetPanel.class.getClassLoader().getResource("org/zeromeaner/game/knet/active-channel.png")));
+					icon);
 			revalidate();
 			fireKnetPanelJoined(getChannel());
 		}
