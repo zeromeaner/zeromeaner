@@ -457,7 +457,7 @@ public class DigChallengeMode extends AbstractNetMode {
 				}
 
 				// NET: Signal options change
-				if(netIsNetPlay && (netNumSpectators > 0)) netSendOptions(engine);
+				if(netIsNetPlay && (netNumSpectators() > 0)) netSendOptions(engine);
 			}
 
 			// Confirm
@@ -551,7 +551,7 @@ public class DigChallengeMode extends AbstractNetMode {
 
 		setSpeed(engine);
 
-		if(netIsWatch) {
+		if(netIsWatch()) {
 			owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
 		} else {
 			owner.bgmStatus.bgm = bgmno;
@@ -694,13 +694,13 @@ public class DigChallengeMode extends AbstractNetMode {
 			updateMeter(engine);
 
 			// Add pending garbage (Normal)
-			if((garbageTimer >= getGarbageMaxTime(engine.statistics.level)) && (goaltype == GOALTYPE_NORMAL) && (!netIsWatch)) {
+			if((garbageTimer >= getGarbageMaxTime(engine.statistics.level)) && (goaltype == GOALTYPE_NORMAL) && (!netIsWatch())) {
 				if(version >= 1) {
 					garbagePending++;
 					garbageTimer = 0;
 
 					// NET: Send stats
-					if(netIsNetPlay && !netIsWatch && (netNumSpectators > 0)) {
+					if(netIsNetPlay && !netIsWatch() && (netNumSpectators() > 0)) {
 						netSendStats(engine);
 					}
 				} else {
@@ -710,13 +710,13 @@ public class DigChallengeMode extends AbstractNetMode {
 
 			// Add Garbage (Realtime)
 			if((garbageTimer >= getGarbageMaxTime(engine.statistics.level)) && (goaltype == GOALTYPE_REALTIME) &&
-			   (engine.stat != GameEngine.Status.LINECLEAR) && (!netIsWatch))
+			   (engine.stat != GameEngine.Status.LINECLEAR) && (!netIsWatch()))
 			{
 				addGarbage(engine);
 				garbageTimer = 0;
 
 				// NET: Send field and stats
-				if(netIsNetPlay && !netIsWatch && (netNumSpectators > 0)) {
+				if(netIsNetPlay && !netIsWatch() && (netNumSpectators() > 0)) {
 					netSendField(engine, false);
 					netSendStats(engine);
 				}
@@ -740,7 +740,7 @@ public class DigChallengeMode extends AbstractNetMode {
 					engine.nowPieceBottomY = engine.nowPieceObject.getBottom(engine.nowPieceX, engine.nowPieceY, engine.field);
 
 					// NET: Send piece movement
-					if(netIsNetPlay && !netIsWatch && (netNumSpectators > 0)) netSendPieceMovement(engine, true);
+					if(netIsNetPlay && !netIsWatch() && (netNumSpectators() > 0)) netSendPieceMovement(engine, true);
 				}
 			}
 		}
@@ -994,7 +994,7 @@ public class DigChallengeMode extends AbstractNetMode {
 
 		if(netIsNetPlay && (netReplaySendStatus == 1)) {
 			receiver.drawMenuFont(engine, playerID, 0, 19, "SENDING...", EventRenderer.COLOR_PINK);
-		} else if(netIsNetPlay && !netIsWatch && (netReplaySendStatus == 2)) {
+		} else if(netIsNetPlay && !netIsWatch() && (netReplaySendStatus == 2)) {
 			receiver.drawMenuFont(engine, playerID, 1, 19, "A: RETRY", EventRenderer.COLOR_RED);
 		}
 	}

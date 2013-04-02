@@ -239,13 +239,13 @@ public class LineRaceMode extends AbstractNetMode {
 				}
 
 				// NET: Signal options change
-				if(netIsNetPlay && (netNumSpectators > 0)) {
+				if(netIsNetPlay && (netNumSpectators() > 0)) {
 					netSendOptions(engine);
 				}
 			}
 
 			// Confirm
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5) && (!netIsWatch)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5) && (!netIsWatch())) {
 				engine.playSE("decide");
 
 				if(menuCursor == 10) {
@@ -253,7 +253,7 @@ public class LineRaceMode extends AbstractNetMode {
 					loadPreset(engine, owner.modeConfig, presetNumber);
 
 					// NET: Signal options change
-					if(netIsNetPlay && (netNumSpectators > 0)) {
+					if(netIsNetPlay && (netNumSpectators() > 0)) {
 						netSendOptions(engine);
 					}
 				} else if(menuCursor == 11) {
@@ -327,7 +327,7 @@ public class LineRaceMode extends AbstractNetMode {
 	public void startGame(GameEngine engine, int playerID) {
 		engine.big = big;
 
-		if(netIsWatch) {
+		if(netIsWatch()) {
 			owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
 		} else {
 			owner.bgmStatus.bgm = bgmno;
@@ -348,7 +348,7 @@ public class LineRaceMode extends AbstractNetMode {
 		receiver.drawScoreFont(engine, playerID, 0, 1, "(" + GOAL_TABLE[goaltype] + " LINES GAME)", EventRenderer.COLOR_RED);
 
 		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
-			if(!owner.replayMode && !big && (engine.ai == null) && !netIsWatch) {
+			if(!owner.replayMode && !big && (engine.ai == null) && !netIsWatch()) {
 				float scale = (receiver.getNextDisplayType() == 2) ? 0.5f : 1.0f;
 				int topY = (receiver.getNextDisplayType() == 2) ? 6 : 4;
 				receiver.drawScoreFont(engine, playerID, 3, topY-1, "TIME     PIECE PPS", EventRenderer.COLOR_BLUE, scale);
@@ -445,7 +445,7 @@ public class LineRaceMode extends AbstractNetMode {
 
 		if(netIsNetPlay && (netReplaySendStatus == 1)) {
 			receiver.drawMenuFont(engine, playerID, 0, 19, "SENDING...", EventRenderer.COLOR_PINK);
-		} else if(netIsNetPlay && !netIsWatch && (netReplaySendStatus == 2)) {
+		} else if(netIsNetPlay && !netIsWatch() && (netReplaySendStatus == 2)) {
 			receiver.drawMenuFont(engine, playerID, 1, 19, "A: RETRY", EventRenderer.COLOR_RED);
 		}
 	}
@@ -463,7 +463,7 @@ public class LineRaceMode extends AbstractNetMode {
 		}
 
 		// Update rankings
-		if((!owner.replayMode) && (engine.statistics.lines >= GOAL_TABLE[goaltype]) && (!big) && (engine.ai == null) && (!netIsWatch))
+		if((!owner.replayMode) && (engine.statistics.lines >= GOAL_TABLE[goaltype]) && (!big) && (engine.ai == null) && (!netIsWatch()))
 		{
 			updateRanking(engine.statistics.time, engine.statistics.totalPieceLocked, engine.statistics.pps);
 

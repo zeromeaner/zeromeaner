@@ -162,13 +162,13 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	}
 	
 	public void joinChannel(int channelId) {
-		if(currentChannel != null)
+		if(currentChannel != null && currentChannel.getId() != channelId)
 			leaveChannel();
 		fireTCP(CHANNEL_JOIN, CHANNEL_ID, channelId);
 	}
 	
 	public void spectateChannel(int channelId) {
-		if(currentChannel != null)
+		if(currentChannel != null && currentChannel.getId() != channelId)
 			leaveChannel();
 		fireTCP(CHANNEL_JOIN, CHANNEL_SPECTATE, CHANNEL_ID, channelId);
 	}

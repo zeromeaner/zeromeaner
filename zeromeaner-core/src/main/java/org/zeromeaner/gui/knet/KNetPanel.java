@@ -7,7 +7,10 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -290,6 +294,9 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 				}
 			});
 			
+			line.setEnabled(false);
+			line.setText("Join channel to chat");
+			
 			client.addKNetChannelListener(this);
 			
 			update();
@@ -308,12 +315,18 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 		}
 		
 		private void joined() {
-			if(getChannel().getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
+			if(channel.getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
 				return;
 			activeChannel = this;
+			Icon icon;
+			if(channel.getPlayers().contains(client.getSource())) {
+				icon = new ImageIcon(KNetPanel.class.getClassLoader().getResource("org/zeromeaner/game/knet/active-channel.png"));
+			} else {
+				icon = new ImageIcon(KNetPanel.class.getClassLoader().getResource("org/zeromeaner/game/knet/spectator-channel.png"));
+			}
 			connectedPanel.channels.setIconAt(
 					connectedPanel.channels.indexOfComponent(this),
-					new ImageIcon(KNetPanel.class.getClassLoader().getResource("org/zeromeaner/game/knet/active-channel.png")));
+					icon);
 			revalidate();
 			fireKnetPanelJoined(getChannel());
 		}
@@ -333,19 +346,61 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 		}
 
 		private void update() {
+			List<String> prevMembers = new ArrayList<String>();
+			for(Object m : membersModel.toArray()) {
+				prevMembers.add((String) m);
+			}
 			membersModel.clear();
 			if("Join channel to chat".equals(line.getText())) {
 				line.setEnabled(false);
 				line.setText("Join channel to chat");
 			}
 			for(KNetEventSource s : channel.getMembers()) {
-				membersModel.addElement(s.getName());
+				membersModel.addElement((channel.getPlayers().contains(s) ? "\u2297" : "\u2299") + s.getName());
 				if("Join channel to chat".equals(line.getText())) {
 					if(s.equals(client.getSource())) {
 						line.setEnabled(true);
 						line.setText("");
 					}
 				}
+			}
+			
+			Collections.sort(new AbstractList<String>() {
+				@Override
+				public String get(int index) {
+					return (String) membersModel.get(index);
+				}
+
+				@Override
+				public int size() {
+					return membersModel.size();
+				}
+				
+				@Override
+				public String set(int index, String element) {
+					String old = get(index);
+					membersModel.set(index, element);
+					return old;
+				}
+			});
+			
+			List<String> newMembers = new ArrayList<String>();
+			for(Object m : membersModel.toArray()) {
+				newMembers.add((String) m);
+			}
+			List<String> parted = new ArrayList<String>(prevMembers); parted.removeAll(newMembers);
+			List<String> joined = new ArrayList<String>(newMembers); joined.removeAll(prevMembers);
+			for(String m : parted) {
+				String text = history.getText();
+				text += text.isEmpty() ? "" : "\n";
+				text += m + " left the channel.";
+				history.setText(text);
+			}
+			for(String m : joined) {
+				String text = history.getText();
+				text += text.isEmpty() ? "" : "\n";
+				text += m + " joined the channel.";
+				history.setText(text);
 			}
 			revalidate();
 		}
@@ -638,6 +693,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 		channels.put(e.getChannel().getId(), chanPan);
 		if(e.getChannel().getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
 			client.fireTCP(CHANNEL_JOIN, CHANNEL_ID, KNetChannelInfo.LOBBY_CHANNEL_ID);
+		connectedPanel.channels.setSelectedComponent(chanPan);
 		revalidate();
 		repaint();
 	}

@@ -114,7 +114,7 @@ public class KNetChannelInfoPanel extends JPanel {
 				LstResourceMap recdRules = new LstResourceMap("config/list/recommended_rules.lst");
 				List<String> ruleResources = recdRules.get(mode.getSelectedItem());
 				if(ruleResources == null || ruleResources.size() == 0) {
-					ruleResources = Arrays.asList("config/rule/Standard.rul");
+					ruleResources = Arrays.asList("config/rule/StandardZero.rul", "config/rule/Standard.rul");
 				}
 				RuleList rules = RuleList.FROM_RESOURCE.map(ruleResources, new RuleList());
 				for(String ruleName : rules.getNames()) {

@@ -316,7 +316,7 @@ public class GameTuningInternalFrame extends JInternalFrame implements ActionLis
 			BufferedImage imgBlock = (BufferedImage) ResourceHolderApplet.imgNormalBlockList.get(i);
 			boolean isSticky = ResourceHolderApplet.blockStickyFlagList.get(i);
 
-			imgBlockSkins[i] = new BufferedImage(144, 16, BufferedImage.TYPE_INT_RGB);
+			imgBlockSkins[i] = new BufferedImage(144, 16, BufferedImage.TYPE_INT_ARGB);
 
 			if(isSticky) {
 				for(int j = 0; j < 9; j++) {

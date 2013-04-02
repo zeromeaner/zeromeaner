@@ -7,6 +7,7 @@ import java.applet.AudioClip;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
@@ -461,14 +462,16 @@ public class AppletMain extends Applet {
 	
 		@Override
 		public void showDocument(URL url, String target) {
-			// TODO Auto-generated method stub
-			
+			try {
+				Desktop.getDesktop().browse(url.toURI());
+			} catch(Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 	
 		@Override
 		public void showDocument(URL url) {
-			// TODO Auto-generated method stub
-			
+			showDocument(url, "_blank");
 		}
 	
 		@Override
