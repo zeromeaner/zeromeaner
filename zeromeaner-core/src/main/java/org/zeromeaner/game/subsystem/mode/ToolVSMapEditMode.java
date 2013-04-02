@@ -177,7 +177,7 @@ public class ToolVSMapEditMode extends AbstractMode {
 		if(change != 0) {
 			engine.playSE("change");
 
-			switch(engine.statc[2]) {
+			switch(menuCursor) {
 			case 0:
 			case 1:
 			case 2:
@@ -199,26 +199,26 @@ public class ToolVSMapEditMode extends AbstractMode {
 		}
 
 		// Decision
-		if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+		if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 			engine.playSE("decide");
 
-			if(engine.statc[2] == 0) {
+			if(menuCursor == 0) {
 				// EDIT
 				engine.enterFieldEdit();
-			} else if(engine.statc[2] == 1) {
+			} else if(menuCursor == 1) {
 				// GRAY->?
 				grayToRandomColor(engine.field);
-			} else if(engine.statc[2] == 2) {
+			} else if(menuCursor == 2) {
 				// CLEAR
 				engine.field.reset();
-			} else if(engine.statc[2] == 3) {
+			} else if(menuCursor == 3) {
 				// SAVE
 				if((nowMapID >= 0) && (nowMapID < listFields.size())) {
 					listFields.get(nowMapID).copy(engine.field);
 				} else {
 					listFields.add(new Field(engine.field));
 				}
-			} else if(engine.statc[2] == 4) {
+			} else if(menuCursor == 4) {
 				// LOAD
 				if((nowMapID >= 0) && (nowMapID < listFields.size())) {
 					engine.field.copy(listFields.get(nowMapID));
@@ -226,16 +226,16 @@ public class ToolVSMapEditMode extends AbstractMode {
 				} else {
 					engine.field.reset();
 				}
-			} else if(engine.statc[2] == 5) {
+			} else if(menuCursor == 5) {
 				// DELETE
 				if((nowMapID >= 0) && (nowMapID < listFields.size())) {
 					listFields.remove(nowMapID);
 					if(nowMapID >= listFields.size()) nowMapID = listFields.size();
 				}
-			} else if(engine.statc[2] == 6) {
+			} else if(menuCursor == 6) {
 				// WRITE
 				saveAllMaps(nowMapSetID);
-			} else if(engine.statc[2] == 7) {
+			} else if(menuCursor == 7) {
 				// READ
 				loadAllMaps(nowMapSetID);
 				nowMapID = 0;
@@ -244,11 +244,11 @@ public class ToolVSMapEditMode extends AbstractMode {
 		}
 
 		// End
-		if(engine.ctrl.isPress(Controller.BUTTON_D) && engine.ctrl.isPress(Controller.BUTTON_E) && (engine.statc[3] >= 5)) {
+		if(engine.ctrl.isPress(Controller.BUTTON_D) && engine.ctrl.isPress(Controller.BUTTON_E) && (menuTime >= 5)) {
 			engine.quitflag = true;
 		}
 
-		engine.statc[3]++;
+		menuTime++;
 		return true;
 	}
 
@@ -258,33 +258,33 @@ public class ToolVSMapEditMode extends AbstractMode {
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
 		receiver.drawMenuFont(engine, playerID, 0, 1, "FIELD EDIT", EventRenderer.COLOR_DARKBLUE);
-		if((engine.statc[2] >= 0) && (engine.statc[2] <= 2)) {
-			receiver.drawMenuFont(engine, playerID, 0, 2 + engine.statc[2], "b", EventRenderer.COLOR_RED);
+		if((menuCursor >= 0) && (menuCursor <= 2)) {
+			receiver.drawMenuFont(engine, playerID, 0, 2 + menuCursor, "b", EventRenderer.COLOR_RED);
 		}
-		receiver.drawMenuFont(engine, playerID, 1, 2, "[EDIT]", (engine.statc[2] == 0));
-		receiver.drawMenuFont(engine, playerID, 1, 3, "[GRAY->?]", (engine.statc[2] == 1));
-		receiver.drawMenuFont(engine, playerID, 1, 4, "[CLEAR]", (engine.statc[2] == 2));
+		receiver.drawMenuFont(engine, playerID, 1, 2, "[EDIT]", (menuCursor == 0));
+		receiver.drawMenuFont(engine, playerID, 1, 3, "[GRAY->?]", (menuCursor == 1));
+		receiver.drawMenuFont(engine, playerID, 1, 4, "[CLEAR]", (menuCursor == 2));
 
 		receiver.drawMenuFont(engine, playerID, 0, 6, "MAP DATA", EventRenderer.COLOR_DARKBLUE);
 		if(listFields.size() > 0) {
-			receiver.drawMenuFont(engine, playerID, 0, 7, nowMapID + "/" + (listFields.size() - 1), (engine.statc[2] >= 3) && (engine.statc[2] <= 5));
+			receiver.drawMenuFont(engine, playerID, 0, 7, nowMapID + "/" + (listFields.size() - 1), (menuCursor >= 3) && (menuCursor <= 5));
 		} else {
-			receiver.drawMenuFont(engine, playerID, 0, 7, "NO MAPS", (engine.statc[2] >= 3) && (engine.statc[2] <= 5));
+			receiver.drawMenuFont(engine, playerID, 0, 7, "NO MAPS", (menuCursor >= 3) && (menuCursor <= 5));
 		}
-		if((engine.statc[2] >= 3) && (engine.statc[2] <= 5)) {
-			receiver.drawMenuFont(engine, playerID, 0, 8 + engine.statc[2] - 3, "b", EventRenderer.COLOR_RED);
+		if((menuCursor >= 3) && (menuCursor <= 5)) {
+			receiver.drawMenuFont(engine, playerID, 0, 8 + menuCursor - 3, "b", EventRenderer.COLOR_RED);
 		}
-		receiver.drawMenuFont(engine, playerID, 1, 8, "[SAVE]", (engine.statc[2] == 3));
-		receiver.drawMenuFont(engine, playerID, 1, 9, "[LOAD]", (engine.statc[2] == 4));
-		receiver.drawMenuFont(engine, playerID, 1, 10, "[DELETE]", (engine.statc[2] == 5));
+		receiver.drawMenuFont(engine, playerID, 1, 8, "[SAVE]", (menuCursor == 3));
+		receiver.drawMenuFont(engine, playerID, 1, 9, "[LOAD]", (menuCursor == 4));
+		receiver.drawMenuFont(engine, playerID, 1, 10, "[DELETE]", (menuCursor == 5));
 
 		receiver.drawMenuFont(engine, playerID, 0, 12, "MAP FILE", EventRenderer.COLOR_DARKBLUE);
-		receiver.drawMenuFont(engine, playerID, 0, 13, nowMapSetID + "/99", (engine.statc[2] >= 6) && (engine.statc[2] <= 7));
-		if((engine.statc[2] >= 6) && (engine.statc[2] <= 7)) {
-			receiver.drawMenuFont(engine, playerID, 0, 14 + engine.statc[2] - 6, "b", EventRenderer.COLOR_RED);
+		receiver.drawMenuFont(engine, playerID, 0, 13, nowMapSetID + "/99", (menuCursor >= 6) && (menuCursor <= 7));
+		if((menuCursor >= 6) && (menuCursor <= 7)) {
+			receiver.drawMenuFont(engine, playerID, 0, 14 + menuCursor - 6, "b", EventRenderer.COLOR_RED);
 		}
-		receiver.drawMenuFont(engine, playerID, 1, 14, "[WRITE]", (engine.statc[2] == 6));
-		receiver.drawMenuFont(engine, playerID, 1, 15, "[READ]", (engine.statc[2] == 7));
+		receiver.drawMenuFont(engine, playerID, 1, 14, "[WRITE]", (menuCursor == 6));
+		receiver.drawMenuFont(engine, playerID, 1, 15, "[READ]", (menuCursor == 7));
 
 		receiver.drawMenuFont(engine, playerID, 0, 19, "EXIT-> D+E", EventRenderer.COLOR_ORANGE);
 	}

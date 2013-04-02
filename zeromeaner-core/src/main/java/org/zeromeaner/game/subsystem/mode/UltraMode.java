@@ -250,7 +250,7 @@ public class UltraMode extends AbstractNetMode {
 				if(engine.ctrl.isPress(Controller.BUTTON_E)) m = 100;
 				if(engine.ctrl.isPress(Controller.BUTTON_F)) m = 1000;
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					engine.speed.gravity += change * m;
 					if(engine.speed.gravity < -1) engine.speed.gravity = 99999;
@@ -335,15 +335,15 @@ public class UltraMode extends AbstractNetMode {
 			}
 
 			// Confirm
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				engine.playSE("decide");
 
-				if(engine.statc[2] == 16) {
+				if(menuCursor == 16) {
 					loadPreset(engine, owner.modeConfig, presetNumber);
 
 					// NET: Signal options change
 					if(netIsNetPlay && (netNumSpectators > 0)) netSendOptions(engine);
-				} else if(engine.statc[2] == 17) {
+				} else if(menuCursor == 17) {
 					savePreset(engine, owner.modeConfig, presetNumber);
 					receiver.saveModeConfig(owner.modeConfig);
 				} else {
@@ -364,17 +364,17 @@ public class UltraMode extends AbstractNetMode {
 				engine.quitflag = true;
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		}
 		// Replay
 		else {
-			engine.statc[3]++;
-			engine.statc[2] = 0;
+			menuTime++;
+			menuCursor = 0;
 
-			if(engine.statc[3] >= 60) {
-				engine.statc[2] = 10;
+			if(menuTime >= 60) {
+				menuCursor = 10;
 			}
-			if(engine.statc[3] >= 120) {
+			if(menuTime >= 120) {
 				return false;
 			}
 		}
@@ -387,7 +387,7 @@ public class UltraMode extends AbstractNetMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		if(engine.statc[2] < 10) {
+		if(menuCursor < 10) {
 			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
 					"GRAVITY", String.valueOf(engine.speed.gravity),
 					"G-MAX", String.valueOf(engine.speed.denominator),
@@ -468,7 +468,7 @@ public class UltraMode extends AbstractNetMode {
 		receiver.drawScoreFont(engine, playerID, 0, 0, "ULTRA", EventRenderer.COLOR_CYAN);
 		receiver.drawScoreFont(engine, playerID, 0, 1, "(" + (goaltype + 1) + " MINUTE GAME)", EventRenderer.COLOR_CYAN);
 
-		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
+		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (big == false) && (engine.ai == null)) {
 				receiver.drawScoreFont(engine, playerID, 0, 3, "SCORE RANKING", EventRenderer.COLOR_GREEN);
 				receiver.drawScoreFont(engine, playerID, 3, 4, "SCORE  LINE", EventRenderer.COLOR_BLUE);
@@ -738,7 +738,7 @@ public class UltraMode extends AbstractNetMode {
 				if(engine.statistics.time >= limitTime) {
 					engine.gameEnded();
 					engine.resetStatc();
-					engine.stat = GameEngine.STAT_ENDINGSTART;
+					engine.stat = GameEngine.Status.ENDINGSTART;
 					return;
 				}
 
@@ -769,20 +769,20 @@ public class UltraMode extends AbstractNetMode {
 	 */
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
-		drawResultStats(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, STAT_SCORE);
+		drawResultStats(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, Statistic.SCORE);
 		if(rankingRank[0] != -1) {
 			String strRank = String.format("RANK %d", rankingRank[0] + 1);
 			receiver.drawMenuFont(engine, playerID, 4, 2, strRank, EventRenderer.COLOR_ORANGE);
 		}
 
-		drawResultStats(engine, playerID, receiver, 3, EventRenderer.COLOR_BLUE, STAT_LINES);
+		drawResultStats(engine, playerID, receiver, 3, EventRenderer.COLOR_BLUE, Statistic.LINES);
 		if(rankingRank[1] != -1) {
 			String strRank = String.format("RANK %d", rankingRank[1] + 1);
 			receiver.drawMenuFont(engine, playerID, 4, 5, strRank, EventRenderer.COLOR_ORANGE);
 		}
 
 		drawResultStats(engine, playerID, receiver, 6, EventRenderer.COLOR_BLUE,
-				STAT_PIECE, STAT_SPL, STAT_SPM, STAT_LPM, STAT_PPS);
+				Statistic.PIECE, Statistic.SPL, Statistic.SPM, Statistic.LPM, Statistic.PPS);
 
 		drawResultNetRank(engine, playerID, receiver, 16, EventRenderer.COLOR_BLUE, netRankingRank[0]);
 		drawResultNetRankDaily(engine, playerID, receiver, 18, EventRenderer.COLOR_BLUE, netRankingRank[1]);

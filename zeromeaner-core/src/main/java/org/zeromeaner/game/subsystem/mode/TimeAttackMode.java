@@ -233,7 +233,7 @@ public class TimeAttackMode extends AbstractNetMode {
 	/** Number of ranking types */
 	private static final int RANKING_TYPE = 11;
 
-	/** EventReceiver object (This receives many game events, can also be used for drawing the fonts.) */
+	/** EventRenderer object (This receives many game events, can also be used for drawing the fonts.) */
 
 	/** Remaining level time */
 	private int levelTimer;
@@ -490,7 +490,7 @@ public class TimeAttackMode extends AbstractNetMode {
 			if(change != 0) {
 				receiver.playSE("change");
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					goaltype += change;
 					if(goaltype < 0) goaltype = GAMETYPE_MAX - 1;
@@ -519,7 +519,7 @@ public class TimeAttackMode extends AbstractNetMode {
 			}
 
 			// Check for A button, when pressed this will begin the game
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				receiver.playSE("decide");
 				saveSetting(owner.modeConfig);
 				receiver.saveModeConfig(owner.modeConfig);
@@ -536,12 +536,12 @@ public class TimeAttackMode extends AbstractNetMode {
 				engine.quitflag = true;
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		} else {
-			engine.statc[3]++;
-			engine.statc[2] = -1;
+			menuTime++;
+			menuCursor = -1;
 
-			if(engine.statc[3] >= 60) {
+			if(menuTime >= 60) {
 				return false;
 			}
 		}
@@ -600,7 +600,7 @@ public class TimeAttackMode extends AbstractNetMode {
 		receiver.drawScoreFont(engine, playerID, 0, 0, "TIME ATTACK", EventRenderer.COLOR_PURPLE);
 		receiver.drawScoreFont(engine, playerID, 0, 1, "("+GAMETYPE_NAME_LONG[goaltype]+")", EventRenderer.COLOR_PURPLE);
 
-		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
+		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (startlevel == 0) && (big == false) && (engine.ai == null) && (!netIsWatch)) {
 				receiver.drawScoreFont(engine, playerID, 3, 3, "LINE TIME", EventRenderer.COLOR_BLUE);
 
@@ -725,7 +725,7 @@ public class TimeAttackMode extends AbstractNetMode {
 			} else if(!netIsWatch) {
 				engine.gameEnded();
 				engine.resetStatc();
-				engine.stat = GameEngine.STAT_GAMEOVER;
+				engine.stat = GameEngine.Status.GAMEOVER;
 			}
 		}
 
@@ -778,7 +778,7 @@ public class TimeAttackMode extends AbstractNetMode {
 				engine.statistics.rollclear = 2;
 				engine.gameEnded();
 				engine.resetStatc();
-				engine.stat = GameEngine.STAT_EXCELLENT;
+				engine.stat = GameEngine.Status.EXCELLENT;
 			}
 		}
 	}
@@ -881,7 +881,7 @@ public class TimeAttackMode extends AbstractNetMode {
 			receiver.drawMenuFont(engine, playerID,  0, 3, strLines, gcolor);
 
 			drawResultStats(engine, playerID, receiver, 4, EventRenderer.COLOR_BLUE,
-					STAT_LEVEL, STAT_TIME, STAT_PIECE, STAT_LPM, STAT_PPS);
+					Statistic.LEVEL, Statistic.TIME, Statistic.PIECE, Statistic.LPM, Statistic.PPS);
 			drawResultRank(engine, playerID, receiver, 14, EventRenderer.COLOR_BLUE, rankingRank);
 			drawResultNetRank(engine, playerID, receiver, 16, EventRenderer.COLOR_BLUE, netRankingRank[0]);
 			drawResultNetRankDaily(engine, playerID, receiver, 18, EventRenderer.COLOR_BLUE, netRankingRank[1]);

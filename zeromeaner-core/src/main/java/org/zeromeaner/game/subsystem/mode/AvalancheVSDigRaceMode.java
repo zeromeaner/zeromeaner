@@ -132,7 +132,7 @@ public class AvalancheVSDigRaceMode extends AbstractAvalancheVSMode {
 				if(engine.ctrl.isPress(Controller.BUTTON_E)) m = 100;
 				if(engine.ctrl.isPress(Controller.BUTTON_F)) m = 1000;
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					engine.speed.gravity += change * m;
 					if(engine.speed.gravity < -1) engine.speed.gravity = 99999;
@@ -270,12 +270,12 @@ public class AvalancheVSDigRaceMode extends AbstractAvalancheVSMode {
 			}
 
 			// Decision
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				engine.playSE("decide");
 
-				if(engine.statc[2] == 27) {
+				if(menuCursor == 27) {
 					loadPreset(engine, owner.modeConfig, presetNumber[playerID], "digrace");
-				} else if(engine.statc[2] == 28) {
+				} else if(menuCursor == 28) {
 					savePreset(engine, owner.modeConfig, presetNumber[playerID], "digrace");
 					receiver.saveModeConfig(owner.modeConfig);
 				} else {
@@ -290,22 +290,22 @@ public class AvalancheVSDigRaceMode extends AbstractAvalancheVSMode {
 			if(engine.ctrl.isPush(Controller.BUTTON_B)) {
 				engine.quitflag = true;
 			}
-			engine.statc[3]++;
+			menuTime++;
 		} else if(engine.statc[4] == 0) {
-			engine.statc[3]++;
-			engine.statc[2] = 0;
+			menuTime++;
+			menuCursor = 0;
 
-			if(engine.statc[3] >= 180)
+			if(menuTime >= 180)
 				engine.statc[4] = 1;
-			else if(engine.statc[3] >= 120)
-				engine.statc[2] = 18;
-			else if(engine.statc[3] >= 60)
-				engine.statc[2] = 9;
+			else if(menuTime >= 120)
+				menuCursor = 18;
+			else if(menuTime >= 60)
+				menuCursor = 9;
 		} else {
 			// Start
 			if((owner.engine[0].statc[4] == 1) && (owner.engine[1].statc[4] == 1) && (playerID == 1)) {
-				owner.engine[0].stat = GameEngine.STAT_READY;
-				owner.engine[1].stat = GameEngine.STAT_READY;
+				owner.engine[0].stat = GameEngine.Status.READY;
+				owner.engine[1].stat = GameEngine.Status.READY;
 				owner.engine[0].resetStatc();
 				owner.engine[1].resetStatc();
 			}
@@ -324,7 +324,7 @@ public class AvalancheVSDigRaceMode extends AbstractAvalancheVSMode {
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
 		if(engine.statc[4] == 0) {
-			if(engine.statc[2] < 9) {
+			if(menuCursor < 9) {
 				drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_ORANGE, 0,
 						"GRAVITY", String.valueOf(engine.speed.gravity),
 						"G-MAX", String.valueOf(engine.speed.denominator),
@@ -337,7 +337,7 @@ public class AvalancheVSDigRaceMode extends AbstractAvalancheVSMode {
 						"CLEAR DELAY", String.valueOf(engine.cascadeClearDelay));
 
 				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 1/3", EventRenderer.COLOR_YELLOW);
-			} else if(engine.statc[2] < 18) {
+			} else if(menuCursor < 18) {
 				drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_CYAN, 9,
 						"COUNTER", OJAMA_COUNTER_STRING[ojamaCounterMode[playerID]],
 						"MAX ATTACK", String.valueOf(maxAttack[playerID]),
@@ -387,7 +387,7 @@ public class AvalancheVSDigRaceMode extends AbstractAvalancheVSMode {
 	public boolean onReady(GameEngine engine, int playerID) {
 		if(engine.statc[0] == 0) {
 			engine.numColors = numColors[playerID];
-			engine.lineGravityType = cascadeSlow[playerID] ? GameEngine.LINE_GRAVITY_CASCADE_SLOW : GameEngine.LINE_GRAVITY_CASCADE;
+			engine.lineGravityType = cascadeSlow[playerID] ? GameEngine.LineGravity.CASCADE_SLOW : GameEngine.LineGravity.CASCADE;
 			engine.rainbowAnimate = true;
 			engine.displaysize = bigDisplay ? 1 : 0;
 
@@ -491,7 +491,7 @@ public class AvalancheVSDigRaceMode extends AbstractAvalancheVSMode {
 
 		if (!owner.engine[playerID].gameActive)
 			return;
-		if((engine.stat != GameEngine.STAT_MOVE) && (engine.stat != GameEngine.STAT_RESULT) && (engine.gameStarted))
+		if((engine.stat != GameEngine.Status.MOVE) && (engine.stat != GameEngine.Status.RESULT) && (engine.gameStarted))
 			drawX(engine, playerID);
 		drawHardOjama(engine, playerID);
 
@@ -524,7 +524,7 @@ public class AvalancheVSDigRaceMode extends AbstractAvalancheVSMode {
 			if (!engine.field.getBlockEmpty(2, 0) ||
 					(dangerColumnDouble[playerID] && !engine.field.getBlockEmpty(3, 0)))
 			{
-				engine.stat = GameEngine.STAT_GAMEOVER;
+				engine.stat = GameEngine.Status.GAMEOVER;
 			}
 		}
 		return false;
@@ -544,27 +544,27 @@ public class AvalancheVSDigRaceMode extends AbstractAvalancheVSMode {
 
 		// Settlement
 		if((playerID == 1) && (owner.engine[0].gameActive)) {
-			boolean p1Lose = (owner.engine[0].stat == GameEngine.STAT_GAMEOVER);
-			if (!p1Lose && owner.engine[1].field != null && owner.engine[1].stat != GameEngine.STAT_READY)
+			boolean p1Lose = (owner.engine[0].stat == GameEngine.Status.GAMEOVER);
+			if (!p1Lose && owner.engine[1].field != null && owner.engine[1].stat != GameEngine.Status.READY)
 				p1Lose = (owner.engine[1].field.getHowManyGems() == 0);
-			boolean p2Lose = (owner.engine[1].stat == GameEngine.STAT_GAMEOVER);
-			if (!p2Lose && owner.engine[0].field != null && owner.engine[0].stat != GameEngine.STAT_READY)
+			boolean p2Lose = (owner.engine[1].stat == GameEngine.Status.GAMEOVER);
+			if (!p2Lose && owner.engine[0].field != null && owner.engine[0].stat != GameEngine.Status.READY)
 				p2Lose = (owner.engine[0].field.getHowManyGems() == 0);
 			if(p1Lose && p2Lose) {
 				// Draw
 				winnerID = -1;
-				owner.engine[0].stat = GameEngine.STAT_GAMEOVER;
-				owner.engine[1].stat = GameEngine.STAT_GAMEOVER;
+				owner.engine[0].stat = GameEngine.Status.GAMEOVER;
+				owner.engine[1].stat = GameEngine.Status.GAMEOVER;
 			} else if(p2Lose && !p1Lose) {
 				// 1P win
 				winnerID = 0;
-				owner.engine[0].stat = GameEngine.STAT_EXCELLENT;
-				owner.engine[1].stat = GameEngine.STAT_GAMEOVER;
+				owner.engine[0].stat = GameEngine.Status.EXCELLENT;
+				owner.engine[1].stat = GameEngine.Status.GAMEOVER;
 			} else if(p1Lose && !p2Lose) {
 				// 2P win
 				winnerID = 1;
-				owner.engine[0].stat = GameEngine.STAT_GAMEOVER;
-				owner.engine[1].stat = GameEngine.STAT_EXCELLENT;
+				owner.engine[0].stat = GameEngine.Status.GAMEOVER;
+				owner.engine[1].stat = GameEngine.Status.EXCELLENT;
 			}
 			if (p1Lose || p2Lose) {
 				owner.engine[0].gameEnded();

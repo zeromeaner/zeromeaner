@@ -291,23 +291,23 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 			// Configuration changes
 			// Up
 			if(engine.ctrl.isMenuRepeatKey(Controller.BUTTON_UP)) {
-				engine.statc[2]--;
-				if(engine.statc[2] < 0){
-					engine.statc[2] = 33;
+				menuCursor--;
+				if(menuCursor < 0){
+					menuCursor = 33;
 					loadDropMapPreview(engine, playerID, DROP_PATTERNS[dropSet[playerID]][dropMap[playerID]]);
 				}
-				else if (engine.statc[2] == 31)
+				else if (menuCursor == 31)
 					engine.field = null;
 				engine.playSE("cursor");
 			}
 			// Down
 			if(engine.ctrl.isMenuRepeatKey(Controller.BUTTON_DOWN)) {
-				engine.statc[2]++;
-				if(engine.statc[2] > 33) {
-					engine.statc[2] = 0;
+				menuCursor++;
+				if(menuCursor > 33) {
+					menuCursor = 0;
 					engine.field = null;
 				}
-				else if (engine.statc[2] == 32)
+				else if (menuCursor == 32)
 					loadDropMapPreview(engine, playerID, DROP_PATTERNS[dropSet[playerID]][dropMap[playerID]]);
 				engine.playSE("cursor");
 			}
@@ -324,7 +324,7 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 				if(engine.ctrl.isPress(Controller.BUTTON_E)) m = 100;
 				if(engine.ctrl.isPress(Controller.BUTTON_F)) m = 1000;
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					engine.speed.gravity += change * m;
 					if(engine.speed.gravity < -1) engine.speed.gravity = 99999;
@@ -502,12 +502,12 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 			}
 
 			// Decision
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				engine.playSE("decide");
 
-				if(engine.statc[2] == 30) {
+				if(menuCursor == 30) {
 					loadPreset(engine, owner.modeConfig, presetNumber[playerID], "spf");
-				} else if(engine.statc[2] == 31) {
+				} else if(menuCursor == 31) {
 					savePreset(engine, owner.modeConfig, presetNumber[playerID], "spf");
 					receiver.saveModeConfig(owner.modeConfig);
 				} else {
@@ -524,42 +524,42 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 			}
 
 			// For previewMapRead
-			if(useMap[playerID] && (engine.statc[3] == 0)) {
+			if(useMap[playerID] && (menuTime == 0)) {
 				loadMapPreview(engine, playerID, (mapNumber[playerID] < 0) ? 0 : mapNumber[playerID], true);
 			}
 
 			// Random map preview
 			if(useMap[playerID] && (propMap[playerID] != null) && (mapNumber[playerID] < 0)) {
-				if(engine.statc[3] % 30 == 0) {
+				if(menuTime % 30 == 0) {
 					engine.statc[5]++;
 					if(engine.statc[5] >= mapMaxNo[playerID]) engine.statc[5] = 0;
 					loadMapPreview(engine, playerID, engine.statc[5], false);
 				}
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		} else if(engine.statc[4] == 0) {
-			engine.statc[3]++;
-			engine.statc[2] = 0;
+			menuTime++;
+			menuCursor = 0;
 
-			if(engine.statc[3] >= 300)
+			if(menuTime >= 300)
 				engine.statc[4] = 1;
-			else if (engine.statc[3] == 240)
+			else if (menuTime == 240)
 			{
-				engine.statc[2] = 32;
+				menuCursor = 32;
 				loadDropMapPreview(engine, playerID, DROP_PATTERNS[dropSet[playerID]][dropMap[playerID]]);
 			}
-			else if(engine.statc[3] >= 180)
-				engine.statc[2] = 24;
-			else if(engine.statc[3] >= 120)
-				engine.statc[2] = 17;
-			else if(engine.statc[3] >= 60)
-				engine.statc[2] = 9;
+			else if(menuTime >= 180)
+				menuCursor = 24;
+			else if(menuTime >= 120)
+				menuCursor = 17;
+			else if(menuTime >= 60)
+				menuCursor = 9;
 		} else {
 			// Start
 			if((owner.engine[0].statc[4] == 1) && (owner.engine[1].statc[4] == 1) && (playerID == 1)) {
-				owner.engine[0].stat = GameEngine.STAT_READY;
-				owner.engine[1].stat = GameEngine.STAT_READY;
+				owner.engine[0].stat = GameEngine.Status.READY;
+				owner.engine[1].stat = GameEngine.Status.READY;
 				owner.engine[0].resetStatc();
 				owner.engine[1].resetStatc();
 			}
@@ -591,7 +591,7 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
 		if(engine.statc[4] == 0) {
-			if(engine.statc[2] < 9) {
+			if(menuCursor < 9) {
 				drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_ORANGE, 0,
 						"GRAVITY", String.valueOf(engine.speed.gravity),
 						"G-MAX", String.valueOf(engine.speed.denominator),
@@ -604,7 +604,7 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 						"CLEAR DELAY", String.valueOf(engine.cascadeClearDelay));
 
 				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 1/5", EventRenderer.COLOR_YELLOW);
-			} else if(engine.statc[2] < 17) {
+			} else if(menuCursor < 17) {
 				drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_CYAN, 9,
 						"COUNTER", OJAMA_COUNTER_STRING[ojamaCounterMode[playerID]],
 						"MAX ATTACK", String.valueOf(maxAttack[playerID]),
@@ -616,7 +616,7 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 						"X SHOW", GeneralUtil.getONorOFF(dangerColumnShowX[playerID]));
 
 				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 2/5", EventRenderer.COLOR_YELLOW);
-			} else if(engine.statc[2] < 24) {
+			} else if(menuCursor < 24) {
 				initMenu(EventRenderer.COLOR_CYAN, 17);
 				drawMenu(engine, playerID, receiver,
 						"COUNTDOWN", (ojamaCountdown[playerID] == 10) ? "NONE" :
@@ -634,7 +634,7 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 				drawMenu(engine, playerID, receiver, "CHAINPOWER", newChainPower[playerID] ? "FEVER" : "CLASSIC");
 
 				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 3/5", EventRenderer.COLOR_YELLOW);
-			} else if(engine.statc[2] < 32) {
+			} else if(menuCursor < 32) {
 				initMenu(EventRenderer.COLOR_PINK, 24);
 				drawMenu(engine, playerID, receiver,
 						"USE MAP", GeneralUtil.getONorOFF(useMap[playerID]),
@@ -761,7 +761,7 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 			receiver.drawDirectFont(engine, playerID, fldPosX - 28, fldPosY + 264, String.format("%8s", strScoreMultiplier), playerColor);
 		}
 
-		if((engine.stat != GameEngine.STAT_MOVE) && (engine.stat != GameEngine.STAT_RESULT) && (engine.gameStarted))
+		if((engine.stat != GameEngine.Status.MOVE) && (engine.stat != GameEngine.Status.RESULT) && (engine.gameStarted))
 			drawX(engine, playerID);
 
 		if (!owner.engine[playerID].gameActive)
@@ -772,7 +772,7 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 		int blockColor, textColor;
 		int d = (engine.displaysize == 1) ? 2 : 1;
 		String str;
-		if((engine.field != null) && (engine.stat != GameEngine.STAT_RESULT) && (engine.gameStarted))
+		if((engine.field != null) && (engine.stat != GameEngine.Status.RESULT) && (engine.gameStarted))
 			for (int x = 0; x < engine.field.getWidth(); x++)
 				for (int y = 0; y < engine.field.getHeight(); y++)
 				{
@@ -907,7 +907,7 @@ public class AvalancheVSSPFMode extends AbstractAvalancheVSMode {
 		//Check for game over
 		if (!engine.field.getBlockEmpty(2, 0) ||
 				(dangerColumnDouble[playerID] && !engine.field.getBlockEmpty(3, 0)))
-			engine.stat = GameEngine.STAT_GAMEOVER;
+			engine.stat = GameEngine.Status.GAMEOVER;
 		return false;
 	}
 

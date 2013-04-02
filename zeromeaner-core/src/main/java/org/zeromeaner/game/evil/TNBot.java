@@ -306,7 +306,7 @@ public class TNBot extends AbstractAI {
 
 	@Override
 	public void setControl(GameEngine engine, int playerID, Controller ctrl) {
-		if((engine.nowPieceObject != null) && (engine.stat == GameEngine.STAT_MOVE) && (engine.statc[0] > 0))
+		if((engine.nowPieceObject != null) && (engine.stat == GameEngine.Status.MOVE) && (engine.statc[0] > 0))
 			;
 		else
 			return;

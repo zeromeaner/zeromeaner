@@ -355,10 +355,10 @@ public class PhysicianVSMode extends AbstractMode {
 		}
 
 		engine.framecolor = PLAYER_COLOR_FRAME[playerID];
-		engine.clearMode = GameEngine.CLEAR_LINE_COLOR;
+		engine.clearMode = GameEngine.ClearType.LINE_COLOR;
 		engine.garbageColorClear = false;
 		engine.colorClearSize = 4;
-		engine.lineGravityType = GameEngine.LINE_GRAVITY_CASCADE;
+		engine.lineGravityType = GameEngine.LineGravity.CASCADE;
 		for(int i = 0; i < Piece.PIECE_COUNT; i++)
 			engine.nextPieceEnable[i] = (PIECE_ENABLE[i] == 1);
 		engine.randomBlockColor = true;
@@ -402,7 +402,7 @@ public class PhysicianVSMode extends AbstractMode {
 				if(engine.ctrl.isPress(Controller.BUTTON_E)) m = 100;
 				if(engine.ctrl.isPress(Controller.BUTTON_F)) m = 1000;
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					engine.speed.gravity += change * m;
 					if(engine.speed.gravity < -1) engine.speed.gravity = 99999;
@@ -497,12 +497,12 @@ public class PhysicianVSMode extends AbstractMode {
 			}
 
 			// Decision
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				engine.playSE("decide");
 
-				if(engine.statc[2] == 7) {
+				if(menuCursor == 7) {
 					loadPreset(engine, owner.modeConfig, presetNumber[playerID]);
-				} else if(engine.statc[2] == 8) {
+				} else if(menuCursor == 8) {
 					savePreset(engine, owner.modeConfig, presetNumber[playerID]);
 					receiver.saveModeConfig(owner.modeConfig);
 				} else {
@@ -519,33 +519,33 @@ public class PhysicianVSMode extends AbstractMode {
 			}
 
 			// For previewMapRead
-			if(useMap[playerID] && (engine.statc[3] == 0)) {
+			if(useMap[playerID] && (menuTime == 0)) {
 				loadMapPreview(engine, playerID, (mapNumber[playerID] < 0) ? 0 : mapNumber[playerID], true);
 			}
 
 			// Random map preview
 			if(useMap[playerID] && (propMap[playerID] != null) && (mapNumber[playerID] < 0)) {
-				if(engine.statc[3] % 30 == 0) {
+				if(menuTime % 30 == 0) {
 					engine.statc[5]++;
 					if(engine.statc[5] >= mapMaxNo[playerID]) engine.statc[5] = 0;
 					loadMapPreview(engine, playerID, engine.statc[5], false);
 				}
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		} else if(engine.statc[4] == 0) {
-			engine.statc[3]++;
-			engine.statc[2] = 0;
+			menuTime++;
+			menuCursor = 0;
 
-			if(engine.statc[3] >= 120)
+			if(menuTime >= 120)
 				engine.statc[4] = 1;
-			else if(engine.statc[3] >= 60)
-				engine.statc[2] = 9;
+			else if(menuTime >= 60)
+				menuCursor = 9;
 		} else {
 			// Start
 			if((owner.engine[0].statc[4] == 1) && (owner.engine[1].statc[4] == 1) && (playerID == 1)) {
-				owner.engine[0].stat = GameEngine.STAT_READY;
-				owner.engine[1].stat = GameEngine.STAT_READY;
+				owner.engine[0].stat = GameEngine.Status.READY;
+				owner.engine[1].stat = GameEngine.Status.READY;
 				owner.engine[0].resetStatc();
 				owner.engine[1].resetStatc();
 			}
@@ -564,7 +564,7 @@ public class PhysicianVSMode extends AbstractMode {
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
 		if(engine.statc[4] == 0) {
-			if(engine.statc[2] < 9) {
+			if(menuCursor < 9) {
 				initMenu(EventRenderer.COLOR_ORANGE, 0);
 				drawMenu(engine, playerID, receiver,
 						"GRAVITY", String.valueOf(engine.speed.gravity),
@@ -702,25 +702,25 @@ public class PhysicianVSMode extends AbstractMode {
 
 		/*
 		if(playerID == 0) {
-			receiver.drawScoreFont(engine, playerID, -1, 0, "PHYSICIAN VS", EventReceiver.COLOR_GREEN);
+			receiver.drawScoreFont(engine, playerID, -1, 0, "PHYSICIAN VS", EventRenderer.COLOR_GREEN);
 
-			receiver.drawScoreFont(engine, playerID, -1, 2, "REST", EventReceiver.COLOR_PURPLE);
-			receiver.drawScoreFont(engine, playerID, -1, 3, "1P:", EventReceiver.COLOR_RED);
+			receiver.drawScoreFont(engine, playerID, -1, 2, "REST", EventRenderer.COLOR_PURPLE);
+			receiver.drawScoreFont(engine, playerID, -1, 3, "1P:", EventRenderer.COLOR_RED);
 			receiver.drawScoreFont(engine, playerID, 3, 3, String.valueOf(rest[0]), (rest[0] <= (flash[playerID] ? 1 : 3)));
-			receiver.drawScoreFont(engine, playerID, -1, 4, "2P:", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, -1, 4, "2P:", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 3, 4, String.valueOf(rest[1]), (rest[1] <= (flash[playerID] ? 1 : 3)));
 
-			receiver.drawScoreFont(engine, playerID, -1, 6, "SPEED", EventReceiver.COLOR_GREEN);
-			receiver.drawScoreFont(engine, playerID, -1, 7, "1P:", EventReceiver.COLOR_RED);
+			receiver.drawScoreFont(engine, playerID, -1, 6, "SPEED", EventRenderer.COLOR_GREEN);
+			receiver.drawScoreFont(engine, playerID, -1, 7, "1P:", EventRenderer.COLOR_RED);
 			receiver.drawScoreFont(engine, playerID,  3, 7, SPEED_NAME[speed[0]], SPEED_COLOR[speed[0]]);
-			receiver.drawScoreFont(engine, playerID, -1, 8, "2P:", EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, -1, 8, "2P:", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID,  3, 8, SPEED_NAME[speed[1]], SPEED_COLOR[speed[1]]);
 
-			receiver.drawScoreFont(engine, playerID, -1, 10, "SCORE", EventReceiver.COLOR_PURPLE);
-			receiver.drawScoreFont(engine, playerID, -1, 11, "1P: " + String.valueOf(score[0]), EventReceiver.COLOR_RED);
-			receiver.drawScoreFont(engine, playerID, -1, 12, "2P: " + String.valueOf(score[1]), EventReceiver.COLOR_BLUE);
+			receiver.drawScoreFont(engine, playerID, -1, 10, "SCORE", EventRenderer.COLOR_PURPLE);
+			receiver.drawScoreFont(engine, playerID, -1, 11, "1P: " + String.valueOf(score[0]), EventRenderer.COLOR_RED);
+			receiver.drawScoreFont(engine, playerID, -1, 12, "2P: " + String.valueOf(score[1]), EventRenderer.COLOR_BLUE);
 
-			receiver.drawScoreFont(engine, playerID, -1, 14, "TIME", EventReceiver.COLOR_GREEN);
+			receiver.drawScoreFont(engine, playerID, -1, 14, "TIME", EventRenderer.COLOR_GREEN);
 			receiver.drawScoreFont(engine, playerID, -1, 15, GeneralUtil.getTime(engine.statistics.time));
 		}
 		*/
@@ -758,7 +758,7 @@ public class PhysicianVSMode extends AbstractMode {
 		{
 			if (garbageCheck(engine, playerID))
 			{
-				engine.stat = GameEngine.STAT_LINECLEAR;
+				engine.stat = GameEngine.Status.LINECLEAR;
 				engine.statc[0] = engine.getLineDelay();
 			}
 		}
@@ -870,13 +870,13 @@ public class PhysicianVSMode extends AbstractMode {
 
 		// Settlement
 		if((playerID == 1) && (owner.engine[0].gameActive)) {
-			boolean p1Lose = (owner.engine[0].stat == GameEngine.STAT_GAMEOVER);
+			boolean p1Lose = (owner.engine[0].stat == GameEngine.Status.GAMEOVER);
 			if (!p1Lose && owner.engine[1].field != null)
 			{
 				rest[1] = owner.engine[1].field.getHowManyGems();
 				p1Lose = (rest[1] == 0);
 			}
-			boolean p2Lose = (owner.engine[1].stat == GameEngine.STAT_GAMEOVER);
+			boolean p2Lose = (owner.engine[1].stat == GameEngine.Status.GAMEOVER);
 			if (!p2Lose && owner.engine[0].field != null)
 			{
 				rest[0] = owner.engine[0].field.getHowManyGems();
@@ -885,18 +885,18 @@ public class PhysicianVSMode extends AbstractMode {
 			if(p1Lose && p2Lose) {
 				// Draw
 				winnerID = -1;
-				owner.engine[0].stat = GameEngine.STAT_GAMEOVER;
-				owner.engine[1].stat = GameEngine.STAT_GAMEOVER;
+				owner.engine[0].stat = GameEngine.Status.GAMEOVER;
+				owner.engine[1].stat = GameEngine.Status.GAMEOVER;
 			} else if(p2Lose && !p1Lose) {
 				// 1P win
 				winnerID = 0;
-				owner.engine[0].stat = GameEngine.STAT_EXCELLENT;
-				owner.engine[1].stat = GameEngine.STAT_GAMEOVER;
+				owner.engine[0].stat = GameEngine.Status.EXCELLENT;
+				owner.engine[1].stat = GameEngine.Status.GAMEOVER;
 			} else if(p1Lose && !p2Lose) {
 				// 2P win
 				winnerID = 1;
-				owner.engine[0].stat = GameEngine.STAT_GAMEOVER;
-				owner.engine[1].stat = GameEngine.STAT_EXCELLENT;
+				owner.engine[0].stat = GameEngine.Status.GAMEOVER;
+				owner.engine[1].stat = GameEngine.Status.EXCELLENT;
 			}
 			if (p1Lose || p2Lose) {
 				owner.engine[0].gameEnded();
@@ -925,10 +925,10 @@ public class PhysicianVSMode extends AbstractMode {
 		}
 
 		drawResultStats(engine, playerID, receiver, 3, EventRenderer.COLOR_ORANGE,
-				STAT_LINES, STAT_PIECE, STAT_LPM, STAT_PPS, STAT_TIME);
+				Statistic.LINES, Statistic.PIECE, Statistic.LPM, Statistic.PPS, Statistic.TIME);
 		/*
 		float apm = (float)(garbageSent[playerID] * 3600) / (float)(engine.statistics.time);
-		drawResult(engine, playerID, receiver, 3, EventReceiver.COLOR_ORANGE,
+		drawResult(engine, playerID, receiver, 3, EventRenderer.COLOR_ORANGE,
 				"ATTACK", String.format("%10d", garbageSent[playerID]),
 				"ATTACK/MIN", String.format("%10g", apm));
 		*/
