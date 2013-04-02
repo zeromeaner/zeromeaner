@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -290,6 +291,9 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 				}
 			});
 			
+			line.setEnabled(false);
+			line.setText("Join channel to chat");
+			
 			client.addKNetChannelListener(this);
 			
 			update();
@@ -333,19 +337,41 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 		}
 
 		private void update() {
+			List<String> prevMembers = new ArrayList<String>();
+			for(Object m : membersModel.toArray()) {
+				prevMembers.add((String) m);
+			}
 			membersModel.clear();
 			if("Join channel to chat".equals(line.getText())) {
 				line.setEnabled(false);
 				line.setText("Join channel to chat");
 			}
 			for(KNetEventSource s : channel.getMembers()) {
-				membersModel.addElement(s.getName());
+				membersModel.addElement((channel.getPlayers().contains(s) ? "\u2297" : "\u2299") + s.getName());
 				if("Join channel to chat".equals(line.getText())) {
 					if(s.equals(client.getSource())) {
 						line.setEnabled(true);
 						line.setText("");
 					}
 				}
+			}
+			List<String> newMembers = new ArrayList<String>();
+			for(Object m : membersModel.toArray()) {
+				newMembers.add((String) m);
+			}
+			List<String> parted = new ArrayList<String>(prevMembers); parted.removeAll(newMembers);
+			List<String> joined = new ArrayList<String>(newMembers); joined.removeAll(prevMembers);
+			for(String m : parted) {
+				String text = history.getText();
+				text += text.isEmpty() ? "" : "\n";
+				text += m + " left the channel.";
+				history.setText(text);
+			}
+			for(String m : joined) {
+				String text = history.getText();
+				text += text.isEmpty() ? "" : "\n";
+				text += m + " joined the channel.";
+				history.setText(text);
 			}
 			revalidate();
 		}
