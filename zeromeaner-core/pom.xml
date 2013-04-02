@@ -2,6 +2,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>zeromeaner-core</artifactId>
+
+	<properties>
+		<maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
+	</properties>
+
 	<build>
 		<resources>
 			<resource>
@@ -40,7 +45,8 @@
 
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -176,12 +182,8 @@
 			<id>sonatype</id>
 			<url>https://oss.sonatype.org/content/groups/public/</url>
 		</repository>
-		<!--
-			<repository>
-			<id>slick</id>
-			<url>http://slick.cokeandcode.com/mavenrepo</url>
-			</repository>
-		-->
+		<!-- <repository> <id>slick</id> <url>http://slick.cokeandcode.com/mavenrepo</url> 
+			</repository> -->
 	</repositories>
 
 	<profiles>
@@ -282,7 +284,7 @@
 									<goal>shade</goal>
 								</goals>
 								<configuration>
-									<finalName>zeromeaner-all-${project.version}</finalName>
+									<finalName>zeromeaner-all-${project.version}-${maven.build.timestamp}</finalName>
 									<createDependencyReducedPom>false</createDependencyReducedPom>
 									<transformers>
 										<transformer
