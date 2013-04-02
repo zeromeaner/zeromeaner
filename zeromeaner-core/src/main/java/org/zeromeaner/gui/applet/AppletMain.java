@@ -90,6 +90,7 @@ public class AppletMain extends Applet {
 		System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".0mino");
 		new File(System.getProperty("user.dir")).mkdirs();
 		isApplet = false;
+		userId = System.getProperty("user.name");
 		CookieAccess.setInstance(new MainCookieAccess());
 		
 		final AppletMain applet = new AppletMain();
@@ -180,7 +181,8 @@ public class AppletMain extends Applet {
 		panel.add(desktop, BorderLayout.CENTER);
 		panel.revalidate();
 
-		userId = CookieAccess.get("userId");
+		if(userId == null)
+			userId = CookieAccess.get("userId");
 		if(userId == null)
 			userId = getParameter("userId");
 		while(userId == null || "default".equals(userId)) {
