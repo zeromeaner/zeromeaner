@@ -7,6 +7,7 @@ import java.applet.AudioClip;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -102,8 +103,8 @@ public class AppletMain extends Applet {
 		frame.setLayout(new BorderLayout());
 		applet.setStub(new MainAppletStub());
 		frame.add(applet.panel = new JPanel(new BorderLayout()), BorderLayout.CENTER);
+		applet.panel.setPreferredSize(new Dimension(800, 800));
 		frame.pack();
-		frame.setSize(800, 800);
 		frame.setVisible(true);
 		frame.setLocationRelativeTo(null);
 		applet.init();
