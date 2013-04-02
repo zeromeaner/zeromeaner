@@ -190,6 +190,15 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 			channel.getPlayerInfo().add(newPlayer);
 		} else if(e.is(CHANNEL_SPECTATE)) {
 			channel.getPlayers().remove(e.getSource());
+			ChannelState s = states.get(channel);
+			KNetEventSource user = e.getSource();
+			boolean isPlayer = channel.getPlayers().contains(user);
+			// declare the player dead
+			if(isPlayer) {
+				fireTCP(DEAD, channel.getPlayers().indexOf(user), CHANNEL_ID, channel.getId(), DEAD_PLACE, channel.getPlayers().size());
+				dead(channel, user);
+				maybeAutostart(channel);
+			}
 		}
 		reply(e, 
 				CHANNEL_JOIN,

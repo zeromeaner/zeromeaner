@@ -356,7 +356,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 				line.setText("Join channel to chat");
 			}
 			for(KNetEventSource s : channel.getMembers()) {
-				membersModel.addElement((channel.getPlayers().contains(s) ? "\u2297" : "\u2299") + s.getName());
+				membersModel.addElement((channel.getPlayers().contains(s) ? "\u2297 " : "\u25a2 ") + s.getName());
 				if("Join channel to chat".equals(line.getText())) {
 					if(s.equals(client.getSource())) {
 						line.setEnabled(true);
