@@ -362,10 +362,11 @@ public class RendererApplet extends EventRenderer {
 //				"Replay URL saved to clipboard.  Paste into another app to save.", 
 //				"Replay URL Copied", 
 //				JOptionPane.INFORMATION_MESSAGE);
-		AppletMain.instance.notifyUser(
-				UIManager.getIcon("OptionPane.informationIcon"), 
-				"Replay URL saved to clipboard.  Paste into another app to save.",
-				replayUrl);
+		if(AppletMain.isApplet())
+			AppletMain.instance.notifyUser(
+					UIManager.getIcon("OptionPane.informationIcon"), 
+					"Replay URL saved to clipboard.  Paste into another app to save.",
+					replayUrl);
 	}
 
 	/*
