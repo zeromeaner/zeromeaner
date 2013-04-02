@@ -615,6 +615,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 			if(strModeToEnter == null) {
 				owner.enterNewMode(null);
 				strModeToEnter = "";
+				MusicList.getInstance().stop();
 			} else if (strModeToEnter.length() > 0) {
 				owner.enterNewMode(strModeToEnter);
 				strModeToEnter = "";
