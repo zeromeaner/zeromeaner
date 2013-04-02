@@ -19,12 +19,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -69,8 +71,10 @@ public class AppletMain extends Applet {
 	public static String userId;
 
 	public static boolean isApplet() {
-		return instance != null;
+		return instance != null && isApplet;
 	}
+	
+	private static boolean isApplet = true;
 	
 	public static URL url;
 	
@@ -83,42 +87,19 @@ public class AppletMain extends Applet {
 	public static void main(String[] args) {
 		System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".0mino");
 		new File(System.getProperty("user.dir")).mkdirs();
-		CookieAccess.setInstance(new CookieAccess() {
-			private File prefs = new File(System.getProperty("user.home"), ".0minorc");
-			
-			@Override
-			protected Map<String, String> get(AppletMain applet) {
-				try {
-					ObjectInputStream in = new ObjectInputStream(new FileInputStream(prefs));
-					try {
-						return (Map<String, String>) in.readObject();
-					} finally {
-						in.close();
-					}
-				} catch(Throwable t) {
-					return new TreeMap<String, String>();
-				}
-			}
-			
-			@Override
-			protected void set(AppletMain applet, Map<String, String> cookie) {
-				try {
-					cookie = new TreeMap<String, String>(cookie);
-					ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(prefs));
-					try {
-						out.writeObject(cookie);
-					} finally {
-						out.close();
-					}
-				} catch(Throwable t) {
-				}
-			}
-		});
+		isApplet = false;
+		CookieAccess.setInstance(new MainCookieAccess());
 		
-		JFrame frame = new JFrame("Zeromeaner");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		final AppletMain applet = new AppletMain();
+		JFrame frame = new JFrame("Zeromeaner") {
+			@Override
+			public void dispose() {
+				applet.destroy();
+				System.exit(0);
+			}
+		};
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
-		AppletMain applet = new AppletMain();
 		applet.setStub(new MainAppletStub());
 		frame.add(applet.panel = new JPanel(new BorderLayout()), BorderLayout.CENTER);
 		frame.pack();
@@ -397,6 +378,43 @@ public class AppletMain extends Applet {
 	//			
 	//		}
 		}
+
+	private static class MainCookieAccess extends CookieAccess {
+		private File prefs = new File(System.getProperty("user.home"), ".0minorc");
+
+		@Override
+		protected Map<String, String> get(AppletMain applet) {
+			try {
+				InputStream in = new FileInputStream(prefs);
+				Properties p = new Properties();
+				try {
+					p.load(in);
+				} finally {
+					in.close();
+				}
+				return new TreeMap<String, String>((Map) p);
+			} catch(Throwable t) {
+				return new TreeMap<String, String>();
+			}
+		}
+
+		@Override
+		protected void set(AppletMain applet, Map<String, String> cookie) {
+			try {
+				Properties p = new Properties();
+				for(Map.Entry<String, String> e : cookie.entrySet()) {
+					p.setProperty(e.getKey(), e.getValue());
+				}
+				OutputStream out = new FileOutputStream(prefs);
+				try {
+					p.store(out, "0mino config");
+				} finally {
+					out.close();
+				}
+			} catch(Throwable t) {
+			}
+		}
+	}
 
 	private static class MainAppletStub implements AppletStub {
 		@Override

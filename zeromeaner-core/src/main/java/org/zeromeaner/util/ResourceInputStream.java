@@ -53,7 +53,7 @@ public class ResourceInputStream extends FilterInputStream {
 		if(in != null)
 			return in;
 		try {
-			File localResource = new File("local-resources/" + resource);
+			File localResource = new File(System.getProperty("user.dir"), "local-resources/" + resource);
 			if(localResource.exists() && !localResource.isDirectory())
 				return new FileInputStream(localResource);
 		} catch(Throwable t) {
@@ -86,6 +86,8 @@ public class ResourceInputStream extends FilterInputStream {
 		}
 		
 		public static void commitCache() throws IOException {
+			if(!AppletMain.isApplet())
+				return;
 			URL url = new URL("http://" + AppletMain.url.getHost() + "/webdav/" + AppletMain.userId + "/cache.jdk");
 			String dir = url.toString().substring(0, url.toString().lastIndexOf("/"));
 			List<String> dirs = new ArrayList<String>();
