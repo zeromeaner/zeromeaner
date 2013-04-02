@@ -703,16 +703,17 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
-				revalidate();
-				repaint();
+//				imageBufferLabel.revalidate();
+				imageBufferLabel.repaint();
 				if(syncDisplay)
 					Toolkit.getDefaultToolkit().sync();
 			}
 		};
-		try {
-			EventQueue.invokeAndWait(r);
-		} catch(Exception ex) {
-		}
+//		try {
+//			EventQueue.invokeAndWait(r);
+//		} catch(Exception ex) {
+//		}
+		r.run();
 
 		ssflag = false;
 		//		} else if((bufferStrategy != null) && !bufferStrategy.contentsLost()) {
@@ -770,16 +771,17 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
-				revalidate();
-				repaint();
+//				imageBufferLabel.revalidate();
+				imageBufferLabel.repaint();
 				if(syncDisplay)
 					Toolkit.getDefaultToolkit().sync();
 			}
 		};
-		try {
-			EventQueue.invokeAndWait(r);
-		} catch(Exception ex) {
-		}
+//		try {
+//			EventQueue.invokeAndWait(r);
+//		} catch(Exception ex) {
+//		}
+		r.run();
 
 		ssflag = false;
 		//		} else if((bufferStrategy != null) && !bufferStrategy.contentsLost()) {
