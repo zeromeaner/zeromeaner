@@ -79,6 +79,8 @@ public class AppletMain extends Applet {
 	public Component notification;
 
 	public static void main(String[] args) {
+		System.setProperty("user.dir", System.getProperty("user.dir") + File.separator + ".0mino");
+		new File(System.getProperty("user.dir")).mkdirs();
 		CookieAccess.setInstance(new CookieAccess() {
 			private File prefs = new File(System.getProperty("user.home"), ".0minorc");
 			
