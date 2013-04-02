@@ -54,6 +54,7 @@ public class MusicVolumeInternalFrame extends JInternalFrame {
 				CookieAccess.put("bgm.selection", (String) selection.getSelectedItem());
 			}
 		});
+		MusicList.getInstance().setSelection(selection.getSelectedIndex() - 1);
 		c.gridy++; add(selection, c);
 		
 		JLabel l;
