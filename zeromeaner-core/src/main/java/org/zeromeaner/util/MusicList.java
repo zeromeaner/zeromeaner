@@ -1,11 +1,13 @@
 package org.zeromeaner.util;
 
 import java.awt.EventQueue;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.regex.Pattern;
 
@@ -24,9 +26,13 @@ import javazoom.jl.player.advanced.PlaybackEvent;
 import javazoom.jl.player.advanced.PlaybackListener;
 
 import org.apache.log4j.Logger;
+import org.funcish.core.coll.ArrayFunctionalList;
+import org.funcish.core.coll.FunctionalList;
+import org.funcish.core.fn.Mapper;
+import org.funcish.core.impl.AbstractMapper;
 import org.zeromeaner.gui.applet.ResourceHolderApplet;
 
-public class MusicList extends ArrayList<URL> {
+public class MusicList extends ArrayFunctionalList<String> {
 	private static final Logger log = Logger.getLogger(MusicList.class);
 	
 	private static MusicList instance;
@@ -36,16 +42,32 @@ public class MusicList extends ArrayList<URL> {
 		return instance;
 	}
 	
+	public static Mapper<String, String> FILE_ONLY = new AbstractMapper<String, String>(String.class, String.class) {
+		@Override
+		public String map0(String key, Integer index) throws Exception {
+			String fn = key.substring(key.lastIndexOf('/') + 1);
+			fn = fn.substring(3);
+			fn = fn.substring(0, fn.length() - 4);
+			return fn;
+		}
+	};
+	
+	private int selection = -1; // -1 == RANDOM
 	private float volume = 1f;
 	private JavaSoundAudioDevice audio;
 	private AdvancedPlayer player;
 	
 	private MusicList() {
+		super(String.class);
 		List<String> rsrc = new ArrayList<String>(Zeroflections.getResources(Pattern.compile("/bgm/.*\\.mp3$")));
 		log.debug(rsrc.size() + " background musics found");
 		for(int i = 0; i < rsrc.size(); i++) {
-			add(ResourceHolderApplet.class.getClassLoader().getResource(rsrc.get(i)));
+			add(rsrc.get(i));
 		}
+	}
+	
+	public FunctionalList<String> filesOnly() {
+		return map(FILE_ONLY);
 	}
 	
 	public boolean isPlaying() {
@@ -55,14 +77,26 @@ public class MusicList extends ArrayList<URL> {
 	public void play() {
 		if(isPlaying() || size() == 0)
 			return;
-		int m = (int) (Math.random() * size());
+		int m;
+		if(selection < 0)
+			m = (int) (Math.random() * size());
+		else
+			m = selection % size();
 		log.debug("Playing:" + get(m));
 		try {
-			player = new AdvancedPlayer(get(m).openStream(), audio = new JavaSoundAudioDevice() {
+			InputStream in = MusicList.class.getClassLoader().getResourceAsStream(get(m));
+			player = new AdvancedPlayer(in, audio = new JavaSoundAudioDevice() {
 				@Override
 				protected void createSource() throws JavaLayerException {
 					super.createSource();
 					updateVolume();
+				}
+			});
+			player.setPlayBackListener(new PlaybackListener() {
+				@Override
+				public void playbackFinished(PlaybackEvent evt) {
+					MusicList.getInstance().stop();
+					MusicList.getInstance().play();
 				}
 			});
 			new Thread(new Runnable() {
@@ -111,6 +145,19 @@ public class MusicList extends ArrayList<URL> {
 	        volControl.setValue(newGain);
 		} catch(Exception ex) {
 			ex.printStackTrace();
+		}
+	}
+
+	public int getSelection() {
+		return selection;
+	}
+
+	public void setSelection(int selection) {
+		int old = this.selection;
+		this.selection = selection;
+		if(old != selection && isPlaying()) {
+			stop();
+			play();
 		}
 	}
 }
