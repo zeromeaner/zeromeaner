@@ -84,10 +84,18 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 			}
 			KNetChannelInfo info = channels.get(id);
 			if(info.getMembers().contains(e.getSource())) {
-				client.reply(e, ERROR, "Already joined channel with id " + id);
-				return;
+				boolean alreadyJoined = false;
+				if(e.is(CHANNEL_SPECTATE) && !info.getPlayers().contains(e.getSource()))
+					alreadyJoined = true;
+				else if(!e.is(CHANNEL_SPECTATE) && info.getPlayers().contains(e.getSource()))
+					alreadyJoined = true;
+				if(alreadyJoined) {
+					client.reply(e, ERROR, "Already joined channel with id " + id);
+					return;
+				}
 			}
-			info.getMembers().add(e.getSource());
+			if(!info.getMembers().contains(e.getSource()))
+				info.getMembers().add(e.getSource());
 			KNetPlayerInfo newPlayer = null;
 			if(info.getPlayers().size() < info.getMaxPlayers() && !info.isPlaying() && !e.is(KNetEventArgs.CHANNEL_SPECTATE)) {
 				info.getPlayers().add(e.getSource());
@@ -96,6 +104,8 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				newPlayer.setPlayer(e.getSource());
 				newPlayer.setTeam(e.getSource().getName() + e.getSource().getId());
 				info.getPlayerInfo().add(newPlayer);
+			} else if(e.is(CHANNEL_SPECTATE)) {
+				info.getPlayers().remove(e.getSource());
 			}
 			client.reply(e, 
 					CHANNEL_JOIN,
