@@ -33,8 +33,6 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
-import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.MemorylessRandomizer;
-import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
@@ -49,6 +47,8 @@ import org.zeromeaner.game.event.EngineAdapter;
 import org.zeromeaner.game.event.EngineEvent;
 import org.zeromeaner.game.event.EngineEventManager;
 import org.zeromeaner.game.event.EngineManagerAdapter;
+import org.zeromeaner.game.randomizer.MemorylessRandomizer;
+import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.util.GeneralUtil;

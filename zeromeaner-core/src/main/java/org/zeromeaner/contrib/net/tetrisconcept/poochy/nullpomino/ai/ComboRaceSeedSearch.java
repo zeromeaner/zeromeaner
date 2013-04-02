@@ -2,11 +2,11 @@ package org.zeromeaner.contrib.net.tetrisconcept.poochy.nullpomino.ai;
 
 
 import org.apache.log4j.Logger;
-import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.BagNoSZORandomizer;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.WallkickResult;
 import org.zeromeaner.game.play.GameEngine;
+import org.zeromeaner.game.randomizer.BagNoSZORandomizer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.wallkick.StandardWallkick;
 

@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer.Randomizer;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
@@ -18,6 +17,7 @@ import org.zeromeaner.game.knet.obj.KNetGameInfo;
 import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.mode.ModeTypes.ModeType;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.util.GeneralUtil;

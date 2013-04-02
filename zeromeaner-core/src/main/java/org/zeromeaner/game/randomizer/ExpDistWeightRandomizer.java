@@ -1,4 +1,4 @@
-package org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer;
+package org.zeromeaner.game.randomizer;
 
 public class ExpDistWeightRandomizer extends DistanceWeightRandomizer {
 

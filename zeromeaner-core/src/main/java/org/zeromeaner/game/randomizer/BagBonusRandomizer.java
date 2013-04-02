@@ -1,35 +1,43 @@
-package org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer;
+package org.zeromeaner.game.randomizer;
 
-public class NineBagRandomizer extends Randomizer {
+public class BagBonusRandomizer extends Randomizer {
 
 	int[] bag;
 	int baglen;
 	int pt;
+	int bonus;
 
-	public NineBagRandomizer() {
+	public BagBonusRandomizer() {
 		super();
 	}
 
-	public NineBagRandomizer(boolean[] pieceEnable, long seed) {
+	public BagBonusRandomizer(boolean[] pieceEnable, long seed) {
 		super(pieceEnable, seed);
 	}
 
 	public void init() {
-		baglen = pieces.length*9;
+		baglen = pieces.length+1;
 		bag = new int[baglen];
 		pt = 0;
-		for (int i = 0; i < baglen; i++) {
-			bag[i] = pieces[i%pieces.length];
+		bonus = pieces.length;
+		for (int i = 0; i < pieces.length; i++) {
+			bag[i] = pieces[i];
 		}
 		shuffle();
 	}
 
 	public void shuffle() {
+		bag[bonus] = r.nextInt(pieces.length);
 		for (int i = baglen; i > 1; i--) {
 			int j = r.nextInt(i);
 			int temp = bag[i-1];
 			bag[i-1] = bag[j];
 			bag[j] = temp;
+			if (bonus == i-1) {
+				bonus = j;
+			} else if(bonus == j) {
+				bonus = i-1;
+			}
 		}
 	}
 

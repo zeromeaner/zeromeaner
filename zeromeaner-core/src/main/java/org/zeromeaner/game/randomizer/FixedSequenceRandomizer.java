@@ -1,4 +1,4 @@
-package org.zeromeaner.contrib.net.omegaboshi.nullpomino.game.subsystem.randomizer;
+package org.zeromeaner.game.randomizer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
