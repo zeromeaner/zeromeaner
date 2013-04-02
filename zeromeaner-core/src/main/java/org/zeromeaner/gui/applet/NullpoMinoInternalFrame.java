@@ -804,22 +804,25 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		else if(e.getActionCommand() == "Menu_Open") {
 			if(replayFileChooser == null) {
 //				File dir = new File(propGlobal.getProperty("custom.replay.directory", "replay"));
-				replayFileChooser = new JFileChooser(new ResourceFileSystemView() {
-					@Override
-					protected String url() {
-						return super.url() + "replay/";
-					}
-					@Override
-					public Boolean isTraversable(File f) {
-						if(f.getName().endsWith(".rep"))
-							return false;
-						return super.isTraversable(f);
-					}
-				});
+				if(AppletMain.isApplet())
+					replayFileChooser = new JFileChooser(new ResourceFileSystemView() {
+						@Override
+						protected String url() {
+							return super.url() + "replay/";
+						}
+						@Override
+						public Boolean isTraversable(File f) {
+							if(f.getName().endsWith(".rep"))
+								return false;
+							return super.isTraversable(f);
+						}
+					});
+				else
+					replayFileChooser = new JFileChooser(System.getProperty("user.dir") + File.separator + "local-resources" + File.separator + "replay");
 				replayFileChooser.addChoosableFileFilter(new ReplayFileFilter());
 			}
 			if(replayFileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION && replayFileChooser.getSelectedFile().getName().endsWith(".rep")) {
-				startReplayGame("replay/" + replayFileChooser.getSelectedFile().getPath());
+				startReplayGame((AppletMain.isApplet() ? "replay/" : "") + replayFileChooser.getSelectedFile().getPath());
 				if(gameFrame == null) {
 					gameFrame = new GameInternalFrame(this);
 				}
