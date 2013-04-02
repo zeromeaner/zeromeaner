@@ -27,7 +27,7 @@ import static org.zeromeaner.game.knet.KNetEventArgs.*;
 public class KNetChannelManager extends KNetClient implements KNetListener {
 	protected class ChannelState {
 		protected KNetChannelInfo channel;
-		protected int requiredAutostartResponses = 0;
+		protected Set<KNetEventSource> requiredAutostartResponses = new HashSet<KNetEventSource>();
 		protected Set<KNetEventSource> living = new HashSet<KNetEventSource>();
 		
 		public ChannelState(KNetChannelInfo channel) {
@@ -185,11 +185,11 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				depart(info, e.getSource(), true);
 			}
 		}
-		if(e.is(AUTOSTART)) {
+		if(e.is(AUTOSTART) || e.is(READY, Boolean.class)) {
 //			client.fireTCP(START, CHANNEL_ID, e.get(CHANNEL_ID));
 			KNetChannelInfo c = channels.get(e.get(CHANNEL_ID));
 			ChannelState s = states.get(c);
-			if(--s.requiredAutostartResponses == 0) {
+			if(s.requiredAutostartResponses.remove(e.getSource()) && s.requiredAutostartResponses.size() == 0) {
 				c.setPlaying(true);
 				client.fireTCP(CHANNEL_UPDATE, c);
 				KNStartInfo startInfo = new KNStartInfo();
@@ -199,6 +199,10 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				s.living.clear();
 				s.living.addAll(c.getPlayers());
 			}
+		} else if(e.is(READY) && !e.is(READY, Boolean.class)) {
+			KNetChannelInfo c = channels.get(e.get(CHANNEL_ID));
+			ChannelState s = states.get(c);
+			s.requiredAutostartResponses.add(e.getSource());
 		}
 		if(e.is(DEAD)) {
 			KNetChannelInfo c = channels.get(e.get(CHANNEL_ID));
@@ -210,7 +214,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 			client.fireTCP(CHANNEL_UPDATE, c);
 			if(c.getPlayers().size() >= 2 && c.isAutoStart()) {
 				client.fireTCP(AUTOSTART_BEGIN, 10, CHANNEL_ID, c.getId());
-				states.get(c).requiredAutostartResponses = c.getPlayers().size();
+				states.get(c).requiredAutostartResponses.addAll(c.getPlayers());
 			}
 		}
 	}
@@ -218,7 +222,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 	protected void maybeAutostart(KNetChannelInfo channel) {
 		if(channel.getPlayers().size() == channel.getMaxPlayers() && channel.isAutoStart()) {
 			fireTCP(AUTOSTART_BEGIN, 10, CHANNEL_ID, channel.getId());
-			states.get(channel).requiredAutostartResponses = channel.getPlayers().size();
+			states.get(channel).requiredAutostartResponses.addAll(channel.getPlayers());
 		} else {
 			fireTCP(AUTOSTART_STOP, CHANNEL_ID, channel.getId());
 		}
