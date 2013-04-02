@@ -526,9 +526,9 @@ public class SPFMode extends AbstractMode {
 		}
 
 		engine.framecolor = PLAYER_COLOR_FRAME[playerID];
-		engine.clearMode = GameEngine.CLEAR_GEM_COLOR;
+		engine.clearMode = GameEngine.ClearType.GEM_COLOR;
 		engine.garbageColorClear = true;
-		engine.lineGravityType = GameEngine.LINE_GRAVITY_CASCADE;
+		engine.lineGravityType = GameEngine.LineGravity.CASCADE;
 		for(int i = 0; i < Piece.PIECE_COUNT; i++)
 			engine.nextPieceEnable[i] = (PIECE_ENABLE[i] == 1);
 		engine.blockColors = BLOCK_COLORS;
@@ -564,23 +564,23 @@ public class SPFMode extends AbstractMode {
 		if((engine.getOwner().replayMode == false) && (engine.statc[4] == 0)) {
 			// Up
 			if(engine.ctrl.isMenuRepeatKey(Controller.BUTTON_UP)) {
-				engine.statc[2]--;
-				if(engine.statc[2] < 0){
-					engine.statc[2] = 19;
+				menuCursor--;
+				if(menuCursor < 0){
+					menuCursor = 19;
 					loadDropMapPreview(engine, playerID, DROP_PATTERNS[dropSet[playerID]][dropMap[playerID]]);
 				}
-				else if (engine.statc[2] == 17)
+				else if (menuCursor == 17)
 					engine.field = null;
 				engine.playSE("cursor");
 			}
 			// Down
 			if(engine.ctrl.isMenuRepeatKey(Controller.BUTTON_DOWN)) {
-				engine.statc[2]++;
-				if(engine.statc[2] > 19) {
-					engine.statc[2] = 0;
+				menuCursor++;
+				if(menuCursor > 19) {
+					menuCursor = 0;
 					engine.field = null;
 				}
-				else if (engine.statc[2] == 18)
+				else if (menuCursor == 18)
 					loadDropMapPreview(engine, playerID, DROP_PATTERNS[dropSet[playerID]][dropMap[playerID]]);
 				engine.playSE("cursor");
 			}
@@ -597,7 +597,7 @@ public class SPFMode extends AbstractMode {
 				if(engine.ctrl.isPress(Controller.BUTTON_E)) m = 100;
 				if(engine.ctrl.isPress(Controller.BUTTON_F)) m = 1000;
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					engine.speed.gravity += change * m;
 					if(engine.speed.gravity < -1) engine.speed.gravity = 99999;
@@ -715,12 +715,12 @@ public class SPFMode extends AbstractMode {
 			}
 
 			// Decision
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				engine.playSE("decide");
 
-				if(engine.statc[2] == 7) {
+				if(menuCursor == 7) {
 					loadPreset(engine, owner.modeConfig, presetNumber[playerID]);
-				} else if(engine.statc[2] == 8) {
+				} else if(menuCursor == 8) {
 					savePreset(engine, owner.modeConfig, presetNumber[playerID]);
 					receiver.saveModeConfig(owner.modeConfig);
 				} else {
@@ -737,40 +737,40 @@ public class SPFMode extends AbstractMode {
 			}
 
 			// For previewMapRead
-			if(useMap[playerID] && (engine.statc[3] == 0)) {
+			if(useMap[playerID] && (menuTime == 0)) {
 				loadMapPreview(engine, playerID, (mapNumber[playerID] < 0) ? 0 : mapNumber[playerID], true);
 			}
 
 			// Random map preview
 			if(useMap[playerID] && (propMap[playerID] != null) && (mapNumber[playerID] < 0)) {
-				if(engine.statc[3] % 30 == 0) {
+				if(menuTime % 30 == 0) {
 					engine.statc[5]++;
 					if(engine.statc[5] >= mapMaxNo[playerID]) engine.statc[5] = 0;
 					loadMapPreview(engine, playerID, engine.statc[5], false);
 				}
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		} else if(engine.statc[4] == 0) {
-			engine.statc[3]++;
-			engine.statc[2] = 0;
+			menuTime++;
+			menuCursor = 0;
 
-			if(engine.statc[3] >= 180)
+			if(menuTime >= 180)
 				engine.statc[4] = 1;
-			else if(engine.statc[3] > 120)
-				engine.statc[2] = 18;
-			else if (engine.statc[3] == 120)
+			else if(menuTime > 120)
+				menuCursor = 18;
+			else if (menuTime == 120)
 			{
-				engine.statc[2] = 18;
+				menuCursor = 18;
 				loadDropMapPreview(engine, playerID, DROP_PATTERNS[dropSet[playerID]][dropMap[playerID]]);
 			}
-			else if(engine.statc[3] >= 60)
-				engine.statc[2] = 9;
+			else if(menuTime >= 60)
+				menuCursor = 9;
 		} else {
 			// Start
 			if((owner.engine[0].statc[4] == 1) && (owner.engine[1].statc[4] == 1) && (playerID == 1)) {
-				owner.engine[0].stat = GameEngine.STAT_READY;
-				owner.engine[1].stat = GameEngine.STAT_READY;
+				owner.engine[0].stat = GameEngine.Status.READY;
+				owner.engine[1].stat = GameEngine.Status.READY;
 				owner.engine[0].resetStatc();
 				owner.engine[1].resetStatc();
 			}
@@ -789,7 +789,7 @@ public class SPFMode extends AbstractMode {
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
 		if(engine.statc[4] == 0) {
-			if(engine.statc[2] < 9) {
+			if(menuCursor < 9) {
 				initMenu(EventRenderer.COLOR_ORANGE, 0);
 				drawMenu(engine, playerID, receiver,
 						"GRAVITY", String.valueOf(engine.speed.gravity),
@@ -804,7 +804,7 @@ public class SPFMode extends AbstractMode {
 						"LOAD", String.valueOf(presetNumber[playerID]),
 						"SAVE", String.valueOf(presetNumber[playerID]));
 				receiver.drawMenuFont(engine, playerID, 0, 19, "PAGE 1/3", EventRenderer.COLOR_YELLOW);
-			} else if (engine.statc[2] < 18){
+			} else if (menuCursor < 18){
 				initMenu(EventRenderer.COLOR_PINK, 9);
 				drawMenu(engine, playerID, receiver, "BGM", String.valueOf(bgmno));
 				menuColor = EventRenderer.COLOR_CYAN;
@@ -1524,27 +1524,27 @@ public class SPFMode extends AbstractMode {
 
 		// Settlement
 		if((playerID == 1) && (owner.engine[0].gameActive)) {
-			if((owner.engine[0].stat == GameEngine.STAT_GAMEOVER) && (owner.engine[1].stat == GameEngine.STAT_GAMEOVER)) {
+			if((owner.engine[0].stat == GameEngine.Status.GAMEOVER) && (owner.engine[1].stat == GameEngine.Status.GAMEOVER)) {
 				// Draw
 				winnerID = -1;
 				owner.engine[0].gameEnded();
 				owner.engine[1].gameEnded();
 				owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
-			} else if((owner.engine[0].stat != GameEngine.STAT_GAMEOVER) && (owner.engine[1].stat == GameEngine.STAT_GAMEOVER)) {
+			} else if((owner.engine[0].stat != GameEngine.Status.GAMEOVER) && (owner.engine[1].stat == GameEngine.Status.GAMEOVER)) {
 				// 1P win
 				winnerID = 0;
 				owner.engine[0].gameEnded();
 				owner.engine[1].gameEnded();
-				owner.engine[0].stat = GameEngine.STAT_EXCELLENT;
+				owner.engine[0].stat = GameEngine.Status.EXCELLENT;
 				owner.engine[0].resetStatc();
 				owner.engine[0].statc[1] = 1;
 				owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
-			} else if((owner.engine[0].stat == GameEngine.STAT_GAMEOVER) && (owner.engine[1].stat != GameEngine.STAT_GAMEOVER)) {
+			} else if((owner.engine[0].stat == GameEngine.Status.GAMEOVER) && (owner.engine[1].stat != GameEngine.Status.GAMEOVER)) {
 				// 2P win
 				winnerID = 1;
 				owner.engine[0].gameEnded();
 				owner.engine[1].gameEnded();
-				owner.engine[1].stat = GameEngine.STAT_EXCELLENT;
+				owner.engine[1].stat = GameEngine.Status.EXCELLENT;
 				owner.engine[1].resetStatc();
 				owner.engine[1].statc[1] = 1;
 				owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
@@ -1570,11 +1570,11 @@ public class SPFMode extends AbstractMode {
 		drawResult(engine, playerID, receiver, 3, EventRenderer.COLOR_ORANGE,
 				"ATTACK", String.format("%10d", ojamaSent[playerID]));
 		drawResultStats(engine, playerID, receiver, 5, EventRenderer.COLOR_ORANGE,
-				STAT_LINES, STAT_PIECE);
+				Statistic.LINES, Statistic.PIECE);
 		drawResult(engine, playerID, receiver, 9, EventRenderer.COLOR_ORANGE,
 				"ATTACK/MIN", String.format("%10g", apm));
 		drawResultStats(engine, playerID, receiver, 11, EventRenderer.COLOR_ORANGE,
-				STAT_LPM, STAT_PPS, STAT_TIME);
+				Statistic.LPM, Statistic.PPS, Statistic.TIME);
 	}
 
 	/*

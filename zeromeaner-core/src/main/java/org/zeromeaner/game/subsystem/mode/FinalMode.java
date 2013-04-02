@@ -82,7 +82,7 @@ public class FinalMode extends AbstractMode {
 
 	/** GameManager object (Manages entire game status) */
 
-	/** EventReceiver object (This receives many game events, can also be used for drawing the fonts.) */
+	/** EventRenderer object (This receives many game events, can also be used for drawing the fonts.) */
 
 	/** Next section level */
 	private int nextseclv;
@@ -355,7 +355,7 @@ public class FinalMode extends AbstractMode {
 			if(change != 0) {
 				receiver.playSE("change");
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					startlevel += change;
 					if(startlevel < 0) startlevel = 9;
@@ -375,13 +375,13 @@ public class FinalMode extends AbstractMode {
 			}
 
 			// Check for F button, when pressed this will flip Leaderboard/Best Section Time Records
-			if(engine.ctrl.isPush(Controller.BUTTON_F) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_F) && (menuTime >= 5)) {
 				engine.playSE("change");
 				isShowBestSectionTime = !isShowBestSectionTime;
 			}
 
 			// Check for A button, when pressed this will begin the game
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				receiver.playSE("decide");
 				saveSetting(owner.modeConfig);
 				receiver.saveModeConfig(owner.modeConfig);
@@ -395,12 +395,12 @@ public class FinalMode extends AbstractMode {
 
 			sectionscomp = 0;
 
-			engine.statc[3]++;
+			menuTime++;
 		} else {
-			engine.statc[3]++;
-			engine.statc[2] = -1;
+			menuTime++;
+			menuCursor = -1;
 
-			if(engine.statc[3] >= 60) {
+			if(menuTime >= 60) {
 				return false;
 			}
 		}
@@ -458,7 +458,7 @@ public class FinalMode extends AbstractMode {
 	public void renderLast(GameEngine engine, int playerID) {
 		receiver.drawScoreFont(engine, playerID, 0, 0, "FINAL", EventRenderer.COLOR_WHITE);
 
-		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
+		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (startlevel == 0) && (big == false) && (engine.ai == null)) {
 				if(!isShowBestSectionTime) {
 					// Leaderboard
@@ -824,7 +824,7 @@ public class FinalMode extends AbstractMode {
 				rollclear = 2;
 				engine.gameEnded();
 				engine.resetStatc();
-				engine.stat = GameEngine.STAT_EXCELLENT;
+				engine.stat = GameEngine.Status.EXCELLENT;
 			}
 		}
 	}
@@ -858,7 +858,7 @@ public class FinalMode extends AbstractMode {
 			}
 
 			drawResultStats(engine, playerID, receiver, 4, EventRenderer.COLOR_BLUE,
-					STAT_SCORE, STAT_LINES, STAT_LEVEL_MANIA, STAT_TIME);
+					Statistic.SCORE, Statistic.LINES, Statistic.LEVEL_MANIA, Statistic.TIME);
 			drawResultRank(engine, playerID, receiver, 12, EventRenderer.COLOR_BLUE, rankingRank);
 			if(secretGrade > 4) {
 				drawResult(engine, playerID, receiver, 14, EventRenderer.COLOR_BLUE,
@@ -885,7 +885,7 @@ public class FinalMode extends AbstractMode {
 			if(medalCO >= 1) receiver.drawMenuFont(engine, playerID, 8, 4, "CO", getMedalFontColor(medalCO));
 
 			drawResultStats(engine, playerID, receiver, 6, EventRenderer.COLOR_BLUE,
-					STAT_LPS, STAT_SPS, STAT_PIECE, STAT_PPS);
+					Statistic.LPS, Statistic.SPS, Statistic.PIECE, Statistic.PPS);
 		}
 	}
 

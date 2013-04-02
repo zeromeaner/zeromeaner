@@ -188,7 +188,7 @@ public class VSDigRaceMode extends AbstractMode {
 				if(engine.ctrl.isPress(Controller.BUTTON_E)) m = 100;
 				if(engine.ctrl.isPress(Controller.BUTTON_F)) m = 1000;
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					engine.speed.gravity += change * m;
 					if(engine.speed.gravity < -1) engine.speed.gravity = 99999;
@@ -252,12 +252,12 @@ public class VSDigRaceMode extends AbstractMode {
 			}
 
 			// Confirm
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				engine.playSE("decide");
 
-				if(engine.statc[2] == 7) {
+				if(menuCursor == 7) {
 					loadPreset(engine, owner.modeConfig, presetNumber[playerID]);
-				} else if(engine.statc[2] == 8) {
+				} else if(menuCursor == 8) {
 					savePreset(engine, owner.modeConfig, presetNumber[playerID]);
 					receiver.saveModeConfig(owner.modeConfig);
 				} else {
@@ -273,23 +273,23 @@ public class VSDigRaceMode extends AbstractMode {
 				engine.quitflag = true;
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		} else if(engine.statc[4] == 0) {
 			// Replay start
-			engine.statc[3]++;
-			engine.statc[2] = 0;
+			menuTime++;
+			menuCursor = 0;
 
-			if(engine.statc[3] >= 60) {
-				engine.statc[2] = 9;
+			if(menuTime >= 60) {
+				menuCursor = 9;
 			}
-			if(engine.statc[3] >= 120) {
+			if(menuTime >= 120) {
 				engine.statc[4] = 1;
 			}
 		} else {
 			// Start the game when both players are ready
 			if((owner.engine[0].statc[4] == 1) && (owner.engine[1].statc[4] == 1) && (playerID == 1)) {
-				owner.engine[0].stat = GameEngine.STAT_READY;
-				owner.engine[1].stat = GameEngine.STAT_READY;
+				owner.engine[0].stat = GameEngine.Status.READY;
+				owner.engine[1].stat = GameEngine.Status.READY;
 				owner.engine[0].resetStatc();
 				owner.engine[1].resetStatc();
 			}
@@ -308,7 +308,7 @@ public class VSDigRaceMode extends AbstractMode {
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
 		if(engine.statc[4] == 0) {
-			if(engine.statc[2] < 9) {
+			if(menuCursor < 9) {
 				drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_ORANGE, 0,
 						"GRAVITY", String.valueOf(engine.speed.gravity),
 						"G-MAX", String.valueOf(engine.speed.denominator),
@@ -458,10 +458,10 @@ public class VSDigRaceMode extends AbstractMode {
 
 		int enemyRemainLines = Math.max(0, getRemainGarbageLines(owner.engine[enemyID], enemyID));
 		/*
-		int fontColorEnemy = EventReceiver.COLOR_WHITE;
-		if((enemyRemainLines <= 14) && (enemyRemainLines > 0)) fontColorEnemy = EventReceiver.COLOR_YELLOW;
-		if((enemyRemainLines <=  8) && (enemyRemainLines > 0)) fontColorEnemy = EventReceiver.COLOR_ORANGE;
-		if((enemyRemainLines <=  4) && (enemyRemainLines > 0)) fontColorEnemy = EventReceiver.COLOR_RED;
+		int fontColorEnemy = EventRenderer.COLOR_WHITE;
+		if((enemyRemainLines <= 14) && (enemyRemainLines > 0)) fontColorEnemy = EventRenderer.COLOR_YELLOW;
+		if((enemyRemainLines <=  8) && (enemyRemainLines > 0)) fontColorEnemy = EventRenderer.COLOR_ORANGE;
+		if((enemyRemainLines <=  4) && (enemyRemainLines > 0)) fontColorEnemy = EventRenderer.COLOR_RED;
 		*/
 
 		// Lines left (bottom)
@@ -537,7 +537,7 @@ public class VSDigRaceMode extends AbstractMode {
 		// Game completed
 		if((lines > 0) && (remainLines <= 0)) {
 			engine.timerActive = false;
-			owner.engine[enemyID].stat = GameEngine.STAT_GAMEOVER;
+			owner.engine[enemyID].stat = GameEngine.Status.GAMEOVER;
 			owner.engine[enemyID].resetStatc();
 		}
 	}
@@ -546,28 +546,28 @@ public class VSDigRaceMode extends AbstractMode {
 	public void onLast(GameEngine engine, int playerID) {
 		// Game End
 		if((playerID == 1) && (owner.engine[0].gameActive)) {
-			if((owner.engine[0].stat == GameEngine.STAT_GAMEOVER) && (owner.engine[1].stat == GameEngine.STAT_GAMEOVER)) {
+			if((owner.engine[0].stat == GameEngine.Status.GAMEOVER) && (owner.engine[1].stat == GameEngine.Status.GAMEOVER)) {
 				// Draw
 				winnerID = -1;
 				owner.engine[0].gameEnded();
 				owner.engine[1].gameEnded();
 				owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
-			} else if((owner.engine[0].stat != GameEngine.STAT_GAMEOVER) && (owner.engine[1].stat == GameEngine.STAT_GAMEOVER)) {
+			} else if((owner.engine[0].stat != GameEngine.Status.GAMEOVER) && (owner.engine[1].stat == GameEngine.Status.GAMEOVER)) {
 				// 1P win
 				winnerID = 0;
 				owner.engine[0].gameEnded();
 				owner.engine[1].gameEnded();
-				owner.engine[0].stat = GameEngine.STAT_EXCELLENT;
+				owner.engine[0].stat = GameEngine.Status.EXCELLENT;
 				owner.engine[0].resetStatc();
 				owner.engine[0].statc[1] = 1;
 				owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
 				if(!owner.replayMode) winCount[0]++;
-			} else if((owner.engine[0].stat == GameEngine.STAT_GAMEOVER) && (owner.engine[1].stat != GameEngine.STAT_GAMEOVER)) {
+			} else if((owner.engine[0].stat == GameEngine.Status.GAMEOVER) && (owner.engine[1].stat != GameEngine.Status.GAMEOVER)) {
 				// 2P win
 				winnerID = 1;
 				owner.engine[0].gameEnded();
 				owner.engine[1].gameEnded();
-				owner.engine[1].stat = GameEngine.STAT_EXCELLENT;
+				owner.engine[1].stat = GameEngine.Status.EXCELLENT;
 				owner.engine[1].resetStatc();
 				owner.engine[1].statc[1] = 1;
 				owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
@@ -590,7 +590,7 @@ public class VSDigRaceMode extends AbstractMode {
 			receiver.drawMenuFont(engine, playerID, 6, 1, "LOSE", EventRenderer.COLOR_WHITE);
 		}
 		drawResultStats(engine, playerID, receiver, 2, EventRenderer.COLOR_ORANGE,
-				STAT_LINES, STAT_PIECE, STAT_LPM, STAT_PPS, STAT_TIME);
+				Statistic.LINES, Statistic.PIECE, Statistic.LPM, Statistic.PPS, Statistic.TIME);
 	}
 
 	/*

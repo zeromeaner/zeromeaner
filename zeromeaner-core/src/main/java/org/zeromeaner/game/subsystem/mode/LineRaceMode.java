@@ -181,7 +181,7 @@ public class LineRaceMode extends AbstractNetMode {
 				if(engine.ctrl.isPress(Controller.BUTTON_E)) m = 100;
 				if(engine.ctrl.isPress(Controller.BUTTON_F)) m = 1000;
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					engine.speed.gravity += change * m;
 					if(engine.speed.gravity < -1) engine.speed.gravity = 99999;
@@ -245,10 +245,10 @@ public class LineRaceMode extends AbstractNetMode {
 			}
 
 			// Confirm
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5) && (!netIsWatch)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5) && (!netIsWatch)) {
 				engine.playSE("decide");
 
-				if(engine.statc[2] == 10) {
+				if(menuCursor == 10) {
 					// Load preset
 					loadPreset(engine, owner.modeConfig, presetNumber);
 
@@ -256,7 +256,7 @@ public class LineRaceMode extends AbstractNetMode {
 					if(netIsNetPlay && (netNumSpectators > 0)) {
 						netSendOptions(engine);
 					}
-				} else if(engine.statc[2] == 11) {
+				} else if(menuCursor == 11) {
 					// Save preset
 					savePreset(engine, owner.modeConfig, presetNumber);
 					receiver.saveModeConfig(owner.modeConfig);
@@ -279,14 +279,14 @@ public class LineRaceMode extends AbstractNetMode {
 				engine.quitflag = true;
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		}
 		// Replay
 		else {
-			engine.statc[3]++;
-			engine.statc[2] = -1;
+			menuTime++;
+			menuCursor = -1;
 
-			if(engine.statc[3] >= 60) {
+			if(menuTime >= 60) {
 				return false;
 			}
 		}
@@ -347,7 +347,7 @@ public class LineRaceMode extends AbstractNetMode {
 		receiver.drawScoreFont(engine, playerID, 0, 0, "LINE RACE", EventRenderer.COLOR_RED);
 		receiver.drawScoreFont(engine, playerID, 0, 1, "(" + GOAL_TABLE[goaltype] + " LINES GAME)", EventRenderer.COLOR_RED);
 
-		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
+		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
 			if(!owner.replayMode && !big && (engine.ai == null) && !netIsWatch) {
 				float scale = (receiver.getNextDisplayType() == 2) ? 0.5f : 1.0f;
 				int topY = (receiver.getNextDisplayType() == 2) ? 6 : 4;
@@ -434,7 +434,7 @@ public class LineRaceMode extends AbstractNetMode {
 	@Override
 	public void renderResult(GameEngine engine, int playerID) {
 		drawResultStats(engine, playerID, receiver, 1, EventRenderer.COLOR_BLUE,
-				STAT_LINES, STAT_PIECE, STAT_TIME, STAT_LPM, STAT_PPS);
+				Statistic.LINES, Statistic.PIECE, Statistic.TIME, Statistic.LPM, Statistic.PPS);
 		drawResultRank(engine, playerID, receiver, 11, EventRenderer.COLOR_BLUE, rankingRank);
 		drawResultNetRank(engine, playerID, receiver, 13, EventRenderer.COLOR_BLUE, netRankingRank[0]);
 		drawResultNetRankDaily(engine, playerID, receiver, 15, EventRenderer.COLOR_BLUE, netRankingRank[1]);

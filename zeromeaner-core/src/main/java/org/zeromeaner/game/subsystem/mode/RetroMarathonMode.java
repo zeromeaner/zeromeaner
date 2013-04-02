@@ -125,7 +125,7 @@ public class RetroMarathonMode extends AbstractMode {
 
 	/** GameManager object (Manages entire game status) */
 
-	/** EventReceiver object (This receives many game events, can also be used for drawing the fonts.) */
+	/** EventRenderer object (This receives many game events, can also be used for drawing the fonts.) */
 
 	/** Amount of points you just get from line clears */
 	private int lastscore;
@@ -256,7 +256,7 @@ public class RetroMarathonMode extends AbstractMode {
 			if(change != 0) {
 				receiver.playSE("change");
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					gametype += change;
 					if(gametype < 0) gametype = GAMETYPE_MAX - 1;
@@ -281,7 +281,7 @@ public class RetroMarathonMode extends AbstractMode {
 			}
 
 			// Check for A button, when pressed this will begin the game
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				receiver.playSE("decide");
 				saveSetting(owner.modeConfig);
 				receiver.saveModeConfig(owner.modeConfig);
@@ -293,12 +293,12 @@ public class RetroMarathonMode extends AbstractMode {
 				engine.quitflag = true;
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		} else {
-			engine.statc[3]++;
-			engine.statc[2] = -1;
+			menuTime++;
+			menuCursor = -1;
 
-			if(engine.statc[3] >= 60) {
+			if(menuTime >= 60) {
 				return false;
 			}
 		}
@@ -346,7 +346,7 @@ public class RetroMarathonMode extends AbstractMode {
 		receiver.drawScoreFont(engine, playerID, 0, 0, "RETRO MARATHON", EventRenderer.COLOR_GREEN);
 		receiver.drawScoreFont(engine, playerID, 0, 1, "("+GAMETYPE_NAME[gametype]+")", EventRenderer.COLOR_GREEN);
 
-		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
+		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (big == false) && (engine.ai == null)) {
 				receiver.drawScoreFont(engine, playerID, 3, 3, "SCORE    LINE LV.", EventRenderer.COLOR_BLUE);
 
@@ -505,12 +505,12 @@ public class RetroMarathonMode extends AbstractMode {
 		receiver.drawMenuFont(engine, playerID,  0, 1, "PLAY DATA", EventRenderer.COLOR_ORANGE);
 
 		drawResultStats(engine, playerID, receiver, 3, EventRenderer.COLOR_BLUE,
-				STAT_SCORE, STAT_LINES);
+				Statistic.SCORE, Statistic.LINES);
 		receiver.drawMenuFont(engine, playerID,  0, 7, "LEVEL", EventRenderer.COLOR_BLUE);
 		String strLevel = String.format("%10s", LEVEL_NAME[engine.statistics.level]);
 		receiver.drawMenuFont(engine, playerID,  0, 8, strLevel);
 		drawResultStats(engine, playerID, receiver, 9, EventRenderer.COLOR_BLUE,
-				STAT_TIME, STAT_SPL, STAT_LPM);
+				Statistic.TIME, Statistic.SPL, Statistic.LPM);
 		drawResultRank(engine, playerID, receiver, 15, EventRenderer.COLOR_BLUE, rankingRank);
 
 	}

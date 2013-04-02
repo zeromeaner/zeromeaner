@@ -73,7 +73,7 @@ public class SquareMode extends AbstractMode {
 
 	/** GameManager object (Manages entire game status) */
 
-	/** EventReceiver object (This receives many game events, can also be used for drawing the fonts.) */
+	/** EventRenderer object (This receives many game events, can also be used for drawing the fonts.) */
 
 	/** Current gravity number (When the point reaches tableGravityChangeScore's value, this variable will increase) */
 	private int gravityindex;
@@ -187,7 +187,7 @@ public class SquareMode extends AbstractMode {
 			if(change != 0) {
 				engine.playSE("change");
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					gametype += change;
 					if(gametype < 0) gametype = GAMETYPE_MAX - 1;
@@ -215,7 +215,7 @@ public class SquareMode extends AbstractMode {
 			}
 
 			// A button (confirm)
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				engine.playSE("decide");
 				saveSetting(owner.modeConfig);
 				receiver.saveModeConfig(owner.modeConfig);
@@ -227,12 +227,12 @@ public class SquareMode extends AbstractMode {
 				engine.quitflag = true;
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		} else {
-			engine.statc[3]++;
-			engine.statc[2] = -1;
+			menuTime++;
+			menuCursor = -1;
 
-			if(engine.statc[3] >= 60) {
+			if(menuTime >= 60) {
 				return false;
 			}
 		}
@@ -299,7 +299,7 @@ public class SquareMode extends AbstractMode {
 	@Override
 	public boolean onMove(GameEngine engine, int playerID) {
 		// Disable cascade
-		engine.lineGravityType = GameEngine.LINE_GRAVITY_NATIVE;
+		engine.lineGravityType = GameEngine.LineGravity.NATIVE;
 		return false;
 	}
 
@@ -310,7 +310,7 @@ public class SquareMode extends AbstractMode {
 	public void renderLast(GameEngine engine, int playerID) {
 		receiver.drawScoreFont(engine, playerID, 0, 0, "SQUARE ("+GAMETYPE_NAME[gametype]+")", EventRenderer.COLOR_DARKBLUE);
 
-		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
+		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (engine.ai == null)) {
 				float scale = ((receiver.getNextDisplayType() == 2) && (gametype == 0)) ? 0.5f : 1.0f;
 				int topY = ((receiver.getNextDisplayType() == 2) && (gametype == 0)) ? 6 : 4;
@@ -401,7 +401,7 @@ public class SquareMode extends AbstractMode {
 			if((engine.statistics.time >= ULTRA_MAX_TIME) && (engine.timerActive == true)) {
 				engine.gameEnded();
 				engine.resetStatc();
-				engine.stat = GameEngine.STAT_ENDINGSTART;
+				engine.stat = GameEngine.Status.ENDINGSTART;
 				return;
 			}
 		} else if (gametype == 2) {
@@ -417,7 +417,7 @@ public class SquareMode extends AbstractMode {
 			if((engine.statistics.score >= SPRINT_MAX_SCORE) && (engine.timerActive == true)) {
 				engine.gameEnded();
 				engine.resetStatc();
-				engine.stat = GameEngine.STAT_ENDINGSTART;
+				engine.stat = GameEngine.Status.ENDINGSTART;
 			}
 		}
 	}
@@ -466,7 +466,7 @@ public class SquareMode extends AbstractMode {
 		int pts = lines;
 
 		if (lines > 0) {
-			engine.lineGravityType = GameEngine.LINE_GRAVITY_NATIVE;
+			engine.lineGravityType = GameEngine.LineGravity.NATIVE;
 			if (engine.field.isEmpty()) {
 				engine.playSE("bravo");
 			}
@@ -551,7 +551,7 @@ public class SquareMode extends AbstractMode {
 		for (int y = (-1 * hiddenHeight); y < height; y++)
 			engine.field.setLineFlag(y, false);
 		// Set cascade flag
-		engine.lineGravityType = GameEngine.LINE_GRAVITY_CASCADE;
+		engine.lineGravityType = GameEngine.LineGravity.CASCADE;
 	}
 
 	/**
@@ -605,7 +605,7 @@ public class SquareMode extends AbstractMode {
 		}
 
 		// Set cascade flag
-		engine.lineGravityType = GameEngine.LINE_GRAVITY_CASCADE;
+		engine.lineGravityType = GameEngine.LineGravity.CASCADE;
 	}
 
 	/*
@@ -613,7 +613,7 @@ public class SquareMode extends AbstractMode {
 	 */
 	@Override
 	public boolean lineClearEnd(GameEngine engine, int playerID) {
-		if((engine.lineGravityType == GameEngine.LINE_GRAVITY_CASCADE) && (engine.lineGravityTotalLines > 0) && (tntAvalanche)) {
+		if((engine.lineGravityType == GameEngine.LineGravity.CASCADE) && (engine.lineGravityTotalLines > 0) && (tntAvalanche)) {
 			Field field = engine.field;
 			for(int i = field.getHeightWithoutHurryupFloor() - 1; i >= (field.getHiddenHeight() * -1); i--) {
 				if(field.isEmptyLine(i)) {

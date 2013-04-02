@@ -157,16 +157,16 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 		if(engine.getOwner().replayMode == false) {
 			// Up
 			if(engine.ctrl.isMenuRepeatKey(Controller.BUTTON_UP)) {
-				engine.statc[2]--;
-				if(engine.statc[2] < 0) engine.statc[2] = 10;
-				else if(engine.statc[2] == 1 && gametype != 2) engine.statc[2]--;
+				menuCursor--;
+				if(menuCursor < 0) menuCursor = 10;
+				else if(menuCursor == 1 && gametype != 2) menuCursor--;
 				engine.playSE("cursor");
 			}
 			// Down
 			if(engine.ctrl.isMenuRepeatKey(Controller.BUTTON_DOWN)) {
-				engine.statc[2]++;
-				if(engine.statc[2] > 10) engine.statc[2] = 0;
-				else if(engine.statc[2] == 1 && gametype != 2) engine.statc[2]++;
+				menuCursor++;
+				if(menuCursor > 10) menuCursor = 0;
+				else if(menuCursor == 1 && gametype != 2) menuCursor++;
 				engine.playSE("cursor");
 			}
 
@@ -178,7 +178,7 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 			if(change != 0) {
 				engine.playSE("change");
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 
 				case 0:
 					gametype += change;
@@ -229,7 +229,7 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 			}
 
 			// Decision
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				engine.playSE("decide");
 				saveSetting(owner.modeConfig);
 				receiver.saveModeConfig(owner.modeConfig);
@@ -241,14 +241,14 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 				engine.quitflag = true;
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		} else {
-			engine.statc[3]++;
-			engine.statc[2] = -1;
+			menuTime++;
+			menuCursor = -1;
 
-			if(engine.statc[3] >= 60)
-				engine.statc[2] = 9;
-			else if(engine.statc[3] >= 120)
+			if(menuTime >= 60)
+				menuCursor = 9;
+			else if(menuTime >= 120)
 				return false;
 		}
 
@@ -260,7 +260,7 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		if (engine.statc[2] <= 8) {
+		if (menuCursor <= 8) {
 			drawMenu(engine, playerID, receiver, 0, EventRenderer.COLOR_BLUE, 0,
 					"GAME TYPE", GAMETYPE_NAME[gametype]);
 			if (gametype == 2)
@@ -312,7 +312,7 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 		receiver.drawScoreFont(engine, playerID, 0, 0, "AVALANCHE (" + modeStr + ")", EventRenderer.COLOR_DARKBLUE);
 		receiver.drawScoreFont(engine, playerID, 0, 1, "("+SCORETYPE_NAME[scoreType] + " " + numColors + " COLORS)", EventRenderer.COLOR_DARKBLUE);
 
-		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
+		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (engine.ai == null) && (engine.colorClearSize == 4)) {
 				float scale = ((receiver.getNextDisplayType() == 2) && (gametype == 0)) ? 0.5f : 1.0f;
 				int topY = ((receiver.getNextDisplayType() == 2) && (gametype == 0)) ? 6 : 4;
@@ -370,7 +370,7 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 			receiver.drawScoreFont(engine, playerID, 11, 12, "MAX CHAIN", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 11, 13, String.valueOf(engine.statistics.maxChain));
 
-			if(dangerColumnShowX && engine.gameStarted && (engine.stat != GameEngine.STAT_MOVE) && (engine.stat != GameEngine.STAT_RESULT)) {
+			if(dangerColumnShowX && engine.gameStarted && (engine.stat != GameEngine.Status.MOVE) && (engine.stat != GameEngine.Status.RESULT)) {
 				drawXorTimer(engine, playerID);
 			}
 
@@ -428,7 +428,7 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 			if((engine.statistics.time >= ULTRA_MAX_TIME) && (engine.timerActive == true)) {
 				engine.gameEnded();
 				engine.resetStatc();
-				engine.stat = GameEngine.STAT_ENDINGSTART;
+				engine.stat = GameEngine.Status.ENDINGSTART;
 				return;
 			}
 		} else if (gametype == 2) {
@@ -444,7 +444,7 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 			if((engine.statistics.score >= SPRINT_MAX_SCORE[sprintTarget]) && (engine.timerActive == true)) {
 				engine.gameEnded();
 				engine.resetStatc();
-				engine.stat = GameEngine.STAT_ENDINGSTART;
+				engine.stat = GameEngine.Status.ENDINGSTART;
 			}
 		}
 	}
@@ -478,7 +478,7 @@ public class AvalancheMode extends AbstractAvalanche1PMode {
 		{
 			if (!engine.field.getBlockEmpty(2, 0) || (dangerColumnDouble && !engine.field.getBlockEmpty(3, 0)))
 			{
-				engine.stat = GameEngine.STAT_GAMEOVER;
+				engine.stat = GameEngine.Status.GAMEOVER;
 				engine.gameEnded();
 				engine.resetStatc();
 				engine.statc[1] = 1;

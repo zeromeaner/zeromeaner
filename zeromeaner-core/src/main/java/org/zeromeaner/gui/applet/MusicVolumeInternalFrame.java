@@ -29,6 +29,7 @@ public class MusicVolumeInternalFrame extends JInternalFrame {
 		if(CookieAccess.get("bgm.enable") != null)
 			sel = Boolean.parseBoolean(CookieAccess.get("bgm.enable"));
 		cb.setSelected(sel);
+		MusicList.getInstance().setVolume(sel ? 1f : 0f);
 		add(cb, BorderLayout.CENTER);
 		JLabel l;
 		add(l = new JLabel("<html><center>Music<br>courtesy<br>of<br>10X</center></html>"), BorderLayout.SOUTH);

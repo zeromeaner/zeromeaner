@@ -416,7 +416,7 @@ public class SpeedMania2Mode extends AbstractMode {
 			if(change != 0) {
 				engine.playSE("change");
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 				case 0:
 					startlevel += change;
 					if(startlevel < 0) startlevel = 13;
@@ -444,13 +444,13 @@ public class SpeedMania2Mode extends AbstractMode {
 			}
 
 			//  section time displaySwitching
-			if(engine.ctrl.isPush(Controller.BUTTON_F) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_F) && (menuTime >= 5)) {
 				engine.playSE("change");
 				isShowBestSectionTime = !isShowBestSectionTime;
 			}
 
 			// Decision
-			if(engine.ctrl.isPush(Controller.BUTTON_A) && (engine.statc[3] >= 5)) {
+			if(engine.ctrl.isPush(Controller.BUTTON_A) && (menuTime >= 5)) {
 				engine.playSE("decide");
 				saveSetting(owner.modeConfig, engine.ruleopt.strRuleName);
 				receiver.saveModeConfig(owner.modeConfig);
@@ -465,12 +465,12 @@ public class SpeedMania2Mode extends AbstractMode {
 				engine.quitflag = true;
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		} else {
-			engine.statc[3]++;
-			engine.statc[2] = -1;
+			menuTime++;
+			menuCursor = -1;
 
-			if(engine.statc[3] >= 60) {
+			if(menuTime >= 60) {
 				return false;
 			}
 		}
@@ -532,7 +532,7 @@ public class SpeedMania2Mode extends AbstractMode {
 	public void renderLast(GameEngine engine, int playerID) {
 		receiver.drawScoreFont(engine, playerID, 0, 0, "SPEED MANIA 2", EventRenderer.COLOR_RED);
 
-		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
+		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (startlevel == 0) && (big == false) && (engine.ai == null)) {
 				if(!isShowBestSectionTime) {
 					// Rankings
@@ -994,7 +994,7 @@ public class SpeedMania2Mode extends AbstractMode {
 				rollclear = 2;
 				engine.gameEnded();
 				engine.resetStatc();
-				engine.stat = GameEngine.STAT_EXCELLENT;
+				engine.stat = GameEngine.Status.EXCELLENT;
 				owner.bgmStatus.bgm = BGMStatus.BGM_NOTHING;
 			}
 		}
@@ -1027,7 +1027,7 @@ public class SpeedMania2Mode extends AbstractMode {
 			receiver.drawMenuFont(engine, playerID, 0, 3, strGrade, gcolor);
 
 			drawResultStats(engine, playerID, receiver, 4, EventRenderer.COLOR_BLUE,
-					STAT_SCORE, STAT_LINES, STAT_LEVEL_MANIA, STAT_TIME);
+					Statistic.SCORE, Statistic.LINES, Statistic.LEVEL_MANIA, Statistic.TIME);
 			drawResultRank(engine, playerID, receiver, 12, EventRenderer.COLOR_BLUE, rankingRank);
 			if(secretGrade > 4) {
 				drawResult(engine, playerID, receiver, 14, EventRenderer.COLOR_BLUE,
@@ -1054,7 +1054,7 @@ public class SpeedMania2Mode extends AbstractMode {
 			if(medalCO >= 1) receiver.drawMenuFont(engine, playerID, 8, 4, "CO", getMedalFontColor(medalCO));
 
 			drawResultStats(engine, playerID, receiver, 6, EventRenderer.COLOR_BLUE,
-					STAT_LPM, STAT_SPM, STAT_PIECE, STAT_PPS);
+					Statistic.LPM, Statistic.SPM, Statistic.PIECE, Statistic.PPS);
 		}
 	}
 

@@ -200,7 +200,7 @@ public class AvalancheFeverMode extends AbstractAvalanche1PMode {
 			if(change != 0) {
 				engine.playSE("change");
 
-				switch(engine.statc[2]) {
+				switch(menuCursor) {
 
 				case 0:
 				case 6:
@@ -279,14 +279,14 @@ public class AvalancheFeverMode extends AbstractAvalanche1PMode {
 			}
 
 			if (engine.ctrl.isPush(Controller.BUTTON_A)) {
-				if ((xyzzy == 573) && engine.statc[2] > 5) {
+				if ((xyzzy == 573) && menuCursor > 5) {
 					loadMapSetFever(engine, playerID, mapSet, true);
 					loadFeverMap(engine, new Random(), previewChain, previewSubset);
 				} else if (xyzzy == 9) {
 					engine.playSE("levelup");
 					xyzzy = 573;
 					loadMapSetFever(engine, playerID, mapSet, true);
-				} else if (engine.statc[3] >= 5) {
+				} else if (menuTime >= 5) {
 					// Decision
 					engine.playSE("decide");
 					saveSetting(owner.modeConfig);
@@ -304,12 +304,12 @@ public class AvalancheFeverMode extends AbstractAvalanche1PMode {
 				}
 			}
 
-			engine.statc[3]++;
+			menuTime++;
 		} else {
-			engine.statc[3]++;
-			engine.statc[2] = -1;
+			menuTime++;
+			menuCursor = -1;
 
-			if(engine.statc[3] >= 60) {
+			if(menuTime >= 60) {
 				return false;
 			}
 		}
@@ -332,7 +332,7 @@ public class AvalancheFeverMode extends AbstractAvalanche1PMode {
 	 */
 	@Override
 	public void renderSetting(GameEngine engine, int playerID) {
-		if (engine.statc[2] <= 5) {
+		if (menuCursor <= 5) {
 			String strOutline = "";
 			if(outlinetype == 0) strOutline = "NORMAL";
 			if(outlinetype == 1) strOutline = "COLOR";
@@ -366,7 +366,7 @@ public class AvalancheFeverMode extends AbstractAvalanche1PMode {
 		receiver.drawScoreFont(engine, playerID, 0, 1, "(" + FEVER_MAPS[mapSet].toUpperCase() + " " +
 				numColors + " COLORS)", EventRenderer.COLOR_DARKBLUE);
 
-		if( (engine.stat == GameEngine.STAT_SETTING) || ((engine.stat == GameEngine.STAT_RESULT) && (owner.replayMode == false)) ) {
+		if( (engine.stat == GameEngine.Status.SETTING) || ((engine.stat == GameEngine.Status.RESULT) && (owner.replayMode == false)) ) {
 			if((owner.replayMode == false) && (engine.ai == null)) {
 				float scale = (receiver.getNextDisplayType() == 2) ? 0.5f : 1.0f;
 				int topY = (receiver.getNextDisplayType() == 2) ? 6 : 4;
@@ -420,7 +420,7 @@ public class AvalancheFeverMode extends AbstractAvalanche1PMode {
 			receiver.drawScoreFont(engine, playerID, 11, 18, "CLEARED", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 11, 19, String.valueOf(blocksCleared));
 
-			if(engine.gameStarted && (engine.stat != GameEngine.STAT_MOVE) && (engine.stat != GameEngine.STAT_RESULT)) {
+			if(engine.gameStarted && (engine.stat != GameEngine.Status.MOVE) && (engine.stat != GameEngine.Status.RESULT)) {
 				drawXorTimer(engine, playerID);
 			}
 
@@ -513,7 +513,7 @@ public class AvalancheFeverMode extends AbstractAvalanche1PMode {
 		if(timeLimit <= 300) engine.meterColor = GameEngine.METER_COLOR_RED;
 
 		if (!fastinuse && engine.ctrl.isPress(Controller.BUTTON_F) &&
-				((fastenable == 2) || (engine.stat == GameEngine.STAT_LINECLEAR && fastenable == 1))) {
+				((fastenable == 2) || (engine.stat == GameEngine.Status.LINECLEAR && fastenable == 1))) {
 			fastinuse = true;
 			for (int i = 0; i < 4; i++) engine.getOwner().updateAll();
 			fastinuse = false;
@@ -586,7 +586,7 @@ public class AvalancheFeverMode extends AbstractAvalanche1PMode {
 		{
 			if (!engine.field.getBlockEmpty(2, 0) || !engine.field.getBlockEmpty(3, 0))
 			{
-				engine.stat = GameEngine.STAT_GAMEOVER;
+				engine.stat = GameEngine.Status.GAMEOVER;
 				engine.gameEnded();
 				engine.resetStatc();
 				engine.statc[1] = 1;
@@ -597,7 +597,7 @@ public class AvalancheFeverMode extends AbstractAvalanche1PMode {
 		if((timeLimit <= 0) && (engine.timerActive == true)) {
 			engine.gameEnded();
 			engine.resetStatc();
-			engine.stat = GameEngine.STAT_ENDINGSTART;
+			engine.stat = GameEngine.Status.ENDINGSTART;
 		}
 		return false;
 	}

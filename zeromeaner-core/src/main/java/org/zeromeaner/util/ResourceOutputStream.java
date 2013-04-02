@@ -30,7 +30,7 @@ public class ResourceOutputStream extends FilterOutputStream {
 		if(AppletMain.isApplet())
 			return new ResourceUploadStream(resource);
 		try {
-			File localResource = new File("local-resources/" + resource);
+			File localResource = new File(System.getProperty("user.dir"), "local-resources/" + resource);
 			localResource.getParentFile().mkdirs();
 			return new FileOutputStream(localResource);
 		} catch(Throwable t) {
