@@ -11,13 +11,21 @@ import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.AbstractAction;
@@ -61,10 +69,8 @@ public class AppletMain extends Applet {
 	public static String userId;
 
 	public static boolean isApplet() {
-		return instance != null && isApplet;
+		return instance != null;
 	}
-	
-	private static boolean isApplet = true;
 	
 	public static URL url;
 	
@@ -73,106 +79,44 @@ public class AppletMain extends Applet {
 	public Component notification;
 
 	public static void main(String[] args) {
-		isApplet = false;
-		JFrame frame = new JFrame("Zeromeaner");
-		frame.setSize(800, 800);
-		frame.setLayout(new BorderLayout());
-		AppletMain applet = new AppletMain();
-		applet.setStub(new AppletStub() {
-			@Override
-			public boolean isActive() {
-				return true;
-			}
+		CookieAccess.setInstance(new CookieAccess() {
+			private File prefs = new File(System.getProperty("user.home"), ".0minorc");
 			
 			@Override
-			public String getParameter(String name) {
-				return null;
-			}
-			
-			@Override
-			public URL getDocumentBase() {
+			protected Map<String, String> get(AppletMain applet) {
 				try {
-					return new URL("http://www.0mino.org/play");
-				} catch (MalformedURLException e) {
-					throw new RuntimeException(e);
+					ObjectInputStream in = new ObjectInputStream(new FileInputStream(prefs));
+					try {
+						return (Map<String, String>) in.readObject();
+					} finally {
+						in.close();
+					}
+				} catch(Throwable t) {
+					return new TreeMap<String, String>();
 				}
 			}
 			
 			@Override
-			public URL getCodeBase() {
-				return null;
-			}
-			
-			@Override
-			public AppletContext getAppletContext() {
-				return new AppletContext() {
-					
-					@Override
-					public void showStatus(String status) {
-						// TODO Auto-generated method stub
-						
+			protected void set(AppletMain applet, Map<String, String> cookie) {
+				try {
+					cookie = new TreeMap<String, String>(cookie);
+					ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(prefs));
+					try {
+						out.writeObject(cookie);
+					} finally {
+						out.close();
 					}
-					
-					@Override
-					public void showDocument(URL url, String target) {
-						// TODO Auto-generated method stub
-						
-					}
-					
-					@Override
-					public void showDocument(URL url) {
-						// TODO Auto-generated method stub
-						
-					}
-					
-					@Override
-					public void setStream(String key, InputStream stream) throws IOException {
-						// TODO Auto-generated method stub
-						
-					}
-					
-					@Override
-					public Iterator<String> getStreamKeys() {
-						// TODO Auto-generated method stub
-						return null;
-					}
-					
-					@Override
-					public InputStream getStream(String key) {
-						// TODO Auto-generated method stub
-						return null;
-					}
-					
-					@Override
-					public Image getImage(URL url) {
-						// TODO Auto-generated method stub
-						return null;
-					}
-					
-					@Override
-					public AudioClip getAudioClip(URL url) {
-						// TODO Auto-generated method stub
-						return null;
-					}
-					
-					@Override
-					public Enumeration<Applet> getApplets() {
-						// TODO Auto-generated method stub
-						return null;
-					}
-					
-					@Override
-					public Applet getApplet(String name) {
-						// TODO Auto-generated method stub
-						return null;
-					}
-				};
-			}
-			
-			@Override
-			public void appletResize(int width, int height) {
+				} catch(Throwable t) {
+				}
 			}
 		});
+		
+		JFrame frame = new JFrame("Zeromeaner");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(800, 800);
+		frame.setLayout(new BorderLayout());
+		AppletMain applet = new AppletMain();
+		applet.setStub(new MainAppletStub());
 		frame.add(applet, BorderLayout.CENTER);
 		frame.setVisible(true);
 		frame.setLocationRelativeTo(null);
@@ -360,91 +304,188 @@ public class AppletMain extends Applet {
 	}
 
 	private void autoNetplay(Iterator<String> commands) {
-		final String room;
-		if(commands.hasNext())
-			room = commands.next();
-		else
-			room = null;
-		
-		final boolean customize = commands.hasNext() && "customize".equals(commands.next());
-		
-		final AtomicBoolean createdRoom = new AtomicBoolean(false);
-		
-		// Launch netplay
-		NullpoMinoInternalFrame.mainFrame.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Menu_NetPlay"));
-
-		// Connect to the server
-		final KNetPanel knp = NullpoMinoInternalFrame.netLobby.getKnetPanel();
-		knp.getConnectionsListPanel().connect();
-		
-		if(room == null || room.isEmpty())
-			return;
-
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(4000);
-				} catch(InterruptedException ie) {
-				}
-			}
-		});
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				// Find the room
-				JTabbedPane tabs = knp.getConnectedPanel().getChannels();
-				for(int i = 0; i < tabs.getTabCount(); i++) {
-					KNetPanel.ChannelPanel chp = (KNetPanel.ChannelPanel) tabs.getComponentAt(i);
-					if(chp.getChannel().getName().equals(room)) {
-						chp.join();
-						return;
+			final String room;
+			if(commands.hasNext())
+				room = commands.next();
+			else
+				room = null;
+			
+			final boolean customize = commands.hasNext() && "customize".equals(commands.next());
+			
+			final AtomicBoolean createdRoom = new AtomicBoolean(false);
+			
+			// Launch netplay
+			NullpoMinoInternalFrame.mainFrame.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Menu_NetPlay"));
+	
+			// Connect to the server
+			final KNetPanel knp = NullpoMinoInternalFrame.netLobby.getKnetPanel();
+			knp.getConnectionsListPanel().connect();
+			
+			if(room == null || room.isEmpty())
+				return;
+	
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(4000);
+					} catch(InterruptedException ie) {
 					}
 				}
+			});
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					// Find the room
+					JTabbedPane tabs = knp.getConnectedPanel().getChannels();
+					for(int i = 0; i < tabs.getTabCount(); i++) {
+						KNetPanel.ChannelPanel chp = (KNetPanel.ChannelPanel) tabs.getComponentAt(i);
+						if(chp.getChannel().getName().equals(room)) {
+							chp.join();
+							return;
+						}
+					}
+	
+					// Room not found
+					knp.getConnectedPanel().add();
+					
+					knp.getCreateChannelPanel().getChannel().setName(room);
+					knp.getCreateChannelPanel().getChannelPanel().updateEditor();
+					
+					createdRoom.set(true);
+				}
+			});
+			
+	//		if(!customize)
+	//			return;
+	//		EventQueue.invokeLater(new Runnable() {
+	//			@Override
+	//			public void run() {
+	//				if(!createdRoom.get())
+	//					return;
+	////				nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CreateRated_Custom"));
+	//				nlf.btnCreateRatedCustom.doClick();
+	//			}
+	//		});
+	//		while(commands.hasNext()) {
+	//			String cmd = commands.next();
+	//			if("mode".equals(cmd)) {
+	//				final String mode = commands.next();
+	//				EventQueue.invokeLater(new Runnable() {
+	//					@Override
+	//					public void run() {
+	//						nlf.comboboxCreateRoomMode.getModel().setSelectedItem(mode);
+	//					}
+	//				});
+	//			} else if("ok".equals(cmd)) {
+	//				EventQueue.invokeLater(new Runnable() {
+	//					@Override
+	//					public void run() {
+	//						if(!createdRoom.get())
+	//							return;
+	//						nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CreateRated_OK"));
+	//					}
+	//				});
+	//			}
+	//			
+	//		}
+		}
 
-				// Room not found
-				knp.getConnectedPanel().add();
-				
-				knp.getCreateChannelPanel().getChannel().setName(room);
-				knp.getCreateChannelPanel().getChannelPanel().updateEditor();
-				
-				createdRoom.set(true);
+	private static class MainAppletStub implements AppletStub {
+		@Override
+		public boolean isActive() {
+			return true;
+		}
+	
+		@Override
+		public String getParameter(String name) {
+			return null;
+		}
+	
+		@Override
+		public URL getDocumentBase() {
+			try {
+				return new URL("http://www.0mino.org/play");
+			} catch (MalformedURLException e) {
+				throw new RuntimeException(e);
 			}
-		});
-		
-//		if(!customize)
-//			return;
-//		EventQueue.invokeLater(new Runnable() {
-//			@Override
-//			public void run() {
-//				if(!createdRoom.get())
-//					return;
-////				nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CreateRated_Custom"));
-//				nlf.btnCreateRatedCustom.doClick();
-//			}
-//		});
-//		while(commands.hasNext()) {
-//			String cmd = commands.next();
-//			if("mode".equals(cmd)) {
-//				final String mode = commands.next();
-//				EventQueue.invokeLater(new Runnable() {
-//					@Override
-//					public void run() {
-//						nlf.comboboxCreateRoomMode.getModel().setSelectedItem(mode);
-//					}
-//				});
-//			} else if("ok".equals(cmd)) {
-//				EventQueue.invokeLater(new Runnable() {
-//					@Override
-//					public void run() {
-//						if(!createdRoom.get())
-//							return;
-//						nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CreateRated_OK"));
-//					}
-//				});
-//			}
-//			
-//		}
+		}
+	
+		@Override
+		public URL getCodeBase() {
+			return null;
+		}
+	
+		@Override
+		public AppletContext getAppletContext() {
+			return new MainAppletContext();
+		}
+	
+		@Override
+		public void appletResize(int width, int height) {
+		}
+	}
+
+	private static class MainAppletContext implements AppletContext {
+		@Override
+		public void showStatus(String status) {
+			// TODO Auto-generated method stub
+			
+		}
+	
+		@Override
+		public void showDocument(URL url, String target) {
+			// TODO Auto-generated method stub
+			
+		}
+	
+		@Override
+		public void showDocument(URL url) {
+			// TODO Auto-generated method stub
+			
+		}
+	
+		@Override
+		public void setStream(String key, InputStream stream) throws IOException {
+			// TODO Auto-generated method stub
+			
+		}
+	
+		@Override
+		public Iterator<String> getStreamKeys() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	
+		@Override
+		public InputStream getStream(String key) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	
+		@Override
+		public Image getImage(URL url) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	
+		@Override
+		public AudioClip getAudioClip(URL url) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	
+		@Override
+		public Enumeration<Applet> getApplets() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	
+		@Override
+		public Applet getApplet(String name) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 
 }

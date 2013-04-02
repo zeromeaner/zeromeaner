@@ -11,18 +11,28 @@ import netscape.javascript.JSObject;
 
 
 public class CookieAccess {
+	private static CookieAccess instance;
+	
+	public static CookieAccess getInstance() {
+		return instance;
+	}
+	
+	public static void setInstance(CookieAccess instance) {
+		CookieAccess.instance = instance;
+	}
+	
 	public static String get(String key) {
-		String c = get().get(key);
+		String c = instance.get().get(key);
 		if(c == null)
 			c = System.getProperty(key);
 		return c;
 	}
 	
-	private static Map<String, String> get() {
+	protected Map<String, String> get() {
 		return get(AppletMain.instance);
 	}
 	
-	private static Map<String, String> get(AppletMain applet) {
+	protected Map<String, String> get(AppletMain applet) {
 		try {
 			String data = "";
 			JSObject myBrowser = JSObject.getWindow(applet);
@@ -52,17 +62,17 @@ public class CookieAccess {
 		}
 	}
 	
-	private static void set(Map<String, String> cookie) {
+	protected void set(Map<String, String> cookie) {
 		set(AppletMain.instance, cookie);
 	}
 	
 	public static void put(String key, String val) {
-		Map<String, String> c = get();
+		Map<String, String> c = instance.get();
 		c.put(key, val);
-		set(c);
+		instance.set(c);
 	}
 
-	private static void set(AppletMain applet, Map<String, String> cookie) {
+	protected void set(AppletMain applet, Map<String, String> cookie) {
 		try {
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();
 			ObjectOutputStream out = new ObjectOutputStream(bout);
