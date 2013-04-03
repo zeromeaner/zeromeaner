@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.zeromeaner.dbo.UserMapper">
+	<select id="selectId" parameterType="Integer" resultType="User">
+		select
+			user_id as userId,
+			email as email,
+			sha1_pw as sha1PwHex
+		from
+			${schema}.users
+		where
+			user_id = #{value};
+	</select>
+	<select id="selectEmail" parameterType="String" resultType="User">
+		select
+			user_id as userId,
+			email as email,
+			sha1_pw as sha1PwHex
+		from
+			${schema}.users
+		where
+			email = #{value}
+	</select>
+	<insert id="insert" parameterType="User">
+		insert into
+			${schema}.users(user_id, email, sha1_pw)
+		values
+			(#{userId}, #{email}, #{sha1PwHex});
+	</insert>
+	<update id="update" parameterType="User">
+		update
+			${schema}.users
+		set
+			email = #{email},
+			sha1_pw = #{sha1PwHex}
+		where
+			user_id = #{userId};
+			
+	</update>
+</mapper>
