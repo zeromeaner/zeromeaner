@@ -6,5 +6,11 @@
     <version>1.0.11-SNAPSHOT</version>
     <relativePath>../zeromeaner-parent</relativePath>
   </parent>
-  <artifactId>zeromeaner-netstats</artifactId>
+  <artifactId>zeromeaner-server</artifactId>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.zeromeaner</groupId>
+  		<artifactId>zeromeaner-core</artifactId>
+  	</dependency>
+  </dependencies>
 </project>
