@@ -2,6 +2,7 @@ package org.zeromeaner.knet.srv;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,7 +36,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 		}
 	}
 	
-	protected Map<Integer, KNetChannelInfo> channels = new HashMap<Integer, KNetChannelInfo>();
+	protected Map<Integer, KNetChannelInfo> channels = Collections.synchronizedMap(new HashMap<Integer, KNetChannelInfo>());
 	protected Map<KNetChannelInfo, ChannelState> states = new HashMap<KNetChannelInfo, ChannelState>();
 	protected AtomicInteger nextChannelId = new AtomicInteger(-1);
 	protected KNetChannelInfo lobby;
@@ -60,7 +61,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 		return (KNetChannelManager) super.start();
 	}
 	
-	public synchronized List<KNetEventSource> getMembers(int channelId) {
+	public List<KNetEventSource> getMembers(int channelId) {
 		List<KNetEventSource> ret = new ArrayList<KNetEventSource>();
 		if(channels.containsKey(channelId))
 			ret.addAll(channels.get(channelId).getMembers());
@@ -68,7 +69,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 	}
 	
 	@Override
-	public synchronized void knetEvented(KNetClient client, KNetEvent e) {
+	public void knetEvented(KNetClient client, KNetEvent e) {
 		if(client.isLocal(e))
 			return;
 		try {
