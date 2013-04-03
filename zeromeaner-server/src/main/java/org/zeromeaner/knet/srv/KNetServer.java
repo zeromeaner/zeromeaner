@@ -50,48 +50,52 @@ public class KNetServer {
 			if(!(object instanceof KNetEvent)) {
 				return;
 			}
-			KNetEvent e = (KNetEvent) object;
-			KNetEventSource evs = sourcesByConnectionId.get(connection.getID());
-			if(evs != null) {
-				if(e.is(UPDATE_SOURCE)) {
-					evs.updateFrom((KNetEventSource) e.get(UPDATE_SOURCE));
+			try {
+				KNetEvent e = (KNetEvent) object;
+				KNetEventSource evs = sourcesByConnectionId.get(connection.getID());
+				if(evs != null) {
+					if(e.is(UPDATE_SOURCE)) {
+						evs.updateFrom((KNetEventSource) e.get(UPDATE_SOURCE));
+					}
+					e.getSource().updateFrom(evs);
 				}
-				e.getSource().updateFrom(evs);
-			}
 
-			boolean global = true;
-			if(e.is(CHANNEL_ID) || e.is(ADDRESS) || e.is(USER_AUTHENTICATE) || e.is(USER_CREATE) || e.is(USER_UPDATE_PASSWORD))
-				global = false;
-			if(!global) {
-				for(KNetEventArgs arg : e.getArgs().keySet()) {
-					if(arg.isGlobal())
-						global = true;
+				boolean global = true;
+				if(e.is(CHANNEL_ID) || e.is(ADDRESS) || e.is(USER_AUTHENTICATE) || e.is(USER_CREATE) || e.is(USER_UPDATE_PASSWORD))
+					global = false;
+				if(!global) {
+					for(KNetEventArgs arg : e.getArgs().keySet()) {
+						if(arg.isGlobal())
+							global = true;
+					}
 				}
-			}
 
-			if(global) {
-				if(e.is(KNetEventArgs.UDP))
-					server.sendToAllExceptUDP(connection.getID(), object);
-				else
-					server.sendToAllExceptTCP(connection.getID(), object);
-			} else {
-				List<KNetEventSource> recipients;
-				if(e.is(CHANNEL_ID))
-					recipients = chanman.getMembers(e.get(CHANNEL_ID, Integer.class));
-				else if(e.is(ADDRESS))
-					recipients = Arrays.asList(e.get(ADDRESS, KNetEventSource.class));
-				else if(e.is(USER_AUTHENTICATE) || e.is(USER_CREATE) || e.is(USER_UPDATE_PASSWORD))
-					recipients = Arrays.asList(uman.getSource());
-				else
-					return;
-				recipients = new ArrayList<KNetEventSource>(recipients);
-				recipients.add(chanman.getSource());
-				for(KNetEventSource r : recipients) {
-					if(e.is(UDP))
-						server.sendToUDP(connectionIds.get(r), object);
+				if(global) {
+					if(e.is(KNetEventArgs.UDP))
+						server.sendToAllExceptUDP(connection.getID(), object);
 					else
-						server.sendToTCP(connectionIds.get(r), object);
+						server.sendToAllExceptTCP(connection.getID(), object);
+				} else {
+					List<KNetEventSource> recipients;
+					if(e.is(CHANNEL_ID))
+						recipients = chanman.getMembers(e.get(CHANNEL_ID, Integer.class));
+					else if(e.is(ADDRESS))
+						recipients = Arrays.asList(e.get(ADDRESS, KNetEventSource.class));
+					else if(e.is(USER_AUTHENTICATE) || e.is(USER_CREATE) || e.is(USER_UPDATE_PASSWORD))
+						recipients = Arrays.asList(uman.getSource());
+					else
+						return;
+					recipients = new ArrayList<KNetEventSource>(recipients);
+					recipients.add(chanman.getSource());
+					for(KNetEventSource r : recipients) {
+						if(e.is(UDP))
+							server.sendToUDP(connectionIds.get(r), object);
+						else
+							server.sendToTCP(connectionIds.get(r), object);
+					}
 				}
+			} catch(Throwable t) {
+				t.printStackTrace();
 			}
 		}
 		
