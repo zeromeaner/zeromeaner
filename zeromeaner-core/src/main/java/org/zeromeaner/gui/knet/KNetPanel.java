@@ -57,26 +57,6 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 	private static final String CREATE_CHANNEL_PANEL_CARD = CreateChannelPanel.class.getName();
 	private static final String VIEW_CHANEL_CARD = KNetChannelInfoPanel.class.getName();
 	
-	public static void main(String[] args) {
-		try {
-		    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-		        if ("Nimbus".equals(info.getName())) {
-		            UIManager.setLookAndFeel(info.getClassName());
-		            break;
-		        }
-		    }
-		} catch(Exception ex) {
-			ex.printStackTrace();
-		}
-		
-		JFrame f = new JFrame(KNetPanel.class.getName());
-		f.add(new KNetPanel(""));
-		f.pack();
-		f.setSize(600, 400);
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setVisible(true);
-	}
-	
 	private String defaultUsername;
 	
 	private CardLayout cards;
