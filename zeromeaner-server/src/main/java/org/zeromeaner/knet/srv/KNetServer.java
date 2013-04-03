@@ -131,7 +131,7 @@ public class KNetServer {
 	public KNetServer(int port) throws IOException, InterruptedException {
 		this.port = port;
 		source = new KNetEventSource(nextClientId.incrementAndGet());
-		server = new Server(1024 * 16, 1024 * 256);
+		server = new Server(1024 * 256, 1024 * 256);
 		KNetKryo.configure(server.getKryo());
 		server.start();
 		server.bind(port, port);
