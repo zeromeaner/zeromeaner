@@ -52,6 +52,7 @@ import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.util.GeneralUtil;
+import org.zeromeaner.util.Version;
 
 
 /**
@@ -248,17 +249,7 @@ public class GameEngine {
 	/** Time of game end in milliseconds */
 	public long endTime;
 
-	/** Major version */
-	public float versionMajor;
-
-	/** Minor version */
-	public int versionMinor;
-
-	/** OLD minor version (Used for 6.9 or earlier replays) */
-	public float versionMinorOld;
-
-	/** Dev build flag */
-	public boolean versionIsDevBuild;
+	private Version version;
 
 	/** Game quit flag */
 	public boolean quitflag;
@@ -725,20 +716,18 @@ public class GameEngine {
 		replayData = new ReplayData();
 
 		if(owner.replayMode == false) {
-			versionMajor = GameManager.getVersionMajor();
-			versionMinor = GameManager.getVersionMinor();
-			versionMinorOld = GameManager.getVersionMinorOld();
-			versionIsDevBuild = GameManager.isDevBuild();
+			version = GameManager.VERSION;
 
 			Random tempRand = new Random();
 			randSeed = tempRand.nextLong();
 			log.debug("Player + " + playerID + "Random seed :" + Long.toString(randSeed, 16));
 			random = new Random(randSeed);
 		} else {
-			versionMajor = owner.replayProp.getProperty("version.core.major", 0f);
-			versionMinor = owner.replayProp.getProperty("version.core.minor", 0);
-			versionMinorOld = owner.replayProp.getProperty("version.core.minor", 0f);
-			versionIsDevBuild = owner.replayProp.getProperty("version.core.dev", false);
+//			versionMajor = owner.replayProp.getProperty("version.core.major", 0);
+//			versionMinor = owner.replayProp.getProperty("version.core.minor", 0);
+//			versionMicro = owner.replayProp.getProperty("version.core.micro", 0);
+//			versionIsDevBuild = owner.replayProp.getProperty("version.core.dev", false);
+			version = new Version(owner.replayProp.getProperty("version.core", GameManager.VERSION.toString()));
 
 			replayData.readProperty(owner.replayProp, playerID);
 
@@ -755,15 +744,6 @@ public class GameEngine {
 			owMoveDiagonal = owner.replayProp.getProperty(playerID + ".tuning.owMoveDiagonal", -1);
 			owBlockOutlineType = owner.replayProp.getProperty(playerID + ".tuning.owBlockOutlineType", -1);
 			owBlockShowOutlineOnly = owner.replayProp.getProperty(playerID + ".tuning.owBlockShowOutlineOnly", -1);
-
-			// Fixing old replays to accomodate for new DAS notation
-			if (versionMajor < 7.3) {
-				if  (owDasDelay >= 0) {
-					owDasDelay++;
-				} else {
-					owDasDelay = owner.replayProp.getProperty(playerID + ".ruleopt.dasDelay", 0) + 1;
-				}
-			}
 		}
 
 		quitflag = false;
@@ -1634,10 +1614,7 @@ public class GameEngine {
 	public void saveReplay() {
 		if((owner.replayMode == true) && (owner.replayRerecord == false)) return;
 
-		owner.replayProp.setProperty("version.core", versionMajor + "." + versionMinor);
-		owner.replayProp.setProperty("version.core.major", versionMajor);
-		owner.replayProp.setProperty("version.core.minor", versionMinor);
-		owner.replayProp.setProperty("version.core.dev", versionIsDevBuild);
+		owner.replayProp.setProperty("version.core", version.toString());
 
 		owner.replayProp.setProperty(playerID + ".replay.randSeed", Long.toString(randSeed, 16));
 
@@ -2192,10 +2169,6 @@ public class GameEngine {
 
 			if(itemRollRollEnable) nowPieceColorOverride = Block.BLOCK_COLOR_GRAY;
 
-			// Precedingrotation
-			if(versionMajor < 7.5f) initialRotate(); //XXX: Weird active time IRS
-			//if( (getARE() != 0) && ((getARELine() != 0) || (version < 6.3f)) ) initialRotate();
-
 			if((speed.gravity > speed.denominator) && (speed.denominator > 0))
 				gcount = speed.gravity % speed.denominator;
 			else
@@ -2470,7 +2443,7 @@ public class GameEngine {
 				}
 			}
 
-			if((!dasRepeat) || (versionMajor < 7.6f)){
+			if(!dasRepeat){
 				// Hard drop
 				if( (ctrl.isPress(getUp()) == true) &&
 					(harddropContinuousUse == false) &&
@@ -2716,10 +2689,10 @@ public class GameEngine {
 				dasInstant = false;
 
 				// Next Determine the processing(Mode If you are toying a status on the side, I do not do anything)
-				if((stat == Status.MOVE) || (versionMajor <= 6.3f)) {
+				if(stat == Status.MOVE) {
 					resetStatc();
 
-					if((ending == 1) && (versionMajor >= 6.6f) && (versionMinorOld >= 0.1f)) {
+					if(ending == 1) {
 						// Ending
 						stat = Status.ENDINGSTART;
 					} else if( (!put && ruleopt.fieldLockoutDeath) || (partialLockOut && ruleopt.fieldPartialLockoutDeath) ) {
@@ -3036,7 +3009,7 @@ public class GameEngine {
 
 				field.lineColorsCleared = null;
 
-				if((stat == Status.LINECLEAR) || (versionMajor <= 6.3f)) {
+				if(stat == Status.LINECLEAR) {
 					resetStatc();
 					if(ending == 1) {
 						// Ending
@@ -3055,7 +3028,6 @@ public class GameEngine {
 					} else {
 						// ARENo
 						nowPieceObject = null;
-						if(versionMajor < 7.5f) initialRotate(); //XXX: Weird IRS thing on lines cleared but no ARE
 						stat = Status.MOVE;
 					}
 				}

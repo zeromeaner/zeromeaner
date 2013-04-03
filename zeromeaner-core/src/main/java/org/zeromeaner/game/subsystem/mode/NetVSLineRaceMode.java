@@ -2,13 +2,13 @@ package org.zeromeaner.game.subsystem.mode;
 
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
-import org.zeromeaner.game.knet.KNetEvent;
-import org.zeromeaner.game.knet.obj.KNetGameInfo;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.knet.KNetEvent;
+import org.zeromeaner.knet.obj.KNetGameInfo;
 import org.zeromeaner.util.GeneralUtil;
 
-import static org.zeromeaner.game.knet.KNetEventArgs.*;
+import static org.zeromeaner.knet.KNetEventArgs.*;
 
 /**
  * NET-VS-LINE RACE mode

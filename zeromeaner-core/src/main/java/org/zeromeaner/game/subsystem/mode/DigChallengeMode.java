@@ -8,13 +8,13 @@ import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
-import org.zeromeaner.game.knet.KNetEvent;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.mode.AbstractMode.Statistic;
+import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
-import static org.zeromeaner.game.knet.KNetEventArgs.*;
+import static org.zeromeaner.knet.KNetEventArgs.*;
 
 /**
  * DIG CHALLENGE mode

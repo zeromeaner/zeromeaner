@@ -158,7 +158,7 @@
 		<dependency>
 			<groupId>org.zeromeaner</groupId>
 			<artifactId>zeromeaner-media</artifactId>
-			<version>1.0.10</version>
+			<version>1.0.11-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -230,40 +230,6 @@
 							<alias>signFiles</alias>
 							<storepass>CasioF-2</storepass>
 							<archiveDirectory>target/dependency</archiveDirectory>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>server</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>exec-maven-plugin</artifactId>
-						<version>1.2.1</version>
-						<configuration>
-							<mainClass>org.zeromeaner.game.knet.srv.KNetServerMain</mainClass>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>dev-server</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>exec-maven-plugin</artifactId>
-						<version>1.2.1</version>
-						<configuration>
-							<mainClass>org.zeromeaner.game.knet.srv.KNetServerMain</mainClass>
-							<arguments>
-								<argument>-p</argument>
-								<argument>61898</argument>
-							</arguments>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -353,7 +319,7 @@
 	<parent>
 		<groupId>org.zeromeaner</groupId>
 		<artifactId>zeromeaner-parent</artifactId>
-		<version>1.0.10</version>
+		<version>1.0.11-SNAPSHOT</version>
 		<relativePath>../zeromeaner-parent</relativePath>
 	</parent>
 	<name>Zeromeaner Core</name>

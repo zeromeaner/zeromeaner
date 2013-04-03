@@ -44,21 +44,7 @@ public class GameManager {
 	/** Log (Apache log4j) */
 	static Logger log = Logger.getLogger(GameManager.class);
 
-	/** Major version */
-	public static final float VERSION_MAJOR;
-
-	/** Minor version */
-	public static final int VERSION_MINOR;
-
-	/** Development-build flag (false:Release-build true:Dev-build) */
-	public static final boolean DEV_BUILD;
-
-	static {
-		Version v = Version.getBuildVersion();
-		VERSION_MAJOR = v.getMajor() + v.getMinor() / 100f;
-		VERSION_MINOR = v.getMicro();
-		DEV_BUILD = v.isSnapshot();
-	}
+	public static final Version VERSION = Version.getBuildVersion();
 	
 	/** Game Mode */
 	public GameMode mode;
@@ -97,61 +83,11 @@ public class GameManager {
 	public boolean showInput;
 
 	/**
-	 * Get major version
-	 * @return Major version
-	 */
-	public static float getVersionMajor() {
-		return VERSION_MAJOR;
-	}
-
-	/**
-	 * Get minor version
-	 * @return Minor version
-	 */
-	public static int getVersionMinor() {
-		return VERSION_MINOR;
-	}
-
-	/**
-	 * Get minor version (For compatibility with old replays)
-	 * @return Minor version
-	 */
-	public static float getVersionMinorOld() {
-		return VERSION_MINOR;
-	}
-
-	/**
 	 * Get version information as String
 	 * @return Version information
 	 */
 	public static String getVersionString() {
-//		return VERSION_MAJOR + "." + VERSION_MINOR + (DEV_BUILD ? "D" : "");
-		return Version.getBuildVersion().toString();
-	}
-
-	/**
-	 * Is this development build?
-	 * @return true if dev build
-	 */
-	public static boolean isDevBuild() {
-		return DEV_BUILD;
-	}
-
-	/**
-	 * Get build type as string
-	 * @return Build type as String
-	 */
-	public static String getBuildTypeString() {
-		return DEV_BUILD ? "Development" : "Release";
-	}
-
-	/**
-	 * Get build type name
-	 * @param type Build type (false:Release true:Development)
-	 * @return Build type as String
-	 */
-	public static String getBuildTypeString(boolean type) {
-		return type ? "Development" : "Release";
+		return VERSION.toString();
 	}
 
 	/**

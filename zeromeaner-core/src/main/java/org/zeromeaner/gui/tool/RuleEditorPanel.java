@@ -85,6 +85,7 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.wallkick.StandardWallkick;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.Zeroflections;
@@ -95,6 +96,8 @@ import java.io.InputStreamReader;
  * Rule Editor
  */
 public class RuleEditorPanel extends JPanel implements ActionListener {
+	private static final Localization lz = new Localization();
+	
 	/** Serial version */
 	private static final long serialVersionUID = 1L;
 
@@ -480,23 +483,6 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 		try {
 			ResourceInputStream in = new ResourceInputStream("config/setting/swing.cfg");
 			propConfig.load(in);
-			in.close();
-		} catch(IOException e) {}
-
-		// Read language file
-		propLangDefault = new CustomProperties();
-		try {
-			ResourceInputStream in = new ResourceInputStream("config/lang/ruleeditor_default.properties");
-			propLangDefault.load(in);
-			in.close();
-		} catch (IOException e) {
-			log.error("Couldn't load default UI language file", e);
-		}
-
-		propLang = new CustomProperties();
-		try {
-			ResourceInputStream in = new ResourceInputStream("config/lang/ruleeditor_" + Locale.getDefault().getCountry() + ".properties");
-			propLang.load(in);
 			in.close();
 		} catch(IOException e) {}
 
@@ -1591,11 +1577,7 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 	 * @return PosttranslationalUIString (If you do not acceptstrReturns)
 	 */
 	public String getUIText(String str) {
-		String result = propLang.getProperty(str);
-		if(result == null) {
-			result = propLangDefault.getProperty(str, str);
-		}
-		return result;
+		return lz.s(str);
 	}
 
 	/**

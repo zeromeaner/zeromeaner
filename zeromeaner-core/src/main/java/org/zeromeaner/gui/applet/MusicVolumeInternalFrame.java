@@ -16,14 +16,17 @@ import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 
+import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.MusicList;
 
 public class MusicVolumeInternalFrame extends JInternalFrame {
+	private static Localization lz = new Localization();
+	
 	public MusicVolumeInternalFrame() {
-		super("Music", false, false, false, false);
+		super(lz.s("title"), false, false, false, false);
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(1,1,1,1), 0, 0);
-		JCheckBox cb = new JCheckBox(new AbstractAction("Play Music") {
+		JCheckBox cb = new JCheckBox(new AbstractAction(lz.s("play")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JCheckBox cb = (JCheckBox) e.getSource();
@@ -42,7 +45,7 @@ public class MusicVolumeInternalFrame extends JInternalFrame {
 		add(cb, c);
 		
 		DefaultComboBoxModel smdl = new DefaultComboBoxModel(MusicList.getInstance().filesOnly().toArray());
-		smdl.insertElementAt("Random", 0);
+		smdl.insertElementAt(lz.s("random"), 0);
 		smdl.setSelectedItem("boisterous little oscillator");
 		String bgmSelection = CookieAccess.get("bgm.selection");
 		if(bgmSelection != null && smdl.getIndexOf(bgmSelection) != -1)
@@ -60,7 +63,7 @@ public class MusicVolumeInternalFrame extends JInternalFrame {
 		c.gridy++; add(selection, c);
 		
 		JLabel l;
-		c.gridy++; add(l = new JLabel("<html><center>Music<br>courtesy<br>of</center></html>"), c);
+		c.gridy++; add(l = new JLabel(lz.s("courtesy")), c);
 		JButton b;
 		c.gridy++; add(b = new JButton(new AbstractAction("Tenfold") {
 			@Override

@@ -32,13 +32,14 @@ import org.funcish.core.fn.Predicate;
 import org.funcish.core.impl.AbstractMapper;
 import org.funcish.core.impl.AbstractPredicate;
 import org.zeromeaner.game.component.RuleOptions;
-import org.zeromeaner.game.knet.obj.KNetChannelInfo;
-import org.zeromeaner.game.knet.obj.KNetGameInfo;
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.AbstractNetVSMode;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.gui.tool.RuleEditorPanel;
+import org.zeromeaner.knet.obj.KNetChannelInfo;
+import org.zeromeaner.knet.obj.KNetGameInfo;
 import org.zeromeaner.util.GeneralUtil;
+import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.LstResourceMap;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.RuleList;
@@ -46,6 +47,8 @@ import org.zeromeaner.util.RuleList;
 
 
 public class KNetChannelInfoPanel extends JPanel {
+	private static Localization lz = new Localization();
+	
 	private KNetChannelInfo channel;
 	
 	private JTabbedPane tabs = new JTabbedPane(JTabbedPane.LEFT);
@@ -142,20 +145,20 @@ public class KNetChannelInfoPanel extends JPanel {
 		JPanel p;
 		
 		p = new JPanel(new GridLayout(0, 2));
-		p.add(new JLabel("Channel Name:")); p.add(name);
-		p.add(new JLabel("Max Players:")); p.add(maxPlayers);
-		p.add(new JLabel("Automatic Start:")); p.add(autoStart);
-		p.add(new JLabel("Game Mode:")); p.add(mode);
-		p.add(new JLabel("Game Mode Rule:")); p.add(rule);
-		p.add(new JLabel("Rule Lock:")); p.add(ruleLock);
-		tabs.addTab("General", p);
+		p.add(new JLabel(lz.s("name"))); p.add(name);
+		p.add(new JLabel(lz.s("max_players"))); p.add(maxPlayers);
+		p.add(new JLabel(lz.s("auto_start"))); p.add(autoStart);
+		p.add(new JLabel(lz.s("mode"))); p.add(mode);
+		p.add(new JLabel(lz.s("rule"))); p.add(rule);
+		p.add(new JLabel(lz.s("rule_lock"))); p.add(ruleLock);
+		tabs.addTab(lz.s("tab_general"), p);
 		
 		for(int i = 0; i < gameEditor.getTabCount(); i++) {
-			tabs.addTab("Game: " + gameEditor.getTitleAt(i), new JScrollPane(gameEditor.getComponentAt(i)));
+			tabs.addTab(lz.s("tab_game") + gameEditor.getTitleAt(i), new JScrollPane(gameEditor.getComponentAt(i)));
 		}
 		
 		for(int i = 0; i < ruleEditor.getTabPane().getTabCount(); i++) {
-			tabs.addTab("Rule: " + ruleEditor.getTabPane().getTitleAt(i), new JScrollPane(ruleEditor.getTabPane().getComponentAt(i)));
+			tabs.addTab(lz.s("tab_rule") + ruleEditor.getTabPane().getTitleAt(i), new JScrollPane(ruleEditor.getTabPane().getComponentAt(i)));
 		}
 	}
 	

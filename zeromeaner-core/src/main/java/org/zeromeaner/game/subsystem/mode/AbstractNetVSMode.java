@@ -8,21 +8,21 @@ import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.event.EventRenderer;
-import org.zeromeaner.game.knet.KNetClient;
-import org.zeromeaner.game.knet.KNetEvent;
-import org.zeromeaner.game.knet.KNetEventSource;
-import org.zeromeaner.game.knet.obj.KNStartInfo;
-import org.zeromeaner.game.knet.obj.KNetChannelInfo;
-import org.zeromeaner.game.knet.obj.KNetGameInfo;
-import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.mode.ModeTypes.ModeType;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
+import org.zeromeaner.knet.KNetClient;
+import org.zeromeaner.knet.KNetEvent;
+import org.zeromeaner.knet.KNetEventSource;
+import org.zeromeaner.knet.obj.KNStartInfo;
+import org.zeromeaner.knet.obj.KNetChannelInfo;
+import org.zeromeaner.knet.obj.KNetGameInfo;
+import org.zeromeaner.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.util.GeneralUtil;
 
-import static org.zeromeaner.game.knet.KNetEventArgs.*;
+import static org.zeromeaner.knet.KNetEventArgs.*;
 
 /**
  * Special base class for netplay VS modes. Up to 6 players supported.
