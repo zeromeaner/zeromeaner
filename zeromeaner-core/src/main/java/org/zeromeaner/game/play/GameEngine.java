@@ -254,9 +254,6 @@ public class GameEngine {
 	/** Minor version */
 	public int versionMinor;
 
-	/** OLD minor version (Used for 6.9 or earlier replays) */
-	public float versionMinorOld;
-
 	/** Dev build flag */
 	public boolean versionIsDevBuild;
 
@@ -727,7 +724,6 @@ public class GameEngine {
 		if(owner.replayMode == false) {
 			versionMajor = GameManager.getVersionMajor();
 			versionMinor = GameManager.getVersionMinor();
-			versionMinorOld = GameManager.getVersionMinorOld();
 			versionIsDevBuild = GameManager.isDevBuild();
 
 			Random tempRand = new Random();
@@ -737,7 +733,6 @@ public class GameEngine {
 		} else {
 			versionMajor = owner.replayProp.getProperty("version.core.major", 0f);
 			versionMinor = owner.replayProp.getProperty("version.core.minor", 0);
-			versionMinorOld = owner.replayProp.getProperty("version.core.minor", 0f);
 			versionIsDevBuild = owner.replayProp.getProperty("version.core.dev", false);
 
 			replayData.readProperty(owner.replayProp, playerID);
@@ -755,15 +750,6 @@ public class GameEngine {
 			owMoveDiagonal = owner.replayProp.getProperty(playerID + ".tuning.owMoveDiagonal", -1);
 			owBlockOutlineType = owner.replayProp.getProperty(playerID + ".tuning.owBlockOutlineType", -1);
 			owBlockShowOutlineOnly = owner.replayProp.getProperty(playerID + ".tuning.owBlockShowOutlineOnly", -1);
-
-			// Fixing old replays to accomodate for new DAS notation
-			if (versionMajor < 7.3) {
-				if  (owDasDelay >= 0) {
-					owDasDelay++;
-				} else {
-					owDasDelay = owner.replayProp.getProperty(playerID + ".ruleopt.dasDelay", 0) + 1;
-				}
-			}
 		}
 
 		quitflag = false;
@@ -2192,10 +2178,6 @@ public class GameEngine {
 
 			if(itemRollRollEnable) nowPieceColorOverride = Block.BLOCK_COLOR_GRAY;
 
-			// Precedingrotation
-			if(versionMajor < 7.5f) initialRotate(); //XXX: Weird active time IRS
-			//if( (getARE() != 0) && ((getARELine() != 0) || (version < 6.3f)) ) initialRotate();
-
 			if((speed.gravity > speed.denominator) && (speed.denominator > 0))
 				gcount = speed.gravity % speed.denominator;
 			else
@@ -2470,7 +2452,7 @@ public class GameEngine {
 				}
 			}
 
-			if((!dasRepeat) || (versionMajor < 7.6f)){
+			if(!dasRepeat){
 				// Hard drop
 				if( (ctrl.isPress(getUp()) == true) &&
 					(harddropContinuousUse == false) &&
@@ -2716,10 +2698,10 @@ public class GameEngine {
 				dasInstant = false;
 
 				// Next Determine the processing(Mode If you are toying a status on the side, I do not do anything)
-				if((stat == Status.MOVE) || (versionMajor <= 6.3f)) {
+				if(stat == Status.MOVE) {
 					resetStatc();
 
-					if((ending == 1) && (versionMajor >= 6.6f) && (versionMinorOld >= 0.1f)) {
+					if(ending == 1) {
 						// Ending
 						stat = Status.ENDINGSTART;
 					} else if( (!put && ruleopt.fieldLockoutDeath) || (partialLockOut && ruleopt.fieldPartialLockoutDeath) ) {
@@ -3036,7 +3018,7 @@ public class GameEngine {
 
 				field.lineColorsCleared = null;
 
-				if((stat == Status.LINECLEAR) || (versionMajor <= 6.3f)) {
+				if(stat == Status.LINECLEAR) {
 					resetStatc();
 					if(ending == 1) {
 						// Ending
@@ -3055,7 +3037,6 @@ public class GameEngine {
 					} else {
 						// ARENo
 						nowPieceObject = null;
-						if(versionMajor < 7.5f) initialRotate(); //XXX: Weird IRS thing on lines cleared but no ARE
 						stat = Status.MOVE;
 					}
 				}
