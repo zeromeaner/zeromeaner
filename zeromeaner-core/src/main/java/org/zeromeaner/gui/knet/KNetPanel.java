@@ -179,7 +179,10 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 		private JButton login = new JButton(new AbstractAction(lz.s("lp_login")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				client.fireTCP(USER_AUTHENTICATE, new String(pass.getPassword()));
+				String pw = pass.getText();
+				if(pw.isEmpty())
+					pw = null;
+				client.fireTCP(USER_AUTHENTICATE, pw);
 			}
 		});
 		
@@ -204,7 +207,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			p = new JPanel(new GridLayout(0, 2));
 			p.add(new JLabel(lz.s("lp_user")));
 			p.add(user);
-			p.add(new JLabel(lz.s("lp.pass")));
+			p.add(new JLabel(lz.s("lp_pass")));
 			p.add(pass);
 			add(p, BorderLayout.CENTER);
 			
@@ -613,7 +616,6 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 				if(n.isEmpty())
 					n = null;
 				client.fireTCP(USER_UPDATE_PASSWORD, new String[] {o, n});
-				client.fireTCP(USER_AUTHENTICATE, n);
 			}
 		});
 		
@@ -665,7 +667,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 				
 				private void updateBg() {
 					if(!newPw.getText().equals(newPwRetype.getText()))
-						newPwRetype.setBackground(Color.RED.brighter().brighter());
+						newPwRetype.setBackground(Color.PINK);
 					else
 						newPwRetype.setBackground(bg);
 				}
@@ -854,6 +856,15 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 		System.out.println(e);
 		if(e.is(USER_AUTHENTICATED)) {
 			if(!e.get(USER_AUTHENTICATED, Boolean.class)) {
+				System.out.println("User auth failed");
+				cards.show(KNetPanel.this, LOGIN_PANEL_CARD);
+			} else {
+				System.out.println("User auth success");
+				cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
+			}
+		}
+		if(e.is(USER_UPDATED_PASSWORD)) {
+			if(!e.get(USER_UPDATED_PASSWORD, Boolean.class)) {
 				System.out.println("User auth failed");
 				cards.show(KNetPanel.this, LOGIN_PANEL_CARD);
 			} else {

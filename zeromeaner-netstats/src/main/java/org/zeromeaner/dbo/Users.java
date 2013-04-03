@@ -72,7 +72,7 @@ public class Users {
 	}
 	
 	public static boolean checkPassword(User user, String password) {
-		return user.getSha1PwHex() == null || sha1(password).equals(select(user.getUserId()).getSha1PwHex());
+		return user.getSha1PwHex() == null && password == null || sha1(password).equals(select(user.getUserId()).getSha1PwHex());
 	}
 	
 	public static void update(User user, String password) {
