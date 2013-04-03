@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.zeromeaner.knet.KNetEvent;
@@ -21,6 +23,8 @@ import com.esotericsoftware.kryonet.Server;
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetServer {
+	
+	
 	protected int port;
 	protected AtomicInteger nextClientId = new AtomicInteger(-1);
 	protected Server server;
@@ -28,6 +32,7 @@ public class KNetServer {
 	
 	protected Map<Integer, KNetEventSource> sourcesByConnectionId = new HashMap<Integer, KNetEventSource>();
 	protected Map<KNetEventSource, Integer> connectionIds = new HashMap<KNetEventSource, Integer>();
+	protected Map<Integer, ExecutorService> senders = new HashMap<Integer, ExecutorService>();
 	
 	protected KNetEventSource source;
 
@@ -41,6 +46,7 @@ public class KNetServer {
 				KNetEventSource evs = new KNetEventSource(nextClientId.incrementAndGet());
 				sourcesByConnectionId.put(connection.getID(), evs);
 				connectionIds.put(evs, connection.getID());
+				senders.put(connection.getID(), Executors.newSingleThreadExecutor());
 				connection.sendTCP(source.event(
 						ASSIGN_SOURCE, evs
 						));
@@ -50,7 +56,7 @@ public class KNetServer {
 		}
 		
 		@Override
-		public void received(Connection connection, Object object) {
+		public void received(Connection connection, final Object object) {
 			if(!(object instanceof KNetEvent)) {
 				return;
 			}
@@ -74,13 +80,11 @@ public class KNetServer {
 					}
 				}
 
+				List<KNetEventSource> recipients;
 				if(global) {
-					if(e.is(KNetEventArgs.UDP))
-						server.sendToAllExceptUDP(connection.getID(), object);
-					else
-						server.sendToAllExceptTCP(connection.getID(), object);
+					recipients = new ArrayList<KNetEventSource>(connectionIds.keySet());
+					recipients.remove(e.getSource());
 				} else {
-					List<KNetEventSource> recipients;
 					if(e.is(CHANNEL_ID))
 						recipients = chanman.getMembers(e.get(CHANNEL_ID, Integer.class));
 					else if(e.is(ADDRESS))
@@ -91,11 +95,18 @@ public class KNetServer {
 						return;
 					recipients = new ArrayList<KNetEventSource>(recipients);
 					recipients.add(chanman.getSource());
-					for(KNetEventSource r : recipients) {
-						if(e.is(UDP))
-							server.sendToUDP(connectionIds.get(r), object);
-						else
-							server.sendToTCP(connectionIds.get(r), object);
+				}
+				for(final KNetEventSource r : recipients) {
+					if(e.is(UDP))
+						server.sendToUDP(connectionIds.get(r), object);
+					else {
+						if(senders.get(connectionIds.get(r)) != null)
+							senders.get(connectionIds.get(r)).execute(new Runnable() {
+								@Override
+								public void run() {
+									server.sendToTCP(connectionIds.get(r), object);
+								}
+							});
 					}
 				}
 			} catch(Throwable t) {
@@ -109,6 +120,8 @@ public class KNetServer {
 				KNetEventSource es = sourcesByConnectionId.get(connection.getID());
 				KNetEvent e = new KNetEvent(es, DISCONNECTED);
 				server.sendToAllExceptTCP(connection.getID(), e);
+				senders.remove(connection.getID()).shutdown();
+				
 			} catch(Throwable t) {
 				t.printStackTrace();
 			}
