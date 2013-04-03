@@ -48,10 +48,13 @@ import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.gui.applet.AppletMain;
 import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.KryoCopy;
+import org.zeromeaner.util.Localization;
 
 import static org.zeromeaner.game.knet.KNetEventArgs.*;
 
 public class KNetPanel extends JPanel implements KNetChannelListener {
+	private static final Localization lz = new Localization();
+	
 	private static final String CONNECTION_LIST_PANEL_CARD = ConnectionListPanel.class.getName();
 	private static final String CONNECTED_PANEL_CARD = ConnectedPanel.class.getName();
 	private static final String CREATE_CHANNEL_PANEL_CARD = CreateChannelPanel.class.getName();
@@ -77,14 +80,14 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			connectionsList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		}
 		
-		private JButton connect = new JButton(new AbstractAction("Connect") {
+		private JButton connect = new JButton(new AbstractAction(lz.s("conn_list_connect")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				connect();
 			}
 		});
 		
-		private JButton exit = new JButton(new AbstractAction("Exit NetPlay") {
+		private JButton exit = new JButton(new AbstractAction(lz.s("conn_list_exit")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				shutdown();
@@ -97,11 +100,11 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			super(new BorderLayout());
 			JPanel p = new JPanel(new BorderLayout());
 			JPanel q = new JPanel(new BorderLayout());
-			q.add(new JLabel("Username:"), BorderLayout.WEST);
+			q.add(new JLabel(lz.s("conn_list_username")), BorderLayout.WEST);
 			q.add(username, BorderLayout.CENTER);
 			p.add(q, BorderLayout.NORTH);
 			p.add(new JScrollPane(connectionsList), BorderLayout.CENTER);
-			p.setBorder(BorderFactory.createTitledBorder("Connections List"));
+			p.setBorder(BorderFactory.createTitledBorder(lz.s("conn_list_border")));
 			add(p, BorderLayout.CENTER);
 			p = new JPanel(new GridLayout(0, 1));
 			p.add(connect);
@@ -152,14 +155,14 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 	public class ConnectedPanel extends JPanel {
 		private JTabbedPane channels = new JTabbedPane(JTabbedPane.LEFT);
 		
-		private JButton add = new JButton(new AbstractAction("Add Channel") {
+		private JButton add = new JButton(new AbstractAction(lz.s("cp_add")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				add();
 			}
 		});
 		
-		private JButton view = new JButton(new AbstractAction("View Options") {
+		private JButton view = new JButton(new AbstractAction(lz.s("cp_view")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cards.show(KNetPanel.this, VIEW_CHANEL_CARD);
@@ -168,28 +171,28 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			}
 		});
 		
-		private JButton spectate = new JButton(new AbstractAction("Spectate") {
+		private JButton spectate = new JButton(new AbstractAction(lz.s("cp_spectate")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				client.spectateChannel(getVisibleChannel().getChannel().getId());
 			}
 		});
 		
-		private JButton join = new JButton(new AbstractAction("Join Channel") {
+		private JButton join = new JButton(new AbstractAction(lz.s("cp_join")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				getVisibleChannel().join();
 			}
 		});
 		
-		private JButton leave = new JButton(new AbstractAction("Leave Channel") {
+		private JButton leave = new JButton(new AbstractAction(lz.s("cp_leave")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				getVisibleChannel().leave();
 			}
 		});
 		
-		private JButton disconnect = new JButton(new AbstractAction("Disconnect") {
+		private JButton disconnect = new JButton(new AbstractAction(lz.s("cp_disconnect")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				disconnect();
@@ -250,7 +253,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			history.setWrapStyleWord(true);
 			history.setEditable(false);
 			p.add(new JScrollPane(history), BorderLayout.CENTER);
-			p.setBorder(BorderFactory.createTitledBorder("Chat Messages"));
+			p.setBorder(BorderFactory.createTitledBorder(lz.s("ch_chat_border")));
 			add(p, BorderLayout.CENTER);
 			
 			add(line, BorderLayout.SOUTH);
@@ -258,7 +261,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			p = new JPanel(new BorderLayout());
 //			p.add(new JLabel("User List:"), BorderLayout.NORTH);
 			p.add(new JScrollPane(membersList), BorderLayout.CENTER);
-			p.setBorder(BorderFactory.createTitledBorder("User List"));
+			p.setBorder(BorderFactory.createTitledBorder(lz.s("ch_user_border")));
 			add(p, BorderLayout.WEST);
 			
 			line.addKeyListener(new KeyAdapter() {
@@ -275,7 +278,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			});
 			
 			line.setEnabled(false);
-			line.setText("Join channel to chat");
+			line.setText(lz.s("ch_join_to_chat"));
 			
 			client.addKNetChannelListener(this);
 			
@@ -331,18 +334,20 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 				prevMembers.add((String) m);
 			}
 			membersModel.clear();
-			if("Join channel to chat".equals(line.getText())) {
-				line.setEnabled(false);
-				line.setText("Join channel to chat");
-			}
+			boolean isMember = false;
 			for(KNetEventSource s : channel.getMembers()) {
 				membersModel.addElement((channel.getPlayers().contains(s) ? "\u2297 " : "\u25a2 ") + s.getName());
-				if("Join channel to chat".equals(line.getText())) {
-					if(s.equals(client.getSource())) {
+				if(s.equals(client.getSource())) {
+					isMember = true;
+					if(!line.isEnabled()) {
 						line.setEnabled(true);
 						line.setText("");
 					}
 				}
+			}
+			if(!isMember) {
+				line.setEnabled(false);
+				line.setText(lz.s("ch_join_to_chat"));
 			}
 			
 			Collections.sort(new AbstractList<String>() {
@@ -439,14 +444,14 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 		private KNetChannelInfo channel;
 		private KNetChannelInfoPanel channelPanel;
 		
-		private JButton create = new JButton(new AbstractAction("Create Channel") {
+		private JButton create = new JButton(new AbstractAction(lz.s("ccp_create")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				create();
 			}
 		});
 		
-		private JButton cancel = new JButton(new AbstractAction("Cancel") {
+		private JButton cancel = new JButton(new AbstractAction(lz.s("ccp_cancel")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cancel();
@@ -469,7 +474,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			
 			p = new JPanel(new BorderLayout());
 			p.add(channelPanel, BorderLayout.CENTER);
-			p.setBorder(BorderFactory.createTitledBorder("Channel Editor"));
+			p.setBorder(BorderFactory.createTitledBorder(lz.s("ccp_border")));
 			add(p, BorderLayout.CENTER);
 		}
 		
@@ -499,7 +504,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 	public class ViewChannelPanel extends JPanel {
 		KNetChannelInfoPanel channelPanel = new KNetChannelInfoPanel(new KNetChannelInfo());
 		
-		private JButton dismiss = new JButton(new AbstractAction("Dismiss") {
+		private JButton dismiss = new JButton(new AbstractAction(lz.s("vcp_dismiss")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
@@ -519,7 +524,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			
 			p = new JPanel(new BorderLayout());
 			p.add(channelPanel, BorderLayout.CENTER);
-			p.setBorder(BorderFactory.createTitledBorder("Channel Editor"));
+			p.setBorder(BorderFactory.createTitledBorder(lz.s("vcp_border")));
 			add(p, BorderLayout.CENTER);
 		}
 	}
