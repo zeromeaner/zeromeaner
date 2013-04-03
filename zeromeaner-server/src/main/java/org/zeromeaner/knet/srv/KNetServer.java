@@ -37,12 +37,16 @@ public class KNetServer {
 	protected Listener listener = new Listener() {
 		@Override
 		public void connected(Connection connection) {
-			KNetEventSource evs = new KNetEventSource(nextClientId.incrementAndGet());
-			sourcesByConnectionId.put(connection.getID(), evs);
-			connectionIds.put(evs, connection.getID());
-			connection.sendTCP(source.event(
-					ASSIGN_SOURCE, evs
-					));
+			try {
+				KNetEventSource evs = new KNetEventSource(nextClientId.incrementAndGet());
+				sourcesByConnectionId.put(connection.getID(), evs);
+				connectionIds.put(evs, connection.getID());
+				connection.sendTCP(source.event(
+						ASSIGN_SOURCE, evs
+						));
+			} catch(Throwable t) {
+				t.printStackTrace();
+			}
 		}
 		
 		@Override
@@ -101,9 +105,13 @@ public class KNetServer {
 		
 		@Override
 		public void disconnected(Connection connection) {
-			KNetEventSource es = sourcesByConnectionId.get(connection.getID());
-			KNetEvent e = new KNetEvent(es, DISCONNECTED);
-			server.sendToAllExceptTCP(connection.getID(), e);
+			try {
+				KNetEventSource es = sourcesByConnectionId.get(connection.getID());
+				KNetEvent e = new KNetEvent(es, DISCONNECTED);
+				server.sendToAllExceptTCP(connection.getID(), e);
+			} catch(Throwable t) {
+				t.printStackTrace();
+			}
 		}
 	};
 	
