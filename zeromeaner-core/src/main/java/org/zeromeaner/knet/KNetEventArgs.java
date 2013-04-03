@@ -68,6 +68,13 @@ public enum KNetEventArgs {
 	 */
 	IN_REPLY_TO(KNetEvent.class),
 	
+	USER_AUTHENTICATE(String.class),
+	USER_AUTHENTICATED(Boolean.class),
+	USER_CREATE(String.class),
+	USER_CREATED(Boolean.class),
+	USER_UPDATE_PASSWORD(String[].class),
+	USER_UPDATED_PASSWORD(Boolean.class),
+	
 	/**
 	 * The username of the event sender
 	 * Argument: {@link String}

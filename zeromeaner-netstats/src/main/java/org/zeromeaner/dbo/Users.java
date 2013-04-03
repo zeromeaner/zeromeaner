@@ -67,6 +67,10 @@ public class Users {
 		return select(email);
 	}
 	
+	public static boolean checkPassword(String email, String password) {
+		return checkPassword(select(email), password);
+	}
+	
 	public static boolean checkPassword(User user, String password) {
 		return user.getSha1PwHex() == null || sha1(password).equals(select(user.getUserId()).getSha1PwHex());
 	}
@@ -75,6 +79,15 @@ public class Users {
 		if(!checkPassword(user, password))
 			throw new IllegalArgumentException("Incorrect password");
 		update(user);
+	}
+	
+	public static User updatePassword(User user, String password, String newPassword) {
+		if(!checkPassword(user, password))
+			throw new IllegalArgumentException("Incorrect password");
+		User u = select(user.getUserId());
+		u.setSha1PwHex(sha1(newPassword));
+		update(u);
+		return select(user.getUserId());
 	}
 	
 	private Users() {}

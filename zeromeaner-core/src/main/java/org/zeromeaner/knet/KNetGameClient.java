@@ -91,6 +91,8 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 		}
 		if(e.is(CHANNEL_ID) && currentChannel != null && currentChannel.getId() == (Integer) e.get(CHANNEL_ID))
 			issue = true;
+		if(getSource().equals(e.get(ADDRESS)))
+			issue = true;
 		if(issue)
 			super.issue(e);
 	}

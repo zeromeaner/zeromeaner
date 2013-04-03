@@ -1,6 +1,7 @@
 package org.zeromeaner.knet.srv;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class KNetServer {
 	protected KNetEventSource source;
 
 	protected KNetChannelManager chanman;
+	protected KNetUserManager uman;
 	
 	protected Listener listener = new Listener() {
 		@Override
@@ -57,7 +59,7 @@ public class KNetServer {
 			}
 
 			boolean global = true;
-			if(e.is(CHANNEL_ID))
+			if(e.is(CHANNEL_ID) || e.is(ADDRESS) || e.is(USER_AUTHENTICATE) || e.is(USER_CREATE) || e.is(USER_UPDATE_PASSWORD))
 				global = false;
 			if(!global) {
 				for(KNetEventArgs arg : e.getArgs().keySet()) {
@@ -72,7 +74,15 @@ public class KNetServer {
 				else
 					server.sendToAllExceptTCP(connection.getID(), object);
 			} else {
-				List<KNetEventSource> recipients = chanman.getMembers(e.get(CHANNEL_ID, Integer.class));
+				List<KNetEventSource> recipients;
+				if(e.is(CHANNEL_ID))
+					recipients = chanman.getMembers(e.get(CHANNEL_ID, Integer.class));
+				else if(e.is(ADDRESS))
+					recipients = Arrays.asList(e.get(ADDRESS, KNetEventSource.class));
+				else if(e.is(USER_AUTHENTICATE) || e.is(USER_CREATE) || e.is(USER_UPDATE_PASSWORD))
+					recipients = Arrays.asList(uman.getSource());
+				else
+					return;
 				recipients.add(chanman.getSource());
 				for(KNetEventSource r : recipients) {
 					if(e.is(UDP))
@@ -101,6 +111,8 @@ public class KNetServer {
 		server.addListener(listener);
 		chanman = new KNetChannelManager(port);
 		chanman.start();
+		uman = new KNetUserManager(port);
+		uman.start();
 	}
 	
 	public void stop() {
