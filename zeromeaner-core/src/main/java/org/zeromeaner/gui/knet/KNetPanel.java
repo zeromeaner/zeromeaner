@@ -137,6 +137,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 						client.getSource().setName(user);
 						client.removeKNetListener(this);
 						client.fireTCP(UPDATE_SOURCE, client.getSource());
+						client.fireTCP(USER_CREATE, null);
 						client.fireTCP(USER_AUTHENTICATE, null);
 					}
 				}
