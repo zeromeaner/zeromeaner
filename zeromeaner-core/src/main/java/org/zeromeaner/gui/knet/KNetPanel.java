@@ -165,6 +165,8 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 		private JButton view = new JButton(new AbstractAction(lz.s("cp_view")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if(getVisibleChannel().getChannel().getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
+					return;
 				cards.show(KNetPanel.this, VIEW_CHANEL_CARD);
 				viewChannelPanel.channelPanel.setChannel(getVisibleChannel().getChannel());
 				viewChannelPanel.channelPanel.updateEditor();
