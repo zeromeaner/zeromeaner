@@ -113,14 +113,6 @@ public class GameManager {
 	}
 
 	/**
-	 * Get minor version (For compatibility with old replays)
-	 * @return Minor version
-	 */
-	public static float getVersionMinorOld() {
-		return VERSION_MINOR;
-	}
-
-	/**
 	 * Get version information as String
 	 * @return Version information
 	 */
