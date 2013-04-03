@@ -25,9 +25,9 @@
 	</select>
 	<insert id="insert" parameterType="User">
 		insert into
-			${schema}.users(user_id, email, sha1_pw)
+			${schema}.users(email, sha1_pw)
 		values
-			(#{userId}, #{email}, #{sha1PwHex});
+			(#{email}, #{sha1PwHex});
 	</insert>
 	<update id="update" parameterType="User">
 		update

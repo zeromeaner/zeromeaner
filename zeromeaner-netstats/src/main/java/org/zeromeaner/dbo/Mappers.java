@@ -9,7 +9,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 public class Mappers {
 	private static SqlSessionFactory factory;
 	
-	public static SqlSessionFactory getFactory() {
+	static SqlSessionFactory getFactory() {
 		if(factory == null) {
 			SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
 			Properties p = new Properties();
