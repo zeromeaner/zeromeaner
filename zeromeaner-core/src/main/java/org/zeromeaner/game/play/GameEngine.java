@@ -52,6 +52,7 @@ import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.util.GeneralUtil;
+import org.zeromeaner.util.Version;
 
 
 /**
@@ -248,14 +249,7 @@ public class GameEngine {
 	/** Time of game end in milliseconds */
 	public long endTime;
 
-	/** Major version */
-	public float versionMajor;
-
-	/** Minor version */
-	public int versionMinor;
-
-	/** Dev build flag */
-	public boolean versionIsDevBuild;
+	private Version version;
 
 	/** Game quit flag */
 	public boolean quitflag;
@@ -722,18 +716,18 @@ public class GameEngine {
 		replayData = new ReplayData();
 
 		if(owner.replayMode == false) {
-			versionMajor = GameManager.getVersionMajor();
-			versionMinor = GameManager.getVersionMinor();
-			versionIsDevBuild = GameManager.isDevBuild();
+			version = GameManager.VERSION;
 
 			Random tempRand = new Random();
 			randSeed = tempRand.nextLong();
 			log.debug("Player + " + playerID + "Random seed :" + Long.toString(randSeed, 16));
 			random = new Random(randSeed);
 		} else {
-			versionMajor = owner.replayProp.getProperty("version.core.major", 0f);
-			versionMinor = owner.replayProp.getProperty("version.core.minor", 0);
-			versionIsDevBuild = owner.replayProp.getProperty("version.core.dev", false);
+//			versionMajor = owner.replayProp.getProperty("version.core.major", 0);
+//			versionMinor = owner.replayProp.getProperty("version.core.minor", 0);
+//			versionMicro = owner.replayProp.getProperty("version.core.micro", 0);
+//			versionIsDevBuild = owner.replayProp.getProperty("version.core.dev", false);
+			version = new Version(owner.replayProp.getProperty("version.core", GameManager.VERSION.toString()));
 
 			replayData.readProperty(owner.replayProp, playerID);
 
@@ -1620,10 +1614,7 @@ public class GameEngine {
 	public void saveReplay() {
 		if((owner.replayMode == true) && (owner.replayRerecord == false)) return;
 
-		owner.replayProp.setProperty("version.core", versionMajor + "." + versionMinor);
-		owner.replayProp.setProperty("version.core.major", versionMajor);
-		owner.replayProp.setProperty("version.core.minor", versionMinor);
-		owner.replayProp.setProperty("version.core.dev", versionIsDevBuild);
+		owner.replayProp.setProperty("version.core", version.toString());
 
 		owner.replayProp.setProperty(playerID + ".replay.randSeed", Long.toString(randSeed, 16));
 
