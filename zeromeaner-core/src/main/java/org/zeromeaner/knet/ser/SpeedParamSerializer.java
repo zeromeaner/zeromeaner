@@ -1,4 +1,4 @@
-package org.zeromeaner.game.knet.ser;
+package org.zeromeaner.knet.ser;
 
 import org.zeromeaner.game.component.SpeedParam;
 

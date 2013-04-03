@@ -1,4 +1,4 @@
-package org.zeromeaner.game.knet.srv;
+package org.zeromeaner.knet.srv;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,17 +12,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.text.html.HTMLDocument.HTMLReader.SpecialAction;
 
-import org.zeromeaner.game.knet.KNetClient;
-import org.zeromeaner.game.knet.KNetEvent;
-import org.zeromeaner.game.knet.KNetEventArgs;
-import org.zeromeaner.game.knet.KNetEventSource;
-import org.zeromeaner.game.knet.KNetListener;
-import org.zeromeaner.game.knet.obj.KNStartInfo;
-import org.zeromeaner.game.knet.obj.KNetChannelInfo;
-import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
+import org.zeromeaner.knet.KNetClient;
+import org.zeromeaner.knet.KNetEvent;
+import org.zeromeaner.knet.KNetEventArgs;
+import org.zeromeaner.knet.KNetEventSource;
+import org.zeromeaner.knet.KNetListener;
+import org.zeromeaner.knet.obj.KNStartInfo;
+import org.zeromeaner.knet.obj.KNetChannelInfo;
+import org.zeromeaner.knet.obj.KNetPlayerInfo;
 
 
-import static org.zeromeaner.game.knet.KNetEventArgs.*;
+import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetChannelManager extends KNetClient implements KNetListener {
 	protected class ChannelState {

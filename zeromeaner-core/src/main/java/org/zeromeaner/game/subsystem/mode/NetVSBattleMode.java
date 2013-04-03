@@ -36,11 +36,11 @@ import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
-import org.zeromeaner.game.knet.KNetClient;
-import org.zeromeaner.game.knet.KNetEvent;
-import org.zeromeaner.game.knet.KNetEventArgs;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
+import org.zeromeaner.knet.KNetClient;
+import org.zeromeaner.knet.KNetEvent;
+import org.zeromeaner.knet.KNetEventArgs;
 import org.zeromeaner.util.GeneralUtil;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -48,7 +48,7 @@ import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
-import static org.zeromeaner.game.knet.KNetEventArgs.*;
+import static org.zeromeaner.knet.KNetEventArgs.*;
 
 /**
  * NET-VS-BATTLE Mode

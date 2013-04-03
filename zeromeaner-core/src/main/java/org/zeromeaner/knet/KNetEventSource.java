@@ -1,4 +1,4 @@
-package org.zeromeaner.game.knet;
+package org.zeromeaner.knet;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;

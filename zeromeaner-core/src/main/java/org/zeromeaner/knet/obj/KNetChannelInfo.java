@@ -1,11 +1,11 @@
-package org.zeromeaner.game.knet.obj;
+package org.zeromeaner.knet.obj;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.zeromeaner.game.component.RuleOptions;
-import org.zeromeaner.game.knet.KNetEvent;
-import org.zeromeaner.game.knet.KNetEventSource;
+import org.zeromeaner.knet.KNetEvent;
+import org.zeromeaner.knet.KNetEventSource;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;

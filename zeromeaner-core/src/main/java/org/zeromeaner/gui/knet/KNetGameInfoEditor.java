@@ -14,7 +14,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
-import org.zeromeaner.game.knet.obj.KNetGameInfo;
+import org.zeromeaner.knet.obj.KNetGameInfo;
 import org.zeromeaner.util.Localization;
 
 public class KNetGameInfoEditor extends JTabbedPane {

@@ -9,17 +9,6 @@ import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.game.event.EventRenderer;
-import org.zeromeaner.game.knet.KNetClient;
-import org.zeromeaner.game.knet.KNetEvent;
-import org.zeromeaner.game.knet.KNetEventSource;
-import org.zeromeaner.game.knet.KNetGameClient;
-import org.zeromeaner.game.knet.KNetListener;
-import org.zeromeaner.game.knet.obj.KNetChannelInfo;
-import org.zeromeaner.game.knet.obj.KNetGameInfo;
-import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
-import org.zeromeaner.game.knet.obj.PieceHold;
-import org.zeromeaner.game.knet.obj.PieceMovement;
-import org.zeromeaner.game.knet.obj.Replay;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.randomizer.Randomizer;
@@ -28,10 +17,21 @@ import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.gui.knet.KNetPanel;
 import org.zeromeaner.gui.knet.KNetPanelEvent;
 import org.zeromeaner.gui.knet.KNetPanelListener;
+import org.zeromeaner.knet.KNetClient;
+import org.zeromeaner.knet.KNetEvent;
+import org.zeromeaner.knet.KNetEventSource;
+import org.zeromeaner.knet.KNetGameClient;
+import org.zeromeaner.knet.KNetListener;
+import org.zeromeaner.knet.obj.KNetChannelInfo;
+import org.zeromeaner.knet.obj.KNetGameInfo;
+import org.zeromeaner.knet.obj.KNetPlayerInfo;
+import org.zeromeaner.knet.obj.PieceHold;
+import org.zeromeaner.knet.obj.PieceMovement;
+import org.zeromeaner.knet.obj.Replay;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
-import static org.zeromeaner.game.knet.KNetEventArgs.*;
+import static org.zeromeaner.knet.KNetEventArgs.*;
 
 /**
  * Special base class for netplay

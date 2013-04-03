@@ -1,4 +1,4 @@
-package org.zeromeaner.game.knet;
+package org.zeromeaner.knet;
 
 import java.lang.annotation.RetentionPolicy;
 
@@ -6,13 +6,13 @@ import java.lang.annotation.Retention;
 
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.knet.obj.KNStartInfo;
-import org.zeromeaner.game.knet.obj.KNetChannelInfo;
-import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
-import org.zeromeaner.game.knet.obj.PieceHold;
-import org.zeromeaner.game.knet.obj.PieceMovement;
-import org.zeromeaner.game.knet.obj.Replay;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
+import org.zeromeaner.knet.obj.KNStartInfo;
+import org.zeromeaner.knet.obj.KNetChannelInfo;
+import org.zeromeaner.knet.obj.KNetPlayerInfo;
+import org.zeromeaner.knet.obj.PieceHold;
+import org.zeromeaner.knet.obj.PieceMovement;
+import org.zeromeaner.knet.obj.Replay;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;

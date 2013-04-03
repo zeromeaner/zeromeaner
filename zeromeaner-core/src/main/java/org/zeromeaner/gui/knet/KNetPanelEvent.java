@@ -2,8 +2,8 @@ package org.zeromeaner.gui.knet;
 
 import java.util.EventObject;
 
-import org.zeromeaner.game.knet.KNetClient;
-import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.zeromeaner.knet.KNetClient;
+import org.zeromeaner.knet.obj.KNetChannelInfo;
 
 public class KNetPanelEvent extends EventObject {
 	

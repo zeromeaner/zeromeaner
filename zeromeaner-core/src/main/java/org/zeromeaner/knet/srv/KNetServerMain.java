@@ -1,4 +1,4 @@
-package org.zeromeaner.game.knet.srv;
+package org.zeromeaner.knet.srv;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;

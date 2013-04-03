@@ -1,6 +1,6 @@
-package org.zeromeaner.game.knet.obj;
+package org.zeromeaner.knet.obj;
 
-import org.zeromeaner.game.knet.KNetEventSource;
+import org.zeromeaner.knet.KNetEventSource;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;

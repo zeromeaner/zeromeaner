@@ -1,4 +1,4 @@
-package org.zeromeaner.game.knet;
+package org.zeromeaner.knet;
 
 import java.util.EventListener;
 

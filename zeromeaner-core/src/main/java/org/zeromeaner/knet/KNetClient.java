@@ -1,4 +1,4 @@
-package org.zeromeaner.game.knet;
+package org.zeromeaner.knet;
 
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
@@ -9,7 +9,7 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-import static org.zeromeaner.game.knet.KNetEventArgs.*;
+import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetClient {
 	protected String type;

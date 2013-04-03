@@ -35,22 +35,22 @@ import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import org.zeromeaner.game.knet.KNetChannelEvent;
-import org.zeromeaner.game.knet.KNetChannelListener;
-import org.zeromeaner.game.knet.KNetClient;
-import org.zeromeaner.game.knet.KNetEvent;
-import org.zeromeaner.game.knet.KNetEventSource;
-import org.zeromeaner.game.knet.KNetGameClient;
-import org.zeromeaner.game.knet.KNetListener;
-import org.zeromeaner.game.knet.obj.KNetChannelInfo;
-import org.zeromeaner.game.knet.obj.KNetGameInfo;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.gui.applet.AppletMain;
+import org.zeromeaner.knet.KNetChannelEvent;
+import org.zeromeaner.knet.KNetChannelListener;
+import org.zeromeaner.knet.KNetClient;
+import org.zeromeaner.knet.KNetEvent;
+import org.zeromeaner.knet.KNetEventSource;
+import org.zeromeaner.knet.KNetGameClient;
+import org.zeromeaner.knet.KNetListener;
+import org.zeromeaner.knet.obj.KNetChannelInfo;
+import org.zeromeaner.knet.obj.KNetGameInfo;
 import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.KryoCopy;
 import org.zeromeaner.util.Localization;
 
-import static org.zeromeaner.game.knet.KNetEventArgs.*;
+import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetPanel extends JPanel implements KNetChannelListener {
 	private static final Localization lz = new Localization();
@@ -305,9 +305,9 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			activeChannel = this;
 			Icon icon;
 			if(channel.getPlayers().contains(client.getSource())) {
-				icon = new ImageIcon(KNetPanel.class.getClassLoader().getResource("org/zeromeaner/game/knet/active-channel.png"));
+				icon = new ImageIcon(KNetPanel.class.getResource("active-channel.png"));
 			} else {
-				icon = new ImageIcon(KNetPanel.class.getClassLoader().getResource("org/zeromeaner/game/knet/spectator-channel.png"));
+				icon = new ImageIcon(KNetPanel.class.getResource("spectator-channel.png"));
 			}
 			connectedPanel.channels.setIconAt(
 					connectedPanel.channels.indexOfComponent(this),

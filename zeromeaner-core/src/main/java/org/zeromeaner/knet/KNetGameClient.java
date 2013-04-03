@@ -1,4 +1,4 @@
-package org.zeromeaner.game.knet;
+package org.zeromeaner.knet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,10 +12,10 @@ import org.funcish.core.Predicates;
 import org.funcish.core.fn.Predicate;
 import org.funcish.core.impl.AbstractPredicate;
 import org.zeromeaner.game.component.Field;
-import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.util.KryoCopy;
 
-import static org.zeromeaner.game.knet.KNetEventArgs.*;
+import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetGameClient extends KNetClient implements KNetListener {
 	private final Predicate<KNetEvent> CHANNEL_LISTING = new AbstractPredicate<KNetEvent>(KNetEvent.class) {

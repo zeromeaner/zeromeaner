@@ -1,8 +1,8 @@
-package org.zeromeaner.game.knet;
+package org.zeromeaner.knet;
 
 import java.util.EventObject;
 
-import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.zeromeaner.knet.obj.KNetChannelInfo;
 
 public class KNetChannelEvent extends EventObject {
 	private KNetChannelInfo channel;

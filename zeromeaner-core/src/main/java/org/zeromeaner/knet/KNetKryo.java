@@ -1,4 +1,4 @@
-package org.zeromeaner.game.knet;
+package org.zeromeaner.knet;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -9,18 +9,7 @@ import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.Statistics;
-import org.zeromeaner.game.knet.obj.KNStartInfo;
-import org.zeromeaner.game.knet.obj.KNetChannelInfo;
-import org.zeromeaner.game.knet.obj.KNetGameInfo;
-import org.zeromeaner.game.knet.obj.KNetPlayerInfo;
-import org.zeromeaner.game.knet.obj.PieceHold;
-import org.zeromeaner.game.knet.obj.PieceMovement;
-import org.zeromeaner.game.knet.ser.BlockSerializer;
 
-import org.zeromeaner.game.knet.ser.PieceSerializer;
-import org.zeromeaner.game.knet.ser.PropertiesSerializer;
-import org.zeromeaner.game.knet.ser.SpeedParamSerializer;
-import org.zeromeaner.game.knet.ser.StatisticsSerializer;
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.ComboRaceMode;
 import org.zeromeaner.game.subsystem.mode.DigChallengeMode;
@@ -29,6 +18,17 @@ import org.zeromeaner.game.subsystem.mode.ExtremeMode;
 import org.zeromeaner.game.subsystem.mode.MarathonMode;
 import org.zeromeaner.game.subsystem.mode.MarathonPlusMode;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
+import org.zeromeaner.knet.obj.KNStartInfo;
+import org.zeromeaner.knet.obj.KNetChannelInfo;
+import org.zeromeaner.knet.obj.KNetGameInfo;
+import org.zeromeaner.knet.obj.KNetPlayerInfo;
+import org.zeromeaner.knet.obj.PieceHold;
+import org.zeromeaner.knet.obj.PieceMovement;
+import org.zeromeaner.knet.ser.BlockSerializer;
+import org.zeromeaner.knet.ser.PieceSerializer;
+import org.zeromeaner.knet.ser.PropertiesSerializer;
+import org.zeromeaner.knet.ser.SpeedParamSerializer;
+import org.zeromeaner.knet.ser.StatisticsSerializer;
 import org.zeromeaner.util.CustomProperties;
 
 import com.esotericsoftware.kryo.Kryo;

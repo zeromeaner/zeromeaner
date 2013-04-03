@@ -5,7 +5,11 @@ import java.util.concurrent.Semaphore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.zeromeaner.game.knet.srv.KNetServer;
+import org.zeromeaner.knet.KNetClient;
+import org.zeromeaner.knet.KNetEvent;
+import org.zeromeaner.knet.KNetEventArgs;
+import org.zeromeaner.knet.KNetListener;
+import org.zeromeaner.knet.srv.KNetServer;
 
 public class KNetServerTest {
 	private KNetServer server;

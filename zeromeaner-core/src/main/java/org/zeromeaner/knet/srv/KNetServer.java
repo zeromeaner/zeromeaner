@@ -1,4 +1,4 @@
-package org.zeromeaner.game.knet.srv;
+package org.zeromeaner.knet.srv;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -6,17 +6,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.zeromeaner.game.knet.KNetEvent;
-import org.zeromeaner.game.knet.KNetEventArgs;
-import org.zeromeaner.game.knet.KNetEventSource;
-import org.zeromeaner.game.knet.KNetKryo;
+import org.zeromeaner.knet.KNetEvent;
+import org.zeromeaner.knet.KNetEventArgs;
+import org.zeromeaner.knet.KNetEventSource;
+import org.zeromeaner.knet.KNetKryo;
 
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
-import static org.zeromeaner.game.knet.KNetEventArgs.*;
+import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetServer {
 	protected int port;

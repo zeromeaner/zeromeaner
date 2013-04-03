@@ -5,12 +5,13 @@ import java.util.concurrent.Semaphore;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.zeromeaner.game.knet.KNetClient;
-import org.zeromeaner.game.knet.KNetEvent;
-import org.zeromeaner.game.knet.KNetListener;
-import org.zeromeaner.game.knet.obj.KNetChannelInfo;
+import org.zeromeaner.knet.KNetClient;
+import org.zeromeaner.knet.KNetEvent;
+import org.zeromeaner.knet.KNetListener;
+import org.zeromeaner.knet.obj.KNetChannelInfo;
+import org.zeromeaner.knet.srv.KNetServer;
 
-import static org.zeromeaner.game.knet.KNetEventArgs.*;
+import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KSChannelManagerTest {
 	private static KNetServer server;

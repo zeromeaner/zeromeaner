@@ -2,7 +2,7 @@ package org.zeromeaner.util;
 
 import java.io.ByteArrayOutputStream;
 
-import org.zeromeaner.game.knet.KNetKryo;
+import org.zeromeaner.knet.KNetKryo;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;

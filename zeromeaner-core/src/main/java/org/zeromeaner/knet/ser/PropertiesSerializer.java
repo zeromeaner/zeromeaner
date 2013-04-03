@@ -1,4 +1,4 @@
-package org.zeromeaner.game.knet.ser;
+package org.zeromeaner.knet.ser;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
