@@ -25,7 +25,6 @@ public class KNetUserManager extends KNetClient implements KNetListener {
 			try {
 				success = Users.checkPassword(email, pw);
 			} catch(Exception ex) {
-				ex.printStackTrace();
 			}
 			reply(e, USER_AUTHENTICATED, success);
 		}
