@@ -13,6 +13,7 @@
 		<module>../zeromeaner-webstart-war</module>
 		<module>../zeromeaner-media</module>
 		<module>../zeromeaner-server</module>
+		<module>../zeromeaner-netstats</module>
 	</modules>
 
 	<build>
