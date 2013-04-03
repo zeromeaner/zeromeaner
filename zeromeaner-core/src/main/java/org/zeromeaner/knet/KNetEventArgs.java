@@ -68,9 +68,9 @@ public enum KNetEventArgs {
 	 */
 	IN_REPLY_TO(KNetEvent.class),
 	
-	USER_AUTHENTICATE(String.class),
+	USER_AUTHENTICATE(String.class, true),
 	USER_AUTHENTICATED(Boolean.class),
-	USER_CREATE(String.class),
+	USER_CREATE(String.class, true),
 	USER_CREATED(Boolean.class),
 	USER_UPDATE_PASSWORD(String[].class),
 	USER_UPDATED_PASSWORD(Boolean.class),

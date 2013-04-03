@@ -52,7 +52,7 @@ import org.zeromeaner.util.Localization;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
-public class KNetPanel extends JPanel implements KNetChannelListener {
+public class KNetPanel extends JPanel implements KNetChannelListener, KNetListener {
 	private static final Localization lz = new Localization();
 	
 	private static final String CONNECTION_LIST_PANEL_CARD = ConnectionListPanel.class.getName();
@@ -126,6 +126,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 			
 			client = new KNetGameClient("Player", host, port);
 			client.addKNetChannelListener(KNetPanel.this);
+			client.addKNetListener(KNetPanel.this);
 			client.addKNetListener(new KNetListener() {
 				@Override
 				public void knetEvented(KNetClient client, KNetEvent e) {
@@ -136,6 +137,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 						client.getSource().setName(user);
 						client.removeKNetListener(this);
 						client.fireTCP(UPDATE_SOURCE, client.getSource());
+						client.fireTCP(USER_AUTHENTICATE, null);
 					}
 				}
 			});
@@ -699,5 +701,15 @@ public class KNetPanel extends JPanel implements KNetChannelListener {
 	public void channelChat(KNetChannelEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void knetEvented(KNetClient client, KNetEvent e) {
+		if(e.is(USER_AUTHENTICATED)) {
+			if(!e.get(USER_AUTHENTICATED, Boolean.class))
+				System.out.println("User auth failed");
+			else
+				System.out.println("User auth success");
+		}
 	}
 }

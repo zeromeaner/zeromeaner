@@ -1,6 +1,7 @@
 package org.zeromeaner.knet.srv;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +84,7 @@ public class KNetServer {
 					recipients = Arrays.asList(uman.getSource());
 				else
 					return;
+				recipients = new ArrayList<KNetEventSource>(recipients);
 				recipients.add(chanman.getSource());
 				for(KNetEventSource r : recipients) {
 					if(e.is(UDP))
