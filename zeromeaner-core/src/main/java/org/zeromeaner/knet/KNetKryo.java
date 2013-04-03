@@ -39,6 +39,8 @@ public class KNetKryo {
 		kryo.setReferences(true);
 		kryo.setAutoReset(true);
 		
+		kryo.register(String[].class);
+		
 		kryo.register(KNetEvent.class);
 		kryo.register(KNetEventSource.class);
 		kryo.register(KNetChannelInfo.class);

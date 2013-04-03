@@ -85,18 +85,20 @@ public class KNetServer {
 					recipients = new ArrayList<KNetEventSource>(connectionIds.keySet());
 					recipients.remove(e.getSource());
 				} else {
-					if(e.is(CHANNEL_ID))
-						recipients = chanman.getMembers(e.get(CHANNEL_ID, Integer.class));
+					if(e.is(USER_AUTHENTICATE) || e.is(USER_CREATE) || e.is(USER_UPDATE_PASSWORD))
+						recipients = Arrays.asList(uman.getSource());
 					else if(e.is(ADDRESS))
 						recipients = Arrays.asList(e.get(ADDRESS, KNetEventSource.class));
-					else if(e.is(USER_AUTHENTICATE) || e.is(USER_CREATE) || e.is(USER_UPDATE_PASSWORD))
-						recipients = Arrays.asList(uman.getSource());
+					else if(e.is(CHANNEL_ID))
+						recipients = chanman.getMembers(e.get(CHANNEL_ID, Integer.class));
 					else
 						return;
 					recipients = new ArrayList<KNetEventSource>(recipients);
 					recipients.add(chanman.getSource());
 				}
 				for(final KNetEventSource r : recipients) {
+					if(r.equals(e.getSource()))
+						continue;
 					if(e.is(UDP))
 						server.sendToUDP(connectionIds.get(r), object);
 					else {
