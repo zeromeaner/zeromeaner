@@ -53,4 +53,15 @@ public class ChannelRS extends RS {
 	public String list() throws Exception {
 		return createMapper().writerWithView(View.class).writeValueAsString(getChannels());
 	}
+	
+	@GET
+	@Path("/names")
+	@Produces("application/json")
+	public String names() throws Exception {
+		List<String> names = new ArrayList<String>();
+		for(KNetChannelInfo c : getChannels()) {
+			names.add(c.getName());
+		}
+		return createMapper().writerWithView(View.class).writeValueAsString(names);
+	}
 }

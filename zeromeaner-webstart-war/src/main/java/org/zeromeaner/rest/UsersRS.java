@@ -25,8 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Path("users")
 @Produces("application/json")
 public class UsersRS extends RS {
-	@GET
-	public String list() throws Exception {
+	public static List<KNetEventSource> getUsers() throws Exception {
 		List<KNetEventSource> users = new ArrayList<KNetEventSource>();
 		for(KNetChannelInfo c : ChannelRS.getChannels()) {
 			if(c.getId() == KNetChannelInfo.LOBBY_CHANNEL_ID) {
@@ -34,6 +33,22 @@ public class UsersRS extends RS {
 				break;
 			}
 		}
-		return createMapper().writerWithView(View.class).writeValueAsString(users);
+		return users;
+	}
+	
+	@GET
+	public String list() throws Exception {
+		return createMapper().writerWithView(View.class).writeValueAsString(getUsers());
+	}
+	
+	@GET
+	@Path("/names")
+	@Produces("application/json")
+	public String names() throws Exception {
+		List<String> names = new ArrayList<String>();
+		for(KNetEventSource s : getUsers()) {
+			names.add(s.getName());
+		}
+		return createMapper().writerWithView(View.class).writeValueAsString(names);
 	}
 }
