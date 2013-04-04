@@ -45,6 +45,7 @@ public class ChannelRS extends RS {
 		client.start();
 		client.fireTCP(CHANNEL_LIST);
 		latch.await();
+		client.stop();
 		return channels;
 	}
 	
