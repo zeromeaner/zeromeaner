@@ -12,20 +12,23 @@ import javax.ws.rs.Produces;
 
 import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
+import org.zeromeaner.knet.KNetEventSource;
 import org.zeromeaner.knet.KNetListener;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.knet.srv.KNetServer;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
 @Path("/channels")
 @Produces("application/json")
-public class ChannelRS {
-	@GET
-	public String list() throws Exception {
+public class ChannelRS extends RS {
+	public static List<KNetChannelInfo> getChannels() throws Exception {
 		final List<KNetChannelInfo> channels = new ArrayList<KNetChannelInfo>();
 		final CountDownLatch latch = new CountDownLatch(1);
 		KNetClient client = new KNetClient("localhost", KNetServer.DEFAULT_PORT);
@@ -42,6 +45,11 @@ public class ChannelRS {
 		client.start();
 		client.fireTCP(CHANNEL_LIST);
 		latch.await();
-		return new ObjectMapper().writeValueAsString(channels);
+		return channels;
+	}
+	
+	@GET
+	public String list() throws Exception {
+		return createMapper().writerWithView(View.class).writeValueAsString(getChannels());
 	}
 }
