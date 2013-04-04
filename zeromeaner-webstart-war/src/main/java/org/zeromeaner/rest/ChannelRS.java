@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
-@Path("channels")
+@Path("/channels")
 @Produces("application/json")
 public class ChannelRS {
 	@GET
