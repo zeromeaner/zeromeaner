@@ -16,8 +16,20 @@
 		<servlet-name>zero</servlet-name>
 		<servlet-class>org.zeromeaner.webstart.ZeroJnlp</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>rest</servlet-name>
+		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>com.sun.jersey.config.property.packages</param-name>
+			<param-value>org.zeromeaner.rest</param-value>
+		</init-param>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>zero</servlet-name>
 		<url-pattern>/zero.jnlp</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>rest</servlet-name>
+		<url-pattern>/rest</url-pattern>
 	</servlet-mapping>
 </web-app>
