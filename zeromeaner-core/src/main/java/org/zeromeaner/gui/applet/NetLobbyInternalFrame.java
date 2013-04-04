@@ -13,7 +13,7 @@ public class NetLobbyInternalFrame extends JInternalFrame {
 	private KNetPanel knetPanel;
 	
 	public NetLobbyInternalFrame() {
-		knetPanel = new KNetPanel(AppletMain.userId);
+		knetPanel = new KNetPanel(AppletMain.userId, !NullpoMinoInternalFrame.propGlobal.getProperty(0 + ".ai", "").isEmpty());
 		
 		setLayout(new BorderLayout());
 		add(knetPanel, BorderLayout.CENTER);

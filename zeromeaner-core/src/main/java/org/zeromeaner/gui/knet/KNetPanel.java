@@ -69,6 +69,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 	private static final String CHANGE_PASSWORD_CARD = ChangePasswordPanel.class.getName();
 	
 	private String defaultUsername;
+	private boolean ai;
 	
 	private CardLayout cards;
 	private ConnectionListPanel connectionsListPanel;
@@ -145,6 +146,8 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 						String user = username.getText();
 						if(user == null || user.isEmpty())
 							user = "anonymous";
+						if(ai)
+							user += " [AI]";
 						client.getSource().setName(user);
 						client.removeKNetListener(this);
 						client.fireTCP(UPDATE_SOURCE, client.getSource());
@@ -678,8 +681,9 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 		}
 	}
 	
-	public KNetPanel(String defaultUsername) {
+	public KNetPanel(String defaultUsername, boolean ai) {
 		this.defaultUsername = defaultUsername;
+		this.ai = ai;
 		
 		setLayout(cards = new CardLayout());
 		
