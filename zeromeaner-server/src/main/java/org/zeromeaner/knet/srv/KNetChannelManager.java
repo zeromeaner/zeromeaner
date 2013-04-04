@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,7 +37,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 		}
 	}
 	
-	protected Map<Integer, KNetChannelInfo> channels = Collections.synchronizedMap(new HashMap<Integer, KNetChannelInfo>());
+	protected Map<Integer, KNetChannelInfo> channels = Collections.synchronizedMap(new TreeMap<Integer, KNetChannelInfo>());
 	protected Map<KNetChannelInfo, ChannelState> states = new HashMap<KNetChannelInfo, ChannelState>();
 	protected AtomicInteger nextChannelId = new AtomicInteger(-1);
 	protected KNetChannelInfo lobby;
