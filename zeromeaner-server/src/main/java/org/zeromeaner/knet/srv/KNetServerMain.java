@@ -19,16 +19,18 @@ public class KNetServerMain {
 		try {
 			new KNetServerMain().innerMain(args);
 		} catch(Exception ex) {
-			throw new RuntimeException(ex);
+			ex.printStackTrace();
+			System.exit(-1);
 		}
 	}
 	
 	protected void innerMain(String[] args) throws Exception {
 		CommandLine cli = new PosixParser().parse(OPTIONS, args);
 		
-		int port = Integer.parseInt(cli.getOptionValue("port", "61897"));
+		int port = Integer.parseInt(cli.getOptionValue("port", "" + KNetServer.DEFAULT_PORT));
 		
-		KNetServer server = new KNetServer(port);
+		new KNetServer(port);
+		new KNetCanary(port);
 	}
 
 }

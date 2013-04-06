@@ -23,7 +23,7 @@ import com.esotericsoftware.kryonet.Server;
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetServer {
-	
+	public static final int DEFAULT_PORT = 61897;
 	
 	protected int port;
 	protected AtomicInteger nextClientId = new AtomicInteger(-1);
@@ -135,6 +135,7 @@ public class KNetServer {
 		source = new KNetEventSource(nextClientId.incrementAndGet());
 		server = new Server(1024 * 256, 1024 * 256);
 		KNetKryo.configure(server.getKryo());
+		server.getKryo().setClassLoader(KNetServer.class.getClassLoader());
 		server.start();
 		server.bind(port, port);
 		server.addListener(listener);

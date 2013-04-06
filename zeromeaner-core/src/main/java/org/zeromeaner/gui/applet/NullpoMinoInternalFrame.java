@@ -1151,6 +1151,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			if(previousMode != null) {
 				if(gameManager.engine[0].ai != null) {
 					gameManager.engine[0].ai.shutdown(gameManager.engine[0], 0);
+					gameManager.engine[0].ai = null;
 				}
 				previousMode.netplayUnload(netLobby.getKnetPanel());
 			}

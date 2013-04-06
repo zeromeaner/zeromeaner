@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>zeromeaner-parent</artifactId>
 		<groupId>org.zeromeaner</groupId>
-		<version>1.0.11</version>
+		<version>1.0.12-SNAPSHOT</version>
 		<relativePath>../zeromeaner-parent</relativePath>
 	</parent>
 	<artifactId>zeromeaner-webstart-war</artifactId>
@@ -143,9 +143,19 @@
 			<version>2.4</version>
 		</dependency>
 		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-servlet</artifactId>
+			<version>1.17.1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.zeromeaner</groupId>
-			<artifactId>zeromeaner-netstats</artifactId>
-			<version>1.0.11</version>
+			<artifactId>zeromeaner-server</artifactId>
+			<version>1.0.12-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
