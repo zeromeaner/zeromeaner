@@ -28,7 +28,8 @@ public class KNetServerMain {
 		
 		int port = Integer.parseInt(cli.getOptionValue("port", "" + KNetServer.DEFAULT_PORT));
 		
-		KNetServer server = new KNetServer(port);
+		new KNetServer(port);
+		new KNetCanary(port);
 	}
 
 }
