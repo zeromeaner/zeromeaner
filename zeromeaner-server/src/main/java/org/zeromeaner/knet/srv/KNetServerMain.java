@@ -19,7 +19,7 @@ public class KNetServerMain {
 		try {
 			new KNetServerMain().innerMain(args);
 		} catch(Exception ex) {
-			throw new RuntimeException(ex);
+			System.exit(-1);
 		}
 	}
 	
