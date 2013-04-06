@@ -19,6 +19,7 @@ public class KNetServerMain {
 		try {
 			new KNetServerMain().innerMain(args);
 		} catch(Exception ex) {
+			ex.printStackTrace();
 			System.exit(-1);
 		}
 	}
