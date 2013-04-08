@@ -41,7 +41,6 @@ public enum KNetEventArgs {
 	/**
 	 * Issued when a client disconnects from a server.
 	 */
-	@Global
 	DISCONNECTED,
 	
 	/** Issued when the packet should be sent via UDP instead of TCP */
