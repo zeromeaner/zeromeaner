@@ -12,6 +12,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.knet.KNetEventSource;
@@ -33,7 +34,7 @@ public class ChannelRS extends RS {
 	public static List<KNetChannelInfo> getChannels() throws Exception {
 		final List<KNetChannelInfo> channels = new ArrayList<KNetChannelInfo>();
 		final CountDownLatch latch = new CountDownLatch(1);
-		KNetClient client = new KNetClient("localhost", KNetServer.DEFAULT_PORT);
+		KNetClient client = new KNetClient("localhost", KNetServer.DEFAULT_PORT + (GameManager.VERSION.isSnapshot() ? 1 : 0));
 		client.addKNetListener(new KNetListener() {
 			@Override
 			public void knetEvented(KNetClient client, KNetEvent e) {
