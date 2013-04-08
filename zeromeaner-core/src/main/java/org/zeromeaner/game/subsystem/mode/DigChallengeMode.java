@@ -759,6 +759,9 @@ public class DigChallengeMode extends AbstractNetMode {
 		} else {
 			engine.meterValue = 0;
 		}
+		if(engine.fieldShift > 0) {
+			engine.fieldShift = engine.meterValue / (4 * 80.);
+		}
 		engine.meterColor = GameEngine.METER_COLOR_GREEN;
 		if(engine.meterValue <= receiver.getMeterMax(engine) / 2) engine.meterColor = GameEngine.METER_COLOR_YELLOW;
 		if(engine.meterValue <= receiver.getMeterMax(engine) / 3) engine.meterColor = GameEngine.METER_COLOR_ORANGE;
@@ -908,6 +911,7 @@ public class DigChallengeMode extends AbstractNetMode {
 	 */
 	private void addGarbage(GameEngine engine) {
 		addGarbage(engine, 1);
+		engine.fieldShift = 1;
 	}
 
 	/**

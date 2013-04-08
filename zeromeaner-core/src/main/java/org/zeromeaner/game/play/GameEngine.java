@@ -657,6 +657,8 @@ public class GameEngine {
 	
 	public int synchronousIncrement = 0;
 
+	public double fieldShift;
+	
 	/**
 	 * Constructor
 	 * @param owner Own the game engineGameOwnerClass
@@ -921,6 +923,8 @@ public class GameEngine {
 
 		startTime = 0;
 		endTime = 0;
+		
+		fieldShift = 0;
 
 		//  event Occurrence
 		if(owner.mode != null) {

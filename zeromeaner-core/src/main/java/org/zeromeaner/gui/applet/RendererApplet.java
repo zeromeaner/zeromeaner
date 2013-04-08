@@ -657,6 +657,8 @@ public class RendererApplet extends EventRenderer {
 		Piece piece = engine.nowPieceObject;
 		int blksize = (int)(16 * scale);
 
+		y = y  + (int)(blksize * engine.fieldShift);
+
 		if(piece != null) {
 			for(int i = 0; i < piece.getMaxBlock(); i++) {
 				if(!piece.big) {
@@ -873,6 +875,9 @@ public class RendererApplet extends EventRenderer {
 	protected void drawField(int x, int y, GameEngine engine, int size) {
 		if(graphics == null) return;
 
+		
+		graphics = (Graphics2D) this.graphics.create();
+		
 		int blksize = 16;
 		float scale = 1.0f;
 		if (size == -1) {
@@ -882,12 +887,18 @@ public class RendererApplet extends EventRenderer {
 			blksize = 32;
 			scale = 2.0f;
 		}
+		
 
 		Field field = engine.field;
 		int width = 10;
 		int height = 20;
 		int viewHeight = 20;
 
+		Graphics2D g = this.graphics;
+		graphics.clipRect(x, y, width * blksize, height * blksize);
+
+		y = y  + (int)(blksize * engine.fieldShift);
+		
 		if(field != null) {
 			width = field.getWidth();
 			viewHeight = height = field.getHeight();
@@ -957,6 +968,8 @@ public class RendererApplet extends EventRenderer {
 				}
 			}
 		}
+		
+		graphics = g;
 	}
 
 	/**
