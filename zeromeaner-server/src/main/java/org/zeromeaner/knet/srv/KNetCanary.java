@@ -17,7 +17,7 @@ public class KNetCanary implements Runnable {
 
 	public KNetCanary(int port) {
 		this.port = port;
-		exec.scheduleAtFixedRate(this, 10, 10, TimeUnit.SECONDS);
+		exec.scheduleAtFixedRate(this, 10, 10, TimeUnit.MINUTES);
 	}
 	
 	@Override
