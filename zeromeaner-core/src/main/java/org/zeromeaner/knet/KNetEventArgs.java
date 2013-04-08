@@ -284,11 +284,15 @@ public enum KNetEventArgs {
 	}
 	
 	public Object read(Kryo kryo, Input input) {
-		if(type == null)
-			return true;
-		if(nullable)
-			return kryo.readClassAndObject(input);
-		else
-			return kryo.readObject(input, type);
+		try {
+			if(type == null)
+				return true;
+			if(nullable)
+				return kryo.readClassAndObject(input);
+			else
+				return kryo.readObject(input, type);
+		} catch(Error er) {
+			throw new Error("reading " + this, er);
+		}
 	}
 }
