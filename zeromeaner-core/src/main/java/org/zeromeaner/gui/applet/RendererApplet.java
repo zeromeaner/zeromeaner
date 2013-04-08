@@ -895,6 +895,8 @@ public class RendererApplet extends EventRenderer {
 		int viewHeight = 20;
 
 		Graphics2D g = this.graphics;
+		try {
+			graphics = (Graphics2D) graphics.create();
 		graphics.clipRect(x, y, width * blksize, height * blksize);
 
 		y = y  + (int)(blksize * engine.fieldShift);
@@ -969,7 +971,9 @@ public class RendererApplet extends EventRenderer {
 			}
 		}
 		
+		} finally {
 		graphics = g;
+		}
 	}
 
 	/**
