@@ -899,8 +899,13 @@ public class DigChallengeMode extends AbstractNetMode {
 		int t = 1;
 		if(version <= 1) t = goaltype;
 
-		if(lv > GARBAGE_TIMER_TABLE[t].length - 1) lv = GARBAGE_TIMER_TABLE[t].length - 1;
-		int limitTime = GARBAGE_TIMER_TABLE[t][lv];
+		int limitTime;
+		if(t == GOALTYPE_NORMAL) {
+			if(lv > GARBAGE_TIMER_TABLE[t].length - 1) lv = GARBAGE_TIMER_TABLE[t].length - 1;
+			limitTime = GARBAGE_TIMER_TABLE[t][lv];
+		} 
+		else
+			limitTime = 180 - 5 * lv;
 
 		return limitTime;
 	}
