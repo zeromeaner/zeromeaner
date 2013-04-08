@@ -278,7 +278,7 @@ public class DigChallengeMode extends AbstractNetMode {
 	private int garbagePending;
 
 	/** Game type */
-	private int goaltype;
+	private int goaltype = GOALTYPE_REALTIME;
 
 	/** Level at the start of the game */
 	private int startlevel;
