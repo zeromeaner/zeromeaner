@@ -11,6 +11,7 @@ import java.util.concurrent.CountDownLatch;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
@@ -23,7 +24,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Path("users")
-@Produces("application/json")
+@Produces(MediaType.APPLICATION_JSON)
 public class UsersRS extends RS {
 	public static List<KNetEventSource> getUsers() throws Exception {
 		List<KNetEventSource> users = new ArrayList<KNetEventSource>();
@@ -43,7 +44,7 @@ public class UsersRS extends RS {
 	
 	@GET
 	@Path("/names")
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	public String names() throws Exception {
 		List<String> names = new ArrayList<String>();
 		for(KNetEventSource s : getUsers()) {
