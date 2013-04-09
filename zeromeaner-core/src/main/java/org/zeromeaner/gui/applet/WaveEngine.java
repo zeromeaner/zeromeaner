@@ -5,12 +5,12 @@
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
 
-        * Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
           notice, this list of conditions and the following disclaimer.
-        * Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
           notice, this list of conditions and the following disclaimer in the
           documentation and/or other materials provided with the distribution.
-        * Neither the name of NullNoname nor the names of its
+ * Neither the name of NullNoname nor the names of its
           contributors may be used to endorse or promote products derived from
           this software without specific prior written permission.
 
@@ -25,16 +25,20 @@
     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.zeromeaner.gui.applet;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -58,14 +62,14 @@ public class WaveEngine implements LineListener {
 	/** Log */
 	private static Logger log = Logger.getLogger(WaveEngine.class);
 
-	private ExecutorService exec = Executors.newSingleThreadExecutor();
-	
+	private ThreadPoolExecutor exec = new ThreadPoolExecutor(1, 1, 1, TimeUnit.MINUTES, new SynchronousQueue<Runnable>());
+
 	/** You can registerWAVE file OfMaximumcount */
 	private int maxClips;
 
 	/** WAVE file  data (Name-> dataBody) */
-	private HashMap<String, Clip> clipMap;
-	
+	private Map<String, Clip> clipMap;
+
 	private Map<String, URL> clipUrls = new HashMap<String, URL>();
 
 	/** Was registeredWAVE file count */
@@ -88,6 +92,8 @@ public class WaveEngine implements LineListener {
 	public WaveEngine(int maxClips) {
 		this.maxClips = maxClips;
 		clipMap = new HashMap<String, Clip>(maxClips);
+		clipMap = Collections.synchronizedMap(clipMap);
+		exec.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
 	}
 
 	/**
@@ -142,9 +148,9 @@ public class WaveEngine implements LineListener {
 			// ULAW/ALAWIf the format isPCMChange the format
 			if((format.getEncoding() == AudioFormat.Encoding.ULAW) || (format.getEncoding() == AudioFormat.Encoding.ALAW)) {
 				AudioFormat newFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-														format.getSampleRate(), format.getSampleSizeInBits() * 2,
-														format.getChannels(), format.getFrameSize() * 2, format.getFrameRate(),
-														true);
+						format.getSampleRate(), format.getSampleSizeInBits() * 2,
+						format.getChannels(), format.getFrameSize() * 2, format.getFrameRate(),
+						true);
 				stream = AudioSystem.getAudioInputStream(newFormat, stream);
 				format = newFormat;
 			}
@@ -161,14 +167,14 @@ public class WaveEngine implements LineListener {
 			clipMap.put(name, clip);
 
 			counter++;
-			
+
 			// Close the stream
 			stream.close();
-			
+
 			FloatControl ctrl = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
 			ctrl.setValue((float)Math.log10(volume) * 20);
 		} catch (LineUnavailableException e) {
-//			log.warn(name + " : Failed to open line", e);
+			//			log.warn(name + " : Failed to open line", e);
 		} catch (UnsupportedAudioFileException e) {
 			log.warn(name + " : This is not a wave file", e);
 		} catch (IOException e) {
@@ -184,36 +190,40 @@ public class WaveEngine implements LineListener {
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
-				synchronized(WaveEngine.this) {
-					Clip clip = clipMap.get(name);
+				Clip clip = clipMap.get(name);
 
-					if(!clipMap.containsKey(name) && clipUrls.containsKey(name)) {
-						long start = System.currentTimeMillis();
-						load(name, clipUrls.get(name));
-						clip = clipMap.get(name);
-						clipMap.put(name, clip);
-						if(clip == null) {
-							counter--;
-							return;
-						}
-						long end = System.currentTimeMillis();
-						int skip = (int)(clip.getFormat().getFrameRate() * ((end - start) / 1000.));
-						if(skip < clip.getFrameLength())
-							clip.setFramePosition(skip);
+				if(!clipMap.containsKey(name) && clipUrls.containsKey(name)) {
+					long start = System.currentTimeMillis();
+					load(name, clipUrls.get(name));
+					clip = clipMap.get(name);
+					clipMap.put(name, clip);
+					if(clip == null) {
+						counter--;
+						return;
 					}
+					long end = System.currentTimeMillis();
+					//						int skip = (int)(clip.getFormat().getFrameRate() * ((end - start) / 1000.));
+					//						if(skip < clip.getFrameLength())
+					//							clip.setFramePosition(skip);
+				}
 
-					if(clip != null) {
-						// Stop
-						clip.stop();
-						// Playback position back to the beginning
-						clip.setFramePosition(0);
-						// Playback
-						clip.start();
-					}
+				if(Thread.interrupted())
+					return;
+
+				if(clip != null) {
+					// Stop
+					clip.stop();
+					// Playback position back to the beginning
+					clip.setFramePosition(0);
+					// Playback
+					clip.start();
 				}
 			}
 		};
-		exec.execute(r);
+		if(clipMap.containsKey(name))
+			r.run();
+		else
+			exec.execute(r);
 	}
 
 	/**
@@ -224,12 +234,10 @@ public class WaveEngine implements LineListener {
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
-				synchronized(WaveEngine.this) {
-					Clip clip = clipMap.get(name);
+				Clip clip = clipMap.get(name);
 
-					if(clip != null) {
-						clip.stop();
-					}
+				if(clip != null) {
+					clip.stop();
 				}
 			}
 		};
@@ -242,15 +250,13 @@ public class WaveEngine implements LineListener {
 	public void update(LineEvent event) {
 		// If you stop playback or to the end
 		if(event.getType() == LineEvent.Type.STOP) {
-			synchronized(WaveEngine.this) {
-				Clip clip = (Clip) event.getSource();
-				clip.stop();
-				clip.setFramePosition(0); // Playback position back to the beginning
-				if(counter > maxClips) {
-					clip.close();
-					clipMap.values().remove(clip);
-					counter--;
-				}
+			Clip clip = (Clip) event.getSource();
+			clip.stop();
+			clip.setFramePosition(0); // Playback position back to the beginning
+			if(counter > maxClips) {
+				clip.close();
+				clipMap.values().remove(clip);
+				counter--;
 			}
 		}
 	}
