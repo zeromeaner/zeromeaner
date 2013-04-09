@@ -618,6 +618,8 @@ public class RendererApplet extends EventRenderer {
 		Piece piece = engine.nowPieceObject;
 		int blksize = (int)(16 * scale);
 
+		y += blksize * engine.fieldShift;
+		
 		if(piece != null) {
 			for(int i = 0; i < piece.getMaxBlock(); i++) {
 				if(!piece.big) {
