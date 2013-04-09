@@ -351,7 +351,7 @@ public class DigChallengeMode extends AbstractNetMode {
 		garbageNextLevelLines = 0;
 		garbagePending = 0;
 
-		growthRate = 0.1 / 50;
+		growthRate = 1 / (9.5 * 60);
 		
 		rankingRank = -1;
 		rankingScore = new int[GOALTYPE_MAX][RANKING_MAX];
@@ -987,7 +987,7 @@ public class DigChallengeMode extends AbstractNetMode {
 			engine.playSE("levelup");
 		}
 		
-		growthRate = 0.1 / (50 - engine.statistics.level);
+		growthRate = 1 / ((22.9416 * (Math.sqrt(garbageTotal + 0.644737) - 0.802955)) * 60);
 	}
 
 	/*
