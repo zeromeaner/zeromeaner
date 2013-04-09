@@ -905,7 +905,7 @@ public class DigChallengeMode extends AbstractNetMode {
 			limitTime = GARBAGE_TIMER_TABLE[t][lv];
 		} 
 		else
-			limitTime = 180 - 5 * lv;
+			limitTime = 180 - 8 * lv;
 
 		return limitTime;
 	}
