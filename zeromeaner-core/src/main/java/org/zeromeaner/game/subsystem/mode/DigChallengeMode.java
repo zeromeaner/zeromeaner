@@ -902,8 +902,7 @@ public class DigChallengeMode extends AbstractNetMode {
 	 * @return Garbage time limi
 	 */
 	private int getGarbageMaxTime(int lv) {
-		int t = 1;
-		if(version <= 1) t = goaltype;
+		int t = goaltype;
 
 		int limitTime;
 		if(t == GOALTYPE_NORMAL) {
