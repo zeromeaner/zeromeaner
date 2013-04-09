@@ -2485,7 +2485,7 @@ public class GameEngine {
 						((ruleopt.moveUpAndDown == true) || (updown == false)) )
 					{
 						if((ruleopt.softdropMultiplyNativeSpeed == true) || (speed.denominator <= 0))
-							gcount += (int)(speed.gravity * ruleopt.softdropSpeed);
+							gcount += Math.max(1, (int)(speed.gravity * ruleopt.softdropSpeed));
 						else
 							gcount += (int)(speed.denominator * ruleopt.softdropSpeed);
 	

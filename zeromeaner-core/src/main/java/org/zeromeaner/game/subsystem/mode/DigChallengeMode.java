@@ -384,7 +384,7 @@ public class DigChallengeMode extends AbstractNetMode {
 	public void setSpeed(GameEngine engine) {
 		if(goaltype == GOALTYPE_REALTIME) {
 			engine.speed.gravity = 0;
-			engine.speed.denominator = 60;
+			engine.speed.denominator = 1;
 		} else {
 			int lv = engine.statistics.level;
 
