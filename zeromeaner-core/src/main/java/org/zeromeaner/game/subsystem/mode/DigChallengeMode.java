@@ -318,6 +318,8 @@ public class DigChallengeMode extends AbstractNetMode {
 
 	/** Rankings' times */
 	private int[][] rankingTime;
+	
+	private double growthRate;
 
 	/*
 	 * Mode name
@@ -349,6 +351,8 @@ public class DigChallengeMode extends AbstractNetMode {
 		garbageNextLevelLines = 0;
 		garbagePending = 0;
 
+		growthRate = 0.1 / 50;
+		
 		rankingRank = -1;
 		rankingScore = new int[GOALTYPE_MAX][RANKING_MAX];
 		rankingLines = new int[GOALTYPE_MAX][RANKING_MAX];
@@ -709,7 +713,7 @@ public class DigChallengeMode extends AbstractNetMode {
 			}
 
 			// Add Garbage (Realtime)
-			if((garbageTimer >= getGarbageMaxTime(engine.statistics.level)) && (goaltype == GOALTYPE_REALTIME) &&
+			if((garbageTimer >= getGarbageMaxTime(engine.statistics.level) || engine.fieldShift <= 0) && (goaltype == GOALTYPE_REALTIME) &&
 			   (engine.stat != GameEngine.Status.LINECLEAR) && (!netIsWatch()))
 			{
 				addGarbage(engine);
@@ -760,7 +764,9 @@ public class DigChallengeMode extends AbstractNetMode {
 			engine.meterValue = 0;
 		}
 		if(engine.fieldShift > 0) {
-			engine.fieldShift = engine.meterValue / (4 * 80.);
+			engine.fieldShift -= growthRate;
+		} else {
+			
 		}
 		engine.meterColor = GameEngine.METER_COLOR_GREEN;
 		if(engine.meterValue <= receiver.getMeterMax(engine) / 2) engine.meterColor = GameEngine.METER_COLOR_YELLOW;
@@ -905,7 +911,7 @@ public class DigChallengeMode extends AbstractNetMode {
 			limitTime = GARBAGE_TIMER_TABLE[t][lv];
 		} 
 		else
-			limitTime = (int)(180 - (10 - lv / 6.) * lv);
+			limitTime = (int)(60 / growthRate);
 
 		return limitTime;
 	}
@@ -980,6 +986,8 @@ public class DigChallengeMode extends AbstractNetMode {
 			setSpeed(engine);
 			engine.playSE("levelup");
 		}
+		
+		growthRate = 0.1 / (50 - engine.statistics.level);
 	}
 
 	/*
