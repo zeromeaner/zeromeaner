@@ -1142,11 +1142,11 @@ public class DigChallengeMode extends AbstractNetMode {
 	 */
 	private int checkRanking(int sc, int li, int time, int type) {
 		for(int i = 0; i < RANKING_MAX; i++) {
-			if(sc > rankingScore[type][i]) {
+			if(time > rankingTime[type][i]) {
 				return i;
-			} else if((sc == rankingScore[type][i]) && (li > rankingLines[type][i])) {
+			} else if((time == rankingTime[type][i]) && (li > rankingLines[type][i])) {
 				return i;
-			} else if((sc == rankingScore[type][i]) && (li == rankingLines[type][i]) && (time > rankingTime[type][i])) {
+			} else if((time == rankingTime[type][i]) && (li == rankingLines[type][i]) && (sc > rankingScore[type][i])) {
 				return i;
 			}
 		}
