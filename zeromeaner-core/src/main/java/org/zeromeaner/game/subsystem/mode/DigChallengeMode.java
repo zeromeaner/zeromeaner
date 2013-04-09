@@ -987,7 +987,10 @@ public class DigChallengeMode extends AbstractNetMode {
 			engine.playSE("levelup");
 		}
 		
-		growthRate = 1 / ((22.9416 * (Math.sqrt(garbageTotal + 0.644737) - 0.802955)) * 60);
+		double nextTime = 22.9416 * (Math.sqrt(garbageTotal + 0.644737) - 0.802955);
+		double prevTime = 22.9416 * (Math.sqrt(garbageTotal - 1 + 0.644737) - 0.802955);
+		
+		growthRate = 1 / ((nextTime - prevTime) * 60);
 	}
 
 	/*
