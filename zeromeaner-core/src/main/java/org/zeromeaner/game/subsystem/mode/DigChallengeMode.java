@@ -336,7 +336,7 @@ public class DigChallengeMode extends AbstractNetMode {
 	public void playerInit(GameEngine engine, int playerID) {
 		owner = engine.getOwner();
 		receiver = engine.getOwner().receiver;
-
+		
 		lastscore = 0;
 		lastbonusscore = 0;
 		scgettime = 0;
