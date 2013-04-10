@@ -200,7 +200,6 @@ public class AppletMain extends Applet {
 						frames.put(j, frame);
 
 						if(nmif != null) {
-							log.debug("np:" + np + " for " + j);
 							Point p = new Point(np);
 							p.x += j.getLocation().x;
 							p.y += j.getLocation().y;
