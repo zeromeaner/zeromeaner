@@ -160,6 +160,11 @@
 			<artifactId>zeromeaner-media</artifactId>
 			<version>1.0.14-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.zeromeaner</groupId>
+			<artifactId>zeromeaner-laf</artifactId>
+			<version>1.0.14-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>

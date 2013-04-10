@@ -14,6 +14,7 @@
 		<module>../zeromeaner-media</module>
 		<module>../zeromeaner-server</module>
 		<module>../zeromeaner-netstats</module>
+		<module>../zeromeaner-laf</module>
 	</modules>
 
 	<build>
