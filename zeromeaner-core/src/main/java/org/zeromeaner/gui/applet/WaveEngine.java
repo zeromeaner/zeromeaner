@@ -28,8 +28,10 @@
  */
 package org.zeromeaner.gui.applet;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,6 +60,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.util.MusicList;
+import org.zeromeaner.util.ResourceInputStream;
 
 /**
  * Sound engine
@@ -82,7 +85,7 @@ public class WaveEngine {
 
 	private Map<String, SourceDataLine> sourceDataLines;
 
-	private Map<String, URL> clipUrls = new HashMap<String, URL>();
+	private Map<String, byte[]> clipBuffers = new HashMap<String, byte[]>();
 
 	/** Was registeredWAVE file count */
 	private AtomicInteger counter = new AtomicInteger();
@@ -142,7 +145,17 @@ public class WaveEngine {
 	 * @param filename Filename
 	 */
 	public void load(String name, String filename) {
-		clipUrls.put(name, ResourceHolderApplet.getURL(filename));
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			InputStream in = ResourceHolderApplet.getURL(filename).openStream();
+			byte[] b = new byte[8192];
+			for(int r = in.read(b); r != -1; r = in.read(b))
+				out.write(b, 0, r);
+			in.close();
+			clipBuffers.put(name, out.toByteArray());
+		} catch(IOException ioe) {
+			log.warn(ioe);
+		}
 	}
 
 
@@ -154,7 +167,7 @@ public class WaveEngine {
 		stop(name);
 		AudioInputStream audioIn;
 		try {
-			audioIn = AudioSystem.getAudioInputStream(clipUrls.get(name));
+			audioIn = AudioSystem.getAudioInputStream(new ByteArrayInputStream(clipBuffers.get(name)));
 		} catch(Exception ex) {
 			log.warn(ex);
 			return;
