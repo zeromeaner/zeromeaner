@@ -39,6 +39,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -66,7 +67,15 @@ public class WaveEngine {
 	/** Log */
 	private static Logger log = Logger.getLogger(WaveEngine.class);
 
-	private ExecutorService exec = Executors.newCachedThreadPool();
+	private ExecutorService exec = Executors.newCachedThreadPool(new ThreadFactory() {
+		private ThreadFactory dtf = Executors.defaultThreadFactory();
+		@Override
+		public Thread newThread(Runnable r) {
+			Thread t = dtf.newThread(r);
+			t.setName("audio thread: " + t.getName());
+			return t;
+		}
+	});
 
 	/** You can registerWAVE file OfMaximumcount */
 	private int maxClips;
