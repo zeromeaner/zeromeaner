@@ -1,5 +1,7 @@
 package org.zeromeaner.game.subsystem.mode;
 
+import java.util.concurrent.TimeUnit;
+
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
@@ -318,6 +320,8 @@ public class DigChallengeMode extends AbstractNetMode {
 
 	/** Rankings' times */
 	private int[][] rankingTime;
+
+	private long lastFrameTime;
 	
 	private double growthRate;
 
@@ -560,6 +564,7 @@ public class DigChallengeMode extends AbstractNetMode {
 		} else {
 			owner.bgmStatus.bgm = bgmno;
 		}
+		lastFrameTime = System.nanoTime();
 	}
 
 	/*
@@ -764,7 +769,10 @@ public class DigChallengeMode extends AbstractNetMode {
 			engine.meterValue = 0;
 		}
 		if(engine.fieldShift > 0) {
-			engine.fieldShift -= growthRate;
+			long last = lastFrameTime;
+			long now = System.nanoTime();
+			engine.fieldShift -= (growthRate * (now - last)) / TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS);
+			lastFrameTime = now;
 		} else {
 			
 		}
@@ -910,7 +918,7 @@ public class DigChallengeMode extends AbstractNetMode {
 			limitTime = GARBAGE_TIMER_TABLE[t][lv];
 		} 
 		else
-			limitTime = (int)(60 / growthRate);
+			limitTime = Integer.MAX_VALUE;
 
 		return limitTime;
 	}
@@ -989,7 +997,7 @@ public class DigChallengeMode extends AbstractNetMode {
 		double nextTime = 22.9416 * (Math.sqrt(garbageTotal + 0.644737) - 0.802955);
 		double prevTime = 22.9416 * (Math.sqrt(garbageTotal - 1 + 0.644737) - 0.802955);
 		// assume 60 FPS
-		growthRate = 1 / ((nextTime - prevTime) * 60);
+		growthRate = 1 / (nextTime - prevTime);
 	}
 
 	/*

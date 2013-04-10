@@ -326,7 +326,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 			}
 		};
 		
-		ScheduledFuture<?> f = exec.scheduleAtFixedRate(task, 0, TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / 60, TimeUnit.NANOSECONDS);
+		ScheduledFuture<?> f = exec.scheduleAtFixedRate(task, 0, TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / maxfps, TimeUnit.NANOSECONDS);
 		
 		while(running.get()) {
 			synchronized(running) {
