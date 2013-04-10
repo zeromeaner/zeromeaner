@@ -322,6 +322,8 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 
 	/** Target Timer */
 	private int targetTimer;
+	
+	private int[] pendingGarbageLines;
 
 	/*
 	 * Mode name
@@ -352,6 +354,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		garbage = new int[NETVS_MAX_PLAYERS];
 		playerAPL = new float[NETVS_MAX_PLAYERS];
 		playerAPM = new float[NETVS_MAX_PLAYERS];
+		pendingGarbageLines = new int[NETVS_MAX_PLAYERS];
 	}
 
 	/**
@@ -426,6 +429,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		garbage[playerID] = 0;
 		playerAPL[playerID] = 0f;
 		playerAPM[playerID] = 0f;
+		pendingGarbageLines[playerID] = 0;
 	}
 
 	/*
@@ -642,6 +646,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			// Make regular garbage lines appear
 			while(!garbageEntries.isEmpty()) {
 				GarbageEntry garbageEntry = garbageEntries.poll();
+				
 				smallGarbageCount += garbageEntry.lines % GARBAGE_DENOMINATOR;
 
 				if(garbageEntry.lines / GARBAGE_DENOMINATOR > 0) {
@@ -656,8 +661,9 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 							}
 							hole = newHole;
 						}
-						engine.field.addSingleHoleGarbage(hole, garbageColor, engine.getSkin(),
-								  garbageEntry.lines / GARBAGE_DENOMINATOR);
+//						engine.field.addSingleHoleGarbage(hole, garbageColor, engine.getSkin(),
+//								  garbageEntry.lines / GARBAGE_DENOMINATOR);
+						pendingGarbageLines[playerID] += garbageEntry.lines / GARBAGE_DENOMINATOR;
 					} else {
 						for(int i = garbageEntry.lines / GARBAGE_DENOMINATOR; i > 0; i--) {
 							if(engine.random.nextInt(100) < finalGarbagePercent) {
@@ -668,7 +674,8 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 								hole = newHole;
 							}
 
-							engine.field.addSingleHoleGarbage(hole, garbageColor, engine.getSkin(), 1);
+//							engine.field.addSingleHoleGarbage(hole, garbageColor, engine.getSkin(), 1);
+							pendingGarbageLines[playerID] += 1;
 						}
 					}
 				}
@@ -687,8 +694,9 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 							}
 							hole = newHole;
 						}
-						engine.field.addSingleHoleGarbage(hole, Block.BLOCK_COLOR_GRAY, engine.getSkin(),
-								  smallGarbageCount / GARBAGE_DENOMINATOR);
+//						engine.field.addSingleHoleGarbage(hole, Block.BLOCK_COLOR_GRAY, engine.getSkin(),
+//								  smallGarbageCount / GARBAGE_DENOMINATOR);
+						pendingGarbageLines[playerID] += smallGarbageCount / GARBAGE_DENOMINATOR;
 					} else {
 						for(int i = smallGarbageCount / GARBAGE_DENOMINATOR; i > 0; i--) {
 							if(engine.random.nextInt(100) < finalGarbagePercent) {
@@ -699,7 +707,8 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 								hole = newHole;
 							}
 
-							engine.field.addSingleHoleGarbage(hole, Block.BLOCK_COLOR_GRAY, engine.getSkin(), 1);
+//							engine.field.addSingleHoleGarbage(hole, Block.BLOCK_COLOR_GRAY, engine.getSkin(), 1);
+							pendingGarbageLines[playerID] += 1;
 						}
 					}
 				}
@@ -772,6 +781,20 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		else if(tempGarbage >= 1) engine.meterColor = GameEngine.METER_COLOR_YELLOW;
 		else engine.meterColor = GameEngine.METER_COLOR_GREEN;
 
+		if(engine.fieldShift > 0) {
+			engine.fieldShift = Math.max(0, engine.fieldShift - 1/20.);
+		}
+		
+		if(pendingGarbageLines[playerID] > 0 && engine.fieldShift == 0) {
+			pendingGarbageLines[playerID]--;
+			engine.fieldShift = 1;
+			engine.field.addSingleHoleGarbage(
+					engine.random.nextInt(engine.fieldWidth), 
+					Block.BLOCK_COLOR_GRAY, 
+					engine.getSkin(), 
+					1);
+		}
+		
 		// APL & APM
 		if((playerID == 0) && (engine.gameActive) && (engine.timerActive) && !netvsIsWatch()) {
 			float tempGarbageSent = (float)garbageSent[playerID] / GARBAGE_DENOMINATOR;

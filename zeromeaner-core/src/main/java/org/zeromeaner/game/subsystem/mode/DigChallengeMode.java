@@ -278,7 +278,7 @@ public class DigChallengeMode extends AbstractNetMode {
 	private int garbagePending;
 
 	/** Game type */
-	private int goaltype;
+	private int goaltype = GOALTYPE_REALTIME;
 
 	/** Level at the start of the game */
 	private int startlevel;
@@ -318,6 +318,8 @@ public class DigChallengeMode extends AbstractNetMode {
 
 	/** Rankings' times */
 	private int[][] rankingTime;
+	
+	private double growthRate;
 
 	/*
 	 * Mode name
@@ -334,7 +336,7 @@ public class DigChallengeMode extends AbstractNetMode {
 	public void playerInit(GameEngine engine, int playerID) {
 		owner = engine.getOwner();
 		receiver = engine.getOwner().receiver;
-
+		
 		lastscore = 0;
 		lastbonusscore = 0;
 		scgettime = 0;
@@ -349,6 +351,8 @@ public class DigChallengeMode extends AbstractNetMode {
 		garbageNextLevelLines = 0;
 		garbagePending = 0;
 
+		growthRate = 1 / (9.5 * 60);
+		
 		rankingRank = -1;
 		rankingScore = new int[GOALTYPE_MAX][RANKING_MAX];
 		rankingLines = new int[GOALTYPE_MAX][RANKING_MAX];
@@ -380,7 +384,7 @@ public class DigChallengeMode extends AbstractNetMode {
 	public void setSpeed(GameEngine engine) {
 		if(goaltype == GOALTYPE_REALTIME) {
 			engine.speed.gravity = 0;
-			engine.speed.denominator = 60;
+			engine.speed.denominator = 1;
 		} else {
 			int lv = engine.statistics.level;
 
@@ -709,7 +713,7 @@ public class DigChallengeMode extends AbstractNetMode {
 			}
 
 			// Add Garbage (Realtime)
-			if((garbageTimer >= getGarbageMaxTime(engine.statistics.level)) && (goaltype == GOALTYPE_REALTIME) &&
+			if((garbageTimer >= getGarbageMaxTime(engine.statistics.level) || engine.fieldShift <= 0) && (goaltype == GOALTYPE_REALTIME) &&
 			   (engine.stat != GameEngine.Status.LINECLEAR) && (!netIsWatch()))
 			{
 				addGarbage(engine);
@@ -758,6 +762,11 @@ public class DigChallengeMode extends AbstractNetMode {
 			engine.meterValue = (remainTime * receiver.getMeterMax(engine)) / limitTime;
 		} else {
 			engine.meterValue = 0;
+		}
+		if(engine.fieldShift > 0) {
+			engine.fieldShift -= growthRate;
+		} else {
+			
 		}
 		engine.meterColor = GameEngine.METER_COLOR_GREEN;
 		if(engine.meterValue <= receiver.getMeterMax(engine) / 2) engine.meterColor = GameEngine.METER_COLOR_YELLOW;
@@ -893,11 +902,15 @@ public class DigChallengeMode extends AbstractNetMode {
 	 * @return Garbage time limi
 	 */
 	private int getGarbageMaxTime(int lv) {
-		int t = 1;
-		if(version <= 1) t = goaltype;
+		int t = goaltype;
 
-		if(lv > GARBAGE_TIMER_TABLE[t].length - 1) lv = GARBAGE_TIMER_TABLE[t].length - 1;
-		int limitTime = GARBAGE_TIMER_TABLE[t][lv];
+		int limitTime;
+		if(t == GOALTYPE_NORMAL) {
+			if(lv > GARBAGE_TIMER_TABLE[t].length - 1) lv = GARBAGE_TIMER_TABLE[t].length - 1;
+			limitTime = GARBAGE_TIMER_TABLE[t][lv];
+		} 
+		else
+			limitTime = (int)(60 / growthRate);
 
 		return limitTime;
 	}
@@ -908,6 +921,7 @@ public class DigChallengeMode extends AbstractNetMode {
 	 */
 	private void addGarbage(GameEngine engine) {
 		addGarbage(engine, 1);
+		engine.fieldShift = 1;
 	}
 
 	/**
@@ -971,6 +985,11 @@ public class DigChallengeMode extends AbstractNetMode {
 			setSpeed(engine);
 			engine.playSE("levelup");
 		}
+		
+		double nextTime = 22.9416 * (Math.sqrt(garbageTotal + 0.644737) - 0.802955);
+		double prevTime = 22.9416 * (Math.sqrt(garbageTotal - 1 + 0.644737) - 0.802955);
+		// assume 60 FPS
+		growthRate = 1 / ((nextTime - prevTime) * 60);
 	}
 
 	/*
@@ -1122,11 +1141,11 @@ public class DigChallengeMode extends AbstractNetMode {
 	 */
 	private int checkRanking(int sc, int li, int time, int type) {
 		for(int i = 0; i < RANKING_MAX; i++) {
-			if(sc > rankingScore[type][i]) {
+			if(time > rankingTime[type][i]) {
 				return i;
-			} else if((sc == rankingScore[type][i]) && (li > rankingLines[type][i])) {
+			} else if((time == rankingTime[type][i]) && (li > rankingLines[type][i])) {
 				return i;
-			} else if((sc == rankingScore[type][i]) && (li == rankingLines[type][i]) && (time > rankingTime[type][i])) {
+			} else if((time == rankingTime[type][i]) && (li == rankingLines[type][i]) && (sc > rankingScore[type][i])) {
 				return i;
 			}
 		}

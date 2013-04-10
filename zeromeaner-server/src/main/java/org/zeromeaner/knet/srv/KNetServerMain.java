@@ -3,6 +3,7 @@ package org.zeromeaner.knet.srv;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
+import org.apache.log4j.PropertyConfigurator;
 
 public class KNetServerMain {
 
@@ -25,6 +26,8 @@ public class KNetServerMain {
 	}
 	
 	protected void innerMain(String[] args) throws Exception {
+		PropertyConfigurator.configure(getClass().getClassLoader().getResourceAsStream("org/zeromeaner/config/etc/log_server.cfg"));
+		
 		CommandLine cli = new PosixParser().parse(OPTIONS, args);
 		
 		int port = Integer.parseInt(cli.getOptionValue("port", "" + KNetServer.DEFAULT_PORT));

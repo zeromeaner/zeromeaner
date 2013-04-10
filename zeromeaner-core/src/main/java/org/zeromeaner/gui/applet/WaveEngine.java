@@ -5,12 +5,12 @@
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
 
-        * Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
           notice, this list of conditions and the following disclaimer.
-        * Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
           notice, this list of conditions and the following disclaimer in the
           documentation and/or other materials provided with the distribution.
-        * Neither the name of NullNoname nor the names of its
+ * Neither the name of NullNoname nor the names of its
           contributors may be used to endorse or promote products derived from
           this software without specific prior written permission.
 
@@ -25,16 +25,24 @@
     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.zeromeaner.gui.applet;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -45,6 +53,7 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.apache.log4j.Logger;
@@ -54,22 +63,29 @@ import org.zeromeaner.util.MusicList;
  * Sound engine
  * <a href="http://javagame.skr.jp/index.php?%A5%B5%A5%A6%A5%F3%A5%C9%A5%A8%A5%F3%A5%B8%A5%F3">Reprint yuan</a>
  */
-public class WaveEngine implements LineListener {
+public class WaveEngine {
 	/** Log */
 	private static Logger log = Logger.getLogger(WaveEngine.class);
 
-	private ExecutorService exec = Executors.newSingleThreadExecutor();
-	
+	private ExecutorService exec = Executors.newCachedThreadPool(new ThreadFactory() {
+		private ThreadFactory dtf = Executors.defaultThreadFactory();
+		@Override
+		public Thread newThread(Runnable r) {
+			Thread t = dtf.newThread(r);
+			t.setName("audio thread: " + t.getName());
+			return t;
+		}
+	});
+
 	/** You can registerWAVE file OfMaximumcount */
 	private int maxClips;
 
-	/** WAVE file  data (Name-> dataBody) */
-	private HashMap<String, Clip> clipMap;
-	
+	private Map<String, SourceDataLine> sourceDataLines;
+
 	private Map<String, URL> clipUrls = new HashMap<String, URL>();
 
 	/** Was registeredWAVE file count */
-	private int counter = 0;
+	private AtomicInteger counter = new AtomicInteger();
 
 	/** Volume */
 	private double volume = 1.0;
@@ -87,7 +103,8 @@ public class WaveEngine implements LineListener {
 	 */
 	public WaveEngine(int maxClips) {
 		this.maxClips = maxClips;
-		clipMap = new HashMap<String, Clip>(maxClips);
+		sourceDataLines = new HashMap<String, SourceDataLine>();
+		sourceDataLines = Collections.synchronizedMap(sourceDataLines);
 	}
 
 	/**
@@ -103,18 +120,20 @@ public class WaveEngine implements LineListener {
 	 * @param vol New configuration volume (1.0The default )
 	 */
 	public void setVolume(double vol) {
-		synchronized(WaveEngine.this) {
-			volume = vol;
+		volume = vol;
 
-			Set<String> set = clipMap.keySet();
-			for(String name: set) {
-				try {
-					Clip clip = clipMap.get(name);
-					FloatControl ctrl = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
-					ctrl.setValue((float)Math.log10(volume) * 20);
-				} catch (Exception e) {}
+		synchronized(sourceDataLines) {
+			for(SourceDataLine line: sourceDataLines.values()) {
+				setVolume(line);
 			}
 		}
+	}
+	
+	private void setVolume(SourceDataLine line) {
+		try {
+			FloatControl ctrl = (FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN);
+			ctrl.setValue((float)Math.log10(volume) * 20);
+		} catch (Exception e) {}
 	}
 
 	/**
@@ -126,94 +145,50 @@ public class WaveEngine implements LineListener {
 		clipUrls.put(name, ResourceHolderApplet.getURL(filename));
 	}
 
-	/**
-	 * WAVE file Read
-	 * @param name Registered name
-	 * @param url URL
-	 */
-	private void load(String name, URL url) {
-		try {
-			// Open the audio stream
-			AudioInputStream stream = AudioSystem.getAudioInputStream(url);
-
-			// Obtains the audio format
-			AudioFormat format = stream.getFormat();
-
-			// ULAW/ALAWIf the format isPCMChange the format
-			if((format.getEncoding() == AudioFormat.Encoding.ULAW) || (format.getEncoding() == AudioFormat.Encoding.ALAW)) {
-				AudioFormat newFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-														format.getSampleRate(), format.getSampleSizeInBits() * 2,
-														format.getChannels(), format.getFrameSize() * 2, format.getFrameRate(),
-														true);
-				stream = AudioSystem.getAudioInputStream(newFormat, stream);
-				format = newFormat;
-			}
-
-			// LinesGet information
-			DataLine.Info info = new DataLine.Info(Clip.class, format);
-			// Create an empty clip
-			Clip clip = (Clip) AudioSystem.getLine(info);
-			// Clip event Monitoring
-			clip.addLineListener(this);
-			// Opened as a clip the audio stream
-			clip.open(stream);
-			// Submit a clip
-			clipMap.put(name, clip);
-
-			counter++;
-			
-			// Close the stream
-			stream.close();
-			
-			FloatControl ctrl = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
-			ctrl.setValue((float)Math.log10(volume) * 20);
-		} catch (LineUnavailableException e) {
-//			log.warn(name + " : Failed to open line", e);
-		} catch (UnsupportedAudioFileException e) {
-			log.warn(name + " : This is not a wave file", e);
-		} catch (IOException e) {
-			log.warn(name + " : Load failed", e);
-		}
-	}
 
 	/**
 	 * Playback
 	 * @param name Registered name
 	 */
 	public void play(final String name) {
-		Runnable r = new Runnable() {
-			@Override
-			public void run() {
-				synchronized(WaveEngine.this) {
-					Clip clip = clipMap.get(name);
-
-					if(!clipMap.containsKey(name) && clipUrls.containsKey(name)) {
-						long start = System.currentTimeMillis();
-						load(name, clipUrls.get(name));
-						clip = clipMap.get(name);
-						clipMap.put(name, clip);
-						if(clip == null) {
-							counter--;
-							return;
-						}
-						long end = System.currentTimeMillis();
-						int skip = (int)(clip.getFormat().getFrameRate() * ((end - start) / 1000.));
-						if(skip < clip.getFrameLength())
-							clip.setFramePosition(skip);
-					}
-
-					if(clip != null) {
-						// Stop
-						clip.stop();
-						// Playback position back to the beginning
-						clip.setFramePosition(0);
-						// Playback
-						clip.start();
-					}
-				}
+		stop(name);
+		AudioInputStream audioIn;
+		try {
+			audioIn = AudioSystem.getAudioInputStream(clipUrls.get(name));
+		} catch(Exception ex) {
+			log.warn(ex);
+			return;
+		}
+		exec.submit(new AudioTask(name, audioIn));
+	}
+	
+	private class AudioTask implements Callable<Object> {
+		private String name;
+		private AudioInputStream audioIn;
+		
+		public AudioTask(String name, AudioInputStream audioIn) {
+			this.name = name;
+			this.audioIn = audioIn;
+		}
+		
+		@Override
+		public Object call() throws Exception {
+			SourceDataLine line;
+			synchronized(sourceDataLines) {
+				line = AudioSystem.getSourceDataLine(audioIn.getFormat());
+				line.open(audioIn.getFormat());
+				line.start();
+				sourceDataLines.put(name, line);
 			}
-		};
-		exec.execute(r);
+			setVolume(line);
+			byte[] buf = new byte[1024 * audioIn.getFormat().getFrameSize()];
+			for(int r = audioIn.read(buf); r != -1; r = audioIn.read(buf)) {
+				line.write(buf, 0, r);
+			}
+			line.drain();
+			line.close();
+			return null;
+		}
 	}
 
 	/**
@@ -221,37 +196,10 @@ public class WaveEngine implements LineListener {
 	 * @param name Registered name
 	 */
 	public void stop(final String name) {
-		Runnable r = new Runnable() {
-			@Override
-			public void run() {
-				synchronized(WaveEngine.this) {
-					Clip clip = clipMap.get(name);
-
-					if(clip != null) {
-						clip.stop();
-					}
-				}
-			}
-		};
-		exec.execute(r);
-	}
-
-	/*
-	 * Lines stateChange
-	 */
-	public void update(LineEvent event) {
-		// If you stop playback or to the end
-		if(event.getType() == LineEvent.Type.STOP) {
-			synchronized(WaveEngine.this) {
-				Clip clip = (Clip) event.getSource();
-				clip.stop();
-				clip.setFramePosition(0); // Playback position back to the beginning
-				if(counter > maxClips) {
-					clip.close();
-					clipMap.values().remove(clip);
-					counter--;
-				}
-			}
+		SourceDataLine line = sourceDataLines.remove(name);
+		if(line != null) {
+			line.flush();
+			line.close();
 		}
 	}
 }

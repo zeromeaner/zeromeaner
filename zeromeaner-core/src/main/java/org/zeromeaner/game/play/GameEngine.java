@@ -657,6 +657,8 @@ public class GameEngine {
 	
 	public int synchronousIncrement = 0;
 
+	public double fieldShift;
+	
 	/**
 	 * Constructor
 	 * @param owner Own the game engineGameOwnerClass
@@ -921,6 +923,8 @@ public class GameEngine {
 
 		startTime = 0;
 		endTime = 0;
+		
+		fieldShift = 0;
 
 		//  event Occurrence
 		if(owner.mode != null) {
@@ -2481,7 +2485,7 @@ public class GameEngine {
 						((ruleopt.moveUpAndDown == true) || (updown == false)) )
 					{
 						if((ruleopt.softdropMultiplyNativeSpeed == true) || (speed.denominator <= 0))
-							gcount += (int)(speed.gravity * ruleopt.softdropSpeed);
+							gcount += Math.max(1, (int)(speed.gravity * ruleopt.softdropSpeed));
 						else
 							gcount += (int)(speed.denominator * ruleopt.softdropSpeed);
 	

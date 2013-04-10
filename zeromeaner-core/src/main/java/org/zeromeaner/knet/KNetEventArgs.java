@@ -41,7 +41,6 @@ public enum KNetEventArgs {
 	/**
 	 * Issued when a client disconnects from a server.
 	 */
-	@Global
 	DISCONNECTED,
 	
 	/** Issued when the packet should be sent via UDP instead of TCP */
@@ -284,11 +283,15 @@ public enum KNetEventArgs {
 	}
 	
 	public Object read(Kryo kryo, Input input) {
-		if(type == null)
-			return true;
-		if(nullable)
-			return kryo.readClassAndObject(input);
-		else
-			return kryo.readObject(input, type);
+		try {
+			if(type == null)
+				return true;
+			if(nullable)
+				return kryo.readClassAndObject(input);
+			else
+				return kryo.readObject(input, type);
+		} catch(Error er) {
+			throw new Error("reading " + this, er);
+		}
 	}
 }

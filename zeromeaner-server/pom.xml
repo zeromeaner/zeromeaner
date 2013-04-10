@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>zeromeaner-parent</artifactId>
 		<groupId>org.zeromeaner</groupId>
-		<version>1.0.12</version>
+		<version>1.0.13-SNAPSHOT</version>
 		<relativePath>../zeromeaner-parent</relativePath>
 	</parent>
 	<artifactId>zeromeaner-server</artifactId>
@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>org.zeromeaner</groupId>
 			<artifactId>zeromeaner-netstats</artifactId>
-			<version>1.0.12</version>
+			<version>1.0.13-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -42,7 +42,12 @@
 						<artifactId>exec-maven-plugin</artifactId>
 						<version>1.2.1</version>
 						<configuration>
-							<mainClass>org.zeromeaner.knet.srv.KNetServerMain</mainClass>
+							<executable>java</executable>
+							<arguments>
+								<argument>-classpath</argument>
+								<classpath/>
+								<argument>org.zeromeaner.knet.srv.KNetServerMain</argument>
+							</arguments>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -57,8 +62,11 @@
 						<artifactId>exec-maven-plugin</artifactId>
 						<version>1.2.1</version>
 						<configuration>
-							<mainClass>org.zeromeaner.knet.srv.KNetServerMain</mainClass>
+							<executable>java</executable>
 							<arguments>
+								<argument>-classpath</argument>
+								<classpath/>
+								<argument>org.zeromeaner.knet.srv.KNetServerMain</argument>
 								<argument>-p</argument>
 								<argument>61898</argument>
 							</arguments>
