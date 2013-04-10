@@ -13,6 +13,7 @@ import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -43,6 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JApplet;
@@ -138,12 +140,18 @@ public class AppletMain extends Applet {
 					if(!frames.containsKey(j)) {
 
 						super.addImpl(comp, constraints, index);
+						j.setVisible(true);
 
 						frame.setTitle(j.getTitle());
 						frame.setIconImage(ico);
 						frame.setJMenuBar(j.getRootPane().getJMenuBar());
 						frame.setContentPane(j.getRootPane().getContentPane());
 						frame.setSize(j.getWidth(), j.getHeight());
+						if(j instanceof SplashInternalFrame) {
+							frame.setUndecorated(true);
+							frame.setLocationRelativeTo(null);
+							frame.getRootPane().setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+						}
 						frame.setVisible(true);
 						frame.setResizable(j.isResizable());
 
@@ -219,6 +227,8 @@ public class AppletMain extends Applet {
 									for(Map.Entry<JInternalFrame, JFrame> e : frames.entrySet()) {
 										if(e.getKey() instanceof NullpoMinoInternalFrame)
 											continue;
+										if(e.getKey() instanceof SplashInternalFrame)
+											continue;
 										JInternalFrame jj = e.getKey();
 										JFrame f = e.getValue();
 										Point p = new Point(np);
@@ -231,6 +241,8 @@ public class AppletMain extends Applet {
 
 							for(Map.Entry<JInternalFrame, JFrame> e : frames.entrySet()) {
 								if(e.getKey() instanceof NullpoMinoInternalFrame)
+									continue;
+								if(e.getKey() instanceof SplashInternalFrame)
 									continue;
 								JInternalFrame jj = e.getKey();
 								JFrame f = e.getValue();
@@ -283,15 +295,8 @@ public class AppletMain extends Applet {
 
 	@Override
 	public synchronized void init() {
-		if(!EventQueue.isDispatchThread()) {
-			EventQueue.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					init();
-				}
-			});
+		if(EQInvoker.reinvoke(false, this))
 			return;
-		}
 
 		if(instance != null)
 			return;
@@ -348,51 +353,20 @@ public class AppletMain extends Applet {
 			}
 		}
 
-		final JLabel consoleLabel = new JLabel(" ");
-		//		PipedOutputStream pout = new PipedOutputStream();
-		//		PipedInputStream pin;
-		//		try {
-		//			pin = new PipedInputStream(pout);
-		//		} catch(IOException ioe) {
-		//			pin = null;
-		//		}
-		//		if(pin != null) {
-		//			final PipedInputStream fpin = pin;
-		//			final PrintStream sout = System.out;
-		//			System.setOut(new PrintStream(pout));
-		//			new Thread(new Runnable() {
-		//				@Override
-		//				public void run() {
-		//					BufferedReader r = new BufferedReader(new InputStreamReader(fpin));
-		//					try {
-		//						for(String line = r.readLine(); line != null; line = r.readLine()) {
-		//							final String fline = line;
-		//							EventQueue.invokeLater(new Runnable() {
-		//								public void run() {
-		//									consoleLabel.setText(fline);
-		//									sout.println(fline);
-		//								}
-		//							});
-		//						}
-		//					} catch(IOException ioe) {
-		//						ioe.printStackTrace();
-		//					}
-		//				}
-		//			}).start();
-		//		}
-
-		final JInternalFrame launching = new JInternalFrame("Launching zeromeaner");
+		final JInternalFrame launching = new SplashInternalFrame("Launching zeromeaner");
 		launching.setLayout(new BorderLayout());
 		JProgressBar pb = new JProgressBar();
 		pb.setIndeterminate(true);
 		launching.add(new JLabel("Launching zeromeaner..."), BorderLayout.NORTH);
-		launching.add(pb, BorderLayout.CENTER);
-		launching.add(consoleLabel, BorderLayout.SOUTH);
+		Image logo = new BufferedImage(320, 480, BufferedImage.TYPE_INT_ARGB);
+		Image icon = new ImageIcon(ResourceInputStream.getURL("res/graphics/icon24.png")).getImage();
+		logo.getGraphics().drawImage(icon, 0, 0, 320, 480, null);
+		launching.add(new JLabel(new ImageIcon(logo)), BorderLayout.CENTER);
+		launching.add(pb, BorderLayout.SOUTH);
 		launching.pack();
-		launching.setSize(500, 125);
 		desktop.add(launching);
 		launching.setVisible(true);
-
+		
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -532,6 +506,12 @@ public class AppletMain extends Applet {
 		//			}
 		//			
 		//		}
+	}
+
+	private class SplashInternalFrame extends JInternalFrame {
+		private SplashInternalFrame(String title) {
+			super(title);
+		}
 	}
 
 	private static class MainCookieAccess extends CookieAccess {
