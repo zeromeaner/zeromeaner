@@ -145,6 +145,7 @@ public class AppletMain extends Applet {
 						frame.setSize(j.getWidth(), j.getHeight());
 						frame.setVisible(true);
 						frame.createBufferStrategy(2);
+						frame.setResizable(j.isResizable());
 						
 						frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
@@ -183,7 +184,7 @@ public class AppletMain extends Applet {
 						frame.addComponentListener(new ComponentAdapter() {
 							@Override
 							public void componentMoved(ComponentEvent e) {
-								if(frame == nmif)
+								if(frame == nmif || nmif == null)
 									return;
 								Point p = frame.getLocation();
 								p.x -= nmif.getLocation().x;
