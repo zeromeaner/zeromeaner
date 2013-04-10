@@ -20,10 +20,12 @@ public class NetLobbyInternalFrame extends JInternalFrame {
 
 		setSize(800, 300);
 		
+		setTitle("zeromeaner NetPlay");
+		
 		AppletMain.instance.desktop.add(this);
+		setLocation(0, 500);
 		setVisible(true);
 		
-		setLocation(0, 500);
 	}
 	
 	public void init() {

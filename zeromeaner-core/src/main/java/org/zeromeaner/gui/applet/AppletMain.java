@@ -120,6 +120,7 @@ public class AppletMain extends Applet {
 
 		applet.desktop = new JDesktopPane() {
 			private JFrame nmif;
+			private Point np;
 			private Image ico;
 			private Map<JInternalFrame, JFrame> frames = new HashMap<JInternalFrame, JFrame>();
 			@Override
@@ -152,7 +153,6 @@ public class AppletMain extends Applet {
 						j.addPropertyChangeListener(new PropertyChangeListener() {
 							@Override
 							public void propertyChange(PropertyChangeEvent evt) {
-								System.out.println(evt.getPropertyName());
 								frame.setTitle(j.getTitle());
 							}
 						});
@@ -172,8 +172,8 @@ public class AppletMain extends Applet {
 							}
 							@Override
 							public void componentMoved(ComponentEvent e) {
-								if(nmif != null && nmif.isVisible()) {
-									Point p = nmif.getLocation();
+								if(nmif != null) {
+									Point p = new Point(np);
 									p.x += j.getLocation().x;
 									p.y += j.getLocation().y;
 									frame.setLocation(p);
@@ -182,21 +182,27 @@ public class AppletMain extends Applet {
 						});
 
 						frame.addComponentListener(new ComponentAdapter() {
+							private boolean skip = true;
 							@Override
 							public void componentMoved(ComponentEvent e) {
 								if(frame == nmif || nmif == null)
 									return;
+								if(skip) {
+									skip = false;
+									return;
+								}
 								Point p = frame.getLocation();
-								p.x -= nmif.getLocation().x;
-								p.y -= nmif.getLocation().y;
+								p.x -= np.x;
+								p.y -= np.y;
 								j.setLocation(p);
 							}
-						});
+								});
 						
 						frames.put(j, frame);
 
-						if(nmif != null && nmif.isVisible()) {
-							Point p = nmif.getLocation();
+						if(nmif != null) {
+							log.debug("np:" + np + " for " + j);
+							Point p = new Point(np);
 							p.x += j.getLocation().x;
 							p.y += j.getLocation().y;
 							frame.setLocation(p);
@@ -204,17 +210,20 @@ public class AppletMain extends Applet {
 
 						if(j instanceof NullpoMinoInternalFrame) {
 							nmif = frame;
+							np = frame.getLocation();
 							frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 							nmif.addComponentListener(new ComponentAdapter() {
 								@Override
 								public void componentMoved(ComponentEvent ev) {
+									if(nmif.isVisible())
+										np = nmif.getLocation();
 									for(Map.Entry<JInternalFrame, JFrame> e : frames.entrySet()) {
 										if(e.getKey() instanceof NullpoMinoInternalFrame)
 											continue;
 										JInternalFrame jj = e.getKey();
 										JFrame f = e.getValue();
-										Point p = nmif.getLocation();
+										Point p = new Point(np);
 										p.x += jj.getLocation().x;
 										p.y += jj.getLocation().y;
 										f.setLocation(p);
