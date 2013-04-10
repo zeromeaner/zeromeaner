@@ -13,6 +13,7 @@ import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +33,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -65,6 +67,7 @@ import org.eviline.ShapeType;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.gui.knet.KNetPanel;
+import org.zeromeaner.util.ResourceInputStream;
 
 public class AppletMain extends Applet {
 	
@@ -101,6 +104,7 @@ public class AppletMain extends Applet {
 				System.exit(0);
 			}
 		};
+		frame.setIconImage(new ImageIcon(ResourceInputStream.getURL("res/graphics/icon24.png")).getImage());
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
 		applet.setStub(new MainAppletStub());
@@ -168,10 +172,17 @@ public class AppletMain extends Applet {
 			add(panel = new JPanel(new BorderLayout()), BorderLayout.CENTER);
 		
 		desktop = new JDesktopPane() {
+			private Icon ico;
 			@Override
 			protected void addImpl(Component comp, Object constraints, int index) {
 				if(comp instanceof JInternalFrame) {
-					((JInternalFrame) comp).setFrameIcon(null);
+					if(ico == null) {
+						Image img = new BufferedImage(12, 18, BufferedImage.TYPE_INT_ARGB);
+						Image src = new ImageIcon(ResourceInputStream.getURL("res/graphics/icon24.png")).getImage();
+						img.getGraphics().drawImage(src, 0, 0, 12, 18, null);
+						ico = new ImageIcon(img);
+					}
+					((JInternalFrame) comp).setFrameIcon(ico);
 				}
 				super.addImpl(comp, constraints, index);
 			}
