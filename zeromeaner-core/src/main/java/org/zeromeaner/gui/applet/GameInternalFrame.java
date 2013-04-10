@@ -44,6 +44,12 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
@@ -68,6 +74,15 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	/** Log */
 	static Logger log = Logger.getLogger(GameInternalFrame.class);
 
+	protected ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+		@Override
+		public Thread newThread(Runnable r) {
+			Thread t = Executors.defaultThreadFactory().newThread(r);
+			t.setName("game update thread");
+			return t;
+		}
+	});
+	
 	/** Parent window */
 	protected NullpoMinoInternalFrame owner = null;
 
@@ -87,7 +102,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	protected Thread thread = null;
 
 	/** trueThread moves between */
-	public volatile boolean running = false;
+	protected AtomicBoolean running = new AtomicBoolean(false);
 
 	/** FPSFor calculation */
 	protected long calcInterval = 0;
@@ -221,7 +236,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		pack();
 		setVisible(true);
 
-		if(!running) {
+		if(!running.get()) {
 			thread = new Thread(this, "Game Thread");
 			thread.start();
 		}
@@ -245,7 +260,10 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 			// Reload global config (because it can change rules)
 			NullpoMinoInternalFrame.loadGlobalConfig();
 		}
-		running = false;
+		synchronized(running) {
+			running.set(false);
+			running.notifyAll();
+		}
 		owner.setVisible(true);
 		setVisible(false);
 
@@ -286,74 +304,40 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 		// Main loop
 		log.debug("Game thread start");
-		running = true;
+		
+		running.set(true);
 		perfectFPSDelay = System.nanoTime();
-		while(running) {
-			if(isNetPlay) {
-				gameUpdateNet();
-				gameRenderNet();
-			} else if(SwingUtilities.getWindowAncestor(imageBufferLabel).isVisible() && SwingUtilities.getWindowAncestor(imageBufferLabel).isActive()) {
-				gameUpdate();
-				gameRender();
-			} else {
-				GameKeyApplet.gamekey[0].clear();
-				GameKeyApplet.gamekey[1].clear();
-			}
-
-			// FPS cap
-			sleepFlag = false;
-
-			afterTime = System.nanoTime();
-			timeDiff = afterTime - beforeTime;
-
-			sleepTime = (periodCurrent - timeDiff) - overSleepTime;
-			sleepTimeInMillis = sleepTime / 1000000L;
-
-			if((sleepTimeInMillis >= 4) && (!perfectFPSMode)) {
-				// If it is possible to use sleep
-				if(maxfps > 0) {
-					try {
-						Thread.sleep(sleepTimeInMillis);
-					} catch(InterruptedException e) {
-						log.debug("Game thread interrupted", e);
-					}
-				}
-				// sleep() oversleep
-				overSleepTime = (System.nanoTime() - afterTime) - sleepTime;
-				perfectFPSDelay = System.nanoTime();
-				sleepFlag = true;
-			} else if((perfectFPSMode) || (sleepTime > 0)) {
-				// Perfect FPS
-				overSleepTime = 0L;
-				if(maxfpsCurrent > maxfps + 5) maxfpsCurrent = maxfps + 5;
-				if(perfectYield) {
-					while(System.nanoTime() < perfectFPSDelay + 1000000000 / maxfps) {Thread.yield();}
+		
+		Runnable task = new Runnable() {
+			@Override
+			public void run() {
+				if(isNetPlay) {
+					gameUpdateNet();
+					gameRenderNet();
+				} else if(SwingUtilities.getWindowAncestor(imageBufferLabel).isVisible() && SwingUtilities.getWindowAncestor(imageBufferLabel).isActive()) {
+					gameUpdate();
+					gameRender();
 				} else {
-					while(System.nanoTime() < perfectFPSDelay + 1000000000 / maxfps) {}
-				}
-				perfectFPSDelay += 1000000000 / maxfps;
-
-				// Don't run in super fast after the heavy slowdown
-				if(System.nanoTime() > perfectFPSDelay + 2000000000 / maxfps) {
-					perfectFPSDelay = System.nanoTime();
-				}
-
-				sleepFlag = true;
-			}
-
-			if(!sleepFlag) {
-				// Impossible to sleep!
-				overSleepTime = 0L;
-				if(++noDelays >= 16) {
-					Thread.yield();
-					noDelays = 0;
+					GameKeyApplet.gamekey[0].clear();
+					GameKeyApplet.gamekey[1].clear();
 				}
 				perfectFPSDelay = System.nanoTime();
+				calcFPS(periodCurrent);
 			}
-
-			beforeTime = System.nanoTime();
-			calcFPS(periodCurrent);
+		};
+		
+		ScheduledFuture<?> f = exec.scheduleAtFixedRate(task, 0, TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / 60, TimeUnit.NANOSECONDS);
+		
+		while(running.get()) {
+			synchronized(running) {
+				try {
+					running.wait();
+				} catch(InterruptedException ie) {
+				}
+			}
 		}
+		
+		f.cancel(false);
 
 		NullpoMinoInternalFrame.gameManager.shutdown();
 		NullpoMinoInternalFrame.gameManager = null;
