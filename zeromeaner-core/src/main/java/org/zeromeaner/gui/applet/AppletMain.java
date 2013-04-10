@@ -12,8 +12,15 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ContainerAdapter;
+import java.awt.event.ContainerEvent;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,6 +34,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -39,19 +47,25 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JApplet;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JRootPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -61,15 +75,18 @@ import javax.swing.text.PlainDocument;
 import javax.swing.text.Position;
 import javax.swing.text.Segment;
 
+import org.apache.log4j.Logger;
 import org.eviline.Block;
 import org.eviline.Shape;
 import org.eviline.ShapeType;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.gui.knet.KNetPanel;
+import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.ResourceInputStream;
 
 public class AppletMain extends Applet {
+	private static final Logger log = Logger.getLogger(AppletMain.class);
 	
 	public static AppletMain instance;
 
@@ -97,22 +114,132 @@ public class AppletMain extends Applet {
 		CookieAccess.setInstance(new MainCookieAccess());
 		
 		final AppletMain applet = new AppletMain();
-		JFrame frame = new JFrame("Zeromeaner") {
+		applet.setStub(new MainAppletStub());
+		applet.panel = new JPanel(new BorderLayout());
+		applet.panel.setPreferredSize(new Dimension(800, 800));
+
+		applet.desktop = new JDesktopPane() {
+			private JFrame nmif;
+			private Image ico;
+			private Map<JInternalFrame, JFrame> frames = new HashMap<JInternalFrame, JFrame>();
 			@Override
-			public void dispose() {
-				applet.destroy();
-				System.exit(0);
+			public void addImpl(Component comp, Object constraints, int index) {
+				if(EQInvoker.reinvoke(false, this, comp, constraints, index))
+					return;
+				if(comp instanceof JInternalFrame) {
+					final JInternalFrame j = (JInternalFrame) comp;
+					if(ico == null) {
+						ico = new BufferedImage(12, 18, BufferedImage.TYPE_INT_ARGB);
+						Image src = new ImageIcon(ResourceInputStream.getURL("res/graphics/icon24.png")).getImage();
+						ico.getGraphics().drawImage(src, 0, 0, 12, 18, null);
+					}
+					final JFrame frame = frames.containsKey(j) ? frames.get(j) : new JFrame();
+					if(!frames.containsKey(j)) {
+						
+						super.addImpl(comp, constraints, index);
+						
+						frame.setTitle(j.getTitle());
+						frame.setIconImage(ico);
+						frame.setJMenuBar(j.getRootPane().getJMenuBar());
+						frame.setContentPane(j.getRootPane().getContentPane());
+						frame.setSize(j.getWidth(), j.getHeight());
+						frame.setVisible(true);
+						frame.createBufferStrategy(2);
+						
+						frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+						j.addPropertyChangeListener(new PropertyChangeListener() {
+							@Override
+							public void propertyChange(PropertyChangeEvent evt) {
+								System.out.println(evt.getPropertyName());
+								frame.setTitle(j.getTitle());
+							}
+						});
+						
+						j.addComponentListener(new ComponentAdapter() {
+							@Override
+							public void componentResized(ComponentEvent e) {
+								frame.setSize(j.getWidth(), j.getHeight());
+							}
+							@Override
+							public void componentHidden(ComponentEvent e) {
+								frame.setVisible(false);
+							}
+							@Override
+							public void componentShown(ComponentEvent e) {
+								frame.setVisible(true);
+							}
+							@Override
+							public void componentMoved(ComponentEvent e) {
+								if(nmif != null && nmif.isVisible()) {
+									Point p = nmif.getLocation();
+									p.x += j.getLocation().x;
+									p.y += j.getLocation().y;
+									frame.setLocation(p);
+								}
+							}
+						});
+
+						frame.addComponentListener(new ComponentAdapter() {
+							@Override
+							public void componentMoved(ComponentEvent e) {
+								if(frame == nmif)
+									return;
+								Point p = frame.getLocation();
+								p.x -= nmif.getLocation().x;
+								p.y -= nmif.getLocation().y;
+								j.setLocation(p);
+							}
+						});
+						
+						frames.put(j, frame);
+
+						if(nmif != null && nmif.isVisible()) {
+							Point p = nmif.getLocation();
+							p.x += j.getLocation().x;
+							p.y += j.getLocation().y;
+							frame.setLocation(p);
+						}
+
+						if(j instanceof NullpoMinoInternalFrame) {
+							nmif = frame;
+							frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+							nmif.addComponentListener(new ComponentAdapter() {
+								@Override
+								public void componentMoved(ComponentEvent ev) {
+									for(Map.Entry<JInternalFrame, JFrame> e : frames.entrySet()) {
+										if(e.getKey() instanceof NullpoMinoInternalFrame)
+											continue;
+										JInternalFrame jj = e.getKey();
+										JFrame f = e.getValue();
+										Point p = nmif.getLocation();
+										p.x += jj.getLocation().x;
+										p.y += jj.getLocation().y;
+										f.setLocation(p);
+									}
+								}
+							});
+							
+							for(Map.Entry<JInternalFrame, JFrame> e : frames.entrySet()) {
+								if(e.getKey() instanceof NullpoMinoInternalFrame)
+									continue;
+								JInternalFrame jj = e.getKey();
+								JFrame f = e.getValue();
+								Point p = nmif.getLocation();
+								p.x += jj.getLocation().x;
+								p.y += jj.getLocation().y;
+								f.setLocation(p);
+							}
+						}
+					}
+					
+				} else
+					super.addImpl(comp, constraints, index);
 			}
 		};
-		frame.setIconImage(new ImageIcon(ResourceInputStream.getURL("res/graphics/icon24.png")).getImage());
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setLayout(new BorderLayout());
-		applet.setStub(new MainAppletStub());
-		frame.add(applet.panel = new JPanel(new BorderLayout()), BorderLayout.CENTER);
-		applet.panel.setPreferredSize(new Dimension(800, 800));
-		frame.pack();
-		frame.setVisible(true);
-		frame.setLocationRelativeTo(null);
+		applet.desktop.setSize(800, 800);
+		
 		applet.init();
 	}
 	
@@ -171,22 +298,24 @@ public class AppletMain extends Applet {
 		if(panel == null)
 			add(panel = new JPanel(new BorderLayout()), BorderLayout.CENTER);
 		
-		desktop = new JDesktopPane() {
-			private Icon ico;
-			@Override
-			protected void addImpl(Component comp, Object constraints, int index) {
-				if(comp instanceof JInternalFrame) {
-					if(ico == null) {
-						Image img = new BufferedImage(12, 18, BufferedImage.TYPE_INT_ARGB);
-						Image src = new ImageIcon(ResourceInputStream.getURL("res/graphics/icon24.png")).getImage();
-						img.getGraphics().drawImage(src, 0, 0, 12, 18, null);
-						ico = new ImageIcon(img);
+		if(desktop == null) {
+			desktop = new JDesktopPane() {
+				private Icon ico;
+				@Override
+				protected void addImpl(Component comp, Object constraints, int index) {
+					if(comp instanceof JInternalFrame) {
+						if(ico == null) {
+							Image img = new BufferedImage(12, 18, BufferedImage.TYPE_INT_ARGB);
+							Image src = new ImageIcon(ResourceInputStream.getURL("res/graphics/icon24.png")).getImage();
+							img.getGraphics().drawImage(src, 0, 0, 12, 18, null);
+							ico = new ImageIcon(img);
+						}
+						((JInternalFrame) comp).setFrameIcon(ico);
 					}
-					((JInternalFrame) comp).setFrameIcon(ico);
+					super.addImpl(comp, constraints, index);
 				}
-				super.addImpl(comp, constraints, index);
-			}
-		};
+			};
+		}
 		desktop.setBackground(Color.decode("0x444488"));
 		desktop.setDoubleBuffered(true);
 		panel.add(desktop, BorderLayout.CENTER);

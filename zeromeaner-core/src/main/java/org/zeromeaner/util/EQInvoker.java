@@ -3,6 +3,8 @@ package org.zeromeaner.util;
 import java.awt.EventQueue;
 import java.lang.reflect.Method;
 
+import org.funcish.core.util.Primitives;
+
 public class EQInvoker {
 	private static Method findMethod(Class<?> cls, String name, Object... args) {
 		for(Method m : cls.getMethods()) {
@@ -12,11 +14,19 @@ public class EQInvoker {
 				continue;
 			boolean match = true;
 			for(int i = 0; i < args.length; i++) {
-				if(args[i] != null && !m.getParameterTypes()[i].isInstance(args[i]))
+				Class<?> pc = m.getParameterTypes()[i];
+				pc = Primitives.ensureNonPrimitive(pc);
+				if(args[i] != null && !pc.isInstance(args[i])) {
 					match = false;
+					
+				}
 			}
 			if(!match)
 				continue;
+			try {
+				m.setAccessible(true);
+			} catch(Throwable t) {
+			}
 			return m;
 		}
 		throw new NoSuchMethodError(name);

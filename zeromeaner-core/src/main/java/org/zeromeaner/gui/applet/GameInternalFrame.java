@@ -49,6 +49,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -291,7 +292,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 			if(isNetPlay) {
 				gameUpdateNet();
 				gameRenderNet();
-			} else if(isVisible() && isSelected()) {
+			} else if(SwingUtilities.getWindowAncestor(imageBufferLabel).isVisible() && SwingUtilities.getWindowAncestor(imageBufferLabel).isActive()) {
 				gameUpdate();
 				gameRender();
 			} else {
