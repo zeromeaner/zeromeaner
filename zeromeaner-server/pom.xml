@@ -47,6 +47,7 @@
 								<argument>-classpath</argument>
 								<classpath/>
 								<argument>org.zeromeaner.knet.srv.KNetServerMain</argument>
+								<argument>--nogui</argument>
 							</arguments>
 						</configuration>
 					</plugin>
@@ -69,6 +70,7 @@
 								<argument>org.zeromeaner.knet.srv.KNetServerMain</argument>
 								<argument>-p</argument>
 								<argument>61898</argument>
+								<argument>--nogui</argument>
 							</arguments>
 						</configuration>
 					</plugin>
