@@ -335,9 +335,15 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		
 		running.set(true);
 		
-		final Runnable task = new Runnable() {
+		Runnable task = new Runnable() {
 			@Override
 			public void run() {
+				while(fps.poll() != null)
+					;
+				while(vps.poll() != null)
+					;
+				if(vps.size() > maxfps)
+					return;
 				fps.add(new FramePerSecond());
 				vps.add(new FramePerSecond());
 				doFrame(true);
@@ -350,18 +356,24 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 				while(totalFPS < maxfps) {
 					fps.add(new FramePerSecond());
 					doFrame(false);
-					totalFPS++;
+					while(fps.poll() != null)
+						;
+					totalFPS = fps.size();
 				}
-				while(fps.poll() != null)
-					;
-				totalFPS = fps.size();
+			}
+		};
+		
+		final Runnable ftask = new FutureTask<Object>(task, null) {
+			@Override
+			public void run() {
+				runAndReset();
 			}
 		};
 		
 		Runnable gtask = new FutureTask<Object>(task, null) {
 			@Override
 			public void run() {
-				gexec.execute(task);
+				gexec.execute(ftask);
 			}
 		};
 		
