@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.text.html.HTMLDocument.HTMLReader.SpecialAction;
 
+import org.apache.log4j.Logger;
 import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.knet.KNetEventArgs;
@@ -27,6 +28,8 @@ import org.zeromeaner.knet.obj.KNetPlayerInfo;
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetChannelManager extends KNetClient implements KNetListener {
+	private static final Logger log = Logger.getLogger(KNetChannelManager.class);
+	
 	protected class ChannelState {
 		protected KNetChannelInfo channel;
 		protected Set<KNetEventSource> requiredAutostartResponses = new HashSet<KNetEventSource>();
@@ -179,7 +182,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				}
 			}
 		} catch(Throwable t) {
-			t.printStackTrace();
+			log.error(t);
 		}
 	}
 	

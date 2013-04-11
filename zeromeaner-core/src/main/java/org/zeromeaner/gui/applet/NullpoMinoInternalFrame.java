@@ -32,8 +32,10 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -51,6 +53,7 @@ import java.util.Locale;
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -186,7 +189,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 	/** HashMap of rules (ModeName->RuleEntry) */
 	protected HashMap<String, RuleEntry> mapRuleEntries;
-
+	
 	/**
 	 * Main functioncount
 	 * @param args Command that was passed to the programLinesArgumentcount

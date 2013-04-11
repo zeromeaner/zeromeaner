@@ -44,11 +44,24 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -67,6 +80,41 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	/** Log */
 	static Logger log = Logger.getLogger(GameInternalFrame.class);
 
+	protected ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+		@Override
+		public Thread newThread(Runnable r) {
+			Thread t = Executors.defaultThreadFactory().newThread(r);
+			t.setName("game update scheduler thread");
+			return t;
+		}
+	});
+	
+	protected ThreadPoolExecutor gexec = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new ThreadFactory() {
+		@Override
+		public Thread newThread(Runnable r) {
+			Thread t = Executors.defaultThreadFactory().newThread(r);
+			t.setName("game update thread");
+			return t;
+		}
+	}, new ThreadPoolExecutor.DiscardPolicy());
+	
+	private class FramePerSecond implements Delayed {
+		private long expiry = System.nanoTime() + TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS);
+		
+		@Override
+		public int compareTo(Delayed o) {
+			return ((Long) getDelay(TimeUnit.NANOSECONDS)).compareTo(o.getDelay(TimeUnit.NANOSECONDS));
+		}
+
+		@Override
+		public long getDelay(TimeUnit unit) {
+			return expiry - System.nanoTime();
+		}
+	}
+	
+	private DelayQueue<FramePerSecond> vps = new DelayQueue<FramePerSecond>();
+	private DelayQueue<FramePerSecond> fps = new DelayQueue<FramePerSecond>();
+	
 	/** Parent window */
 	protected NullpoMinoInternalFrame owner = null;
 
@@ -86,16 +134,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	protected Thread thread = null;
 
 	/** trueThread moves between */
-	public volatile boolean running = false;
-
-	/** FPSFor calculation */
-	protected long calcInterval = 0;
-
-	/** FPSFor calculation */
-	protected long prevCalcTime = 0;
-
-	/**  frame count */
-	protected long frameCount = 0;
+	protected AtomicBoolean running = new AtomicBoolean(false);
 
 	/** MaximumFPS (Setting) */
 	public int maxfps;
@@ -106,20 +145,14 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 	/** Current Pause time */
 	protected long periodCurrent = 0;
 
+	
 	/** ActualFPS */
-	public double actualFPS = 0.0;
+	public double visibleFPS = 0.0;
+
+	public double totalFPS = 0;
 
 	/** FPSDisplayDecimalFormat */
-	public DecimalFormat df = new DecimalFormat("0.0");
-
-	/** Used by perfect fps mode */
-	public long perfectFPSDelay = 0;
-
-	/** True to use perfect FPS */
-	public boolean perfectFPSMode = false;
-
-	/** Execute Thread.yield() during Perfect FPS mode */
-	public boolean perfectYield = true;
+	public DecimalFormat df = new DecimalFormat("0");
 
 	/** True if execute Toolkit.getDefaultToolkit().sync() at the end of each frame */
 	public boolean syncDisplay = true;
@@ -220,7 +253,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		pack();
 		setVisible(true);
 
-		if(!running) {
+		if(!running.get()) {
 			thread = new Thread(this, "Game Thread");
 			thread.start();
 		}
@@ -244,7 +277,10 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 			// Reload global config (because it can change rules)
 			NullpoMinoInternalFrame.loadGlobalConfig();
 		}
-		running = false;
+		synchronized(running) {
+			running.set(false);
+			running.notifyAll();
+		}
 		owner.setVisible(true);
 		setVisible(false);
 
@@ -252,6 +288,21 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		System.gc();
 	}
 
+	private void doFrame(boolean render) {
+		if(isNetPlay) {
+			gameUpdateNet();
+			if(render)
+				gameRenderNet();
+		} else if(SwingUtilities.getWindowAncestor(imageBufferLabel).isVisible() && SwingUtilities.getWindowAncestor(imageBufferLabel).isActive()) {
+			gameUpdate();
+			if(render)
+				gameRender();
+		} else {
+			GameKeyApplet.gamekey[0].clear();
+			GameKeyApplet.gamekey[1].clear();
+		}
+	}
+	
 	/**
 	 * Processing of the thread
 	 */
@@ -264,8 +315,6 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		// Initialization
 		maxfpsCurrent = maxfps;
 		periodCurrent = (long) (1.0 / maxfpsCurrent * 1000000000);
-		beforeTime = System.nanoTime();
-		prevCalcTime = beforeTime;
 		pause = false;
 		pauseMessageHide = false;
 		fastforward = 0;
@@ -279,80 +328,67 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		// Settings to take effect
 		enableframestep = NullpoMinoInternalFrame.propConfig.getProperty("option.enableframestep", false);
 		showfps = NullpoMinoInternalFrame.propConfig.getProperty("option.showfps", true);
-		perfectFPSMode = NullpoMinoInternalFrame.propConfig.getProperty("option.perfectFPSMode", false);
-		perfectYield = NullpoMinoInternalFrame.propConfig.getProperty("option.perfectYield", true);
 		syncDisplay = NullpoMinoInternalFrame.propConfig.getProperty("option.syncDisplay", true);
 
 		// Main loop
 		log.debug("Game thread start");
-		running = true;
-		perfectFPSDelay = System.nanoTime();
-		while(running) {
-			if(isNetPlay) {
-				gameUpdateNet();
-				gameRenderNet();
-			} else if(isVisible() && isSelected()) {
-				gameUpdate();
-				gameRender();
-			} else {
-				GameKeyApplet.gamekey[0].clear();
-				GameKeyApplet.gamekey[1].clear();
+		
+		running.set(true);
+		
+		Runnable task = new Runnable() {
+			@Override
+			public void run() {
+				while(fps.poll() != null)
+					;
+				while(vps.poll() != null)
+					;
+				if(vps.size() > maxfps)
+					return;
+				fps.add(new FramePerSecond());
+				vps.add(new FramePerSecond());
+				doFrame(true);
+				while(fps.poll() != null)
+					;
+				while(vps.poll() != null)
+					;
+				totalFPS = fps.size();
+				visibleFPS = vps.size();
+				while(totalFPS < maxfps) {
+					fps.add(new FramePerSecond());
+					doFrame(false);
+					while(fps.poll() != null)
+						;
+					totalFPS = fps.size();
+				}
 			}
-
-			// FPS cap
-			sleepFlag = false;
-
-			afterTime = System.nanoTime();
-			timeDiff = afterTime - beforeTime;
-
-			sleepTime = (periodCurrent - timeDiff) - overSleepTime;
-			sleepTimeInMillis = sleepTime / 1000000L;
-
-			if((sleepTimeInMillis >= 4) && (!perfectFPSMode)) {
-				// If it is possible to use sleep
-				if(maxfps > 0) {
-					try {
-						Thread.sleep(sleepTimeInMillis);
-					} catch(InterruptedException e) {
-						log.debug("Game thread interrupted", e);
-					}
-				}
-				// sleep() oversleep
-				overSleepTime = (System.nanoTime() - afterTime) - sleepTime;
-				perfectFPSDelay = System.nanoTime();
-				sleepFlag = true;
-			} else if((perfectFPSMode) || (sleepTime > 0)) {
-				// Perfect FPS
-				overSleepTime = 0L;
-				if(maxfpsCurrent > maxfps + 5) maxfpsCurrent = maxfps + 5;
-				if(perfectYield) {
-					while(System.nanoTime() < perfectFPSDelay + 1000000000 / maxfps) {Thread.yield();}
-				} else {
-					while(System.nanoTime() < perfectFPSDelay + 1000000000 / maxfps) {}
-				}
-				perfectFPSDelay += 1000000000 / maxfps;
-
-				// Don't run in super fast after the heavy slowdown
-				if(System.nanoTime() > perfectFPSDelay + 2000000000 / maxfps) {
-					perfectFPSDelay = System.nanoTime();
-				}
-
-				sleepFlag = true;
+		};
+		
+		final Runnable ftask = new FutureTask<Object>(task, null) {
+			@Override
+			public void run() {
+				runAndReset();
 			}
-
-			if(!sleepFlag) {
-				// Impossible to sleep!
-				overSleepTime = 0L;
-				if(++noDelays >= 16) {
-					Thread.yield();
-					noDelays = 0;
-				}
-				perfectFPSDelay = System.nanoTime();
+		};
+		
+		Runnable gtask = new FutureTask<Object>(task, null) {
+			@Override
+			public void run() {
+				gexec.execute(ftask);
 			}
-
-			beforeTime = System.nanoTime();
-			calcFPS(periodCurrent);
+		};
+		
+		ScheduledFuture<?> f = exec.scheduleAtFixedRate(gtask, 0, TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / maxfps, TimeUnit.NANOSECONDS);
+		
+		while(running.get()) {
+			synchronized(running) {
+				try {
+					running.wait();
+				} catch(InterruptedException ie) {
+				}
+			}
 		}
+		
+		f.cancel(false);
 
 		NullpoMinoInternalFrame.gameManager.shutdown();
 		NullpoMinoInternalFrame.gameManager = null;
@@ -687,10 +723,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 		// FPSDisplay
 		if(showfps) {
-			if(perfectFPSMode)
-				NormalFontApplet.printFont(0, 480-16, df.format(actualFPS), NormalFontApplet.COLOR_BLUE, 1.0f);
-			else
-				NormalFontApplet.printFont(0, 480-16, df.format(actualFPS) + "/" + maxfpsCurrent, NormalFontApplet.COLOR_BLUE, 1.0f);
+			NormalFontApplet.printFont(0, 480-16, df.format(totalFPS) + "/" + maxfpsCurrent + " (" + df.format(visibleFPS) + " RENDERED)", NormalFontApplet.COLOR_BLUE, 1.0f);
 		}
 
 		// Displayed on the screen /ScreenshotCreating
@@ -758,7 +791,7 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 
 		// FPSDisplay
 		if(showfps) {
-			NormalFontApplet.printFont(0, 480-16, df.format(actualFPS) + "/" + maxfpsCurrent, NormalFontApplet.COLOR_BLUE, 1.0f);
+			NormalFontApplet.printFont(0, 480-16, df.format(totalFPS) + "/" + maxfpsCurrent + " (" + df.format(visibleFPS) + " RENDERED)", NormalFontApplet.COLOR_BLUE, 1.0f);
 		}
 
 		// Displayed on the screen /ScreenshotCreating
@@ -789,47 +822,6 @@ public class GameInternalFrame extends JInternalFrame implements Runnable {
 		//			bufferStrategy.show();
 		//			if(syncDisplay) Toolkit.getDefaultToolkit().sync();
 		//		}
-	}
-
-	/**
-	 * FPSCalculation of
-	 * @param period FPSInterval to calculate the
-	 */
-	protected void calcFPS(long period) {
-		frameCount++;
-		calcInterval += period;
-
-		// 1Second intervalsFPSRecalculate the
-		if(calcInterval >= 1000000000L) {
-			long timeNow = System.nanoTime();
-
-			// Actual elapsed timeMeasure
-			long realElapsedTime = timeNow - prevCalcTime; // Unit: ns
-
-			// FPSCalculate the
-			// realElapsedTimeThe unit ofnsSosConverted to
-			actualFPS = ((double) frameCount / realElapsedTime) * 1000000000L;
-
-			frameCount = 0L;
-			calcInterval = 0L;
-			prevCalcTime = timeNow;
-
-			// Set new target fps
-			if((maxfps > 0) && (!perfectFPSMode)) {
-				if(actualFPS < maxfps - 1) {
-					// Too slow
-					maxfpsCurrent++;
-					if(maxfpsCurrent > maxfps + 20) maxfpsCurrent = maxfps + 20;
-					periodCurrent = (long) (1.0 / maxfpsCurrent * 1000000000);
-				} else if(actualFPS > maxfps + 1) {
-					// Too fast
-					maxfpsCurrent--;
-					if(maxfpsCurrent < maxfps - 0) maxfpsCurrent = maxfps - 0;
-					if(maxfpsCurrent < 0) maxfpsCurrent = 0;
-					periodCurrent = (long) (1.0 / maxfpsCurrent * 1000000000);
-				}
-			}
-		}
 	}
 
 	/**

@@ -15,6 +15,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.MusicList;
@@ -24,7 +25,9 @@ public class MusicVolumeInternalFrame extends JInternalFrame {
 	
 	public MusicVolumeInternalFrame() {
 		super(lz.s("title"), false, false, false, false);
-		setLayout(new GridBagLayout());
+		JPanel p = new JPanel();
+		add(p);
+		p.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(1,1,1,1), 0, 0);
 		JCheckBox cb = new JCheckBox(new AbstractAction(lz.s("play")) {
 			@Override
@@ -42,7 +45,7 @@ public class MusicVolumeInternalFrame extends JInternalFrame {
 			sel = Boolean.parseBoolean(CookieAccess.get("bgm.enable"));
 		cb.setSelected(sel);
 		MusicList.getInstance().setVolume(sel ? 1f : 0f);
-		add(cb, c);
+		p.add(cb, c);
 		
 		DefaultComboBoxModel smdl = new DefaultComboBoxModel(MusicList.getInstance().filesOnly().toArray());
 		smdl.insertElementAt(lz.s("random"), 0);
@@ -60,12 +63,12 @@ public class MusicVolumeInternalFrame extends JInternalFrame {
 			}
 		});
 		MusicList.getInstance().setSelection(selection.getSelectedIndex() - 1);
-		c.gridy++; add(selection, c);
+		c.gridy++; p.add(selection, c);
 		
 		JLabel l;
-		c.gridy++; add(l = new JLabel(lz.s("courtesy")), c);
+		c.gridy++; p.add(l = new JLabel(lz.s("courtesy")), c);
 		JButton b;
-		c.gridy++; add(b = new JButton(new AbstractAction("Tenfold") {
+		c.gridy++; p.add(b = new JButton(new AbstractAction("Tenfold") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {

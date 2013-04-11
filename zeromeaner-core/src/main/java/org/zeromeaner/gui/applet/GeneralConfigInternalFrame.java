@@ -111,12 +111,6 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 	/** Use bigger side piece preview */
 	protected JCheckBox chkboxBigSideNext;
 
-	/** Perfect FPS */
-	protected JCheckBox chkboxPerfectFPSMode;
-
-	/** Execute Thread.yield() during Perfect FPS mode */
-	protected JCheckBox chkboxPerfectYield;
-
 	/** Sync Display */
 	protected JCheckBox chkboxSyncDisplay;
 
@@ -281,14 +275,6 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 		chkboxEnableFrameStep.setAlignmentX(LEFT_ALIGNMENT);
 		pAdvancedTab.add(chkboxEnableFrameStep);
 
-		chkboxPerfectFPSMode = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_PerfectFPSMode"));
-		chkboxPerfectFPSMode.setAlignmentX(LEFT_ALIGNMENT);
-		pAdvancedTab.add(chkboxPerfectFPSMode);
-
-		chkboxPerfectYield = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_PerfectYield"));
-		chkboxPerfectYield.setAlignmentX(LEFT_ALIGNMENT);
-		pAdvancedTab.add(chkboxPerfectYield);
-
 		chkboxSyncDisplay = new JCheckBox(NullpoMinoInternalFrame.lz.s("GeneralConfig_SyncDisplay"));
 		chkboxSyncDisplay.setAlignmentX(LEFT_ALIGNMENT);
 		pAdvancedTab.add(chkboxSyncDisplay);
@@ -347,8 +333,6 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 		chkboxDarkNextArea.setSelected(NullpoMinoInternalFrame.propConfig.getProperty("option.darknextarea", true));
 		chkboxShowFieldBGGrid.setSelected(NullpoMinoInternalFrame.propConfig.getProperty("option.showfieldbggrid", true));
 		chkboxShowInput.setSelected(NullpoMinoInternalFrame.propConfig.getProperty("option.showInput", false));
-		chkboxPerfectFPSMode.setSelected(NullpoMinoInternalFrame.propConfig.getProperty("option.perfectFPSMode", false));
-		chkboxPerfectYield.setSelected(NullpoMinoInternalFrame.propConfig.getProperty("option.perfectYield", true));
 		chkboxSyncDisplay.setSelected(NullpoMinoInternalFrame.propConfig.getProperty("option.syncDisplay", true));
 		chkboxShowLineClearEffect.setSelected(NullpoMinoInternalFrame.propConfig.getProperty("option.showlineeffect", false));
 	}
@@ -390,8 +374,6 @@ public class GeneralConfigInternalFrame extends JInternalFrame implements Action
 			NullpoMinoInternalFrame.propConfig.setProperty("option.darknextarea", chkboxDarkNextArea.isSelected());
 			NullpoMinoInternalFrame.propConfig.setProperty("option.showfieldbggrid", chkboxShowFieldBGGrid.isSelected());
 			NullpoMinoInternalFrame.propConfig.setProperty("option.showInput", chkboxShowInput.isSelected());
-			NullpoMinoInternalFrame.propConfig.setProperty("option.perfectFPSMode", chkboxPerfectFPSMode.isSelected());
-			NullpoMinoInternalFrame.propConfig.setProperty("option.perfectYield", chkboxPerfectYield.isSelected());
 			NullpoMinoInternalFrame.propConfig.setProperty("option.syncDisplay", chkboxSyncDisplay.isSelected());
 			NullpoMinoInternalFrame.propConfig.setProperty("option.showlineeffect", chkboxShowLineClearEffect.isSelected());
 

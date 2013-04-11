@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,6 +64,35 @@ public class ResourceInputStream extends FilterInputStream {
 			return in;
 //		throw new IOException("Resource not found:" + resource);
 		return new FileInputStream(resource);
+	}
+	
+	public static URL getURL(String resource) {
+		URL in = null;
+		if(
+				AppletMain.isApplet() 
+				&& (resource.startsWith("config/setting/") || resource.startsWith("replay/"))
+				&& !dontDownload.contains(resource))
+			try {
+				in = new URL("http://" + AppletMain.url.getHost() + "/webdav/" + AppletMain.userId + "/" + resource);
+			} catch(IOException ioe) {
+			}
+		if(in != null)
+			return in;
+		try {
+			File localResource = new File(System.getProperty("user.dir"), "local-resources/" + resource);
+			if(localResource.exists() && !localResource.isDirectory())
+				return localResource.toURI().toURL();
+		} catch(Throwable t) {
+		}
+		in = ResourceInputStream.class.getClassLoader().getResource("org/zeromeaner/" + resource);
+		if(in != null)
+			return in;
+//		throw new IOException("Resource not found:" + resource);
+		try {
+			return new File(resource).toURI().toURL();
+		} catch(Throwable t) {
+		}
+		return null;
 	}
 	
 	public static class ResourceDownloadStream extends FilterInputStream {

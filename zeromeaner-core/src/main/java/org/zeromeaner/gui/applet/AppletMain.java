@@ -11,8 +11,20 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ContainerAdapter;
+import java.awt.event.ContainerEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
+import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,30 +38,39 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JApplet;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JRootPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -59,15 +80,19 @@ import javax.swing.text.PlainDocument;
 import javax.swing.text.Position;
 import javax.swing.text.Segment;
 
+import org.apache.log4j.Logger;
 import org.eviline.Block;
 import org.eviline.Shape;
 import org.eviline.ShapeType;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.gui.knet.KNetPanel;
+import org.zeromeaner.util.EQInvoker;
+import org.zeromeaner.util.ResourceInputStream;
 
 public class AppletMain extends Applet {
-	
+	private static final Logger log = Logger.getLogger(AppletMain.class);
+
 	public static AppletMain instance;
 
 	public static String userId;
@@ -75,15 +100,15 @@ public class AppletMain extends Applet {
 	public static boolean isApplet() {
 		return instance != null && isApplet;
 	}
-	
+
 	private static boolean isApplet = true;
-	
+
 	public static URL url;
-	
+
 	public JDesktopPane desktop;
-	
+
 	public Component notification;
-	
+
 	private JPanel panel;
 
 	public static void main(String[] args) {
@@ -92,32 +117,171 @@ public class AppletMain extends Applet {
 		isApplet = false;
 		userId = System.getProperty("user.name");
 		CookieAccess.setInstance(new MainCookieAccess());
-		
+
 		final AppletMain applet = new AppletMain();
-		JFrame frame = new JFrame("Zeromeaner") {
+		applet.setStub(new MainAppletStub());
+		applet.panel = new JPanel(new BorderLayout());
+		applet.panel.setPreferredSize(new Dimension(800, 800));
+
+		applet.desktop = new JDesktopPane() {
+			private JFrame nmif;
+			private Point np;
+			private Image ico;
+			private Image ico320t = new ImageIcon(ResourceInputStream.getURL("res/graphics/icon320_transparent.png")).getImage();
+			private Map<JInternalFrame, JFrame> frames = new HashMap<JInternalFrame, JFrame>();
 			@Override
-			public void dispose() {
-				applet.destroy();
-				System.exit(0);
+			public void addImpl(Component comp, Object constraints, int index) {
+				if(EQInvoker.reinvoke(false, this, comp, constraints, index))
+					return;
+				if(comp instanceof JInternalFrame) {
+					final JInternalFrame j = (JInternalFrame) comp;
+					if(ico == null) {
+						ico = new BufferedImage(12, 18, BufferedImage.TYPE_INT_ARGB);
+						Image src = new ImageIcon(ResourceInputStream.getURL("res/graphics/icon24.png")).getImage();
+						ico.getGraphics().drawImage(src, 0, 0, 12, 18, null);
+					}
+					final JFrame frame = frames.containsKey(j) ? frames.get(j) : new JFrame();
+					if(!frames.containsKey(j)) {
+
+						super.addImpl(comp, constraints, index);
+						j.setVisible(true);
+
+						frame.setTitle(j.getTitle());
+						frame.setIconImage(ico);
+						frame.setJMenuBar(j.getRootPane().getJMenuBar());
+						frame.setContentPane(j.getRootPane().getContentPane());
+						frame.setSize(j.getWidth(), j.getHeight());
+						if(j instanceof SplashInternalFrame) {
+							frame.setUndecorated(true);
+							frame.setLocationRelativeTo(null);
+							frame.getRootPane().setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+						}
+						frame.setVisible(true);
+						frame.setResizable(j.isResizable());
+						frame.createBufferStrategy(2);
+						
+
+						frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+						j.addPropertyChangeListener(new PropertyChangeListener() {
+							@Override
+							public void propertyChange(PropertyChangeEvent evt) {
+								frame.setTitle(j.getTitle());
+							}
+						});
+
+						j.addComponentListener(new ComponentAdapter() {
+							@Override
+							public void componentResized(ComponentEvent e) {
+								frame.setSize(j.getWidth(), j.getHeight());
+							}
+							@Override
+							public void componentHidden(ComponentEvent e) {
+								frame.setVisible(false);
+							}
+							@Override
+							public void componentShown(ComponentEvent e) {
+								frame.setVisible(true);
+							}
+							@Override
+							public void componentMoved(ComponentEvent e) {
+								if(nmif != null) {
+									Point p = new Point(np);
+									p.x += j.getLocation().x;
+									p.y += j.getLocation().y;
+									frame.setLocation(p);
+								}
+							}
+						});
+
+						frame.addComponentListener(new ComponentAdapter() {
+							private boolean skip = true;
+							@Override
+							public void componentMoved(ComponentEvent e) {
+								if(frame == nmif || nmif == null)
+									return;
+								if(skip) {
+									skip = false;
+									return;
+								}
+								Point p = frame.getLocation();
+								p.x -= np.x;
+								p.y -= np.y;
+								j.setLocation(p);
+							}
+						});
+
+						frames.put(j, frame);
+
+						if(nmif != null) {
+							Point p = new Point(np);
+							p.x += j.getLocation().x;
+							p.y += j.getLocation().y;
+							frame.setLocation(p);
+						}
+
+						if(j instanceof NullpoMinoInternalFrame) {
+							nmif = frame;
+							np = frame.getLocation();
+							frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+							nmif.addComponentListener(new ComponentAdapter() {
+								@Override
+								public void componentMoved(ComponentEvent ev) {
+									if(nmif.isVisible())
+										np = nmif.getLocation();
+									for(Map.Entry<JInternalFrame, JFrame> e : frames.entrySet()) {
+										if(e.getKey() instanceof NullpoMinoInternalFrame)
+											continue;
+										if(e.getKey() instanceof SplashInternalFrame)
+											continue;
+										JInternalFrame jj = e.getKey();
+										JFrame f = e.getValue();
+										Point p = new Point(np);
+										p.x += jj.getLocation().x;
+										p.y += jj.getLocation().y;
+										f.setLocation(p);
+									}
+								}
+							});
+
+							for(Map.Entry<JInternalFrame, JFrame> e : frames.entrySet()) {
+								if(e.getKey() instanceof NullpoMinoInternalFrame)
+									continue;
+								if(e.getKey() instanceof SplashInternalFrame)
+									continue;
+								JInternalFrame jj = e.getKey();
+								JFrame f = e.getValue();
+								Point p = nmif.getLocation();
+								p.x += jj.getLocation().x;
+								p.y += jj.getLocation().y;
+								f.setLocation(p);
+							}
+						}
+					}
+
+				} else
+					super.addImpl(comp, constraints, index);
 			}
 		};
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setLayout(new BorderLayout());
-		applet.setStub(new MainAppletStub());
-		frame.add(applet.panel = new JPanel(new BorderLayout()), BorderLayout.CENTER);
-		applet.panel.setPreferredSize(new Dimension(800, 800));
-		frame.pack();
-		frame.setVisible(true);
-		frame.setLocationRelativeTo(null);
+		applet.desktop.setSize(800, 800);
+
 		applet.init();
 	}
-	
+
 	public AppletMain() {
+		// enable anti-aliased text:
+		System.setProperty("awt.useSystemAAFontSettings","on");
+		System.setProperty("swing.aatext", "true");
 	}
-	
+
 	public void notifyUser(Icon icon, String message, String copyable) {
+		if(EQInvoker.reinvoke(false, this, icon, message, copyable))
+			return;
 		if(notification != null)
 			panel.remove(notification);
+		validate();
+		repaint();
 		JPanel p = new JPanel(new BorderLayout());
 		if(icon != null)
 			p.add(new JLabel(icon), BorderLayout.WEST);
@@ -136,20 +300,14 @@ public class AppletMain extends Applet {
 		}), BorderLayout.EAST);
 		if(icon != null || message != null)
 			panel.add(notification = p, BorderLayout.SOUTH);
-		panel.revalidate();
+		validate();
+		repaint();
 	}
-	
+
 	@Override
 	public synchronized void init() {
-		if(!EventQueue.isDispatchThread()) {
-			EventQueue.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					init();
-				}
-			});
+		if(EQInvoker.reinvoke(false, this))
 			return;
-		}
 
 		if(instance != null)
 			return;
@@ -162,20 +320,45 @@ public class AppletMain extends Applet {
 				url = new URL(System.getProperty("zero_url"));
 			} catch(Exception ex) {
 			}
-		
+
 		setLayout(new BorderLayout());
 		if(panel == null)
 			add(panel = new JPanel(new BorderLayout()), BorderLayout.CENTER);
-		
-		desktop = new JDesktopPane() {
-			@Override
-			protected void addImpl(Component comp, Object constraints, int index) {
-				if(comp instanceof JInternalFrame) {
-					((JInternalFrame) comp).setFrameIcon(null);
+
+		if(desktop == null) {
+			desktop = new JDesktopPane() {
+				private Icon ico;
+				private Image ico320;
+				@Override
+				protected void addImpl(Component comp, Object constraints, int index) {
+					if(comp instanceof JInternalFrame) {
+						if(ico == null) {
+							Image img = new BufferedImage(12, 18, BufferedImage.TYPE_INT_ARGB);
+							Image src = new ImageIcon(ResourceInputStream.getURL("res/graphics/icon24.png")).getImage();
+							img.getGraphics().drawImage(src, 0, 0, 12, 18, null);
+							ico = new ImageIcon(img);
+						}
+						((JInternalFrame) comp).setFrameIcon(ico);
+					}
+					super.addImpl(comp, constraints, index);
 				}
-				super.addImpl(comp, constraints, index);
-			}
-		};
+				
+				@Override
+				protected void paintComponent(Graphics g) {
+					super.paintComponent(g);
+					if(ico320 == null) {
+						ico320 = new ImageIcon(ResourceInputStream.getURL("res/graphics/icon320.png")).getImage();
+						BufferedImage buf = new BufferedImage(320, 480, BufferedImage.TYPE_INT_ARGB);
+						Graphics bg = buf.getGraphics();
+						bg.drawImage(ico320, 0, 0, 320, 480, null);
+//						bg.setColor(new Color(0, 0, 0, 128));
+//						bg.fillRect(0, 0, 320, 480);
+						ico320 = buf;
+					}
+					g.drawImage(ico320, 0, 0, getWidth(), getHeight(), null);
+				}
+			};
+		}
 		desktop.setBackground(Color.decode("0x444488"));
 		desktop.setDoubleBuffered(true);
 		panel.add(desktop, BorderLayout.CENTER);
@@ -197,51 +380,18 @@ public class AppletMain extends Applet {
 			}
 		}
 
-		final JLabel consoleLabel = new JLabel(" ");
-//		PipedOutputStream pout = new PipedOutputStream();
-//		PipedInputStream pin;
-//		try {
-//			pin = new PipedInputStream(pout);
-//		} catch(IOException ioe) {
-//			pin = null;
-//		}
-//		if(pin != null) {
-//			final PipedInputStream fpin = pin;
-//			final PrintStream sout = System.out;
-//			System.setOut(new PrintStream(pout));
-//			new Thread(new Runnable() {
-//				@Override
-//				public void run() {
-//					BufferedReader r = new BufferedReader(new InputStreamReader(fpin));
-//					try {
-//						for(String line = r.readLine(); line != null; line = r.readLine()) {
-//							final String fline = line;
-//							EventQueue.invokeLater(new Runnable() {
-//								public void run() {
-//									consoleLabel.setText(fline);
-//									sout.println(fline);
-//								}
-//							});
-//						}
-//					} catch(IOException ioe) {
-//						ioe.printStackTrace();
-//					}
-//				}
-//			}).start();
-//		}
-		
-		final JInternalFrame launching = new JInternalFrame("Launching zeromeaner");
+		final JInternalFrame launching = new SplashInternalFrame("Launching zeromeaner");
 		launching.setLayout(new BorderLayout());
 		JProgressBar pb = new JProgressBar();
 		pb.setIndeterminate(true);
 		launching.add(new JLabel("Launching zeromeaner..."), BorderLayout.NORTH);
-		launching.add(pb, BorderLayout.CENTER);
-		launching.add(consoleLabel, BorderLayout.SOUTH);
+//		Image icon = new ImageIcon(ResourceInputStream.getURL("res/graphics/icon320.png")).getImage();
+//		launching.add(new JLabel(new ImageIcon(icon)), BorderLayout.CENTER);
+		launching.add(pb, BorderLayout.SOUTH);
 		launching.pack();
-		launching.setSize(500, 125);
 		desktop.add(launching);
 		launching.setVisible(true);
-
+		
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -282,7 +432,7 @@ public class AppletMain extends Applet {
 			}
 		}
 	}
-	
+
 	private void autoReplay(Iterator<String> commands) {
 		String path = "replay";
 		while(commands.hasNext()) {
@@ -296,92 +446,98 @@ public class AppletMain extends Applet {
 	}
 
 	private void autoNetplay(Iterator<String> commands) {
-			final String room;
-			if(commands.hasNext())
-				room = commands.next();
-			else
-				room = null;
-			
-			final boolean customize = commands.hasNext() && "customize".equals(commands.next());
-			
-			final AtomicBoolean createdRoom = new AtomicBoolean(false);
-			
-			// Launch netplay
-			NullpoMinoInternalFrame.mainFrame.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Menu_NetPlay"));
-	
-			// Connect to the server
-			final KNetPanel knp = NullpoMinoInternalFrame.netLobby.getKnetPanel();
-			knp.getConnectionsListPanel().connect();
-			
-			if(room == null || room.isEmpty())
-				return;
-	
-			EventQueue.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						Thread.sleep(4000);
-					} catch(InterruptedException ie) {
+		final String room;
+		if(commands.hasNext())
+			room = commands.next();
+		else
+			room = null;
+
+		final boolean customize = commands.hasNext() && "customize".equals(commands.next());
+
+		final AtomicBoolean createdRoom = new AtomicBoolean(false);
+
+		// Launch netplay
+		NullpoMinoInternalFrame.mainFrame.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Menu_NetPlay"));
+
+		// Connect to the server
+		final KNetPanel knp = NullpoMinoInternalFrame.netLobby.getKnetPanel();
+		knp.getConnectionsListPanel().connect();
+
+		if(room == null || room.isEmpty())
+			return;
+
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(4000);
+				} catch(InterruptedException ie) {
+				}
+			}
+		});
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				// Find the room
+				JTabbedPane tabs = knp.getConnectedPanel().getChannels();
+				for(int i = 0; i < tabs.getTabCount(); i++) {
+					KNetPanel.ChannelPanel chp = (KNetPanel.ChannelPanel) tabs.getComponentAt(i);
+					if(chp.getChannel().getName().equals(room)) {
+						chp.join();
+						return;
 					}
 				}
-			});
-			EventQueue.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					// Find the room
-					JTabbedPane tabs = knp.getConnectedPanel().getChannels();
-					for(int i = 0; i < tabs.getTabCount(); i++) {
-						KNetPanel.ChannelPanel chp = (KNetPanel.ChannelPanel) tabs.getComponentAt(i);
-						if(chp.getChannel().getName().equals(room)) {
-							chp.join();
-							return;
-						}
-					}
-	
-					// Room not found
-					knp.getConnectedPanel().add();
-					
-					knp.getCreateChannelPanel().getChannel().setName(room);
-					knp.getCreateChannelPanel().getChannelPanel().updateEditor();
-					
-					createdRoom.set(true);
-				}
-			});
-			
-	//		if(!customize)
-	//			return;
-	//		EventQueue.invokeLater(new Runnable() {
-	//			@Override
-	//			public void run() {
-	//				if(!createdRoom.get())
-	//					return;
-	////				nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CreateRated_Custom"));
-	//				nlf.btnCreateRatedCustom.doClick();
-	//			}
-	//		});
-	//		while(commands.hasNext()) {
-	//			String cmd = commands.next();
-	//			if("mode".equals(cmd)) {
-	//				final String mode = commands.next();
-	//				EventQueue.invokeLater(new Runnable() {
-	//					@Override
-	//					public void run() {
-	//						nlf.comboboxCreateRoomMode.getModel().setSelectedItem(mode);
-	//					}
-	//				});
-	//			} else if("ok".equals(cmd)) {
-	//				EventQueue.invokeLater(new Runnable() {
-	//					@Override
-	//					public void run() {
-	//						if(!createdRoom.get())
-	//							return;
-	//						nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CreateRated_OK"));
-	//					}
-	//				});
-	//			}
-	//			
-	//		}
+
+				// Room not found
+				knp.getConnectedPanel().add();
+
+				knp.getCreateChannelPanel().getChannel().setName(room);
+				knp.getCreateChannelPanel().getChannelPanel().updateEditor();
+
+				createdRoom.set(true);
+			}
+		});
+
+		//		if(!customize)
+		//			return;
+		//		EventQueue.invokeLater(new Runnable() {
+		//			@Override
+		//			public void run() {
+		//				if(!createdRoom.get())
+		//					return;
+		////				nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CreateRated_Custom"));
+		//				nlf.btnCreateRatedCustom.doClick();
+		//			}
+		//		});
+		//		while(commands.hasNext()) {
+		//			String cmd = commands.next();
+		//			if("mode".equals(cmd)) {
+		//				final String mode = commands.next();
+		//				EventQueue.invokeLater(new Runnable() {
+		//					@Override
+		//					public void run() {
+		//						nlf.comboboxCreateRoomMode.getModel().setSelectedItem(mode);
+		//					}
+		//				});
+		//			} else if("ok".equals(cmd)) {
+		//				EventQueue.invokeLater(new Runnable() {
+		//					@Override
+		//					public void run() {
+		//						if(!createdRoom.get())
+		//							return;
+		//						nlf.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CreateRated_OK"));
+		//					}
+		//				});
+		//			}
+		//			
+		//		}
+	}
+
+	private class SplashInternalFrame extends JInternalFrame {
+		private SplashInternalFrame(String title) {
+			super(title);
 		}
+	}
 
 	private static class MainCookieAccess extends CookieAccess {
 		private File prefs = new File(System.getProperty("user.dir"), "0mino.properties");
@@ -425,12 +581,12 @@ public class AppletMain extends Applet {
 		public boolean isActive() {
 			return true;
 		}
-	
+
 		@Override
 		public String getParameter(String name) {
 			return null;
 		}
-	
+
 		@Override
 		public URL getDocumentBase() {
 			try {
@@ -439,17 +595,17 @@ public class AppletMain extends Applet {
 				throw new RuntimeException(e);
 			}
 		}
-	
+
 		@Override
 		public URL getCodeBase() {
 			return getDocumentBase();
 		}
-	
+
 		@Override
 		public AppletContext getAppletContext() {
 			return new MainAppletContext();
 		}
-	
+
 		@Override
 		public void appletResize(int width, int height) {
 		}
@@ -459,9 +615,9 @@ public class AppletMain extends Applet {
 		@Override
 		public void showStatus(String status) {
 			// TODO Auto-generated method stub
-			
+
 		}
-	
+
 		@Override
 		public void showDocument(URL url, String target) {
 			try {
@@ -470,48 +626,48 @@ public class AppletMain extends Applet {
 				ex.printStackTrace();
 			}
 		}
-	
+
 		@Override
 		public void showDocument(URL url) {
 			showDocument(url, "_blank");
 		}
-	
+
 		@Override
 		public void setStream(String key, InputStream stream) throws IOException {
 			// TODO Auto-generated method stub
-			
+
 		}
-	
+
 		@Override
 		public Iterator<String> getStreamKeys() {
 			// TODO Auto-generated method stub
 			return null;
 		}
-	
+
 		@Override
 		public InputStream getStream(String key) {
 			// TODO Auto-generated method stub
 			return null;
 		}
-	
+
 		@Override
 		public Image getImage(URL url) {
 			// TODO Auto-generated method stub
 			return null;
 		}
-	
+
 		@Override
 		public AudioClip getAudioClip(URL url) {
 			// TODO Auto-generated method stub
 			return null;
 		}
-	
+
 		@Override
 		public Enumeration<Applet> getApplets() {
 			// TODO Auto-generated method stub
 			return null;
 		}
-	
+
 		@Override
 		public Applet getApplet(String name) {
 			// TODO Auto-generated method stub

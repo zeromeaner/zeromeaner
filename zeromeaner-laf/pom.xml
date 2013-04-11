@@ -6,11 +6,5 @@
     <version>1.0.14-SNAPSHOT</version>
     <relativePath>../zeromeaner-parent</relativePath>
   </parent>
-  <artifactId>zeromeaner-tuning</artifactId>
-  <dependencies>
-  	<dependency>
-  		<groupId>org.zeromeaner</groupId>
-  		<artifactId>zeromeaner-core</artifactId>
-  	</dependency>
-  </dependencies>
+  <artifactId>zeromeaner-laf</artifactId>
 </project>
