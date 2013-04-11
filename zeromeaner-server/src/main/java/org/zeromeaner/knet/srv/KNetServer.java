@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.log4j.Logger;
 import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.knet.KNetEventArgs;
 import org.zeromeaner.knet.KNetEventSource;
@@ -23,6 +24,8 @@ import com.esotericsoftware.kryonet.Server;
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetServer {
+	private static final Logger log = Logger.getLogger(KNetServer.class);
+	
 	public static final int DEFAULT_PORT = 61897;
 	
 	protected int port;
@@ -50,6 +53,7 @@ public class KNetServer {
 				connection.sendTCP(source.event(
 						ASSIGN_SOURCE, evs
 						));
+				log.info("Client connected:" + evs);
 			} catch(Throwable t) {
 				t.printStackTrace();
 			}
@@ -68,6 +72,7 @@ public class KNetServer {
 						evs.updateFrom((KNetEventSource) e.get(UPDATE_SOURCE));
 					}
 					e.getSource().updateFrom(evs);
+					log.info("Client updated source info:" + evs);
 				}
 
 				boolean global = true;
@@ -123,7 +128,7 @@ public class KNetServer {
 				KNetEvent e = new KNetEvent(es, DISCONNECTED);
 				server.sendToAllExceptTCP(connection.getID(), e);
 				senders.remove(connection.getID()).shutdown();
-				
+				log.info("Client disconnected:" + es);
 			} catch(Throwable t) {
 				t.printStackTrace();
 			}

@@ -44,6 +44,10 @@ public class KNetServerMain {
 		int port = Integer.parseInt(cli.getOptionValue("port", "" + KNetServer.DEFAULT_PORT));
 
 		if(!cli.hasOption("nogui")) {
+			// enable anti-aliased text:
+			System.setProperty("awt.useSystemAAFontSettings","on");
+			System.setProperty("swing.aatext", "true");
+
 			JFrame frame = new JFrame("zeromeaner server on port " + port);
 			frame.setLayout(new BorderLayout());
 			JTextArea ta = new JTextArea("");
@@ -52,6 +56,7 @@ public class KNetServerMain {
 			System.setOut(new PrintStream(new DocumentOutputStream(ta.getDocument())));
 			frame.pack();
 			frame.setSize(400, 400);
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.setVisible(true);
 		}
 		PropertyConfigurator.configure(getClass().getClassLoader().getResourceAsStream("org/zeromeaner/config/etc/log_server.cfg"));
