@@ -11,6 +11,7 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Window;
@@ -19,6 +20,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ContainerAdapter;
 import java.awt.event.ContainerEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -124,6 +127,7 @@ public class AppletMain extends Applet {
 			private JFrame nmif;
 			private Point np;
 			private Image ico;
+			private Image ico320t = new ImageIcon(ResourceInputStream.getURL("res/graphics/icon320_transparent.png")).getImage();
 			private Map<JInternalFrame, JFrame> frames = new HashMap<JInternalFrame, JFrame>();
 			@Override
 			public void addImpl(Component comp, Object constraints, int index) {
@@ -154,6 +158,8 @@ public class AppletMain extends Applet {
 						}
 						frame.setVisible(true);
 						frame.setResizable(j.isResizable());
+						frame.createBufferStrategy(2);
+						
 
 						frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
@@ -270,8 +276,12 @@ public class AppletMain extends Applet {
 	}
 
 	public void notifyUser(Icon icon, String message, String copyable) {
+		if(EQInvoker.reinvoke(false, this, icon, message, copyable))
+			return;
 		if(notification != null)
 			panel.remove(notification);
+		validate();
+		repaint();
 		JPanel p = new JPanel(new BorderLayout());
 		if(icon != null)
 			p.add(new JLabel(icon), BorderLayout.WEST);
@@ -290,7 +300,8 @@ public class AppletMain extends Applet {
 		}), BorderLayout.EAST);
 		if(icon != null || message != null)
 			panel.add(notification = p, BorderLayout.SOUTH);
-		panel.revalidate();
+		validate();
+		repaint();
 	}
 
 	@Override
@@ -317,6 +328,7 @@ public class AppletMain extends Applet {
 		if(desktop == null) {
 			desktop = new JDesktopPane() {
 				private Icon ico;
+				private Image ico320;
 				@Override
 				protected void addImpl(Component comp, Object constraints, int index) {
 					if(comp instanceof JInternalFrame) {
@@ -329,6 +341,21 @@ public class AppletMain extends Applet {
 						((JInternalFrame) comp).setFrameIcon(ico);
 					}
 					super.addImpl(comp, constraints, index);
+				}
+				
+				@Override
+				protected void paintComponent(Graphics g) {
+					super.paintComponent(g);
+					if(ico320 == null) {
+						ico320 = new ImageIcon(ResourceInputStream.getURL("res/graphics/icon320.png")).getImage();
+						BufferedImage buf = new BufferedImage(320, 480, BufferedImage.TYPE_INT_ARGB);
+						Graphics bg = buf.getGraphics();
+						bg.drawImage(ico320, 0, 0, 320, 480, null);
+//						bg.setColor(new Color(0, 0, 0, 128));
+//						bg.fillRect(0, 0, 320, 480);
+						ico320 = buf;
+					}
+					g.drawImage(ico320, 0, 0, getWidth(), getHeight(), null);
 				}
 			};
 		}
@@ -358,10 +385,8 @@ public class AppletMain extends Applet {
 		JProgressBar pb = new JProgressBar();
 		pb.setIndeterminate(true);
 		launching.add(new JLabel("Launching zeromeaner..."), BorderLayout.NORTH);
-		Image logo = new BufferedImage(320, 480, BufferedImage.TYPE_INT_ARGB);
-		Image icon = new ImageIcon(ResourceInputStream.getURL("res/graphics/icon24.png")).getImage();
-		logo.getGraphics().drawImage(icon, 0, 0, 320, 480, null);
-		launching.add(new JLabel(new ImageIcon(logo)), BorderLayout.CENTER);
+//		Image icon = new ImageIcon(ResourceInputStream.getURL("res/graphics/icon320.png")).getImage();
+//		launching.add(new JLabel(new ImageIcon(icon)), BorderLayout.CENTER);
 		launching.add(pb, BorderLayout.SOUTH);
 		launching.pack();
 		desktop.add(launching);
