@@ -1,6 +1,7 @@
 package org.zeromeaner.gui.applet;
 
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
 
 import javax.swing.JInternalFrame;
 
@@ -22,8 +23,8 @@ public class NetLobbyInternalFrame extends JInternalFrame {
 		
 		setTitle("zeromeaner NetPlay");
 		
-		AppletMain.instance.desktop.add(this);
 		setLocation(0, 500);
+		AppletMain.instance.desktop.add(this);
 		setVisible(true);
 		
 	}
