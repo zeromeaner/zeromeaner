@@ -49,6 +49,7 @@ public class GameDriver implements KeyListener, Callable<Integer> {
 	}
 	
 	public static interface GameDriverListener extends EventListener {
+		public void frameUpdated(GameDriverEvent e);
 		public void frameRendered(GameDriverEvent e);
 		public void frameSkipped(GameDriverEvent e);
 	}
@@ -169,6 +170,18 @@ public class GameDriver implements KeyListener, Callable<Integer> {
 		}
 	}
 	
+	protected void fireFrameUpdated() {
+		Object[] ll = listenerList.getListenerList();
+		GameDriverEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == GameDriverListener.class) {
+				if(e == null)
+					e = new GameDriverEvent(this);
+				((GameDriverListener) ll[i+1]).frameUpdated(e);
+			}
+		}
+	}
+	
 	protected void fireFrameRendered() {
 		Object[] ll = listenerList.getListenerList();
 		GameDriverEvent e = null;
@@ -195,6 +208,7 @@ public class GameDriver implements KeyListener, Callable<Integer> {
 	
 	private synchronized void tick(boolean render) {
 		update();
+		fireFrameUpdated();
 		if(render) {
 			render();
 			fireFrameRendered();
