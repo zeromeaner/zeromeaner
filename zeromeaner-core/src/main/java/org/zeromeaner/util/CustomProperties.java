@@ -308,4 +308,14 @@ public class CustomProperties extends Properties {
 
 		return true;
 	}
+	
+	public CustomProperties subProperties(String prefix) {
+		CustomProperties ret = new CustomProperties();
+		for(String key : stringPropertyNames()) {
+			if(!key.startsWith(prefix))
+				continue;
+			ret.setProperty(key.substring(prefix.length()), getProperty(key));
+		}
+		return ret;
+	}
 }
