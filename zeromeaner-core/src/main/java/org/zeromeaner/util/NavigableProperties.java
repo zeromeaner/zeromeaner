@@ -15,7 +15,6 @@ import java.util.TreeSet;
 
 import org.funcish.core.fn.Mapping;
 import org.funcish.core.impl.AbstractMapping;
-import org.funcish.view.impl.MappingViewSet;
 
 public class NavigableProperties {
 	private NavigableProperties parent;
