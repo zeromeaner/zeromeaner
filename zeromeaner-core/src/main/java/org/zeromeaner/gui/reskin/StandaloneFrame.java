@@ -20,6 +20,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
 
 import org.zeromeaner.gui.knet.KNetPanel;
 import org.zeromeaner.gui.knet.KNetPanelAdapter;
@@ -64,6 +65,7 @@ public class StandaloneFrame extends JFrame {
 	private static void add(JToolBar toolbar, ButtonGroup g, AbstractButton b) {
 		b.setFocusable(false);
 		b.setBorder(null);
+		b.setHorizontalAlignment(SwingConstants.RIGHT);
 		toolbar.add(b);
 		g.add(b);
 	}
@@ -76,6 +78,15 @@ public class StandaloneFrame extends JFrame {
 		ButtonGroup g = new ButtonGroup();
 		
 		AbstractButton b;
+		
+		b = new JToggleButton(new LocalizedAction("toolbar.play") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		add(t, g, b);
 		
 		b = new JToggleButton(new LocalizedAction("toolbar.netplay") {
 			@Override
