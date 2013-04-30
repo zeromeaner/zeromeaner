@@ -32,8 +32,10 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -51,6 +53,7 @@ import java.util.Locale;
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -186,7 +189,7 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 
 	/** HashMap of rules (ModeName->RuleEntry) */
 	protected HashMap<String, RuleEntry> mapRuleEntries;
-
+	
 	/**
 	 * Main functioncount
 	 * @param args Command that was passed to the programLinesArgumentcount
@@ -587,6 +590,13 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 		miOpen.setActionCommand("Menu_Open");
 		menuFile.add(miOpen);
 
+		if(!AppletMain.isApplet()) {
+			JMenuItem miOnlineOpen = new JMenuItem(lz.s("Menu_OnlineOpen"));
+			miOnlineOpen.addActionListener(this);
+			miOnlineOpen.setActionCommand("Menu_OnlineOpen");
+			menuFile.add(miOnlineOpen);
+		}
+		
 		// NetPlay start
 		JMenuItem miNetPlay = new JMenuItem(lz.s("Menu_NetPlay"));
 		miNetPlay.setMnemonic('N');
@@ -812,26 +822,24 @@ public class NullpoMinoInternalFrame extends JInternalFrame implements ActionLis
 			onStartOfflineClicked();
 		}
 		// Open Replay
-		else if(e.getActionCommand() == "Menu_Open") {
-			if(replayFileChooser == null) {
-//				File dir = new File(propGlobal.getProperty("custom.replay.directory", "replay"));
-				if(AppletMain.isApplet())
-					replayFileChooser = new JFileChooser(new ResourceFileSystemView() {
-						@Override
-						protected String url() {
-							return super.url() + "replay/";
-						}
-						@Override
-						public Boolean isTraversable(File f) {
-							if(f.getName().endsWith(".rep"))
-								return false;
-							return super.isTraversable(f);
-						}
-					});
-				else
-					replayFileChooser = new JFileChooser(System.getProperty("user.dir") + File.separator + "local-resources" + File.separator + "replay");
-				replayFileChooser.addChoosableFileFilter(new ReplayFileFilter());
-			}
+		else if(e.getActionCommand() == "Menu_Open" || e.getActionCommand() == "Menu_OnlineOpen") {
+			JFileChooser replayFileChooser;
+			if(AppletMain.isApplet() || e.getActionCommand() == "Menu_OnlineOpen")
+				replayFileChooser = new JFileChooser(new ResourceFileSystemView() {
+					@Override
+					protected String url() {
+						return super.url() + "replay/";
+					}
+					@Override
+					public Boolean isTraversable(File f) {
+						if(f.getName().endsWith(".rep"))
+							return false;
+						return super.isTraversable(f);
+					}
+				});
+			else
+				replayFileChooser = new JFileChooser(System.getProperty("user.dir") + File.separator + "local-resources" + File.separator + "replay");
+			replayFileChooser.addChoosableFileFilter(new ReplayFileFilter());
 			if(replayFileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION && replayFileChooser.getSelectedFile().getName().endsWith(".rep")) {
 				startReplayGame((AppletMain.isApplet() ? "replay/" : "") + replayFileChooser.getSelectedFile().getPath());
 				if(gameFrame == null) {

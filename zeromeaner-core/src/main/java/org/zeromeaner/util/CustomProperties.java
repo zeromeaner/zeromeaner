@@ -33,16 +33,25 @@ import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.NavigableMap;
 import java.util.Properties;
 
 /**
  * StringSet of properties that can be stored in non-
  */
-public class CustomProperties extends Properties {
-	/**
-	 * Serial version
-	 */
-	private static final long serialVersionUID = 2L;
+public class CustomProperties extends NavigableProperties {
+
+	
+	public CustomProperties() {
+	}
+
+	protected CustomProperties(
+			NavigableProperties parent,
+			NavigableMap<String, String> backing, 
+			String prefix) {
+		super(parent, backing, prefix);
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * byteSet the properties of the type
@@ -307,5 +316,17 @@ public class CustomProperties extends Properties {
 		}
 
 		return true;
+	}
+
+	@Override
+	protected NavigableProperties newSubProperties(
+			NavigableMap<String, String> submap, 
+			String subPrefix) {
+		return new CustomProperties(this, submap, subPrefix);
+	}
+	
+	@Override
+	public CustomProperties subProperties(String keyPrefix) {
+		return (CustomProperties) super.subProperties(keyPrefix);
 	}
 }

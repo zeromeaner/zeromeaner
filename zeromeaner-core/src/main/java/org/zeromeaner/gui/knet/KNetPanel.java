@@ -39,6 +39,8 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.gui.applet.AppletMain;
@@ -51,9 +53,11 @@ import org.zeromeaner.knet.KNetGameClient;
 import org.zeromeaner.knet.KNetListener;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.knet.obj.KNetGameInfo;
+import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.KryoCopy;
 import org.zeromeaner.util.Localization;
+import org.zeromeaner.util.LstResourceMap;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
@@ -67,6 +71,8 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 	private static final String CREATE_CHANNEL_PANEL_CARD = CreateChannelPanel.class.getName();
 	private static final String VIEW_CHANEL_CARD = KNetChannelInfoPanel.class.getName();
 	private static final String CHANGE_PASSWORD_CARD = ChangePasswordPanel.class.getName();
+	
+	private LstResourceMap config;
 	
 	private String defaultUsername;
 	private boolean ai;
@@ -86,6 +92,8 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 	private KNetGameClient client;
 	
 	public class ConnectionListPanel extends JPanel {
+		private LstResourceMap servers = new LstResourceMap("config/list/knet_servers.lst");
+		
 		private DefaultListModel connectionsModel = new DefaultListModel();
 		private JList connectionsList = new JList(connectionsModel);
 		{
@@ -99,6 +107,37 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			}
 		});
 		
+		private JButton add = new JButton(new AbstractAction(lz.s("conn_list_add")) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(host.getText().isEmpty())
+					return;
+				if(port.getText().isEmpty())
+					port.setText("61897");
+				String c = host.getText() + ":" + port.getText();
+				if(connectionsModel.contains(c))
+					return;
+				connectionsModel.addElement(c);
+				connectionsList.setSelectedIndex(connectionsModel.size() - 1);
+				servers.get("").add(c);
+				servers.write();
+			}
+		});
+		
+		private JButton remove = new JButton(new AbstractAction(lz.s("conn_list_remove")) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String c = null;
+				if(connectionsList.getSelectedIndex() > 0)
+					c = (String) connectionsModel.remove(connectionsList.getSelectedIndex());
+				connectionsList.revalidate();
+				if(c != null) {
+					servers.get("").remove(c);
+					servers.write();
+				}
+			}
+		});
+		
 		private JButton exit = new JButton(new AbstractAction(lz.s("conn_list_exit")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -108,6 +147,10 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 		
 		private JTextField username = new JTextField(defaultUsername);
 		
+		private JTextField host = new JTextField("");
+		
+		private JTextField port = new JTextField("");
+		
 		public ConnectionListPanel() {
 			super(new BorderLayout());
 			JPanel p = new JPanel(new BorderLayout());
@@ -116,10 +159,18 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			q.add(username, BorderLayout.CENTER);
 			p.add(q, BorderLayout.NORTH);
 			p.add(new JScrollPane(connectionsList), BorderLayout.CENTER);
+			q = new JPanel(new GridLayout(1, 0));
+			q.add(host);
+			q.add(port);
+			p.add(q, BorderLayout.SOUTH);
 			p.setBorder(BorderFactory.createTitledBorder(lz.s("conn_list_border")));
 			add(p, BorderLayout.CENTER);
 			p = new JPanel(new GridLayout(0, 1));
 			p.add(connect);
+			if(!AppletMain.isApplet()) {
+				p.add(add);
+				p.add(remove);
+			}
 			p.add(exit);
 			add(p, BorderLayout.EAST);
 			
@@ -127,14 +178,31 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 				connectionsModel.addElement("" + AppletMain.url.getHost() + ":61897");
 			else {
 				connectionsModel.addElement("" + AppletMain.url.getHost() + ":61898");
-				connectionsModel.addElement("localhost:61897");
 			}
+			
+			for(String c : servers.get("")) {
+				connectionsModel.addElement(c);
+			}
+			
+			connectionsList.addListSelectionListener(new ListSelectionListener() {
+				@Override
+				public void valueChanged(ListSelectionEvent e) {
+					if(connectionsList.getSelectedValue() == null) {
+						host.setText("");
+						port.setText("");
+						return;
+					}
+					String[] f = ((String) connectionsList.getSelectedValue()).split(":", 2);
+					host.setText(f[0]);
+					port.setText(f.length > 1 ? f[1] : "61897");
+				}
+			});
 			connectionsList.setSelectedIndex(0);
 		}
 		
 		public void connect() {
-			String host = ((String)connectionsList.getSelectedValue()).split(":")[0];
-			int port = Integer.parseInt(((String) connectionsList.getSelectedValue()).split(":")[1]);
+			String host = this.host.getText();
+			int port = Integer.parseInt(this.port.getText().isEmpty() ? "61897" : this.port.getText());
 			
 			client = new KNetGameClient("Player", host, port);
 			client.addKNetChannelListener(KNetPanel.this);
