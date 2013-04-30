@@ -90,7 +90,7 @@ public class Localization extends ResourceBundle {
 	}
 	
 	public String s(String key) {
-		return s(key, key);
+		return s(key, "\u00ab" + key + "\u00bb");
 	}
 
 	@Override
