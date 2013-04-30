@@ -48,4 +48,16 @@ public class ZeroMetalTheme extends DefaultMetalTheme {
 	protected ColorUIResource getBlack() {
 		return new ColorUIResource(255, 255, 255);
 	}
+	
+	@Override
+	public ColorUIResource getUserTextColor() {
+		return new ColorUIResource(0, 0, 0);
+	}
+	
+	@Override
+	public ColorUIResource getTextHighlightColor() {
+		return new ColorUIResource(128, 128, 128);
+	}
+	
+	
 }

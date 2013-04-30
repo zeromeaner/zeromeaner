@@ -1,6 +1,7 @@
 package org.zeromeaner.gui.reskin;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -14,11 +15,16 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
+import org.zeromeaner.gui.knet.KNetPanel;
+import org.zeromeaner.gui.knet.KNetPanelAdapter;
+import org.zeromeaner.gui.knet.KNetPanelEvent;
+import org.zeromeaner.gui.knet.KNetPanelListener;
 import org.zeromeaner.util.Localization;
 
 public class StandaloneFrame extends JFrame {
@@ -29,7 +35,9 @@ public class StandaloneFrame extends JFrame {
 		return url == null ? null : new ImageIcon(url);
 	}
 	
+	private JPanel content;
 	private JToolBar toolbar;
+	private KNetPanel knet;
 	
 	public StandaloneFrame() {
 		setTitle("0mino");
@@ -39,7 +47,18 @@ public class StandaloneFrame extends JFrame {
 		
 		setLayout(new BorderLayout());
 		add(toolbar = createToolbar(), BorderLayout.EAST);
-		add(new JLabel(" "), BorderLayout.CENTER);
+		add(content = new JPanel(new BorderLayout()), BorderLayout.CENTER);
+
+		knet = new KNetPanel("none", false);
+		knet.setPreferredSize(new Dimension(800, 300));
+		knet.addKNetPanelListener(new KNetPanelAdapter() {
+			@Override
+			public void knetPanelShutdown(KNetPanelEvent e) {
+				content.remove(knet);
+				content.validate();
+				content.repaint();
+			}
+		});
 	}
 	
 	private static void add(JToolBar toolbar, ButtonGroup g, AbstractButton b) {
@@ -61,8 +80,9 @@ public class StandaloneFrame extends JFrame {
 		b = new JToggleButton(new LocalizedAction("toolbar.netplay") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
+				content.add(knet, BorderLayout.SOUTH);
+				content.validate();
+				content.repaint();
 			}
 		});
 		add(t, g, b);
