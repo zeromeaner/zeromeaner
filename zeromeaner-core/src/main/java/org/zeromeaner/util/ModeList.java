@@ -84,6 +84,8 @@ public class ModeList<E extends GameMode> extends ArrayFunctionalList<E> {
 	}
 	
 	public E get(String name) {
+		if(indexOfName(name) == -1)
+			return null;
 		return get(indexOfName(name));
 	}
 	

@@ -26,7 +26,7 @@
     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
 */
-package org.zeromeaner.gui.applet;
+package org.zeromeaner.gui.reskin;
 
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -54,7 +54,7 @@ import org.zeromeaner.util.Zeroflections;
 /**
  * Class to the management of image and sound
  */
-public class ResourceHolderApplet {
+public class StandaloneResourceHolder {
 	/** BackgroundOfcount */
 	public static final int BACKGROUND_MAX = 20;
 
@@ -68,7 +68,7 @@ public class ResourceHolderApplet {
 	public static final int PERASE_MAX = 7;
 
 	/** Log */
-	static Logger log = Logger.getLogger(ResourceHolderApplet.class);
+	static Logger log = Logger.getLogger(StandaloneResourceHolder.class);
 
 	/** Block images */
 	public static LinkedList<Image> imgNormalBlockList, imgSmallBlockList, imgBigBlockList;
@@ -101,7 +101,7 @@ public class ResourceHolderApplet {
 	 * Loading images and sound files
 	 */
 	public static void load() {
-		String skindir = NullpoMinoInternalFrame.propConfig.getProperty("custom.skin.directory", "res");
+		String skindir = StandaloneMain.propConfig.getProperty("custom.skin.directory", "res");
 
 		// Blocks
 		int numBlocks = 0;
@@ -147,10 +147,10 @@ public class ResourceHolderApplet {
 		imgFieldbg2Small = loadImage(getURL(skindir + "/graphics/fieldbg2_small.png"));
 		imgFieldbg2Big = loadImage(getURL(skindir + "/graphics/fieldbg2_big.png"));
 
-		if(NullpoMinoInternalFrame.propConfig.getProperty("option.showlineeffect", false) == true) {
+		if(StandaloneMain.propConfig.getProperty("option.showlineeffect", false) == true) {
 			loadLineClearEffectImages();
 		}
-		if(NullpoMinoInternalFrame.propConfig.getProperty("option.showbg", true) == true) {
+		if(StandaloneMain.propConfig.getProperty("option.showbg", true) == true) {
 			loadBackgroundImages();
 		}
 
@@ -159,7 +159,7 @@ public class ResourceHolderApplet {
 		
 		// Sound effects
 		soundManager = new WaveEngine();
-		if(NullpoMinoInternalFrame.propConfig.getProperty("option.se", true) == true) {
+		if(StandaloneMain.propConfig.getProperty("option.se", true) == true) {
 			soundManager.load("cursor", skindir + "/se/cursor.wav");
 			soundManager.load("decide", skindir + "/se/decide.wav");
 			soundManager.load("erase1", skindir + "/se/erase1.wav");
@@ -227,7 +227,7 @@ public class ResourceHolderApplet {
 				soundManager.load("combo" + (i + 1), skindir + "/se/combo" + (i + 1) + ".wav");
 			}
 
-			soundManager.setVolume(NullpoMinoInternalFrame.propConfig.getProperty("option.sevolume", 0.5));
+			soundManager.setVolume(StandaloneMain.propConfig.getProperty("option.sevolume", 0.5));
 		}
 	}
 
@@ -238,7 +238,7 @@ public class ResourceHolderApplet {
 		if(imgPlayBG == null) {
 			imgPlayBG = new Image[BACKGROUND_MAX];
 
-			String skindir = NullpoMinoInternalFrame.propConfig.getProperty("custom.skin.directory", "res");
+			String skindir = StandaloneMain.propConfig.getProperty("custom.skin.directory", "res");
 			for(int i = 0; i < BACKGROUND_MAX; i++) {
 				imgPlayBG[i] = loadImage(getURL(skindir + "/graphics/back" + i + ".png"));
 				Graphics g = (Graphics2D) imgPlayBG[i].getGraphics();
@@ -258,7 +258,7 @@ public class ResourceHolderApplet {
 	 * Load line clear effect images.
 	 */
 	public static void loadLineClearEffectImages() {
-		String skindir = NullpoMinoInternalFrame.propConfig.getProperty("custom.skin.directory", "res");
+		String skindir = StandaloneMain.propConfig.getProperty("custom.skin.directory", "res");
 
 		if(imgBreak == null) {
 			imgBreak = new Image[BLOCK_BREAK_MAX][BLOCK_BREAK_SEGMENTS];
@@ -304,7 +304,7 @@ public class ResourceHolderApplet {
 	 */
 	public static URL getURL(String str) {
 		
-		URL url = ResourceHolderApplet.class.getClassLoader().getResource("org/zeromeaner/" + str);
+		URL url = StandaloneResourceHolder.class.getClassLoader().getResource("org/zeromeaner/" + str);
 		return url;
 		
 //		URL url = null;
