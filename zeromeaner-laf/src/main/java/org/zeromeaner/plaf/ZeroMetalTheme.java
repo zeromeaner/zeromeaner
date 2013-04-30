@@ -16,36 +16,36 @@ public class ZeroMetalTheme extends DefaultMetalTheme {
 
 	@Override
 	protected ColorUIResource getPrimary1() {
-		return new ColorUIResource(128, 128, 128);
-	}
-
-	@Override
-	protected ColorUIResource getPrimary2() {
-		return new ColorUIResource(224, 224, 255);
-	}
-
-	@Override
-	protected ColorUIResource getPrimary3() {
-		return new ColorUIResource(192, 192, 192);
-	}
-
-	@Override
-	protected ColorUIResource getSecondary1() {
 		return new ColorUIResource(Color.GRAY);
 	}
 
 	@Override
-	protected ColorUIResource getSecondary2() {
+	protected ColorUIResource getPrimary2() {
 		return new ColorUIResource(Color.LIGHT_GRAY);
 	}
 
 	@Override
-	protected ColorUIResource getSecondary3() {
+	protected ColorUIResource getPrimary3() {
 		return new ColorUIResource(Color.WHITE);
 	}
 
 	@Override
+	protected ColorUIResource getSecondary1() {
+		return new ColorUIResource(0, 0, 128);
+	}
+
+	@Override
+	protected ColorUIResource getSecondary2() {
+		return new ColorUIResource(0, 0, 255);
+	}
+
+	@Override
+	protected ColorUIResource getSecondary3() {
+		return new ColorUIResource(0, 0, 192);
+	}
+
+	@Override
 	protected ColorUIResource getBlack() {
-		return new ColorUIResource(72, 72, 128);
+		return new ColorUIResource(255, 255, 255);
 	}
 }
