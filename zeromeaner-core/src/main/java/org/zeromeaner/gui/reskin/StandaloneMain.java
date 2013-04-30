@@ -15,6 +15,8 @@ import org.zeromeaner.plaf.ZeroMetalTheme;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.ResourceInputStream;
+import org.zeromeaner.util.ResourceOutputStream;
+import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 
 public class StandaloneMain {
 	public static CustomProperties propConfig = new CustomProperties();
@@ -38,7 +40,16 @@ public class StandaloneMain {
 			throw new RuntimeException(ioe);
 		}
 	}
-	
+
+	public static void saveConfig() {
+		try {
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/swing.cfg");
+			propConfig.store(out, "zeromeaner Swing-frontend Config");
+			out.close();
+		} catch(IOException e) {
+		}
+	}
+
 	private static void _main(String[] args) throws Exception {
 		try {
 			PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));

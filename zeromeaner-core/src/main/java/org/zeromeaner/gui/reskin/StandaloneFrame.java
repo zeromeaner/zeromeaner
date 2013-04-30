@@ -99,6 +99,8 @@ public class StandaloneFrame extends JFrame {
 		b = new JToggleButton(new LocalizedAction("toolbar.play") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				content.removeAll();
+				content.revalidate();
 				content.add(gamePanel, BorderLayout.CENTER);
 				content.revalidate();
 				content.repaint();
@@ -112,6 +114,8 @@ public class StandaloneFrame extends JFrame {
 		b = new JToggleButton(new LocalizedAction("toolbar.netplay") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				content.removeAll();
+				content.revalidate();
 				content.add(netLobby, BorderLayout.SOUTH);
 				content.revalidate();
 				content.repaint();
@@ -146,6 +150,19 @@ public class StandaloneFrame extends JFrame {
 		});
 		add(t, g, b);
 		
+		b = new JToggleButton(new LocalizedAction("toolbar.keys_1p") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				content.removeAll();
+				StandaloneKeyConfig kc = new StandaloneKeyConfig(StandaloneFrame.this);
+				kc.load(0);
+				content.add(kc, BorderLayout.CENTER);
+				content.revalidate();
+				content.repaint();
+			}
+		});
+		add(t, g, b);
+		
 		b = new JToggleButton(new LocalizedAction("toolbar.tuning_1p") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -165,6 +182,15 @@ public class StandaloneFrame extends JFrame {
 		add(t, g, b);
 		
 		b = new JToggleButton(new LocalizedAction("toolbar.rule_2p") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		add(t, g, b);
+		
+		b = new JToggleButton(new LocalizedAction("toolbar.keys_2p") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
