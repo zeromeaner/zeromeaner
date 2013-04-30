@@ -242,11 +242,11 @@ public class StandaloneResourceHolder {
 			for(int i = 0; i < BACKGROUND_MAX; i++) {
 				imgPlayBG[i] = loadImage(getURL(skindir + "/graphics/back" + i + ".png"));
 				Graphics g = (Graphics2D) imgPlayBG[i].getGraphics();
-				g.setColor(new Color(255, 255, 255, 192));
-				for(int j = 0; j < imgPlayBG[i].getHeight(null); j += 2) {
-					g.fillRect(0, j, imgPlayBG[i].getWidth(null), 1);
-				}
-				Image img = new BufferedImage(imgPlayBG[i].getWidth(null), imgPlayBG[i].getHeight(null), BufferedImage.TYPE_BYTE_GRAY);
+//				g.setColor(new Color(255, 255, 255, 192));
+//				for(int j = 0; j < imgPlayBG[i].getHeight(null); j += 2) {
+//					g.fillRect(0, j, imgPlayBG[i].getWidth(null), 1);
+//				}
+				Image img = new BufferedImage(imgPlayBG[i].getWidth(null), imgPlayBG[i].getHeight(null), BufferedImage.TYPE_INT_ARGB);
 				g = img.getGraphics();
 				g.drawImage(imgPlayBG[i], 0, 0, null);
 				imgPlayBG[i] = img;
