@@ -178,18 +178,20 @@ public class StandaloneFrame extends JFrame {
 		});
 		content.add(fc, CARD_OPEN_ONLINE);
 		
-		fc = new JFileChooser(System.getProperty("user.dir") + File.separator + "local-resources" + File.separator + "replay");
-		fc.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(!e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION))
-					return;
-				JFileChooser fc = (JFileChooser) e.getSource();
-				String path = fc.getSelectedFile().getPath();
-				startReplayGame(path);
-			}
-		});
-		content.add(fc, CARD_OPEN);
+		if(!AppletMain.isApplet()) {
+			fc = new JFileChooser(System.getProperty("user.dir") + File.separator + "local-resources" + File.separator + "replay");
+			fc.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if(!e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION))
+						return;
+					JFileChooser fc = (JFileChooser) e.getSource();
+					String path = fc.getSelectedFile().getPath();
+					startReplayGame(path);
+				}
+			});
+			content.add(fc, CARD_OPEN);
+		}
 	}
 	
 	private JToolBar createToolbar() {
