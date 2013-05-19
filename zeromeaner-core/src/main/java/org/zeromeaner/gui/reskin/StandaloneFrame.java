@@ -141,6 +141,8 @@ public class StandaloneFrame extends JFrame {
 		option.addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
+				if(!CARD_PLAY_END.equals(currentCard))
+					return;
 				if(evt.getNewValue().equals(JOptionPane.YES_OPTION)) {
 					gamePanel.shutdown();
 					try {
@@ -152,6 +154,7 @@ public class StandaloneFrame extends JFrame {
 				}
 				if(evt.getNewValue().equals(JOptionPane.NO_OPTION)) {
 					contentCards.show(content, CARD_PLAY);
+					currentCard = CARD_PLAY;
 					playButton.setSelected(true);
 				}
 				
@@ -173,6 +176,8 @@ public class StandaloneFrame extends JFrame {
 		option.addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
+				if(!CARD_NETPLAY_END.equals(currentCard))
+					return;
 				if(evt.getNewValue().equals(JOptionPane.YES_OPTION)) {
 					gamePanel.shutdown();
 					try {
@@ -185,6 +190,7 @@ public class StandaloneFrame extends JFrame {
 				}
 				if(evt.getNewValue().equals(JOptionPane.NO_OPTION)) {
 					contentCards.show(content, CARD_NETPLAY);
+					currentCard = CARD_NETPLAY;
 					netplayButton.setSelected(true);
 				}
 				
@@ -296,7 +302,7 @@ public class StandaloneFrame extends JFrame {
 		b = playButton = new JToggleButton(new ToolbarAction("toolbar.play") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(CARD_PLAY.equals(currentCard) && gamePanel.running.get())
+				if(CARD_PLAY.equals(currentCard))
 					return;
 				super.actionPerformed(e);
 				playCardSelected();
@@ -310,7 +316,7 @@ public class StandaloneFrame extends JFrame {
 		b = netplayButton = new JToggleButton(new ToolbarAction("toolbar.netplay") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(CARD_NETPLAY.equals(currentCard) && gamePanel.running.get())
+				if(CARD_NETPLAY.equals(currentCard))
 					return;
 				super.actionPerformed(e);
 				netplayCardSelected();
@@ -388,6 +394,7 @@ public class StandaloneFrame extends JFrame {
 			if(CARD_PLAY.equals(currentCard) && gamePanel.isInGame[0]) {
 				nextCard = cardName;
 				contentCards.show(content, CARD_PLAY_END);
+				currentCard = CARD_PLAY_END;
 				revalidate();
 				repaint();
 				return;
@@ -395,6 +402,7 @@ public class StandaloneFrame extends JFrame {
 			if(CARD_NETPLAY.equals(currentCard) && netLobby.getClient() != null) {
 				nextCard = cardName;
 				contentCards.show(content, CARD_NETPLAY_END);
+				currentCard = CARD_NETPLAY_END;
 				revalidate();
 				repaint();
 				return;
