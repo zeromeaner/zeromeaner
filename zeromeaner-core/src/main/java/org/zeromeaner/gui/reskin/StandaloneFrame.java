@@ -135,6 +135,13 @@ public class StandaloneFrame extends JFrame {
 		gt = new StandaloneGameTuningPanel();
 		gt.load(1);
 		content.add(gt, CARD_TUNING_2P);
+		
+		StandaloneAISelectPanel ai = new StandaloneAISelectPanel();
+		ai.load(0);
+		content.add(ai, CARD_AI_1P);
+		ai = new StandaloneAISelectPanel();
+		ai.load(1);
+		content.add(ai, CARD_AI_2P);
 	}
 	
 	private JToolBar createToolbar() {
