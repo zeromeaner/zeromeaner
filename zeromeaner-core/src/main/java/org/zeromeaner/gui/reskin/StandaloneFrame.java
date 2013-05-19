@@ -222,6 +222,7 @@ public class StandaloneFrame extends JFrame {
 	@Override
 	public void dispose() {
 		super.dispose();
+		StandaloneMain.saveConfig();
 		System.exit(0);
 	}
 	
