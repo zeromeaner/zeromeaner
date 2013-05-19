@@ -142,6 +142,10 @@ public class StandaloneFrame extends JFrame {
 		ai = new StandaloneAISelectPanel();
 		ai.load(1);
 		content.add(ai, CARD_AI_2P);
+		
+		StandaloneGeneralConfigPanel gc = new StandaloneGeneralConfigPanel();
+		gc.load();
+		content.add(gc, CARD_GENERAL);
 	}
 	
 	private JToolBar createToolbar() {
