@@ -792,6 +792,11 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 		fireKnetPanelInit();
 	}
 	
+	public void disconnect() {
+		if(client != null)
+			connectedPanel.disconnect.doClick();
+	}
+	
 	public void shutdown() {
 		fireKnetPanelShutdown();
 	}

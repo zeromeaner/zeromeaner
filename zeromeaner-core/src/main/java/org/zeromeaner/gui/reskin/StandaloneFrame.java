@@ -3,12 +3,16 @@ package org.zeromeaner.gui.reskin;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -22,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
@@ -39,7 +44,6 @@ import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.game.subsystem.mode.MarathonMode;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.gui.applet.AppletMain;
-
 import org.zeromeaner.gui.knet.KNetPanel;
 import org.zeromeaner.gui.knet.KNetPanelAdapter;
 import org.zeromeaner.gui.knet.KNetPanelEvent;
@@ -59,8 +63,10 @@ public class StandaloneFrame extends JFrame {
 	}
 	
 	public static final String CARD_PLAY = "toolbar.play";
+	public static final String CARD_PLAY_END = "toolbar.play.end";
 	public static final String CARD_MODESELECT = "toolbar.modeselect";
 	public static final String CARD_NETPLAY = "toolbar.netplay";
+	public static final String CARD_NETPLAY_END = "toolbar.netplay.end";
 	public static final String CARD_OPEN = "toolbar.open";
 	public static final String CARD_OPEN_ONLINE = "toolbar.open_online";
 	public static final String CARD_RULE_1P = "toolbar.rule_1p";
@@ -76,14 +82,20 @@ public class StandaloneFrame extends JFrame {
 	
 	private JToolBar toolbar;
 	private CardLayout contentCards;
+	private String currentCard;
+	private String nextCard;
 	private JPanel content;
 	
 	private JPanel playCard;
 	private JPanel netplayCard;
 
+	private JToggleButton playButton;
+	private JToggleButton netplayButton;
+	
 	KNetPanel netLobby;
 	GameManager gameManager;
 	private StandaloneGamePanel gamePanel;
+	private StandaloneMusicVolumePanel musicPanel;
 	
 	public StandaloneFrame() {
 		setTitle("0mino");
@@ -107,6 +119,7 @@ public class StandaloneFrame extends JFrame {
 		});
 		
 		gamePanel = new StandaloneGamePanel(this);
+		musicPanel = new StandaloneMusicVolumePanel();
 		
 		createCards();
 	}
@@ -123,12 +136,65 @@ public class StandaloneFrame extends JFrame {
 		playCard = new JPanel(new BorderLayout());
 		content.add(playCard, CARD_PLAY);
 		
+		JPanel confirm = new JPanel(new GridBagLayout());
+		JOptionPane option = new JOptionPane("A game is in open.  End this game?", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+		option.addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if(evt.getNewValue().equals(JOptionPane.YES_OPTION)) {
+					gamePanel.shutdown();
+					try {
+						gamePanel.shutdownWait();
+					} catch(InterruptedException ie) {
+					}
+					contentCards.show(content, nextCard);
+					currentCard = nextCard;
+				}
+				if(evt.getNewValue().equals(JOptionPane.NO_OPTION)) {
+					contentCards.show(content, CARD_PLAY);
+					playButton.setSelected(true);
+				}
+				
+				((JOptionPane) evt.getSource()).setValue(-1);
+			}
+		});
+		GridBagConstraints cx = new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0);
+		confirm.add(option, cx);
+		content.add(confirm, CARD_PLAY_END);
+		
 		content.add(new StandaloneModeselectPanel(), CARD_MODESELECT);
 		
 		netplayCard = new JPanel(new BorderLayout());
 		netplayCard.add(netLobby, BorderLayout.SOUTH);
 		content.add(netplayCard, CARD_NETPLAY);
 
+		confirm = new JPanel(new GridBagLayout());
+		option = new JOptionPane("A netplay game is open.  End this game and disconnect?", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+		option.addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if(evt.getNewValue().equals(JOptionPane.YES_OPTION)) {
+					gamePanel.shutdown();
+					try {
+						gamePanel.shutdownWait();
+					} catch(InterruptedException ie) {
+					}
+					netLobby.disconnect();
+					contentCards.show(content, nextCard);
+					currentCard = nextCard;
+				}
+				if(evt.getNewValue().equals(JOptionPane.NO_OPTION)) {
+					contentCards.show(content, CARD_NETPLAY);
+					netplayButton.setSelected(true);
+				}
+				
+				((JOptionPane) evt.getSource()).setValue(-1);
+			}
+		});
+		cx = new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0);
+		confirm.add(option, cx);
+		content.add(confirm, CARD_NETPLAY_END);
+		
 		StandaloneKeyConfig kc = new StandaloneKeyConfig(this);
 		kc.load(0);
 		content.add(kc, CARD_KEYS_1P);
@@ -194,6 +260,30 @@ public class StandaloneFrame extends JFrame {
 		}
 	}
 	
+	private void playCardSelected() {
+		playCard.add(gamePanel, BorderLayout.CENTER);
+		playCard.add(musicPanel, BorderLayout.WEST);
+		gamePanel.shutdown();
+		try {
+			gamePanel.shutdownWait();
+		} catch(InterruptedException ie) {
+		}
+		startNewGame();
+		gamePanel.displayWindow();
+	}
+	
+	private void netplayCardSelected() {
+		netplayCard.add(gamePanel, BorderLayout.CENTER);
+		netplayCard.add(musicPanel, BorderLayout.WEST);
+		gamePanel.shutdown();
+		try {
+			gamePanel.shutdownWait();
+		} catch(InterruptedException ie) {
+		}
+		enterNewMode(null);
+		gamePanel.displayWindow();
+	}
+	
 	private JToolBar createToolbar() {
 		JToolBar t = new JToolBar(JToolBar.VERTICAL);
 		t.setFloatable(false);
@@ -203,18 +293,13 @@ public class StandaloneFrame extends JFrame {
 		
 		AbstractButton b;
 		
-		b = new JToggleButton(new ToolbarAction("toolbar.play") {
+		b = playButton = new JToggleButton(new ToolbarAction("toolbar.play") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if(CARD_PLAY.equals(currentCard) && gamePanel.running.get())
+					return;
 				super.actionPerformed(e);
-				playCard.add(gamePanel, BorderLayout.CENTER);
-				gamePanel.shutdown();
-				try {
-					gamePanel.shutdownWait();
-				} catch(InterruptedException ie) {
-				}
-				startNewGame();
-				gamePanel.displayWindow();
+				playCardSelected();
 			}
 		});
 		add(t, g, b);
@@ -222,18 +307,13 @@ public class StandaloneFrame extends JFrame {
 		b = new JToggleButton(new ToolbarAction("toolbar.modeselect"));
 		add(t, g, b);
 		
-		b = new JToggleButton(new ToolbarAction("toolbar.netplay") {
+		b = netplayButton = new JToggleButton(new ToolbarAction("toolbar.netplay") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if(CARD_NETPLAY.equals(currentCard) && gamePanel.running.get())
+					return;
 				super.actionPerformed(e);
-				netplayCard.add(gamePanel, BorderLayout.CENTER);
-				gamePanel.shutdown();
-				try {
-					gamePanel.shutdownWait();
-				} catch(InterruptedException ie) {
-				}
-				enterNewMode(null);
-				gamePanel.displayWindow();
+				netplayCardSelected();
 			}
 		});
 		add(t, g, b);
@@ -305,8 +385,22 @@ public class StandaloneFrame extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			remove(netLobby);
+			if(CARD_PLAY.equals(currentCard) && gamePanel.isInGame[0]) {
+				nextCard = cardName;
+				contentCards.show(content, CARD_PLAY_END);
+				revalidate();
+				repaint();
+				return;
+			}
+			if(CARD_NETPLAY.equals(currentCard) && netLobby.getClient() != null) {
+				nextCard = cardName;
+				contentCards.show(content, CARD_NETPLAY_END);
+				revalidate();
+				repaint();
+				return;
+			}
 			contentCards.show(content, cardName);
+			currentCard = cardName;
 			revalidate();
 			repaint();
 		}

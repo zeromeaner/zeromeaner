@@ -22,10 +22,14 @@ import static org.zeromeaner.gui.applet.AppletMain.url;
 import static org.zeromeaner.gui.applet.AppletMain.userId;
 
 public class StandaloneApplet extends Applet {
+	public static StandaloneApplet instance;
+	
 	@Override
 	public void init() {
 		if(EQInvoker.reinvoke(false, this))
 			return;
+		
+		instance = this;
 		
 		CookieAccess.setInstance(new CookieAccess() {
 			@Override

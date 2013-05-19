@@ -143,7 +143,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	protected Thread thread = null;
 
 	/** trueThread moves between */
-	protected AtomicBoolean running = new AtomicBoolean(false);
+	public AtomicBoolean running = new AtomicBoolean(false);
 
 	/** MaximumFPS (Setting) */
 	public int maxfps;
