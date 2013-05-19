@@ -28,6 +28,7 @@
  */
 package org.zeromeaner.gui.reskin;
 
+import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -61,6 +62,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -68,6 +70,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
+
+
 
 
 
@@ -107,6 +111,15 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		}
 	}, new ThreadPoolExecutor.DiscardPolicy());
 	
+	private static class FocusableJLabel extends JLabel {
+		private FocusableJLabel(Icon image) {
+			super(image);
+			setFocusable(true);
+			setFocusCycleRoot(true);
+			enableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.FOCUS_EVENT_MASK);
+		}
+	}
+
 	private class FramePerSecond implements Delayed {
 		private long expiry = System.nanoTime() + TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS);
 		
@@ -220,7 +233,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		imageBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB);
 		gameBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB);
 
-		add(imageBufferLabel = new JLabel(new ImageIcon(imageBuffer)), BorderLayout.CENTER);
+		add(imageBufferLabel = new FocusableJLabel(new ImageIcon(imageBuffer)), BorderLayout.CENTER);
 		
 		imageBufferLabel.setText("No Active Game");
 		imageBufferLabel.setIcon(null);
@@ -239,7 +252,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		MouseListener ml = new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				requestFocusInWindow();
+				requestFocus();
 			}
 		};
 		addMouseListener(ml);
