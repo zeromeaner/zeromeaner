@@ -53,9 +53,17 @@ public class StandaloneModeselectPanel extends JPanel {
 			for(ModeButton mb : mbs) {
 				mb.addActionListener(b);
 			}
+			if(rule.resourceName.equals(StandaloneMain.propConfig.getProperty("0.rule")))
+				b.setSelected(true);
 		}
 		p.add(ruleButtons, BorderLayout.CENTER);
 		add(p, BorderLayout.SOUTH);
+		
+		for(ModeButton mb : mbs) {
+			if(mb.mode.getName().equals(StandaloneMain.propConfig.getProperty("name.mode")))
+				mb.setSelected(true);
+
+		}
 	}
 	
 	private class ModeButton extends JToggleButton {
