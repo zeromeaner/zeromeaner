@@ -6,9 +6,11 @@ import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
@@ -37,14 +39,15 @@ import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.game.subsystem.mode.MarathonMode;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.gui.applet.AppletMain;
+
 import org.zeromeaner.gui.knet.KNetPanel;
 import org.zeromeaner.gui.knet.KNetPanelAdapter;
 import org.zeromeaner.gui.knet.KNetPanelEvent;
-import org.zeromeaner.gui.knet.KNetPanelListener;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.ResourceFileSystemView;
+import org.zeromeaner.util.ResourceInputStream;
 
 public class StandaloneFrame extends JFrame {
 	private static final Logger log = Logger.getLogger(StandaloneFrame.class);
@@ -163,9 +166,29 @@ public class StandaloneFrame extends JFrame {
 				return super.isTraversable(f);
 			}
 		});
+		fc.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION))
+					return;
+				JFileChooser fc = (JFileChooser) e.getSource();
+				String path = "replay/" + fc.getSelectedFile().getPath();
+				startReplayGame(path.replaceAll("/+", "/"));
+			}
+		});
 		content.add(fc, CARD_OPEN_ONLINE);
 		
 		fc = new JFileChooser(System.getProperty("user.dir") + File.separator + "local-resources" + File.separator + "replay");
+		fc.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION))
+					return;
+				JFileChooser fc = (JFileChooser) e.getSource();
+				String path = fc.getSelectedFile().getPath();
+				startReplayGame(path);
+			}
+		});
 		content.add(fc, CARD_OPEN);
 	}
 	
@@ -480,4 +503,82 @@ public class StandaloneFrame extends JFrame {
 			gameManager.engine[i].init();
 		}
 	}
+
+	public void startReplayGame(String filename) {
+		contentCards.show(content, CARD_PLAY);
+		playCard.add(gamePanel, BorderLayout.CENTER);
+		gamePanel.shutdown();
+		try {
+			gamePanel.shutdownWait();
+		} catch(InterruptedException ie) {
+		}
+		startNewGame();
+		gamePanel.displayWindow();
+
+		log.info("Loading Replay:" + filename);
+		CustomProperties prop = new CustomProperties();
+
+		try {
+			ResourceInputStream stream = new ResourceInputStream(filename);
+			prop.load(stream);
+			stream.close();
+		} catch (IOException e) {
+			log.error("Couldn't load replay file from " + filename, e);
+			return;
+		}
+
+		StandaloneRenderer rendererSwing = new StandaloneRenderer();
+		gameManager = new GameManager(rendererSwing);
+		gameManager.replayMode = true;
+		gameManager.replayProp = prop;
+
+		// Mode
+		String modeName = prop.getProperty("name.mode", "");
+		GameMode modeObj = StandaloneMain.modeManager.get(modeName);
+		if(modeObj == null) {
+			log.error("Couldn't find mode:" + modeName);
+		} else {
+			gameManager.mode = modeObj;
+		}
+
+		gameManager.init();
+
+		// Initialization for each player
+		for(int i = 0; i < gameManager.getPlayers(); i++) {
+			// Rule
+			RuleOptions ruleopt = new RuleOptions();
+			ruleopt.readProperty(prop, i);
+			gameManager.engine[i].ruleopt = ruleopt;
+
+			// NEXTOrder generation algorithm
+			if((ruleopt.strRandomizer != null) && (ruleopt.strRandomizer.length() > 0)) {
+				Randomizer randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer, gameManager.engine[i]);
+				gameManager.engine[i].randomizer = randomizerObject;
+			}
+
+			// Wallkick
+			if((ruleopt.strWallkick != null) && (ruleopt.strWallkick.length() > 0)) {
+				Wallkick wallkickObject = GeneralUtil.loadWallkick(ruleopt.strWallkick);
+				gameManager.engine[i].wallkick = wallkickObject;
+			}
+
+			// AI (For added replay)
+			String aiName = StandaloneMain.propConfig.getProperty(i + ".ai", "");
+			if(aiName.length() > 0) {
+				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
+				gameManager.engine[i].ai = aiObj;
+				gameManager.engine[i].aiMoveDelay = StandaloneMain.propConfig.getProperty(i + ".aiMoveDelay", 0);
+				gameManager.engine[i].aiThinkDelay = StandaloneMain.propConfig.getProperty(i + ".aiThinkDelay", 0);
+				gameManager.engine[i].aiUseThread = StandaloneMain.propConfig.getProperty(i + ".aiUseThread", true);
+				gameManager.engine[i].aiShowHint = StandaloneMain.propConfig.getProperty(i+".aiShowHint", false);
+				gameManager.engine[i].aiPrethink = StandaloneMain.propConfig.getProperty(i+".aiPrethink", false);
+				gameManager.engine[i].aiShowState = StandaloneMain.propConfig.getProperty(i+".aiShowState", false);
+			}
+			gameManager.showInput = StandaloneMain.propConfig.getProperty("option.showInput", false);
+
+			// Called at initialization
+			gameManager.engine[i].init();
+		}
+	}
+
 }
