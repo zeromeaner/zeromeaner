@@ -1,5 +1,6 @@
 package org.zeromeaner.gui.applet;
 
+import java.applet.Applet;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -32,7 +33,7 @@ public class CookieAccess {
 		return get(AppletMain.instance);
 	}
 	
-	protected Map<String, String> get(AppletMain applet) {
+	protected Map<String, String> get(Applet applet) {
 		try {
 			String data = "";
 			JSObject myBrowser = JSObject.getWindow(applet);

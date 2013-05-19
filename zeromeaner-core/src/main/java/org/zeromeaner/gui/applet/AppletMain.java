@@ -553,7 +553,7 @@ public class AppletMain extends Applet {
 		private File prefs = new File(System.getProperty("user.dir"), "0mino.properties");
 
 		@Override
-		protected Map<String, String> get(AppletMain applet) {
+		protected Map<String, String> get(Applet applet) {
 			try {
 				InputStream in = new FileInputStream(prefs);
 				Properties p = new Properties();

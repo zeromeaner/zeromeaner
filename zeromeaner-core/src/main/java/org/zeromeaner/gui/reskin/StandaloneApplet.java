@@ -4,6 +4,7 @@ import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -25,6 +26,13 @@ public class StandaloneApplet extends Applet {
 	public void init() {
 		if(EQInvoker.reinvoke(false, this))
 			return;
+		
+		CookieAccess.setInstance(new CookieAccess() {
+			@Override
+			protected Map<String, String> get() {
+				return get(StandaloneApplet.this);
+			}
+		});
 		
 		// FIXME: Satisfy some old applet code
 		AppletMain.instance = new AppletMain();
