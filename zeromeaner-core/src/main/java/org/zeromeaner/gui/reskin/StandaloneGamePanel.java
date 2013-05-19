@@ -221,6 +221,9 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		gameBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB);
 
 		add(imageBufferLabel = new JLabel(new ImageIcon(imageBuffer)), BorderLayout.CENTER);
+		
+		imageBufferLabel.setText("No Active Game");
+		imageBufferLabel.setIcon(null);
 
 		maxfps = StandaloneMain.propConfig.getProperty("option.maxfps", 60);
 
@@ -253,6 +256,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		int screenHeight = StandaloneMain.propConfig.getProperty("option.screenheight", 480);
 
 		imageBuffer = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);
+		imageBufferLabel.setText(null);
 		imageBufferLabel.setIcon(new ImageIcon(imageBuffer));
 		imageBufferLabel.revalidate();
 
@@ -275,10 +279,15 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			running.set(false);
 			running.notifyAll();
 		}
-		
-		owner.content.remove(this);
-		owner.content.revalidate();
-		owner.content.repaint();
+		imageBufferLabel.setText("No Active Game");
+		imageBufferLabel.setIcon(null);
+	}
+	
+	public void shutdownWait() throws InterruptedException {
+		synchronized(running) {
+			while(running.get())
+				running.wait();
+		}
 	}
 
 	private void doFrame(boolean render) {
@@ -286,13 +295,13 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			gameUpdateNet();
 			if(render)
 				gameRenderNet();
-		} else if(SwingUtilities.getWindowAncestor(imageBufferLabel).isVisible() && SwingUtilities.getWindowAncestor(imageBufferLabel).isActive()) {
+		} else {
 			gameUpdate();
 			if(render)
 				gameRender();
-		} else {
-			StandaloneGameKey.gamekey[0].clear();
-			StandaloneGameKey.gamekey[1].clear();
+//		} else {
+//			StandaloneGameKey.gamekey[0].clear();
+//			StandaloneGameKey.gamekey[1].clear();
 		}
 	}
 	

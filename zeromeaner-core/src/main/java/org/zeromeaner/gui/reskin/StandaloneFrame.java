@@ -1,10 +1,13 @@
 package org.zeromeaner.gui.reskin;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
@@ -48,12 +51,31 @@ public class StandaloneFrame extends JFrame {
 		return url == null ? null : new ImageIcon(url);
 	}
 	
-	private JToolBar toolbar;
-	JPanel content;
+	public static final String CARD_PLAY = "toolbar.play";
+	public static final String CARD_NETPLAY = "toolbar.netplay";
+	public static final String CARD_OPEN = "toolbar.open";
+	public static final String CARD_OPEN_ONLINE = "toolbar.open_online";
+	public static final String CARD_RULE_1P = "toolbar.rule_1p";
+	public static final String CARD_KEYS_1P = "toolbar.keys_1p";
+	public static final String CARD_TUNING_1P = "toolbar.tuning_1p";
+	public static final String CARD_AI_1P = "toolbar.ai_1p";
+	public static final String CARD_RULE_2P = "toolbar.rule_2p";
+	public static final String CARD_KEYS_2P = "toolbar.keys_2p";
+	public static final String CARD_TUNING_2P = "toolbar.tuning_2p";
+	public static final String CARD_AI_2P = "toolbar.ai_2p";
+	public static final String CARD_GENERAL = "toolbar.general";
+	public static final String CARD_CLOSE = "toolbar.close";
 	
+	private JToolBar toolbar;
+	private CardLayout contentCards;
+	private JPanel content;
+	
+	private JPanel playCard;
+	private JPanel netplayCard;
+
 	KNetPanel netLobby;
 	GameManager gameManager;
-	StandaloneGamePanel gamePanel;
+	private StandaloneGamePanel gamePanel;
 	
 	public StandaloneFrame() {
 		setTitle("0mino");
@@ -63,7 +85,7 @@ public class StandaloneFrame extends JFrame {
 		
 		setLayout(new BorderLayout());
 		add(toolbar = createToolbar(), BorderLayout.EAST);
-		add(content = new JPanel(new BorderLayout()), BorderLayout.CENTER);
+		add(content = new JPanel(contentCards = new CardLayout()), BorderLayout.CENTER);
 
 		netLobby = new KNetPanel("none", false);
 		netLobby.setPreferredSize(new Dimension(800, 250));
@@ -77,6 +99,8 @@ public class StandaloneFrame extends JFrame {
 		});
 		
 		gamePanel = new StandaloneGamePanel(this);
+		
+		createCards();
 	}
 	
 	private static void add(JToolBar toolbar, ButtonGroup g, AbstractButton b) {
@@ -85,6 +109,23 @@ public class StandaloneFrame extends JFrame {
 		b.setHorizontalAlignment(SwingConstants.RIGHT);
 		toolbar.add(b);
 		g.add(b);
+	}
+	
+	private void createCards() {
+		playCard = new JPanel(new BorderLayout());
+		content.add(playCard, CARD_PLAY);
+		
+		netplayCard = new JPanel(new BorderLayout());
+		netplayCard.add(netLobby, BorderLayout.SOUTH);
+		content.add(netplayCard, CARD_NETPLAY);
+
+		StandaloneKeyConfig kc = new StandaloneKeyConfig(this);
+		kc.load(0);
+		content.add(kc, CARD_KEYS_1P);
+		kc = new StandaloneKeyConfig(this);
+		kc.load(1);
+		content.add(kc, CARD_KEYS_2P);
+		
 	}
 	
 	private JToolBar createToolbar() {
@@ -96,137 +137,72 @@ public class StandaloneFrame extends JFrame {
 		
 		AbstractButton b;
 		
-		b = new JToggleButton(new LocalizedAction("toolbar.play") {
+		b = new JToggleButton(new ToolbarAction("toolbar.play") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				content.removeAll();
-				content.revalidate();
-				content.add(gamePanel, BorderLayout.CENTER);
-				content.revalidate();
-				content.repaint();
+				super.actionPerformed(e);
+				playCard.add(gamePanel, BorderLayout.CENTER);
+				gamePanel.shutdown();
+				try {
+					gamePanel.shutdownWait();
+				} catch(InterruptedException ie) {
+				}
 				startNewGame();
 				gamePanel.displayWindow();
-				gamePanel.requestFocusInWindow();
 			}
 		});
 		add(t, g, b);
 		
-		b = new JToggleButton(new LocalizedAction("toolbar.netplay") {
+		b = new JToggleButton(new ToolbarAction("toolbar.netplay") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				content.removeAll();
-				content.revalidate();
-				content.add(netLobby, BorderLayout.SOUTH);
-				content.revalidate();
-				content.repaint();
+				super.actionPerformed(e);
+				netplayCard.add(gamePanel, BorderLayout.CENTER);
+				gamePanel.shutdown();
+				try {
+					gamePanel.shutdownWait();
+				} catch(InterruptedException ie) {
+				}
+				enterNewMode(null);
+				gamePanel.displayWindow();
 			}
 		});
 		add(t, g, b);
 		
-		b = new JToggleButton(new LocalizedAction("toolbar.open") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		b = new JToggleButton(new ToolbarAction("toolbar.open"));
 		add(t, g, b);
 		
-		b = new JToggleButton(new LocalizedAction("toolbar.open_online") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		b = new JToggleButton(new ToolbarAction("toolbar.open_online"));
 		add(t, g, b);
 		
-		b = new JToggleButton(new LocalizedAction("toolbar.rule_1p") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		b = new JToggleButton(new ToolbarAction("toolbar.rule_1p"));
 		add(t, g, b);
 		
-		b = new JToggleButton(new LocalizedAction("toolbar.keys_1p") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				content.removeAll();
-				StandaloneKeyConfig kc = new StandaloneKeyConfig(StandaloneFrame.this);
-				kc.load(0);
-				content.add(kc, BorderLayout.CENTER);
-				content.revalidate();
-				content.repaint();
-			}
-		});
+		b = new JToggleButton(new ToolbarAction("toolbar.keys_1p"));
 		add(t, g, b);
 		
-		b = new JToggleButton(new LocalizedAction("toolbar.tuning_1p") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		b = new JToggleButton(new ToolbarAction("toolbar.tuning_1p"));
 		add(t, g, b);
 		
-		b = new JToggleButton(new LocalizedAction("toolbar.ai_1p") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		b = new JToggleButton(new ToolbarAction("toolbar.ai_1p"));
 		add(t, g, b);
 		
-		b = new JToggleButton(new LocalizedAction("toolbar.rule_2p") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		b = new JToggleButton(new ToolbarAction("toolbar.rule_2p"));
 		add(t, g, b);
 		
-		b = new JToggleButton(new LocalizedAction("toolbar.keys_2p") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		b = new JToggleButton(new ToolbarAction("toolbar.keys_2p"));
 		add(t, g, b);
 		
-		b = new JToggleButton(new LocalizedAction("toolbar.tuning_2p") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		b = new JToggleButton(new ToolbarAction("toolbar.tuning_2p"));
 		add(t, g, b);
 		
-		b = new JToggleButton(new LocalizedAction("toolbar.ai_2p") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		b = new JToggleButton(new ToolbarAction("toolbar.ai_2p"));
 		add(t, g, b);
 		
-		b = new JToggleButton(new LocalizedAction("toolbar.general") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		b = new JToggleButton(new ToolbarAction("toolbar.general"));
 		add(t, g, b);
 		
-		b = new JButton(new LocalizedAction("toolbar.close") {
+		b = new JButton(new ToolbarAction("toolbar.close") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
@@ -243,9 +219,20 @@ public class StandaloneFrame extends JFrame {
 		System.exit(0);
 	}
 	
-	private static abstract class LocalizedAction extends AbstractAction {
-		public LocalizedAction(String name) {
+	private class ToolbarAction extends AbstractAction {
+		private String cardName;
+		
+		public ToolbarAction(String name) {
 			super(lz.s(name), icon(name));
+			this.cardName = name;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			remove(netLobby);
+			contentCards.show(content, cardName);
+			revalidate();
+			repaint();
 		}
 	}
 
@@ -256,6 +243,11 @@ public class StandaloneFrame extends JFrame {
 	public void enterNewMode(String modeName) {
 		StandaloneMain.loadGlobalConfig();	// Reload global config file
 
+		if(gameManager == null) {
+			StandaloneRenderer rendererSwing = new StandaloneRenderer();
+			gameManager = new GameManager(rendererSwing);
+		}
+		
 		GameMode previousMode = gameManager.mode;
 		GameMode newModeTemp = (modeName == null) ? new AbstractNetMode() : StandaloneMain.modeManager.get(modeName);
 
