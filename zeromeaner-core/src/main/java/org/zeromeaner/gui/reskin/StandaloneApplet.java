@@ -26,6 +26,9 @@ public class StandaloneApplet extends Applet {
 		if(EQInvoker.reinvoke(false, this))
 			return;
 		
+		// FIXME: Satisfy some old applet code
+		AppletMain.instance = new AppletMain();
+		
 		url = getDocumentBase();
 		if(System.getProperty("zero_url") != null) {
 			try {

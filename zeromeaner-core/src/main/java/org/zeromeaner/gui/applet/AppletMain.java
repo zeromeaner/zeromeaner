@@ -549,7 +549,7 @@ public class AppletMain extends Applet {
 		}
 	}
 
-	private static class MainCookieAccess extends CookieAccess {
+	public static class MainCookieAccess extends CookieAccess {
 		private File prefs = new File(System.getProperty("user.dir"), "0mino.properties");
 
 		@Override

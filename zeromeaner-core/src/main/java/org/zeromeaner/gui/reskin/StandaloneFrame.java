@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.File;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
@@ -16,6 +17,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,6 +36,7 @@ import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.game.subsystem.mode.MarathonMode;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
+import org.zeromeaner.gui.applet.AppletMain;
 import org.zeromeaner.gui.knet.KNetPanel;
 import org.zeromeaner.gui.knet.KNetPanelAdapter;
 import org.zeromeaner.gui.knet.KNetPanelEvent;
@@ -41,6 +44,7 @@ import org.zeromeaner.gui.knet.KNetPanelListener;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.Localization;
+import org.zeromeaner.util.ResourceFileSystemView;
 
 public class StandaloneFrame extends JFrame {
 	private static final Logger log = Logger.getLogger(StandaloneFrame.class);
@@ -146,6 +150,23 @@ public class StandaloneFrame extends JFrame {
 		StandaloneGeneralConfigPanel gc = new StandaloneGeneralConfigPanel();
 		gc.load();
 		content.add(gc, CARD_GENERAL);
+
+		JFileChooser fc = new JFileChooser(new ResourceFileSystemView() {
+			@Override
+			protected String url() {
+				return super.url() + "replay/";
+			}
+			@Override
+			public Boolean isTraversable(File f) {
+				if(f.getName().endsWith(".rep"))
+					return false;
+				return super.isTraversable(f);
+			}
+		});
+		content.add(fc, CARD_OPEN_ONLINE);
+		
+		fc = new JFileChooser(System.getProperty("user.dir") + File.separator + "local-resources" + File.separator + "replay");
+		content.add(fc, CARD_OPEN);
 	}
 	
 	private JToolBar createToolbar() {
@@ -223,8 +244,10 @@ public class StandaloneFrame extends JFrame {
 		b = new JToggleButton(new ToolbarAction("toolbar.general"));
 		add(t, g, b);
 		
-		b = new JToggleButton(new ToolbarAction("toolbar.open"));
-		add(t, g, b);
+		if(!AppletMain.isApplet()) {
+			b = new JToggleButton(new ToolbarAction("toolbar.open"));
+			add(t, g, b);
+		}
 		
 		b = new JToggleButton(new ToolbarAction("toolbar.open_online"));
 		add(t, g, b);
