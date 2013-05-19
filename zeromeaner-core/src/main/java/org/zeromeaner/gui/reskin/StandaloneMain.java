@@ -63,9 +63,14 @@ public class StandaloneMain {
 	private static void _main(String[] args) throws Exception {
 		System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".0mino");
 		new File(System.getProperty("user.dir")).mkdirs();
-		AppletMain.userId = System.getProperty("user.name");
 		CookieAccess.setInstance(new AppletMain.MainCookieAccess());
+
 		AppletMain.url = new URL("http://www.0mino.org/" + (GameManager.VERSION.isSnapshot() ? "snapshot" : "play") + "/");
+
+		AppletMain.userId = System.getProperty("user.name");
+		if(CookieAccess.get("userId") != null)
+			AppletMain.userId = CookieAccess.get("userId");
+
 		
 		try {
 			PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));

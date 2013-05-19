@@ -44,6 +44,9 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
+import org.zeromeaner.gui.applet.AppletMain;
+import org.zeromeaner.gui.applet.CookieAccess;
+
 import static org.zeromeaner.gui.applet.NullpoMinoInternalFrame.lz;
 import static org.zeromeaner.gui.applet.NullpoMinoInternalFrame.getIntTextField;
 import static org.zeromeaner.gui.applet.NullpoMinoInternalFrame.getDoubleTextField;
@@ -127,6 +130,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	/** Show field BG grid */
 	protected JCheckBox chkboxShowInput;
 
+	protected JTextField userId = new JTextField();
+	
 	/**
 	 * Constructor
 	 * @param owner Parent window
@@ -145,6 +150,11 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	protected void initUI() {
 		setLayout(new BorderLayout());
 
+		JPanel login = new JPanel(new BorderLayout());
+		login.add(new JLabel("www.0mino.org user ID:"), BorderLayout.WEST);
+		login.add(userId, BorderLayout.CENTER);
+		this.add(login, BorderLayout.NORTH);
+		
 		// * Tab pane
 		JTabbedPane tabPane = new JTabbedPane();
 		this.add(tabPane, BorderLayout.CENTER);
@@ -300,6 +310,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	 * Current SettingsGUIBe reflected in the
 	 */
 	public void load() {
+		userId.setText(AppletMain.userId);
+		
 		int sWidth = StandaloneMain.propConfig.getProperty("option.screenwidth", 640);
 		int sHeight = StandaloneMain.propConfig.getProperty("option.screenheight", 480);
 		comboboxScreenSize.setSelectedIndex(4);	// Default to 640x480
@@ -338,6 +350,10 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand() == "GeneralConfig_OK") {
 			// OK
+			
+			AppletMain.userId = userId.getText();
+			CookieAccess.put("userId", AppletMain.userId);
+			
 			int screenSizeIndex = comboboxScreenSize.getSelectedIndex();
 			if((screenSizeIndex >= 0) && (screenSizeIndex < SCREENSIZE_TABLE.length)) {
 				StandaloneMain.propConfig.setProperty("option.screenwidth", SCREENSIZE_TABLE[screenSizeIndex][0]);
