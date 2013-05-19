@@ -81,4 +81,9 @@ public class StandaloneApplet extends Applet {
 			ex.printStackTrace();
 		}
 	}
+	
+	@Override
+	public void destroy() {
+		StandaloneMain.saveConfig();
+	}
 }
