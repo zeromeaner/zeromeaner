@@ -49,6 +49,10 @@ public class StandaloneMain {
 			out.close();
 		} catch(IOException e) {
 		}
+		try {
+			ResourceDownloadStream.commitCache();
+		} catch(IOException ioe) {
+		}
 	}
 
 	private static void _main(String[] args) throws Exception {
