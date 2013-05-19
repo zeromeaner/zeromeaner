@@ -153,6 +153,9 @@ public class StandaloneFrame extends JFrame {
 		});
 		add(t, g, b);
 		
+		b = new JToggleButton(new ToolbarAction("toolbar.modeselect"));
+		add(t, g, b);
+		
 		b = new JToggleButton(new ToolbarAction("toolbar.netplay") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
