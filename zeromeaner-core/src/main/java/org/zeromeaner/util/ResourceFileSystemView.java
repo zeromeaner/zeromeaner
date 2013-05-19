@@ -168,6 +168,8 @@ public class ResourceFileSystemView extends FileSystemView {
 
 	@Override
 	public File getParentDirectory(File dir) {
+		if(dir == null)
+			return null;
 		return dir.getParentFile();
 	}
 
