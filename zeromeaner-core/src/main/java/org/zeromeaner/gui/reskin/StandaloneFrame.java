@@ -395,22 +395,16 @@ public class StandaloneFrame extends JFrame {
 				nextCard = cardName;
 				contentCards.show(content, CARD_PLAY_END);
 				currentCard = CARD_PLAY_END;
-				revalidate();
-				repaint();
 				return;
 			}
 			if(CARD_NETPLAY.equals(currentCard) && netLobby.getClient() != null) {
 				nextCard = cardName;
 				contentCards.show(content, CARD_NETPLAY_END);
 				currentCard = CARD_NETPLAY_END;
-				revalidate();
-				repaint();
 				return;
 			}
 			contentCards.show(content, cardName);
 			currentCard = cardName;
-			revalidate();
-			repaint();
 		}
 	}
 
