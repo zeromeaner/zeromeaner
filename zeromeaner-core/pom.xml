@@ -260,7 +260,7 @@
 									<transformers>
 										<transformer
 											implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-											<mainClass>org.zeromeaner.gui.applet.AppletMain</mainClass>
+											<mainClass>org.zeromeaner.gui.reskin.StandaloneMain</mainClass>
 										</transformer>
 									</transformers>
 									<filters>
@@ -300,7 +300,7 @@
 									<transformers>
 										<transformer
 											implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-											<mainClass>org.zeromeaner.gui.applet.AppletMain</mainClass>
+											<mainClass>org.zeromeaner.gui.reskin.StandaloneMain</mainClass>
 										</transformer>
 									</transformers>
 									<filters>
