@@ -188,13 +188,12 @@ public class StandaloneFrame extends JFrame {
 		});
 		add(t, g, b);
 		
-		b = new JToggleButton(new ToolbarAction("toolbar.open"));
-		add(t, g, b);
-		
-		b = new JToggleButton(new ToolbarAction("toolbar.open_online"));
-		add(t, g, b);
-		
+		/*
 		b = new JToggleButton(new ToolbarAction("toolbar.rule_1p"));
+		add(t, g, b);
+		*/
+		
+		b = new JToggleButton(new ToolbarAction("toolbar.ai_1p"));
 		add(t, g, b);
 		
 		b = new JToggleButton(new ToolbarAction("toolbar.keys_1p"));
@@ -203,9 +202,7 @@ public class StandaloneFrame extends JFrame {
 		b = new JToggleButton(new ToolbarAction("toolbar.tuning_1p"));
 		add(t, g, b);
 		
-		b = new JToggleButton(new ToolbarAction("toolbar.ai_1p"));
-		add(t, g, b);
-		
+		/*
 		b = new JToggleButton(new ToolbarAction("toolbar.rule_2p"));
 		add(t, g, b);
 		
@@ -217,8 +214,15 @@ public class StandaloneFrame extends JFrame {
 		
 		b = new JToggleButton(new ToolbarAction("toolbar.ai_2p"));
 		add(t, g, b);
+		*/
 		
 		b = new JToggleButton(new ToolbarAction("toolbar.general"));
+		add(t, g, b);
+		
+		b = new JToggleButton(new ToolbarAction("toolbar.open"));
+		add(t, g, b);
+		
+		b = new JToggleButton(new ToolbarAction("toolbar.open_online"));
 		add(t, g, b);
 		
 		b = new JButton(new ToolbarAction("toolbar.close") {
