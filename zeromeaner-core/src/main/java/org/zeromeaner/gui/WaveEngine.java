@@ -26,7 +26,7 @@
     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
  */
-package org.zeromeaner.gui.applet;
+package org.zeromeaner.gui;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -59,6 +59,7 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.apache.log4j.Logger;
+import org.zeromeaner.gui.applet.ResourceHolderApplet;
 import org.zeromeaner.util.MusicList;
 import org.zeromeaner.util.ResourceInputStream;
 

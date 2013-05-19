@@ -44,8 +44,8 @@ public class ResourceInputStream extends FilterInputStream {
 	public static InputStream getStream(String resource) throws IOException {
 		InputStream in = null;
 		if(
-				AppletMain.isApplet() 
-				&& (resource.startsWith("config/setting/") || resource.startsWith("replay/"))
+				((AppletMain.isApplet() && resource.startsWith("config/setting/")) 
+				|| resource.startsWith("replay/"))
 				&& !dontDownload.contains(resource))
 			try {
 				in = new ResourceDownloadStream(resource);

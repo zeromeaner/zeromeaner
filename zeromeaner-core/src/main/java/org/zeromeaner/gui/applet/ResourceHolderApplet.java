@@ -28,7 +28,10 @@
 */
 package org.zeromeaner.gui.applet;
 
+import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -44,6 +47,7 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
+import org.zeromeaner.gui.WaveEngine;
 import org.zeromeaner.util.MusicList;
 import org.zeromeaner.util.Zeroflections;
 
@@ -237,6 +241,15 @@ public class ResourceHolderApplet {
 			String skindir = NullpoMinoInternalFrame.propConfig.getProperty("custom.skin.directory", "res");
 			for(int i = 0; i < BACKGROUND_MAX; i++) {
 				imgPlayBG[i] = loadImage(getURL(skindir + "/graphics/back" + i + ".png"));
+				Graphics g = (Graphics2D) imgPlayBG[i].getGraphics();
+				g.setColor(new Color(255, 255, 255, 192));
+				for(int j = 0; j < imgPlayBG[i].getHeight(null); j += 2) {
+					g.fillRect(0, j, imgPlayBG[i].getWidth(null), 1);
+				}
+				Image img = new BufferedImage(imgPlayBG[i].getWidth(null), imgPlayBG[i].getHeight(null), BufferedImage.TYPE_BYTE_GRAY);
+				g = img.getGraphics();
+				g.drawImage(imgPlayBG[i], 0, 0, null);
+				imgPlayBG[i] = img;
 			}
 		}
 	}

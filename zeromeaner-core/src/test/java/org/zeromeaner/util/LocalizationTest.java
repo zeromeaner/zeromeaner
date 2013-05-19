@@ -16,8 +16,8 @@ public class LocalizationTest {
 	
 	@Test
 	public void testLocalized() {
-		Assert.assertEquals("unlocalized", lz.s("unlocalized"));
-		Assert.assertEquals("unlocalized", lz("unlocalized"));
+		Assert.assertEquals("«unlocalized»", lz.s("unlocalized"));
+		Assert.assertEquals("«unlocalized»", lz("unlocalized"));
 		Assert.assertEquals("howdy", lz.s("localized"));
 		Assert.assertEquals("howdy", lz("localized"));
 	}

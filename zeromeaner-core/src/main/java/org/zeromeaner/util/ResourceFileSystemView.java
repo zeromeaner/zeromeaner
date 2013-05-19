@@ -50,7 +50,7 @@ public class ResourceFileSystemView extends FileSystemView {
 		try {
 			s.getResources(toSardine(f) + "/");
 			return true;
-		} catch(SardineException se) {
+		} catch(Exception se) {
 			return false;
 		}
 	}
@@ -168,6 +168,8 @@ public class ResourceFileSystemView extends FileSystemView {
 
 	@Override
 	public File getParentDirectory(File dir) {
+		if(dir == null)
+			return null;
 		return dir.getParentFile();
 	}
 

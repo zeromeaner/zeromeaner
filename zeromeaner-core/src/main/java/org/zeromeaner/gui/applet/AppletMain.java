@@ -72,6 +72,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -87,6 +88,7 @@ import org.eviline.ShapeType;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.gui.knet.KNetPanel;
+import org.zeromeaner.plaf.ZeroMetalTheme;
 import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.ResourceInputStream;
 
@@ -273,6 +275,14 @@ public class AppletMain extends Applet {
 		// enable anti-aliased text:
 		System.setProperty("awt.useSystemAAFontSettings","on");
 		System.setProperty("swing.aatext", "true");
+		
+		try {
+			MetalLookAndFeel.setCurrentTheme(new ZeroMetalTheme());
+			UIManager.setLookAndFeel(new MetalLookAndFeel());
+			SwingUtilities.updateComponentTreeUI(this);
+		} catch(Exception ex) {
+			log.warn(ex);
+		}
 	}
 
 	public void notifyUser(Icon icon, String message, String copyable) {
@@ -539,11 +549,11 @@ public class AppletMain extends Applet {
 		}
 	}
 
-	private static class MainCookieAccess extends CookieAccess {
+	public static class MainCookieAccess extends CookieAccess {
 		private File prefs = new File(System.getProperty("user.dir"), "0mino.properties");
 
 		@Override
-		protected Map<String, String> get(AppletMain applet) {
+		protected Map<String, String> get(Applet applet) {
 			try {
 				InputStream in = new FileInputStream(prefs);
 				Properties p = new Properties();
