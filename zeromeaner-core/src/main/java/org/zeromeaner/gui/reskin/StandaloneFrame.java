@@ -52,6 +52,7 @@ public class StandaloneFrame extends JFrame {
 	}
 	
 	public static final String CARD_PLAY = "toolbar.play";
+	public static final String CARD_MODESELECT = "toolbar.modeselect";
 	public static final String CARD_NETPLAY = "toolbar.netplay";
 	public static final String CARD_OPEN = "toolbar.open";
 	public static final String CARD_OPEN_ONLINE = "toolbar.open_online";
@@ -114,6 +115,8 @@ public class StandaloneFrame extends JFrame {
 	private void createCards() {
 		playCard = new JPanel(new BorderLayout());
 		content.add(playCard, CARD_PLAY);
+		
+		content.add(new StandaloneModeselectPanel(), CARD_MODESELECT);
 		
 		netplayCard = new JPanel(new BorderLayout());
 		netplayCard.add(netLobby, BorderLayout.SOUTH);
