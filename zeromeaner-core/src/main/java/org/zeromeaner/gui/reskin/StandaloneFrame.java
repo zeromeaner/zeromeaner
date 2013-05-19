@@ -82,7 +82,7 @@ public class StandaloneFrame extends JFrame {
 		setTitle("0mino");
 		setUndecorated(true);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setExtendedState(JFrame.MAXIMIZED_BOTH);
+		
 		
 		setLayout(new BorderLayout());
 		add(toolbar = createToolbar(), BorderLayout.EAST);

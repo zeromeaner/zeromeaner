@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -70,6 +71,9 @@ public class StandaloneMain {
 		
 		StandaloneResourceHolder.load();
 		
-		new StandaloneFrame().setVisible(true);
+		StandaloneFrame frame = new StandaloneFrame();
+		
+		frame.setVisible(true);
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 	}
 }
