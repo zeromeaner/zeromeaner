@@ -47,7 +47,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
-import org.zeromeaner.gui.applet.NullpoMinoInternalFrame;
+import static org.zeromeaner.gui.applet.NullpoMinoInternalFrame.lz;
 
 /**
  * Key config frame
@@ -140,10 +140,10 @@ public class StandaloneKeyConfig extends JPanel implements ActionListener {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		// Hint labels
-		JLabel labelHelp1 = new JLabel(NullpoMinoInternalFrame.lz.s("KeyConfig_LabelHelp1"));
+		JLabel labelHelp1 = new JLabel(lz.s("KeyConfig_LabelHelp1"));
 		labelHelp1.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(labelHelp1);
-		JLabel labelHelp2 = new JLabel(NullpoMinoInternalFrame.lz.s("KeyConfig_LabelHelp2"));
+		JLabel labelHelp2 = new JLabel(lz.s("KeyConfig_LabelHelp2"));
 		labelHelp2.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(labelHelp2);
 
@@ -156,7 +156,7 @@ public class StandaloneKeyConfig extends JPanel implements ActionListener {
 		JPanel pKeySetting = new JPanel();
 		pKeySetting.setLayout(new BoxLayout(pKeySetting, BoxLayout.Y_AXIS));
 		pKeySetting.setAlignmentX(LEFT_ALIGNMENT);
-		tabKeySetting.addTab(NullpoMinoInternalFrame.lz.s("KeyConfig_Tab_Ingame"), pKeySetting);
+		tabKeySetting.addTab(lz.s("KeyConfig_Tab_Ingame"), pKeySetting);
 
 		txtfldGameKeys = new JTextField[StandaloneGameKey.MAX_BUTTON];
 		for(int i = 0; i < StandaloneGameKey.MAX_BUTTON; i++) {
@@ -164,7 +164,7 @@ public class StandaloneKeyConfig extends JPanel implements ActionListener {
 			pKeySetting.add(psKeyTemp);
 			psKeyTemp.setLayout(new BorderLayout());
 
-			psKeyTemp.add(new JLabel(NullpoMinoInternalFrame.lz.s("KeyConfig_LabelKey" + i)), BorderLayout.WEST);
+			psKeyTemp.add(new JLabel(lz.s("KeyConfig_LabelKey" + i)), BorderLayout.WEST);
 
 			txtfldGameKeys[i] = new JTextField(20);
 			txtfldGameKeys[i].addKeyListener(keyEventListener);
@@ -177,7 +177,7 @@ public class StandaloneKeyConfig extends JPanel implements ActionListener {
 		JPanel pKeySettingNav = new JPanel();
 		pKeySettingNav.setLayout(new BoxLayout(pKeySettingNav, BoxLayout.Y_AXIS));
 		pKeySettingNav.setAlignmentX(LEFT_ALIGNMENT);
-		tabKeySetting.addTab(NullpoMinoInternalFrame.lz.s("KeyConfig_Tab_Menu"), pKeySettingNav);
+		tabKeySetting.addTab(lz.s("KeyConfig_Tab_Menu"), pKeySettingNav);
 
 		txtfldGameKeysNav = new JTextField[StandaloneGameKey.MAX_BUTTON];
 		for(int i = 0; i < StandaloneGameKey.MAX_BUTTON; i++) {
@@ -185,7 +185,7 @@ public class StandaloneKeyConfig extends JPanel implements ActionListener {
 			pKeySettingNav.add(psKeyTemp);
 			psKeyTemp.setLayout(new BorderLayout());
 
-			psKeyTemp.add(new JLabel(NullpoMinoInternalFrame.lz.s("KeyConfig_LabelKey" + i)), BorderLayout.WEST);
+			psKeyTemp.add(new JLabel(lz.s("KeyConfig_LabelKey" + i)), BorderLayout.WEST);
 
 			txtfldGameKeysNav[i] = new JTextField(20);
 			txtfldGameKeysNav[i].addKeyListener(keyEventListener);
@@ -198,10 +198,10 @@ public class StandaloneKeyConfig extends JPanel implements ActionListener {
 		JPanel pKeyReset = new JPanel();
 		pKeyReset.setLayout(new BoxLayout(pKeyReset, BoxLayout.Y_AXIS));
 		pKeyReset.setAlignmentX(LEFT_ALIGNMENT);
-		tabKeySetting.addTab(NullpoMinoInternalFrame.lz.s("KeyConfig_Tab_Reset"), pKeyReset);
+		tabKeySetting.addTab(lz.s("KeyConfig_Tab_Reset"), pKeyReset);
 
 		for(int i = 0; i < 3; i++) {
-			JButton btnReset = new JButton(NullpoMinoInternalFrame.lz.s("KeyConfig_Reset" + i));
+			JButton btnReset = new JButton(lz.s("KeyConfig_Reset" + i));
 			btnReset.addActionListener(this);
 			btnReset.setActionCommand("KeyConfig_Reset" + i);
 			btnReset.setMaximumSize(new Dimension(Short.MAX_VALUE, 30));
@@ -214,13 +214,13 @@ public class StandaloneKeyConfig extends JPanel implements ActionListener {
 		pButtons.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pButtons);
 
-		JButton btnOK = new JButton(NullpoMinoInternalFrame.lz.s("KeyConfig_OK"));
+		JButton btnOK = new JButton(lz.s("KeyConfig_OK"));
 		btnOK.addActionListener(this);
 		btnOK.setActionCommand("KeyConfig_OK");
 		btnOK.setMaximumSize(new Dimension(Short.MAX_VALUE, 30));
 		pButtons.add(btnOK);
 
-		JButton btnCancel = new JButton(NullpoMinoInternalFrame.lz.s("KeyConfig_Cancel"));
+		JButton btnCancel = new JButton(lz.s("KeyConfig_Cancel"));
 		btnCancel.addActionListener(this);
 		btnCancel.setActionCommand("KeyConfig_Cancel");
 		btnCancel.setMaximumSize(new Dimension(Short.MAX_VALUE, 30));

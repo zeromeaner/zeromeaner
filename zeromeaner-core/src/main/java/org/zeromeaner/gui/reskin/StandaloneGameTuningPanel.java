@@ -52,7 +52,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 
-import org.zeromeaner.gui.applet.NullpoMinoInternalFrame;
+import static org.zeromeaner.gui.applet.NullpoMinoInternalFrame.lz;
+import static org.zeromeaner.gui.applet.NullpoMinoInternalFrame.getIntTextField;
 
 /**
  * Tuning Settings screen frame
@@ -136,20 +137,20 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		pRotateButtonDefaultRight.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pRotateButtonDefaultRight);
 
-		JLabel lRotateButtonDefaultRight = new JLabel(NullpoMinoInternalFrame.lz.s("GameTuning_RotateButtonDefaultRight_Label"));
+		JLabel lRotateButtonDefaultRight = new JLabel(lz.s("GameTuning_RotateButtonDefaultRight_Label"));
 		pRotateButtonDefaultRight.add(lRotateButtonDefaultRight);
 
 		ButtonGroup gRotateButtonDefaultRight = new ButtonGroup();
 
-		radioRotateButtonDefaultRightAuto = new JRadioButton(NullpoMinoInternalFrame.lz.s("GameTuning_RotateButtonDefaultRight_Auto"));
+		radioRotateButtonDefaultRightAuto = new JRadioButton(lz.s("GameTuning_RotateButtonDefaultRight_Auto"));
 		pRotateButtonDefaultRight.add(radioRotateButtonDefaultRightAuto);
 		gRotateButtonDefaultRight.add(radioRotateButtonDefaultRightAuto);
 
-		radioRotateButtonDefaultRightLeft = new JRadioButton(NullpoMinoInternalFrame.lz.s("GameTuning_RotateButtonDefaultRight_Left"));
+		radioRotateButtonDefaultRightLeft = new JRadioButton(lz.s("GameTuning_RotateButtonDefaultRight_Left"));
 		pRotateButtonDefaultRight.add(radioRotateButtonDefaultRightLeft);
 		gRotateButtonDefaultRight.add(radioRotateButtonDefaultRightLeft);
 
-		radioRotateButtonDefaultRightRight = new JRadioButton(NullpoMinoInternalFrame.lz.s("GameTuning_RotateButtonDefaultRight_Right"));
+		radioRotateButtonDefaultRightRight = new JRadioButton(lz.s("GameTuning_RotateButtonDefaultRight_Right"));
 		pRotateButtonDefaultRight.add(radioRotateButtonDefaultRightRight);
 		gRotateButtonDefaultRight.add(radioRotateButtonDefaultRightRight);
 
@@ -159,20 +160,20 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		pMoveDiagonal.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pMoveDiagonal);
 
-		JLabel lMoveDiagonal = new JLabel(NullpoMinoInternalFrame.lz.s("GameTuning_MoveDiagonal_Label"));
+		JLabel lMoveDiagonal = new JLabel(lz.s("GameTuning_MoveDiagonal_Label"));
 		pMoveDiagonal.add(lMoveDiagonal);
 
 		ButtonGroup gMoveDiagonal = new ButtonGroup();
 
-		radioMoveDiagonalAuto = new JRadioButton(NullpoMinoInternalFrame.lz.s("GameTuning_MoveDiagonal_Auto"));
+		radioMoveDiagonalAuto = new JRadioButton(lz.s("GameTuning_MoveDiagonal_Auto"));
 		pMoveDiagonal.add(radioMoveDiagonalAuto);
 		gMoveDiagonal.add(radioMoveDiagonalAuto);
 
-		radioMoveDiagonalDisable = new JRadioButton(NullpoMinoInternalFrame.lz.s("GameTuning_MoveDiagonal_Disable"));
+		radioMoveDiagonalDisable = new JRadioButton(lz.s("GameTuning_MoveDiagonal_Disable"));
 		pMoveDiagonal.add(radioMoveDiagonalDisable);
 		gMoveDiagonal.add(radioMoveDiagonalDisable);
 
-		radioMoveDiagonalEnable = new JRadioButton(NullpoMinoInternalFrame.lz.s("GameTuning_MoveDiagonal_Enable"));
+		radioMoveDiagonalEnable = new JRadioButton(lz.s("GameTuning_MoveDiagonal_Enable"));
 		pMoveDiagonal.add(radioMoveDiagonalEnable);
 		gMoveDiagonal.add(radioMoveDiagonalEnable);
 
@@ -182,20 +183,20 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		pBlockShowOutlineOnly.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pBlockShowOutlineOnly);
 
-		JLabel lBlockShowOutlineOnly = new JLabel(NullpoMinoInternalFrame.lz.s("GameTuning_BlockShowOutlineOnly_Label"));
+		JLabel lBlockShowOutlineOnly = new JLabel(lz.s("GameTuning_BlockShowOutlineOnly_Label"));
 		pBlockShowOutlineOnly.add(lBlockShowOutlineOnly);
 
 		ButtonGroup gBlockShowOutlineOnly = new ButtonGroup();
 
-		radioBlockShowOutlineOnlyAuto = new JRadioButton(NullpoMinoInternalFrame.lz.s("GameTuning_BlockShowOutlineOnly_Auto"));
+		radioBlockShowOutlineOnlyAuto = new JRadioButton(lz.s("GameTuning_BlockShowOutlineOnly_Auto"));
 		pBlockShowOutlineOnly.add(radioBlockShowOutlineOnlyAuto);
 		gBlockShowOutlineOnly.add(radioBlockShowOutlineOnlyAuto);
 
-		radioBlockShowOutlineOnlyDisable = new JRadioButton(NullpoMinoInternalFrame.lz.s("GameTuning_BlockShowOutlineOnly_Disable"));
+		radioBlockShowOutlineOnlyDisable = new JRadioButton(lz.s("GameTuning_BlockShowOutlineOnly_Disable"));
 		pBlockShowOutlineOnly.add(radioBlockShowOutlineOnlyDisable);
 		gBlockShowOutlineOnly.add(radioBlockShowOutlineOnlyDisable);
 
-		radioBlockShowOutlineOnlyEnable = new JRadioButton(NullpoMinoInternalFrame.lz.s("GameTuning_BlockShowOutlineOnly_Enable"));
+		radioBlockShowOutlineOnlyEnable = new JRadioButton(lz.s("GameTuning_BlockShowOutlineOnly_Enable"));
 		pBlockShowOutlineOnly.add(radioBlockShowOutlineOnlyEnable);
 		gBlockShowOutlineOnly.add(radioBlockShowOutlineOnlyEnable);
 
@@ -204,11 +205,11 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		pSkin.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pSkin);
 
-		JLabel lSkin = new JLabel(NullpoMinoInternalFrame.lz.s("GameTuning_Skin_Label"));
+		JLabel lSkin = new JLabel(lz.s("GameTuning_Skin_Label"));
 		pSkin.add(lSkin);
 
 		DefaultComboBoxModel model = new DefaultComboBoxModel();
-		model.addElement(new ComboLabel(NullpoMinoInternalFrame.lz.s("GameTuning_Skin_Auto")));
+		model.addElement(new ComboLabel(lz.s("GameTuning_Skin_Auto")));
 		for(int i = 0; i < imgBlockSkins.length; i++) {
 			model.addElement(new ComboLabel("" + i, new ImageIcon(imgBlockSkins[i])));
 		}
@@ -223,12 +224,12 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		pOutlineType.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pOutlineType);
 
-		JLabel lOutlineType = new JLabel(NullpoMinoInternalFrame.lz.s("GameTuning_OutlineType_Label"));
+		JLabel lOutlineType = new JLabel(lz.s("GameTuning_OutlineType_Label"));
 		pOutlineType.add(lOutlineType);
 
 		String[] strArrayOutlineType = new String[OUTLINE_TYPE_NAMES.length];
 		for(int i = 0; i < OUTLINE_TYPE_NAMES.length; i++) {
-			strArrayOutlineType[i] = NullpoMinoInternalFrame.lz.s(OUTLINE_TYPE_NAMES[i]);
+			strArrayOutlineType[i] = lz.s(OUTLINE_TYPE_NAMES[i]);
 		}
 		DefaultComboBoxModel modelOutlineType = new DefaultComboBoxModel(strArrayOutlineType);
 		comboboxBlockOutlineType = new JComboBox(modelOutlineType);
@@ -240,7 +241,7 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		pMinDAS.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pMinDAS);
 
-		JLabel lMinDAS = new JLabel(NullpoMinoInternalFrame.lz.s("GameTuning_MinDAS_Label"));
+		JLabel lMinDAS = new JLabel(lz.s("GameTuning_MinDAS_Label"));
 		pMinDAS.add(lMinDAS);
 
 		txtfldMinDAS = new JTextField(5);
@@ -251,7 +252,7 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		pMaxDAS.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pMaxDAS);
 
-		JLabel lMaxDAS = new JLabel(NullpoMinoInternalFrame.lz.s("GameTuning_MaxDAS_Label"));
+		JLabel lMaxDAS = new JLabel(lz.s("GameTuning_MaxDAS_Label"));
 		pMaxDAS.add(lMaxDAS);
 
 		txtfldMaxDAS = new JTextField(5);
@@ -262,7 +263,7 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		pDasDelay.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pDasDelay);
 
-		JLabel lDasDelay = new JLabel(NullpoMinoInternalFrame.lz.s("GameTuning_DasDelay_Label"));
+		JLabel lDasDelay = new JLabel(lz.s("GameTuning_DasDelay_Label"));
 		pDasDelay.add(lDasDelay);
 
 		txtfldDasDelay = new JTextField(5);
@@ -273,7 +274,7 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		pReverseUpDown.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pReverseUpDown);
 
-		JLabel lReverseUpDown = new JLabel(NullpoMinoInternalFrame.lz.s("GameTuning_ReverseUpDown_Label"));
+		JLabel lReverseUpDown = new JLabel(lz.s("GameTuning_ReverseUpDown_Label"));
 		pReverseUpDown.add(lReverseUpDown);
 
 		chkboxReverseUpDown = new JCheckBox();
@@ -284,13 +285,13 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		pButtons.setAlignmentX(LEFT_ALIGNMENT);
 		this.add(pButtons);
 
-		JButton buttonOK = new JButton(NullpoMinoInternalFrame.lz.s("GameTuning_OK"));
+		JButton buttonOK = new JButton(lz.s("GameTuning_OK"));
 		buttonOK.setMnemonic('O');
 		buttonOK.addActionListener(this);
 		buttonOK.setActionCommand("GameTuning_OK");
 		pButtons.add(buttonOK);
 
-		JButton buttonCancel = new JButton(NullpoMinoInternalFrame.lz.s("GameTuning_Cancel"));
+		JButton buttonCancel = new JButton(lz.s("GameTuning_Cancel"));
 		buttonCancel.setMnemonic('C');
 		buttonCancel.addActionListener(this);
 		buttonCancel.setActionCommand("GameTuning_Cancel");
@@ -382,11 +383,11 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		int owBlockOutlineType = comboboxBlockOutlineType.getSelectedIndex() - 1;
 		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owBlockOutlineType", owBlockOutlineType);
 
-		int owMinDAS = NullpoMinoInternalFrame.getIntTextField(-1, txtfldMinDAS);
+		int owMinDAS = getIntTextField(-1, txtfldMinDAS);
 		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owMinDAS", owMinDAS);
-		int owMaxDAS = NullpoMinoInternalFrame.getIntTextField(-1, txtfldMaxDAS);
+		int owMaxDAS = getIntTextField(-1, txtfldMaxDAS);
 		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owMaxDAS", owMaxDAS);
-		int owDasDelay = NullpoMinoInternalFrame.getIntTextField(-1, txtfldDasDelay);
+		int owDasDelay = getIntTextField(-1, txtfldDasDelay);
 		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owDasDelay", owDasDelay);
 		boolean owReverseUpDown = chkboxReverseUpDown.isSelected();
 		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owReverseUpDown", owReverseUpDown);
