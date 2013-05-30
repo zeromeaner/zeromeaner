@@ -12,7 +12,6 @@ import org.zeromeaner.gui.applet.AppletMain;
 import com.googlecode.sardine.DavResource;
 import com.googlecode.sardine.Factory;
 import com.googlecode.sardine.Sardine;
-import com.googlecode.sardine.util.SardineException;
 
 public class ResourceFileSystemView extends FileSystemView {
 	private static Sardine s;

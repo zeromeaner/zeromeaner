@@ -34,9 +34,6 @@ import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +41,6 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -54,13 +50,13 @@ import javax.swing.JTextField;
 
 
 
+
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.subsystem.ai.AIPlayer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
-import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.Zeroflections;
 
-import static org.zeromeaner.gui.applet.NullpoMinoInternalFrame.lz;
+import static org.zeromeaner.gui.reskin.Localizations.lz;
 
 /**
  * AISelection screen frame

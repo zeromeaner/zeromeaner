@@ -40,7 +40,6 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
-import org.zeromeaner.knet.KNetEventArgs;
 import org.zeromeaner.util.GeneralUtil;
 
 import com.esotericsoftware.kryo.Kryo;

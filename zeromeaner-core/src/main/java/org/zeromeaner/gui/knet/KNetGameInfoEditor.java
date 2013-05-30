@@ -1,6 +1,5 @@
 package org.zeromeaner.gui.knet;
 
-import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.lang.reflect.Field;
 
@@ -11,7 +10,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
 import org.zeromeaner.knet.obj.KNetGameInfo;

@@ -1,4 +1,4 @@
-package org.zeromeaner.gui.applet;
+package org.zeromeaner.gui.reskin;
 
 import java.applet.Applet;
 import java.io.ByteArrayInputStream;
@@ -7,6 +7,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.zeromeaner.gui.applet.AppletMain;
 
 import netscape.javascript.JSObject;
 

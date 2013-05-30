@@ -12,7 +12,6 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.gui.applet.AppletMain;
-import org.zeromeaner.gui.applet.CookieAccess;
 import org.zeromeaner.plaf.ZeroMetalTheme;
 import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.ModeList;

@@ -30,7 +30,6 @@ import org.funcish.core.coll.ArrayFunctionalList;
 import org.funcish.core.coll.FunctionalList;
 import org.funcish.core.fn.Mapper;
 import org.funcish.core.impl.AbstractMapper;
-import org.zeromeaner.gui.applet.ResourceHolderApplet;
 
 public class MusicList extends ArrayFunctionalList<String> {
 	private static final Logger log = Logger.getLogger(MusicList.class);

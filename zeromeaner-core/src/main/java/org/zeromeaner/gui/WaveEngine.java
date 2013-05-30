@@ -59,7 +59,7 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.apache.log4j.Logger;
-import org.zeromeaner.gui.applet.ResourceHolderApplet;
+import org.zeromeaner.gui.reskin.StandaloneResourceHolder;
 import org.zeromeaner.util.MusicList;
 import org.zeromeaner.util.ResourceInputStream;
 
@@ -148,7 +148,7 @@ public class WaveEngine {
 	public void load(String name, String filename) {
 		try {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			InputStream in = ResourceHolderApplet.getURL(filename).openStream();
+			InputStream in = StandaloneResourceHolder.getURL(filename).openStream();
 			byte[] b = new byte[8192];
 			for(int r = in.read(b); r != -1; r = in.read(b))
 				out.write(b, 0, r);

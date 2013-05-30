@@ -3,18 +3,11 @@ package org.zeromeaner.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Properties;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
-import org.funcish.core.fn.Mapping;
-import org.funcish.core.impl.AbstractMapping;
 
 public class NavigableProperties {
 	private NavigableProperties parent;

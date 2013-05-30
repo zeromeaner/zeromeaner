@@ -41,13 +41,12 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
-import static org.zeromeaner.gui.applet.NullpoMinoInternalFrame.lz;
+import static org.zeromeaner.gui.reskin.Localizations.lz;
 
 /**
  * Key config frame

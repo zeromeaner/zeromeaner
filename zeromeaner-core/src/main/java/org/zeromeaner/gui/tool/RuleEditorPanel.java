@@ -34,16 +34,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
-import java.util.Locale;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
@@ -56,27 +52,17 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
-import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-
 import org.funcish.core.Mappings;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
@@ -86,7 +72,6 @@ import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.wallkick.StandardWallkick;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.Localization;
-import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.Zeroflections;
 
