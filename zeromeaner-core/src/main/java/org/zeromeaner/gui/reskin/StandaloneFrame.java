@@ -87,7 +87,7 @@ public class StandaloneFrame extends JFrame {
 	private JToggleButton netplayButton;
 	
 	KNetPanel netLobby;
-	GameManager gameManager;
+	volatile GameManager gameManager;
 	private StandaloneGamePanel gamePanel;
 	private StandaloneMusicVolumePanel musicPanel;
 	
@@ -145,6 +145,7 @@ public class StandaloneFrame extends JFrame {
 					}
 					contentCards.show(content, nextCard);
 					currentCard = nextCard;
+					playCardSelected();
 				}
 				if(evt.getNewValue().equals(JOptionPane.NO_OPTION)) {
 					contentCards.show(content, CARD_PLAY);
@@ -296,10 +297,9 @@ public class StandaloneFrame extends JFrame {
 		b = playButton = new JToggleButton(new ToolbarAction("toolbar.play") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(CARD_PLAY.equals(currentCard))
-					return;
 				super.actionPerformed(e);
-				playCardSelected();
+				if(CARD_PLAY.equals(currentCard))
+					playCardSelected();
 			}
 		});
 		add(t, g, b);
