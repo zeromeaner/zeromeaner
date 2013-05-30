@@ -229,7 +229,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 		add(imageBufferLabel = new FocusableJLabel(new ImageIcon(imageBuffer)), BorderLayout.CENTER);
 		
-		imageBufferLabel.setText("No Active Game");
+		imageBufferLabel.setText("No Active Game.  Click \"Play\" to start.");
 		imageBufferLabel.setIcon(null);
 
 		maxfps = StandaloneMain.propConfig.getProperty("option.maxfps", 60);
@@ -286,7 +286,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			running.set(false);
 			running.notifyAll();
 		}
-		imageBufferLabel.setText("No Active Game");
+		imageBufferLabel.setText("No Active Game.  Click \"Play\" to start.");
 		imageBufferLabel.setIcon(null);
 	}
 	
