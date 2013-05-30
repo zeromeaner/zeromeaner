@@ -12,7 +12,6 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.GameMode;
-import org.zeromeaner.gui.applet.AppletMain;
 import org.zeromeaner.plaf.ZeroMetalTheme;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ModeList;
@@ -23,6 +22,7 @@ import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 public class StandaloneMain {
 	public static CustomProperties propConfig = new CustomProperties();
 	public static ModeList<GameMode> modeManager;
+	public static String userId;
 	
 	public static void main(String[] args) {
 		try {
@@ -61,11 +61,11 @@ public class StandaloneMain {
 		new File(System.getProperty("user.dir")).mkdirs();
 		CookieAccess.setInstance(new MainCookieAccess());
 
-		AppletMain.url = new URL("http://www.0mino.org/" + (GameManager.VERSION.isSnapshot() ? "snapshot" : "play") + "/");
+		StandaloneApplet.url = new URL("http://www.0mino.org/" + (GameManager.VERSION.isSnapshot() ? "snapshot" : "play") + "/");
 
-		AppletMain.userId = System.getProperty("user.name");
+		userId = System.getProperty("user.name");
 		if(CookieAccess.get("userId") != null)
-			AppletMain.userId = CookieAccess.get("userId");
+			userId = CookieAccess.get("userId");
 
 		
 		try {

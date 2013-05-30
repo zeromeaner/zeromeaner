@@ -37,7 +37,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.gui.applet.AppletMain;
+import org.zeromeaner.gui.reskin.StandaloneApplet;
 import org.zeromeaner.knet.KNetChannelEvent;
 import org.zeromeaner.knet.KNetChannelListener;
 import org.zeromeaner.knet.KNetClient;
@@ -159,18 +159,18 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			add(p, BorderLayout.CENTER);
 			p = new JPanel(new GridLayout(0, 1));
 			p.add(connect);
-			if(!AppletMain.isApplet()) {
+			if(!StandaloneApplet.isApplet()) {
 				p.add(add);
 				p.add(remove);
 			}
 			p.add(exit);
 			add(p, BorderLayout.EAST);
 			
-			if(AppletMain.url != null) {
+			if(StandaloneApplet.url != null) {
 				if(!GameManager.VERSION.isSnapshot())
-					connectionsModel.addElement("" + AppletMain.url.getHost() + ":61897");
+					connectionsModel.addElement("" + StandaloneApplet.url.getHost() + ":61897");
 				else {
-					connectionsModel.addElement("" + AppletMain.url.getHost() + ":61898");
+					connectionsModel.addElement("" + StandaloneApplet.url.getHost() + ":61898");
 				}
 			}
 			

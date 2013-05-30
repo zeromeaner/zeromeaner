@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import org.zeromeaner.gui.applet.AppletMain;
-
 public class MainCookieAccess extends CookieAccess {
 	private File prefs = new File(System.getProperty("user.dir"), "0mino.properties");
 
@@ -32,7 +30,7 @@ public class MainCookieAccess extends CookieAccess {
 	}
 
 	@Override
-	protected void set(AppletMain applet, Map<String, String> cookie) {
+	protected void set(StandaloneApplet applet, Map<String, String> cookie) {
 		try {
 			Properties p = new Properties();
 			for(Map.Entry<String, String> e : cookie.entrySet()) {

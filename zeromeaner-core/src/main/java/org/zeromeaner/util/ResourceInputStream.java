@@ -20,7 +20,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
-import org.zeromeaner.gui.applet.AppletMain;
+import org.zeromeaner.gui.reskin.StandaloneApplet;
+import org.zeromeaner.gui.reskin.StandaloneMain;
 
 import com.googlecode.sardine.Factory;
 import com.googlecode.sardine.Sardine;
@@ -43,7 +44,7 @@ public class ResourceInputStream extends FilterInputStream {
 	public static InputStream getStream(String resource) throws IOException {
 		InputStream in = null;
 		if(
-				((AppletMain.isApplet() && resource.startsWith("config/setting/")) 
+				((StandaloneApplet.isApplet() && resource.startsWith("config/setting/")) 
 				|| resource.startsWith("replay/"))
 				&& !dontDownload.contains(resource))
 			try {
@@ -68,11 +69,11 @@ public class ResourceInputStream extends FilterInputStream {
 	public static URL getURL(String resource) {
 		URL in = null;
 		if(
-				AppletMain.isApplet() 
+				StandaloneApplet.isApplet() 
 				&& (resource.startsWith("config/setting/") || resource.startsWith("replay/"))
 				&& !dontDownload.contains(resource))
 			try {
-				in = new URL("http://" + AppletMain.url.getHost() + "/webdav/" + AppletMain.userId + "/" + resource);
+				in = new URL("http://" + StandaloneApplet.url.getHost() + "/webdav/" + StandaloneMain.userId + "/" + resource);
 			} catch(IOException ioe) {
 			}
 		if(in != null)
@@ -104,7 +105,7 @@ public class ResourceInputStream extends FilterInputStream {
 			cache = new TreeMap<String, byte[]>();
 			try {
 				log.info("Loading resource cache");
-				URL url = new URL("http://" + AppletMain.url.getHost() + "/webdav/" + AppletMain.userId + "/cache.jdk");
+				URL url = new URL("http://" + StandaloneApplet.url.getHost() + "/webdav/" + StandaloneMain.userId + "/cache.jdk");
 				InputStream in = s.getInputStream(url.toString());
 				cache.putAll((Map<String, byte[]>) new ObjectInputStream(in).readObject());
 				in.close();
@@ -115,12 +116,12 @@ public class ResourceInputStream extends FilterInputStream {
 		}
 		
 		public static void commitCache() throws IOException {
-			if(!AppletMain.isApplet())
+			if(!StandaloneApplet.isApplet())
 				return;
-			URL url = new URL("http://" + AppletMain.url.getHost() + "/webdav/" + AppletMain.userId + "/cache.jdk");
+			URL url = new URL("http://" + StandaloneApplet.url.getHost() + "/webdav/" + StandaloneMain.userId + "/cache.jdk");
 			String dir = url.toString().substring(0, url.toString().lastIndexOf("/"));
 			List<String> dirs = new ArrayList<String>();
-			while(!dir.equals("http://" + AppletMain.url.getHost() + "/webdav")) {
+			while(!dir.equals("http://" + StandaloneApplet.url.getHost() + "/webdav")) {
 				dirs.add(0, dir);
 				dir = dir.substring(0, dir.lastIndexOf("/"));
 			}
@@ -145,7 +146,7 @@ public class ResourceInputStream extends FilterInputStream {
 				log.info("Returning cached copy of resource " + resource);
 				return new ByteArrayInputStream(getCache().get(resource));
 			}
-			final URL url = new URL("http://" + AppletMain.url.getHost() + "/webdav/" + AppletMain.userId + "/" + resource);
+			final URL url = new URL("http://" + StandaloneApplet.url.getHost() + "/webdav/" + StandaloneMain.userId + "/" + resource);
 			return s.getInputStream(url.toString());
 		}
 		

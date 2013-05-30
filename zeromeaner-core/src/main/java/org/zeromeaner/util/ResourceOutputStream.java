@@ -10,7 +10,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.zeromeaner.gui.applet.AppletMain;
+import org.zeromeaner.gui.reskin.StandaloneApplet;
+import org.zeromeaner.gui.reskin.StandaloneMain;
 import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 
 import com.googlecode.sardine.Factory;
@@ -27,7 +28,7 @@ public class ResourceOutputStream extends FilterOutputStream {
 	}
 
 	public static OutputStream getStream(String resource) throws IOException {
-		if(AppletMain.isApplet())
+		if(StandaloneApplet.isApplet())
 			return new ResourceUploadStream(resource);
 		try {
 			File localResource = new File(System.getProperty("user.dir"), "local-resources/" + resource);
@@ -44,7 +45,7 @@ public class ResourceOutputStream extends FilterOutputStream {
 	
 	public static class ResourceUploadStream extends FilterOutputStream {
 		public static OutputStream getUploadStream(final String resource) throws IOException {
-			final URL url = new URL("http://" + AppletMain.url.getHost() + "/webdav/" + AppletMain.userId + "/" + resource);
+			final URL url = new URL("http://" + StandaloneApplet.url.getHost() + "/webdav/" + StandaloneMain.userId + "/" + resource);
 			System.out.println("Creating new ResourceUploadStream to " + url);
 			return new ByteArrayOutputStream() {
 				@Override
@@ -56,7 +57,7 @@ public class ResourceOutputStream extends FilterOutputStream {
 					}
 					String dir = url.toString().substring(0, url.toString().lastIndexOf("/"));
 					List<String> dirs = new ArrayList<String>();
-					while(!dir.equals("http://" + AppletMain.url.getHost() + "/webdav")) {
+					while(!dir.equals("http://" + StandaloneApplet.url.getHost() + "/webdav")) {
 						dirs.add(0, dir);
 						dir = dir.substring(0, dir.lastIndexOf("/"));
 					}

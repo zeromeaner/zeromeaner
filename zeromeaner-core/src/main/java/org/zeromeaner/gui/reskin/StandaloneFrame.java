@@ -38,7 +38,6 @@ import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.game.subsystem.mode.MarathonMode;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
-import org.zeromeaner.gui.applet.AppletMain;
 import org.zeromeaner.gui.knet.KNetPanel;
 import org.zeromeaner.gui.knet.KNetPanelAdapter;
 import org.zeromeaner.gui.knet.KNetPanelEvent;
@@ -245,7 +244,7 @@ public class StandaloneFrame extends JFrame {
 		});
 		content.add(fc, CARD_OPEN_ONLINE);
 		
-		if(!AppletMain.isApplet()) {
+		if(!StandaloneApplet.isApplet()) {
 			fc = new JFileChooser(System.getProperty("user.dir") + File.separator + "local-resources" + File.separator + "replay");
 			fc.addActionListener(new ActionListener() {
 				@Override
@@ -350,7 +349,7 @@ public class StandaloneFrame extends JFrame {
 		b = new JToggleButton(new ToolbarAction("toolbar.general"));
 		add(t, g, b);
 		
-		if(!AppletMain.isApplet()) {
+		if(!StandaloneApplet.isApplet()) {
 			b = new JToggleButton(new ToolbarAction("toolbar.open"));
 			add(t, g, b);
 		}

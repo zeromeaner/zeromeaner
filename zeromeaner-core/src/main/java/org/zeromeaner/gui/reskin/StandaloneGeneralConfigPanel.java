@@ -46,7 +46,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import org.zeromeaner.gui.applet.AppletMain;
 import org.zeromeaner.util.SwingUtils;
 
 import static org.zeromeaner.gui.reskin.Localizations.lz;
@@ -310,7 +309,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	 * Current SettingsGUIBe reflected in the
 	 */
 	public void load() {
-		userId.setText(AppletMain.userId);
+		userId.setText(StandaloneMain.userId);
 		
 		int sWidth = StandaloneMain.propConfig.getProperty("option.screenwidth", 640);
 		int sHeight = StandaloneMain.propConfig.getProperty("option.screenheight", 480);
@@ -351,8 +350,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		if(e.getActionCommand() == "GeneralConfig_OK") {
 			// OK
 			
-			AppletMain.userId = userId.getText();
-			CookieAccess.put("userId", AppletMain.userId);
+			StandaloneMain.userId = userId.getText();
+			CookieAccess.put("userId", StandaloneMain.userId);
 			
 			int screenSizeIndex = comboboxScreenSize.getSelectedIndex();
 			if((screenSizeIndex >= 0) && (screenSizeIndex < SCREENSIZE_TABLE.length)) {
