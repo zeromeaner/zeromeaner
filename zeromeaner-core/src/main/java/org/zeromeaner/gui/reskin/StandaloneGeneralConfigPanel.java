@@ -29,6 +29,7 @@
 package org.zeromeaner.gui.reskin;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,6 +44,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.zeromeaner.gui.applet.AppletMain;
 import org.zeromeaner.gui.applet.CookieAccess;
@@ -148,7 +150,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	 * GUIOfInitialization
 	 */
 	protected void initUI() {
-		setLayout(new BorderLayout());
+		setLayout(new BorderLayout(10, 10));
 
 		JPanel login = new JPanel(new BorderLayout());
 		login.add(new JLabel("www.0mino.org user ID:"), BorderLayout.WEST);
@@ -161,12 +163,12 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 
 		// ** Basic Tab
 		JPanel pBasicTab = new JPanel();
-		pBasicTab.setLayout(new BoxLayout(pBasicTab, BoxLayout.Y_AXIS));
+		pBasicTab.setLayout(new GridLayout(0, 1));
 		tabPane.addTab(lz.s("GeneralConfig_TabName_Basic"), pBasicTab);
 
 		// ---------- Sound effectsVolume of ----------
 		JPanel pSEVolume = new JPanel();
-		pSEVolume.setAlignmentX(LEFT_ALIGNMENT);
+		pSEVolume.setAlignmentX(CENTER_ALIGNMENT);
 		pBasicTab.add(pSEVolume);
 
 		JLabel lSEVolume = new JLabel(lz.s("GeneralConfig_SEVolume"));
@@ -177,61 +179,61 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 
 		// ---------- checkBox ----------
 		chkboxShowBackground = new JCheckBox(lz.s("GeneralConfig_ShowBackground"));
-		chkboxShowBackground.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxShowBackground.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxShowBackground);
 
 		chkboxShowMeter = new JCheckBox(lz.s("GeneralConfig_ShowMeter"));
-		chkboxShowMeter.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxShowMeter.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxShowMeter);
 
 		chkboxShowFieldBlockGraphics = new JCheckBox(lz.s("GeneralConfig_ShowFieldBlockGraphics"));
-		chkboxShowFieldBlockGraphics.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxShowFieldBlockGraphics.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxShowFieldBlockGraphics);
 
 		chkboxSimpleBlock = new JCheckBox(lz.s("GeneralConfig_SimpleBlock"));
-		chkboxSimpleBlock.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxSimpleBlock.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxSimpleBlock);
 
 		chkboxSE = new JCheckBox(lz.s("GeneralConfig_SE"));
-		chkboxSE.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxSE.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxSE);
 
 		chkboxNextShadow = new JCheckBox(lz.s("GeneralConfig_NextShadow"));
-		chkboxNextShadow.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxNextShadow.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxNextShadow);
 
 		chkboxOutlineGhost = new JCheckBox(lz.s("GeneralConfig_OutlineGhost"));
-		chkboxOutlineGhost.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxOutlineGhost.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxOutlineGhost);
 
 		chkboxSideNext = new JCheckBox(lz.s("GeneralConfig_SideNext"));
-		chkboxSideNext.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxSideNext.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxSideNext);
 
 		chkboxBigSideNext = new JCheckBox(lz.s("GeneralConfig_BigSideNext"));
-		chkboxBigSideNext.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxBigSideNext.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxBigSideNext);
 
 		chkboxDarkNextArea = new JCheckBox(lz.s("GeneralConfig_DarkNextArea"));
-		chkboxDarkNextArea.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxDarkNextArea.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxDarkNextArea);
 
 		chkboxShowFieldBGGrid = new JCheckBox(lz.s("GeneralConfig_ShowFieldBGGrid"));
-		chkboxShowFieldBGGrid.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxShowFieldBGGrid.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxShowFieldBGGrid);
 
 		chkboxShowInput = new JCheckBox(lz.s("GeneralConfig_ShowInput"));
-		chkboxShowInput.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxShowInput.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxShowInput);
 
 		// ** Advanced Tab
 		JPanel pAdvancedTab = new JPanel();
-		pAdvancedTab.setLayout(new BoxLayout(pAdvancedTab, BoxLayout.Y_AXIS));
+		pAdvancedTab.setLayout(new GridLayout(0, 1));
 		tabPane.addTab(lz.s("GeneralConfig_TabName_Advanced"), pAdvancedTab);
 
 		// ---------- Screen size ----------
 		JPanel pScreenSize = new JPanel();
-		pScreenSize.setAlignmentX(LEFT_ALIGNMENT);
+		pScreenSize.setAlignmentX(CENTER_ALIGNMENT);
 		pAdvancedTab.add(pScreenSize);
 
 		JLabel lScreenSize = new JLabel(lz.s("GeneralConfig_ScreenSize"));
@@ -247,7 +249,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 
 		// ---------- MaximumFPS ----------
 		JPanel pMaxFPS = new JPanel();
-		pMaxFPS.setAlignmentX(LEFT_ALIGNMENT);
+		pMaxFPS.setAlignmentX(CENTER_ALIGNMENT);
 		pAdvancedTab.add(pMaxFPS);
 
 		JLabel lMaxFPS = new JLabel(lz.s("GeneralConfig_MaxFPS"));
@@ -258,7 +260,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 
 		// ---------- Line clear effect speed ----------
 		JPanel pLineClearEffectSpeed = new JPanel();
-		pLineClearEffectSpeed.setAlignmentX(LEFT_ALIGNMENT);
+		pLineClearEffectSpeed.setAlignmentX(CENTER_ALIGNMENT);
 		pAdvancedTab.add(pLineClearEffectSpeed);
 
 		JLabel lLineClearEffectSpeed = new JLabel(lz.s("GeneralConfig_LineClearEffectSpeed"));
@@ -269,28 +271,28 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 
 		// ---------- Checkboxes ----------
 		chkboxShowFPS = new JCheckBox(lz.s("GeneralConfig_ShowFPS"));
-		chkboxShowFPS.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxShowFPS.setHorizontalAlignment(SwingConstants.CENTER);
 		pAdvancedTab.add(chkboxShowFPS);
 
 		chkboxUseNativeLookAndFeel = new JCheckBox(lz.s("GeneralConfig_UseNativeLookAndFeel"));
-		chkboxUseNativeLookAndFeel.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxUseNativeLookAndFeel.setHorizontalAlignment(SwingConstants.CENTER);
 		pAdvancedTab.add(chkboxUseNativeLookAndFeel);
 
 		chkboxEnableFrameStep = new JCheckBox(lz.s("GeneralConfig_EnableFrameStep"));
-		chkboxEnableFrameStep.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxEnableFrameStep.setHorizontalAlignment(SwingConstants.CENTER);
 		pAdvancedTab.add(chkboxEnableFrameStep);
 
 		chkboxSyncDisplay = new JCheckBox(lz.s("GeneralConfig_SyncDisplay"));
-		chkboxSyncDisplay.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxSyncDisplay.setHorizontalAlignment(SwingConstants.CENTER);
 		pAdvancedTab.add(chkboxSyncDisplay);
 
 		chkboxShowLineClearEffect = new JCheckBox(lz.s("GeneralConfig_ShowLineClearEffect"));
-		chkboxShowLineClearEffect.setAlignmentX(LEFT_ALIGNMENT);
+		chkboxShowLineClearEffect.setHorizontalAlignment(SwingConstants.CENTER);
 		pAdvancedTab.add(chkboxShowLineClearEffect);
 
 		// ---------- The bottom of the screen button ----------
 		JPanel pButtons = new JPanel();
-		pButtons.setAlignmentX(LEFT_ALIGNMENT);
+		pButtons.setAlignmentX(CENTER_ALIGNMENT);
 		this.add(pButtons, BorderLayout.SOUTH);
 
 		JButton buttonOK = new JButton(lz.s("GeneralConfig_OK"));

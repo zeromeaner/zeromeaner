@@ -31,6 +31,7 @@ package org.zeromeaner.gui.reskin;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -129,13 +130,19 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 	 * GUIOfInitialization
 	 */
 	protected void initUI() {
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setLayout(new GridLayout(0, 2));
+		
+		JPanel left = new JPanel(new GridLayout(0, 1));
+		JPanel right = new JPanel(new GridLayout(0, 1));
 
+		this.add(left);
+		this.add(right);
+		
 		// ---------- A buttonInrotationDirection ----------
 		JPanel pRotateButtonDefaultRight = new JPanel();
 		pRotateButtonDefaultRight.setLayout(new BoxLayout(pRotateButtonDefaultRight, BoxLayout.Y_AXIS));
 		pRotateButtonDefaultRight.setAlignmentX(LEFT_ALIGNMENT);
-		this.add(pRotateButtonDefaultRight);
+		left.add(pRotateButtonDefaultRight);
 
 		JLabel lRotateButtonDefaultRight = new JLabel(lz.s("GameTuning_RotateButtonDefaultRight_Label"));
 		pRotateButtonDefaultRight.add(lRotateButtonDefaultRight);
@@ -158,7 +165,7 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		JPanel pMoveDiagonal = new JPanel();
 		pMoveDiagonal.setLayout(new BoxLayout(pMoveDiagonal, BoxLayout.Y_AXIS));
 		pMoveDiagonal.setAlignmentX(LEFT_ALIGNMENT);
-		this.add(pMoveDiagonal);
+		left.add(pMoveDiagonal);
 
 		JLabel lMoveDiagonal = new JLabel(lz.s("GameTuning_MoveDiagonal_Label"));
 		pMoveDiagonal.add(lMoveDiagonal);
@@ -181,7 +188,7 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		JPanel pBlockShowOutlineOnly = new JPanel();
 		pBlockShowOutlineOnly.setLayout(new BoxLayout(pBlockShowOutlineOnly, BoxLayout.Y_AXIS));
 		pBlockShowOutlineOnly.setAlignmentX(LEFT_ALIGNMENT);
-		this.add(pBlockShowOutlineOnly);
+		left.add(pBlockShowOutlineOnly);
 
 		JLabel lBlockShowOutlineOnly = new JLabel(lz.s("GameTuning_BlockShowOutlineOnly_Label"));
 		pBlockShowOutlineOnly.add(lBlockShowOutlineOnly);
@@ -203,7 +210,7 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		// ---------- Picture ----------
 		JPanel pSkin = new JPanel();
 		pSkin.setAlignmentX(LEFT_ALIGNMENT);
-		this.add(pSkin);
+		right.add(pSkin);
 
 		JLabel lSkin = new JLabel(lz.s("GameTuning_Skin_Label"));
 		pSkin.add(lSkin);
@@ -222,7 +229,7 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		// ---------- Outline Type ----------
 		JPanel pOutlineType = new JPanel();
 		pOutlineType.setAlignmentX(LEFT_ALIGNMENT);
-		this.add(pOutlineType);
+		right.add(pOutlineType);
 
 		JLabel lOutlineType = new JLabel(lz.s("GameTuning_OutlineType_Label"));
 		pOutlineType.add(lOutlineType);
@@ -239,7 +246,7 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		// ---------- LowestDAS ----------
 		JPanel pMinDAS = new JPanel();
 		pMinDAS.setAlignmentX(LEFT_ALIGNMENT);
-		this.add(pMinDAS);
+		right.add(pMinDAS);
 
 		JLabel lMinDAS = new JLabel(lz.s("GameTuning_MinDAS_Label"));
 		pMinDAS.add(lMinDAS);
@@ -250,7 +257,7 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		// ---------- MaximumDAS ----------
 		JPanel pMaxDAS = new JPanel();
 		pMaxDAS.setAlignmentX(LEFT_ALIGNMENT);
-		this.add(pMaxDAS);
+		right.add(pMaxDAS);
 
 		JLabel lMaxDAS = new JLabel(lz.s("GameTuning_MaxDAS_Label"));
 		pMaxDAS.add(lMaxDAS);
@@ -261,7 +268,7 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		// ---------- Lateral movement speed ----------
 		JPanel pDasDelay = new JPanel();
 		pDasDelay.setAlignmentX(LEFT_ALIGNMENT);
-		this.add(pDasDelay);
+		right.add(pDasDelay);
 
 		JLabel lDasDelay = new JLabel(lz.s("GameTuning_DasDelay_Label"));
 		pDasDelay.add(lDasDelay);
@@ -272,7 +279,7 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		// ---------- Reverse Up/Down ----------
 		JPanel pReverseUpDown = new JPanel();
 		pReverseUpDown.setAlignmentX(LEFT_ALIGNMENT);
-		this.add(pReverseUpDown);
+		right.add(pReverseUpDown);
 
 		JLabel lReverseUpDown = new JLabel(lz.s("GameTuning_ReverseUpDown_Label"));
 		pReverseUpDown.add(lReverseUpDown);
@@ -283,7 +290,7 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		// ---------- The bottom of the screen button ----------
 		JPanel pButtons = new JPanel();
 		pButtons.setAlignmentX(LEFT_ALIGNMENT);
-		this.add(pButtons);
+		right.add(pButtons);
 
 		JButton buttonOK = new JButton(lz.s("GameTuning_OK"));
 		buttonOK.setMnemonic('O');
