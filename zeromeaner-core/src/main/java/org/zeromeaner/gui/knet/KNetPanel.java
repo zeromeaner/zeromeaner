@@ -276,7 +276,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			p.add(pass);
 			add(p, BorderLayout.CENTER);
 			
-			user.setEditable(false);
+			user.setEnabled(false);
 			user.setDocument(connectionsListPanel.username.getDocument());
 		}
 	}
