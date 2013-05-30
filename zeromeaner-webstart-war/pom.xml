@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>zeromeaner-parent</artifactId>
 		<groupId>org.zeromeaner</groupId>
-		<version>1.0.15</version>
+		<version>1.0.16</version>
 		<relativePath>../zeromeaner-parent</relativePath>
 	</parent>
 	<artifactId>zeromeaner-webstart-war</artifactId>
@@ -155,7 +155,7 @@
 		<dependency>
 			<groupId>org.zeromeaner</groupId>
 			<artifactId>zeromeaner-server</artifactId>
-			<version>1.0.15</version>
+			<version>1.0.16</version>
 		</dependency>
 	</dependencies>
 </project>
