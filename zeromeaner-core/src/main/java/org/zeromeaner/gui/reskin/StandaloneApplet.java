@@ -83,6 +83,9 @@ public class StandaloneApplet extends Applet {
 			StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 			StandaloneGameKey.gamekey[1].loadDefaultKeymap();
 			
+			StandaloneGameKey.gamekey[0].loadConfig(StandaloneMain.propConfig);
+			StandaloneGameKey.gamekey[1].loadConfig(StandaloneMain.propConfig);
+			
 			StandaloneResourceHolder.load();
 			
 			StandaloneFrame frame = new StandaloneFrame();

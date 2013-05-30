@@ -232,10 +232,9 @@ public class StandaloneKeyConfig extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand() == "KeyConfig_OK") {
 			save();
-			this.setVisible(false);
 		}
 		else if(e.getActionCommand() == "KeyConfig_Cancel") {
-			this.setVisible(false);
+			load(playerID);
 		}
 		else if(e.getActionCommand().startsWith("KeyConfig_Reset")) {
 			String strTemp = e.getActionCommand().replaceFirst("KeyConfig_Reset", "");

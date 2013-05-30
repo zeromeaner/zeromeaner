@@ -85,6 +85,9 @@ public class StandaloneMain {
 		StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 		StandaloneGameKey.gamekey[1].loadDefaultKeymap();
 		
+		StandaloneGameKey.gamekey[0].loadConfig(propConfig);
+		StandaloneGameKey.gamekey[1].loadConfig(propConfig);
+		
 		StandaloneResourceHolder.load();
 		
 		StandaloneFrame frame = new StandaloneFrame();
