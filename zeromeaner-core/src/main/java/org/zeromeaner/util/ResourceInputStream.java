@@ -36,7 +36,7 @@ public class ResourceInputStream extends FilterInputStream {
 		}
 	}
 	
-	private static Collection<String> dontDownload = Arrays.asList(
+	static Collection<String> dontDownload = Arrays.asList(
 			"config/setting/netlobby_serverlist_dev.cfg",
 			"config/setting/netlobby_serverlist.cfg"
 			);
@@ -44,7 +44,7 @@ public class ResourceInputStream extends FilterInputStream {
 	public static InputStream getStream(String resource) throws IOException {
 		InputStream in = null;
 		if(
-				((StandaloneApplet.isApplet() && resource.startsWith("config/setting/")) 
+				(resource.startsWith("config/setting/") 
 				|| resource.startsWith("replay/"))
 				&& !dontDownload.contains(resource))
 			try {
@@ -116,8 +116,6 @@ public class ResourceInputStream extends FilterInputStream {
 		}
 		
 		public static void commitCache() throws IOException {
-			if(!StandaloneApplet.isApplet())
-				return;
 			URL url = new URL("http://" + StandaloneApplet.url.getHost() + "/webdav/" + StandaloneMain.userId + "/cache.jdk");
 			String dir = url.toString().substring(0, url.toString().lastIndexOf("/"));
 			List<String> dirs = new ArrayList<String>();

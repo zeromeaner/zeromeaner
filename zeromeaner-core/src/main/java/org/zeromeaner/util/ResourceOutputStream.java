@@ -28,7 +28,9 @@ public class ResourceOutputStream extends FilterOutputStream {
 	}
 
 	public static OutputStream getStream(String resource) throws IOException {
-		if(StandaloneApplet.isApplet())
+		if(
+				resource.startsWith("config/setting/") 
+				&& !ResourceInputStream.dontDownload.contains(resource))
 			return new ResourceUploadStream(resource);
 		try {
 			File localResource = new File(System.getProperty("user.dir"), "local-resources/" + resource);
