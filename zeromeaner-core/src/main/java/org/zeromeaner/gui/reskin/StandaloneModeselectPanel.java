@@ -61,7 +61,7 @@ public class StandaloneModeselectPanel extends JPanel {
 		
 		for(ModeButton mb : this.modeButtons) {
 			if(mb.mode.getName().equals(StandaloneMain.propConfig.getProperty("name.mode")))
-				mb.setSelected(true);
+				mb.doClick();
 
 		}
 	}
@@ -83,7 +83,7 @@ public class StandaloneModeselectPanel extends JPanel {
 					if(ruleResource != null) {
 						for(RuleButton rb : ruleButtons) {
 							if(ruleResource.equals(rb.rule.resourceName))
-								rb.setSelected(true);
+								rb.doClick();
 						}
 					}
 				}
