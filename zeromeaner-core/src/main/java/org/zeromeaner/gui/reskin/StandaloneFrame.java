@@ -101,7 +101,7 @@ public class StandaloneFrame extends JFrame {
 		add(toolbar = createToolbar(), BorderLayout.EAST);
 		add(content = new JPanel(contentCards = new CardLayout()), BorderLayout.CENTER);
 
-		netLobby = new KNetPanel("none", false);
+		netLobby = new KNetPanel(StandaloneMain.userId, false);
 		netLobby.setPreferredSize(new Dimension(800, 250));
 		netLobby.addKNetPanelListener(new KNetPanelAdapter() {
 			@Override
