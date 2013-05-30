@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.funcish.core.fn.Predicate;
 import org.funcish.core.fn.Predicator;
 import org.funcish.core.impl.AbstractPredicator;
 

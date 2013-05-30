@@ -1,7 +1,6 @@
 package org.zeromeaner.gui.reskin;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -10,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
@@ -23,14 +21,15 @@ import org.zeromeaner.util.RuleList;
 public class StandaloneModeselectPanel extends JPanel {
 	private LstResourceMap recommended = new LstResourceMap("config/list/recommended_rules.lst");
 	
+	private List<ModeButton> modeButtons = new ArrayList<ModeButton>();
+	private List<RuleButton> ruleButtons = new ArrayList<RuleButton>();
+	
 	private ModeButton currentMode;
 	private RuleButton currentRule;
 	
 	public StandaloneModeselectPanel() {
 		super(new BorderLayout());
 
-		List<ModeButton> mbs = new ArrayList<ModeButton>();
-		
 		ButtonGroup g = new ButtonGroup();
 		JPanel modeButtons = new JPanel(new GridLayout(0, 8, 10, 10));
 		JPanel p = new JPanel(new BorderLayout());
@@ -38,7 +37,7 @@ public class StandaloneModeselectPanel extends JPanel {
 			ModeButton b = new ModeButton(mode);
 			modeButtons.add(b);
 			g.add(b);
-			mbs.add(b);
+			this.modeButtons.add(b);
 		}
 		p.add(modeButtons, BorderLayout.CENTER);
 		add(p, BorderLayout.NORTH);
@@ -49,8 +48,9 @@ public class StandaloneModeselectPanel extends JPanel {
 		for(RuleOptions rule : RuleList.getRules()) {
 			RuleButton b = new RuleButton(rule);
 			ruleButtons.add(b);
+			this.ruleButtons.add(b);
 			g.add(b);
-			for(ModeButton mb : mbs) {
+			for(ModeButton mb : this.modeButtons) {
 				mb.addActionListener(b);
 			}
 			if(rule.resourceName.equals(StandaloneMain.propConfig.getProperty("0.rule")))
@@ -59,9 +59,9 @@ public class StandaloneModeselectPanel extends JPanel {
 		p.add(ruleButtons, BorderLayout.CENTER);
 		add(p, BorderLayout.SOUTH);
 		
-		for(ModeButton mb : mbs) {
+		for(ModeButton mb : this.modeButtons) {
 			if(mb.mode.getName().equals(StandaloneMain.propConfig.getProperty("name.mode")))
-				mb.setSelected(true);
+				mb.doClick();
 
 		}
 	}
@@ -78,9 +78,14 @@ public class StandaloneModeselectPanel extends JPanel {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					currentMode = ModeButton.this;
-					if(rule != null)
-						rule.setSelected(true);
 					StandaloneMain.propConfig.setProperty("name.mode", mode.getName());
+					String ruleResource = StandaloneMain.propConfig.getProperty("mode." + mode.getName() + ".rule");
+					if(ruleResource != null) {
+						for(RuleButton rb : ruleButtons) {
+							if(ruleResource.equals(rb.rule.resourceName))
+								rb.doClick();
+						}
+					}
 				}
 			});
 		}
@@ -99,6 +104,7 @@ public class StandaloneModeselectPanel extends JPanel {
 						currentMode.rule = RuleButton.this;
 					currentRule = RuleButton.this;
 					StandaloneMain.propConfig.setProperty("0.rule", rule.resourceName);
+					StandaloneMain.propConfig.setProperty("mode." + currentMode.mode.getName() + ".rule", rule.resourceName);
 				}
 			});
 		}

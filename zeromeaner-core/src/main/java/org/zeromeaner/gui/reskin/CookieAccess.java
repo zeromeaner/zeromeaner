@@ -1,4 +1,4 @@
-package org.zeromeaner.gui.applet;
+package org.zeromeaner.gui.reskin;
 
 import java.applet.Applet;
 import java.io.ByteArrayInputStream;
@@ -30,7 +30,7 @@ public class CookieAccess {
 	}
 	
 	protected Map<String, String> get() {
-		return get(AppletMain.instance);
+		return get(StandaloneApplet.instance);
 	}
 	
 	protected Map<String, String> get(Applet applet) {
@@ -64,7 +64,7 @@ public class CookieAccess {
 	}
 	
 	protected void set(Map<String, String> cookie) {
-		set(AppletMain.instance, cookie);
+		set(StandaloneApplet.instance, cookie);
 	}
 	
 	public static void put(String key, String val) {
@@ -73,7 +73,7 @@ public class CookieAccess {
 		instance.set(c);
 	}
 
-	protected void set(AppletMain applet, Map<String, String> cookie) {
+	protected void set(StandaloneApplet applet, Map<String, String> cookie) {
 		try {
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();
 			ObjectOutputStream out = new ObjectOutputStream(bout);

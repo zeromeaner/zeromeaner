@@ -3,17 +3,14 @@ package org.zeromeaner.gui.knet;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +20,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -35,15 +31,13 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.gui.applet.AppletMain;
+import org.zeromeaner.gui.reskin.StandaloneApplet;
 import org.zeromeaner.knet.KNetChannelEvent;
 import org.zeromeaner.knet.KNetChannelListener;
 import org.zeromeaner.knet.KNetClient;
@@ -53,9 +47,7 @@ import org.zeromeaner.knet.KNetGameClient;
 import org.zeromeaner.knet.KNetListener;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.knet.obj.KNetGameInfo;
-import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.EQInvoker;
-import org.zeromeaner.util.KryoCopy;
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.LstResourceMap;
 
@@ -167,18 +159,18 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			add(p, BorderLayout.CENTER);
 			p = new JPanel(new GridLayout(0, 1));
 			p.add(connect);
-			if(!AppletMain.isApplet()) {
+			if(!StandaloneApplet.isApplet()) {
 				p.add(add);
 				p.add(remove);
 			}
 			p.add(exit);
 			add(p, BorderLayout.EAST);
 			
-			if(AppletMain.url != null) {
+			if(StandaloneApplet.url != null) {
 				if(!GameManager.VERSION.isSnapshot())
-					connectionsModel.addElement("" + AppletMain.url.getHost() + ":61897");
+					connectionsModel.addElement("" + StandaloneApplet.url.getHost() + ":61897");
 				else {
-					connectionsModel.addElement("" + AppletMain.url.getHost() + ":61898");
+					connectionsModel.addElement("" + StandaloneApplet.url.getHost() + ":61898");
 				}
 			}
 			
@@ -284,7 +276,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			p.add(pass);
 			add(p, BorderLayout.CENTER);
 			
-			user.setEditable(false);
+			user.setEnabled(false);
 			user.setDocument(connectionsListPanel.username.getDocument());
 		}
 	}

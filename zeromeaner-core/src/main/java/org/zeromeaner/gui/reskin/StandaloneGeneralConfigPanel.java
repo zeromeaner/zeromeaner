@@ -46,12 +46,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import org.zeromeaner.gui.applet.AppletMain;
-import org.zeromeaner.gui.applet.CookieAccess;
+import org.zeromeaner.util.SwingUtils;
 
-import static org.zeromeaner.gui.applet.NullpoMinoInternalFrame.lz;
-import static org.zeromeaner.gui.applet.NullpoMinoInternalFrame.getIntTextField;
-import static org.zeromeaner.gui.applet.NullpoMinoInternalFrame.getDoubleTextField;
+import static org.zeromeaner.gui.reskin.Localizations.lz;
 
 /**
  * Setting screen frame
@@ -312,7 +309,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	 * Current SettingsGUIBe reflected in the
 	 */
 	public void load() {
-		userId.setText(AppletMain.userId);
+		userId.setText(StandaloneMain.userId);
 		
 		int sWidth = StandaloneMain.propConfig.getProperty("option.screenwidth", 640);
 		int sHeight = StandaloneMain.propConfig.getProperty("option.screenheight", 480);
@@ -353,8 +350,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		if(e.getActionCommand() == "GeneralConfig_OK") {
 			// OK
 			
-			AppletMain.userId = userId.getText();
-			CookieAccess.put("userId", AppletMain.userId);
+			StandaloneMain.userId = userId.getText();
+			CookieAccess.put("userId", StandaloneMain.userId);
 			
 			int screenSizeIndex = comboboxScreenSize.getSelectedIndex();
 			if((screenSizeIndex >= 0) && (screenSizeIndex < SCREENSIZE_TABLE.length)) {
@@ -362,13 +359,13 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 				StandaloneMain.propConfig.setProperty("option.screenheight", SCREENSIZE_TABLE[screenSizeIndex][1]);
 			}
 
-			int maxfps = getIntTextField(60, txtfldMaxFPS);
+			int maxfps = SwingUtils.getIntTextField(60, txtfldMaxFPS);
 			StandaloneMain.propConfig.setProperty("option.maxfps", maxfps);
 
-			double sevolume = getDoubleTextField(1.0d, txtfldSEVolume);
+			double sevolume = SwingUtils.getDoubleTextField(1.0d, txtfldSEVolume);
 			StandaloneMain.propConfig.setProperty("option.sevolume", sevolume);
 
-			int lineeffectspeed = getIntTextField(0, txtfldLineClearEffectSpeed) - 1;
+			int lineeffectspeed = SwingUtils.getIntTextField(0, txtfldLineClearEffectSpeed) - 1;
 			if(lineeffectspeed < 0) lineeffectspeed = 0;
 			StandaloneMain.propConfig.setProperty("option.lineeffectspeed", lineeffectspeed);
 

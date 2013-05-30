@@ -2,12 +2,10 @@ package org.zeromeaner.gui.knet;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,18 +25,12 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.funcish.core.Predicates;
-import org.funcish.core.fn.Mapper;
 import org.funcish.core.fn.Predicate;
-import org.funcish.core.impl.AbstractMapper;
-import org.funcish.core.impl.AbstractPredicate;
 import org.zeromeaner.game.component.RuleOptions;
-import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
-import org.zeromeaner.game.subsystem.mode.AbstractNetVSMode;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.gui.tool.RuleEditorPanel;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.knet.obj.KNetGameInfo;
-import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.LstResourceMap;
 import org.zeromeaner.util.ModeList;

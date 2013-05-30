@@ -3,11 +3,8 @@ package org.zeromeaner.knet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import org.funcish.core.Predicates;
 import org.funcish.core.fn.Predicate;
 import org.funcish.core.impl.AbstractPredicate;

@@ -41,13 +41,12 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
-import static org.zeromeaner.gui.applet.NullpoMinoInternalFrame.lz;
+import static org.zeromeaner.gui.reskin.Localizations.lz;
 
 /**
  * Key config frame
@@ -233,10 +232,9 @@ public class StandaloneKeyConfig extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand() == "KeyConfig_OK") {
 			save();
-			this.setVisible(false);
 		}
 		else if(e.getActionCommand() == "KeyConfig_Cancel") {
-			this.setVisible(false);
+			load(playerID);
 		}
 		else if(e.getActionCommand().startsWith("KeyConfig_Reset")) {
 			String strTemp = e.getActionCommand().replaceFirst("KeyConfig_Reset", "");

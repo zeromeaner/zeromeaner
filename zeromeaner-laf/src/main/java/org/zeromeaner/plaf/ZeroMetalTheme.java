@@ -59,5 +59,9 @@ public class ZeroMetalTheme extends DefaultMetalTheme {
 		return new ColorUIResource(128, 128, 128);
 	}
 	
+	@Override
+	public ColorUIResource getControlDarkShadow() {
+		return getPrimary1();
+	}
 	
 }

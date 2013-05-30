@@ -1,9 +1,6 @@
 package org.zeromeaner.util;
 
-import java.io.BufferedReader;
 import java.util.Collection;
-import java.util.List;
-
 import org.funcish.core.Mappings;
 import org.funcish.core.Predicates;
 import org.funcish.core.coll.ArrayFunctionalList;

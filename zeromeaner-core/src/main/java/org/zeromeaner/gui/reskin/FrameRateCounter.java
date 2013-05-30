@@ -1,4 +1,4 @@
-package org.zeromeaner.gui.applet;
+package org.zeromeaner.gui.reskin;
 
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;

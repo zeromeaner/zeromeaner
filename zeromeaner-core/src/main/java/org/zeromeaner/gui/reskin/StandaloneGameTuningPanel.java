@@ -45,7 +45,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -53,8 +52,9 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 
-import static org.zeromeaner.gui.applet.NullpoMinoInternalFrame.lz;
-import static org.zeromeaner.gui.applet.NullpoMinoInternalFrame.getIntTextField;
+import org.zeromeaner.util.SwingUtils;
+
+import static org.zeromeaner.gui.reskin.Localizations.lz;
 
 /**
  * Tuning Settings screen frame
@@ -390,11 +390,11 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		int owBlockOutlineType = comboboxBlockOutlineType.getSelectedIndex() - 1;
 		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owBlockOutlineType", owBlockOutlineType);
 
-		int owMinDAS = getIntTextField(-1, txtfldMinDAS);
+		int owMinDAS = SwingUtils.getIntTextField(-1, txtfldMinDAS);
 		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owMinDAS", owMinDAS);
-		int owMaxDAS = getIntTextField(-1, txtfldMaxDAS);
+		int owMaxDAS = SwingUtils.getIntTextField(-1, txtfldMaxDAS);
 		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owMaxDAS", owMaxDAS);
-		int owDasDelay = getIntTextField(-1, txtfldDasDelay);
+		int owDasDelay = SwingUtils.getIntTextField(-1, txtfldDasDelay);
 		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owDasDelay", owDasDelay);
 		boolean owReverseUpDown = chkboxReverseUpDown.isSelected();
 		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owReverseUpDown", owReverseUpDown);

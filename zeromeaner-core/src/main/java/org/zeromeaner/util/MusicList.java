@@ -1,26 +1,16 @@
 package org.zeromeaner.util;
 
-import java.awt.EventQueue;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.TreeMap;
-import java.util.concurrent.CountDownLatch;
 import java.util.regex.Pattern;
 
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
 
 import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.AudioDevice;
 import javazoom.jl.player.JavaSoundAudioDevice;
-import javazoom.jl.player.JavaSoundAudioDeviceFactory;
-import javazoom.jl.player.NullAudioDevice;
-import javazoom.jl.player.Player;
 import javazoom.jl.player.advanced.AdvancedPlayer;
 import javazoom.jl.player.advanced.PlaybackEvent;
 import javazoom.jl.player.advanced.PlaybackListener;
@@ -30,7 +20,6 @@ import org.funcish.core.coll.ArrayFunctionalList;
 import org.funcish.core.coll.FunctionalList;
 import org.funcish.core.fn.Mapper;
 import org.funcish.core.impl.AbstractMapper;
-import org.zeromeaner.gui.applet.ResourceHolderApplet;
 
 public class MusicList extends ArrayFunctionalList<String> {
 	private static final Logger log = Logger.getLogger(MusicList.class);

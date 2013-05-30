@@ -9,8 +9,6 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -25,11 +23,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
@@ -43,7 +38,6 @@ import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.game.subsystem.mode.MarathonMode;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
-import org.zeromeaner.gui.applet.AppletMain;
 import org.zeromeaner.gui.knet.KNetPanel;
 import org.zeromeaner.gui.knet.KNetPanelAdapter;
 import org.zeromeaner.gui.knet.KNetPanelEvent;
@@ -93,7 +87,7 @@ public class StandaloneFrame extends JFrame {
 	private JToggleButton netplayButton;
 	
 	KNetPanel netLobby;
-	GameManager gameManager;
+	volatile GameManager gameManager;
 	private StandaloneGamePanel gamePanel;
 	private StandaloneMusicVolumePanel musicPanel;
 	
@@ -107,7 +101,7 @@ public class StandaloneFrame extends JFrame {
 		add(toolbar = createToolbar(), BorderLayout.EAST);
 		add(content = new JPanel(contentCards = new CardLayout()), BorderLayout.CENTER);
 
-		netLobby = new KNetPanel("none", false);
+		netLobby = new KNetPanel(StandaloneMain.userId, false);
 		netLobby.setPreferredSize(new Dimension(800, 250));
 		netLobby.addKNetPanelListener(new KNetPanelAdapter() {
 			@Override
@@ -151,6 +145,7 @@ public class StandaloneFrame extends JFrame {
 					}
 					contentCards.show(content, nextCard);
 					currentCard = nextCard;
+					playCardSelected();
 				}
 				if(evt.getNewValue().equals(JOptionPane.NO_OPTION)) {
 					contentCards.show(content, CARD_PLAY);
@@ -250,7 +245,7 @@ public class StandaloneFrame extends JFrame {
 		});
 		content.add(fc, CARD_OPEN_ONLINE);
 		
-		if(!AppletMain.isApplet()) {
+		if(!StandaloneApplet.isApplet()) {
 			fc = new JFileChooser(System.getProperty("user.dir") + File.separator + "local-resources" + File.separator + "replay");
 			fc.addActionListener(new ActionListener() {
 				@Override
@@ -302,10 +297,9 @@ public class StandaloneFrame extends JFrame {
 		b = playButton = new JToggleButton(new ToolbarAction("toolbar.play") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(CARD_PLAY.equals(currentCard))
-					return;
 				super.actionPerformed(e);
-				playCardSelected();
+				if(CARD_PLAY.equals(currentCard))
+					playCardSelected();
 			}
 		});
 		add(t, g, b);
@@ -355,7 +349,7 @@ public class StandaloneFrame extends JFrame {
 		b = new JToggleButton(new ToolbarAction("toolbar.general"));
 		add(t, g, b);
 		
-		if(!AppletMain.isApplet()) {
+		if(!StandaloneApplet.isApplet()) {
 			b = new JToggleButton(new ToolbarAction("toolbar.open"));
 			add(t, g, b);
 		}

@@ -7,16 +7,11 @@ import java.io.InputStream;
 import java.net.URL;
 
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
-import javax.swing.plaf.metal.MetalTheme;
-
 import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.GameMode;
-import org.zeromeaner.gui.applet.AppletMain;
-import org.zeromeaner.gui.applet.CookieAccess;
 import org.zeromeaner.plaf.ZeroMetalTheme;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ModeList;
@@ -27,6 +22,7 @@ import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 public class StandaloneMain {
 	public static CustomProperties propConfig = new CustomProperties();
 	public static ModeList<GameMode> modeManager;
+	public static String userId;
 	
 	public static void main(String[] args) {
 		try {
@@ -63,13 +59,13 @@ public class StandaloneMain {
 	private static void _main(String[] args) throws Exception {
 		System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".0mino");
 		new File(System.getProperty("user.dir")).mkdirs();
-		CookieAccess.setInstance(new AppletMain.MainCookieAccess());
+		CookieAccess.setInstance(new MainCookieAccess());
 
-		AppletMain.url = new URL("http://www.0mino.org/" + (GameManager.VERSION.isSnapshot() ? "snapshot" : "play") + "/");
+		StandaloneApplet.url = new URL("http://www.0mino.org/" + (GameManager.VERSION.isSnapshot() ? "snapshot" : "play") + "/");
 
-		AppletMain.userId = System.getProperty("user.name");
+		userId = System.getProperty("user.name");
 		if(CookieAccess.get("userId") != null)
-			AppletMain.userId = CookieAccess.get("userId");
+			userId = CookieAccess.get("userId");
 
 		
 		try {
@@ -88,6 +84,9 @@ public class StandaloneMain {
 		StandaloneGameKey.initGlobalGameKeySwing();
 		StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 		StandaloneGameKey.gamekey[1].loadDefaultKeymap();
+		
+		StandaloneGameKey.gamekey[0].loadConfig(propConfig);
+		StandaloneGameKey.gamekey[1].loadConfig(propConfig);
 		
 		StandaloneResourceHolder.load();
 		

@@ -11,18 +11,20 @@ import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.apache.log4j.PropertyConfigurator;
-import org.zeromeaner.gui.applet.AppletMain;
-import org.zeromeaner.gui.applet.CookieAccess;
 import org.zeromeaner.plaf.ZeroMetalTheme;
 import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.ResourceInputStream;
 
-import static org.zeromeaner.gui.applet.AppletMain.url;
-import static org.zeromeaner.gui.applet.AppletMain.userId;
+import static org.zeromeaner.gui.reskin.StandaloneMain.userId;
 
 public class StandaloneApplet extends Applet {
 	public static StandaloneApplet instance;
+	public static URL url;
+	
+	public static boolean isApplet() {
+		return instance != null;
+	}
 	
 	@Override
 	public void init() {
@@ -37,9 +39,6 @@ public class StandaloneApplet extends Applet {
 				return get(StandaloneApplet.this);
 			}
 		});
-		
-		// FIXME: Satisfy some old applet code
-		AppletMain.instance = new AppletMain();
 		
 		url = getDocumentBase();
 		if(System.getProperty("zero_url") != null) {
@@ -83,6 +82,9 @@ public class StandaloneApplet extends Applet {
 			StandaloneGameKey.initGlobalGameKeySwing();
 			StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 			StandaloneGameKey.gamekey[1].loadDefaultKeymap();
+			
+			StandaloneGameKey.gamekey[0].loadConfig(StandaloneMain.propConfig);
+			StandaloneGameKey.gamekey[1].loadConfig(StandaloneMain.propConfig);
 			
 			StandaloneResourceHolder.load();
 			

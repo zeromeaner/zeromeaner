@@ -30,8 +30,6 @@ package org.zeromeaner.gui.reskin;
 
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.HeadlessException;
@@ -47,11 +45,9 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.ScheduledExecutorService;
@@ -64,10 +60,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -235,7 +229,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 		add(imageBufferLabel = new FocusableJLabel(new ImageIcon(imageBuffer)), BorderLayout.CENTER);
 		
-		imageBufferLabel.setText("No Active Game");
+		imageBufferLabel.setText("No Active Game.  Click \"Play\" to start.");
 		imageBufferLabel.setIcon(null);
 
 		maxfps = StandaloneMain.propConfig.getProperty("option.maxfps", 60);
@@ -292,7 +286,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			running.set(false);
 			running.notifyAll();
 		}
-		imageBufferLabel.setText("No Active Game");
+		imageBufferLabel.setText("No Active Game.  Click \"Play\" to start.");
 		imageBufferLabel.setIcon(null);
 	}
 	

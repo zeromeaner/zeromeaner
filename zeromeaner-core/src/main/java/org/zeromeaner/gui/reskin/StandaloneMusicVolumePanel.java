@@ -1,6 +1,5 @@
 package org.zeromeaner.gui.reskin;
 
-import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -13,11 +12,9 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.zeromeaner.gui.applet.CookieAccess;
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.MusicList;
 

@@ -33,13 +33,8 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
 
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
@@ -48,7 +43,6 @@ import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.gui.EffectObject;
-import org.zeromeaner.gui.applet.NullpoMinoInternalFrame;
 import org.zeromeaner.util.CustomProperties;
 
 
@@ -1188,7 +1182,7 @@ public class StandaloneRenderer extends EventRenderer {
 			if(getNextDisplayType() == 2) {
 				if(engine.ruleopt.nextDisplay >= 1) {
 					int x2 = x + 8 + (fldWidth * fldBlkSize) + meterWidth;
-					StandaloneNormalFont.printFont(x2 + 16, y + 40, NullpoMinoInternalFrame.lz.s("InGame_Next"), COLOR_ORANGE, 0.5f);
+					StandaloneNormalFont.printFont(x2 + 16, y + 40, Localizations.lz.s("InGame_Next"), COLOR_ORANGE, 0.5f);
 
 					for(int i = 0; i < engine.ruleopt.nextDisplay; i++) {
 						Piece piece = engine.getNextObject(engine.nextPieceCount + i);
@@ -1203,7 +1197,7 @@ public class StandaloneRenderer extends EventRenderer {
 			} else if(getNextDisplayType() == 1) {
 				if(engine.ruleopt.nextDisplay >= 1) {
 					int x2 = x + 8 + (fldWidth * fldBlkSize) + meterWidth;
-					StandaloneNormalFont.printFont(x2, y + 40, NullpoMinoInternalFrame.lz.s("InGame_Next"), COLOR_ORANGE, 0.5f);
+					StandaloneNormalFont.printFont(x2, y + 40, Localizations.lz.s("InGame_Next"), COLOR_ORANGE, 0.5f);
 
 					for(int i = 0; i < engine.ruleopt.nextDisplay; i++) {
 						Piece piece = engine.getNextObject(engine.nextPieceCount + i);
@@ -1219,7 +1213,7 @@ public class StandaloneRenderer extends EventRenderer {
 				// NEXT1
 				if(engine.ruleopt.nextDisplay >= 1) {
 					Piece piece = engine.getNextObject(engine.nextPieceCount);
-					StandaloneNormalFont.printFont(x + 60, y, NullpoMinoInternalFrame.lz.s("InGame_Next"), COLOR_ORANGE, 0.5f);
+					StandaloneNormalFont.printFont(x + 60, y, Localizations.lz.s("InGame_Next"), COLOR_ORANGE, 0.5f);
 
 					if(piece != null) {
 						//int x2 = x + 4 + ((-1 + (engine.field.getWidth() - piece.getWidth() + 1) / 2) * 16);
@@ -1266,14 +1260,14 @@ public class StandaloneRenderer extends EventRenderer {
 				if(engine.holdDisable == true) tempColor = COLOR_WHITE;
 
 				if(engine.ruleopt.holdLimit < 0) {
-					StandaloneNormalFont.printFont(x2, y2, NullpoMinoInternalFrame.lz.s("InGame_Hold"), tempColor, 0.5f);
+					StandaloneNormalFont.printFont(x2, y2, Localizations.lz.s("InGame_Hold"), tempColor, 0.5f);
 				} else {
 					if(!engine.holdDisable) {
 						if((holdRemain > 0) && (holdRemain <= 10)) tempColor = COLOR_YELLOW;
 						if((holdRemain > 0) && (holdRemain <= 5)) tempColor = COLOR_RED;
 					}
 
-					StandaloneNormalFont.printFont(x2, y2, NullpoMinoInternalFrame.lz.s("InGame_Hold") + "\ne " + holdRemain, tempColor, 0.5f);
+					StandaloneNormalFont.printFont(x2, y2, Localizations.lz.s("InGame_Hold") + "\ne " + holdRemain, tempColor, 0.5f);
 				}
 
 				if(engine.holdPieceObject != null) {
