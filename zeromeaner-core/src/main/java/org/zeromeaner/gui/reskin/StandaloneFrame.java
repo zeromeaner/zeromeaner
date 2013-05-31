@@ -342,9 +342,9 @@ public class StandaloneFrame extends JFrame {
 		b = new JToggleButton(new ToolbarAction("toolbar.tuning_2p"));
 		add(t, g, b);
 		
+		*/
 		b = new JToggleButton(new ToolbarAction("toolbar.ai_2p"));
 		add(t, g, b);
-		*/
 		
 		b = new JToggleButton(new ToolbarAction("toolbar.general"));
 		add(t, g, b);
