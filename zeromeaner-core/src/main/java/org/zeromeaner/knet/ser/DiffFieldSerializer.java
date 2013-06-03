@@ -15,35 +15,29 @@ import com.esotericsoftware.kryo.util.ObjectMap;
 
 public class DiffFieldSerializer<T> extends FieldSerializer<T> {
 	protected T typical;
+	protected byte[][] typicalFields;
 	
 	public DiffFieldSerializer(Kryo kryo, Class<T> type, T typical) {
 		super(kryo, type);
 		this.typical = typical;
+		CachedField[] fields = getFields();
+		typicalFields = new byte[fields.length][];
+		for(int i = 0; i < fields.length; i++) {
+			try {
+				ByteArrayOutputStream bout = new ByteArrayOutputStream();
+				Output kout = new Output(bout, 1024);
+				kryo.writeClassAndObject(kout, fields[i].getField().get(typical));
+				kout.flush();
+				typicalFields[i] = bout.toByteArray();
+			} catch(Exception ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	@Override
 	public void write(Kryo kryo, Output output, T object) {
 		CachedField[] fields = getFields();
-		ObjectMap context = kryo.getGraphContext();
-		byte[][] typicalFields;
-		
-		if(!context.containsKey(this)) {
-			typicalFields = new byte[fields.length][];
-			context.put(this, typicalFields);
-			for(int i = 0; i < fields.length; i++) {
-				try {
-					ByteArrayOutputStream bout = new ByteArrayOutputStream();
-					Output kout = new Output(bout, 1024);
-					kryo.writeClassAndObject(kout, fields[i].getField().get(typical));
-					kout.flush();
-					typicalFields[i] = bout.toByteArray();
-				} catch(Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		} else {
-			typicalFields = (byte[][]) context.get(this);
-		}
 		
 		for(int i = 0; i < fields.length; i++) {
 			Field f = fields[i].getField();
