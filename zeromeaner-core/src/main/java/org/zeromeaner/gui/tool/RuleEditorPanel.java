@@ -40,6 +40,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -70,6 +71,12 @@ import javax.swing.filechooser.FileFilter;
 
 
 
+
+
+
+
+
+import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.log4j.Logger;
 import org.funcish.core.Mappings;
@@ -79,11 +86,14 @@ import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.wallkick.StandardWallkick;
+import org.zeromeaner.knet.KNetKryo;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.Zeroflections;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
 import java.io.InputStreamReader;
@@ -1640,10 +1650,35 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 			comboboxRandomizer.setSelectedItem(null);
 		}
 		if("Base64_Generate".equals(e.getActionCommand())) {
+			try {
+				ByteArrayOutputStream bout = new ByteArrayOutputStream();
+				Base64OutputStream b64 = new Base64OutputStream(bout);
+				Output kout = new Output(b64, 1024);
+				Kryo kryo = new Kryo();
+				KNetKryo.configure(kryo);
+				RuleOptions rule = new RuleOptions();
+				writeRuleFromUI(rule);
+				kryo.writeObject(kout, rule);
+				kout.flush();
+				b64.close();
+				base64.setText(new String(bout.toByteArray(), "ASCII"));
+			} catch(Exception ex) {
+				base64.setText(ex.toString());
+			}
 			
 		}
 		if("Base64_Load".equals(e.getActionCommand())) {
-			
+			try {
+				ByteArrayInputStream bin = new ByteArrayInputStream(base64.getText().getBytes("ASCII"));
+				Base64InputStream b64 = new Base64InputStream(bin);
+				Input kin = new Input(b64, 1024);
+				Kryo kryo = new Kryo();
+				KNetKryo.configure(kryo);
+				RuleOptions rule = kryo.readObject(kin, RuleOptions.class);
+				readRuleToUI(rule);
+			} catch(Exception ex) {
+				base64.setText(ex.toString());
+			}
 		}
 	}
 
