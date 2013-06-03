@@ -70,9 +70,10 @@ public class KNetServer {
 				if(evs != null) {
 					if(e.is(UPDATE_SOURCE)) {
 						evs.updateFrom((KNetEventSource) e.get(UPDATE_SOURCE));
+						log.info("Client updated source info:" + evs);
+						return;
 					}
 					e.getSource().updateFrom(evs);
-					log.info("Client updated source info:" + evs);
 				}
 
 				boolean global = true;
