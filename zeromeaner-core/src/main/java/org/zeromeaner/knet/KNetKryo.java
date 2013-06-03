@@ -2,6 +2,7 @@ package org.zeromeaner.knet;
 
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
@@ -68,7 +69,20 @@ public class KNetKryo {
 		kryo.register(CustomProperties.class, new PropertiesSerializer());
 		kryo.register(Statistics.class, new StatisticsSerializer());
 //		fieldSerializer(kryo, RuleOptions.class);
-		kryo.register(RuleOptions.class, new DiffFieldSerializer<RuleOptions>(kryo, RuleOptions.class, GeneralUtil.loadRule("config/rule/Standard.rul")));
+		kryo.register(
+				RuleOptions.class, 
+				new DiffFieldSerializer<RuleOptions>(
+						kryo, 
+						RuleOptions.class, 
+						GeneralUtil.loadRule("config/rule/Standard.rul"),
+						new Callable<Kryo>() {
+							@Override
+							public Kryo call() throws Exception {
+								Kryo ret = new Kryo();
+								KNetKryo.configure(ret);
+								return ret;
+							}
+						}));
 		kryo.register(KNStartInfo.class);
 		
 		fieldSerializer(kryo, AbstractNetMode.DefaultStats.class);

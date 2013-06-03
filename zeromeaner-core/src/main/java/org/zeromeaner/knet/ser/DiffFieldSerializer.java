@@ -3,6 +3,7 @@ package org.zeromeaner.knet.ser;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.concurrent.Callable;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
@@ -14,19 +15,21 @@ import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.util.ObjectMap;
 
 public class DiffFieldSerializer<T> extends FieldSerializer<T> {
+	protected Callable<Kryo> kryoFactory;
 	protected T typical;
 	protected byte[][] typicalFields;
 	
-	public DiffFieldSerializer(Kryo kryo, Class<T> type, T typical) {
+	public DiffFieldSerializer(Kryo kryo, Class<T> type, T typical, Callable<Kryo> kryoFactory) {
 		super(kryo, type);
 		this.typical = typical;
+		this.kryoFactory = kryoFactory;
 		CachedField[] fields = getFields();
 		typicalFields = new byte[fields.length][];
 		for(int i = 0; i < fields.length; i++) {
 			try {
 				ByteArrayOutputStream bout = new ByteArrayOutputStream();
 				Output kout = new Output(bout, 1024);
-				kryo.writeClassAndObject(kout, fields[i].getField().get(typical));
+				kryoFactory.call().writeClassAndObject(kout, fields[i].getField().get(typical));
 				kout.flush();
 				typicalFields[i] = bout.toByteArray();
 			} catch(Exception ex) {
@@ -46,7 +49,7 @@ public class DiffFieldSerializer<T> extends FieldSerializer<T> {
 				Object v = f.get(object);
 				ByteArrayOutputStream bout = new ByteArrayOutputStream();
 				Output kout = new Output(bout, 1024);
-				kryo.writeClassAndObject(kout, v);
+				kryoFactory.call().writeClassAndObject(kout, v);
 				kout.flush();
 				objf = bout.toByteArray();
 			} catch(Exception ex) {
