@@ -32,10 +32,15 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -62,6 +67,10 @@ import javax.swing.ListCellRenderer;
 import javax.swing.filechooser.FileFilter;
 
 
+
+
+
+import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.log4j.Logger;
 import org.funcish.core.Mappings;
 import org.zeromeaner.game.component.Block;
@@ -74,6 +83,8 @@ import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.Zeroflections;
+
+import com.esotericsoftware.kryo.io.Output;
 
 import java.io.InputStreamReader;
 
@@ -444,6 +455,12 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 	//----------------------------------------------------------------------
 	/** BlockImage */
 	private BufferedImage[] imgBlockSkins;
+
+	private JButton generateBase64;
+	
+	private JButton loadBase64;
+	
+	private JTextField base64;
 
 	public JTabbedPane getTabPane() {
 		return tabPane;
@@ -1200,6 +1217,25 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 			comboboxPieceDirection[i].setMaximumRowCount(strDirectionNames.length);
 			pPieceDirection[i].add(comboboxPieceDirection[i]);
 		}
+		
+		// Base 64 store/load
+		JPanel base64Panel = new JPanel(new GridBagLayout());
+		tabPane.addTab(getUIText("TabName_Base64"), base64Panel);
+		GridBagConstraints c = new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10,10,10,10), 0, 0);
+		
+		generateBase64 = new JButton(getUIText("Base64_Generate"));
+		generateBase64.setActionCommand("Base64_Generate");
+		base64Panel.add(generateBase64, c);
+		
+		c.gridx++;
+		loadBase64 = new JButton(getUIText("Base64_Load"));
+		loadBase64.setActionCommand("Base64_Load");
+		base64Panel.add(loadBase64, c);
+		
+		c.gridx = 0; c.gridy++; c.gridwidth = 2;
+		base64 = new JTextField("");
+		base64Panel.add(base64, c);
+		
 	}
 
 	/**
@@ -1602,6 +1638,12 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 		if(e.getActionCommand() == "ResetRandomizer") {
 			// NEXTReset selection of order generation algorithm
 			comboboxRandomizer.setSelectedItem(null);
+		}
+		if("Base64_Generate".equals(e.getActionCommand())) {
+			
+		}
+		if("Base64_Load".equals(e.getActionCommand())) {
+			
 		}
 	}
 
