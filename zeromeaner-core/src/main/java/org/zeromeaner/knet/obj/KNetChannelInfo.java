@@ -118,7 +118,7 @@ public class KNetChannelInfo implements KryoSerializable {
 		kryo.writeObjectOrNull(output, rule, RuleOptions.class);
 		output.writeInt(playerInfo.size(), true);
 		for(KNetPlayerInfo pi : playerInfo) {
-			kryo.writeObject(output, pi);
+			kryo.writeObjectOrNull(output, pi, KNetPlayerInfo.class);
 		}
 		output.writeBoolean(playing);
 		output.writeInt(maxPlayers, true);
@@ -144,7 +144,7 @@ public class KNetChannelInfo implements KryoSerializable {
 		int pisize = input.readInt(true);
 		playerInfo.clear();
 		for(int i = 0; i < pisize; i++)
-			playerInfo.add(kryo.readObject(input, KNetPlayerInfo.class));
+			playerInfo.add(kryo.readObjectOrNull(input, KNetPlayerInfo.class));
 		playing = input.readBoolean();
 		maxPlayers = input.readInt(true);
 		game = kryo.readObjectOrNull(input, KNetGameInfo.class);
