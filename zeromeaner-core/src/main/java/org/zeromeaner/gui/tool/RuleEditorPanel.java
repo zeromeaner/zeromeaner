@@ -1235,11 +1235,13 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 		
 		generateBase64 = new JButton(getUIText("Base64_Generate"));
 		generateBase64.setActionCommand("Base64_Generate");
+		generateBase64.addActionListener(this);
 		base64Panel.add(generateBase64, c);
 		
 		c.gridx++;
 		loadBase64 = new JButton(getUIText("Base64_Load"));
 		loadBase64.setActionCommand("Base64_Load");
+		loadBase64.addActionListener(this);
 		base64Panel.add(loadBase64, c);
 		
 		c.gridx = 0; c.gridy++; c.gridwidth = 2;
