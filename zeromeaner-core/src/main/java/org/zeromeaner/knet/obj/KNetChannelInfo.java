@@ -107,11 +107,11 @@ public class KNetChannelInfo implements KryoSerializable {
 		output.writeString(name);
 		output.writeInt(members.size(), true);
 		for(KNetEventSource m : members) {
-			kryo.writeObject(output, m);
+			kryo.writeObjectOrNull(output, m, KNetEventSource.class);
 		}
 		output.writeInt(players.size(), true);
 		for(KNetEventSource p : players) {
-			kryo.writeObject(output, p);
+			kryo.writeObjectOrNull(output, p, KNetEventSource.class);
 		}
 		output.writeString(mode);
 		output.writeBoolean(ruleLock);
@@ -133,11 +133,11 @@ public class KNetChannelInfo implements KryoSerializable {
 		int msize = input.readInt(true);
 		members.clear();
 		for(int i = 0; i < msize; i++)
-			members.add(kryo.readObject(input, KNetEventSource.class));
+			members.add(kryo.readObjectOrNull(input, KNetEventSource.class));
 		int psize = input.readInt(true);
 		players.clear();
 		for(int i = 0; i < psize; i++)
-			players.add(kryo.readObject(input, KNetEventSource.class));
+			players.add(kryo.readObjectOrNull(input, KNetEventSource.class));
 		mode = input.readString();
 		ruleLock = input.readBoolean();
 		rule = kryo.readObjectOrNull(input, RuleOptions.class);
