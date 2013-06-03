@@ -9,7 +9,6 @@ import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.Statistics;
-
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.ComboRaceMode;
 import org.zeromeaner.game.subsystem.mode.DigChallengeMode;
@@ -32,6 +31,7 @@ import org.zeromeaner.knet.ser.StatisticsSerializer;
 import org.zeromeaner.util.CustomProperties;
 
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 
 public class KNetKryo {
@@ -65,7 +65,8 @@ public class KNetKryo {
 		kryo.register(Properties.class, new PropertiesSerializer());
 		kryo.register(CustomProperties.class, new PropertiesSerializer());
 		kryo.register(Statistics.class, new StatisticsSerializer());
-		fieldSerializer(kryo, RuleOptions.class);
+//		fieldSerializer(kryo, RuleOptions.class);
+		kryo.register(RuleOptions.class, new CompatibleFieldSerializer<RuleOptions>(kryo, RuleOptions.class));
 		kryo.register(KNStartInfo.class);
 		
 		fieldSerializer(kryo, AbstractNetMode.DefaultStats.class);
