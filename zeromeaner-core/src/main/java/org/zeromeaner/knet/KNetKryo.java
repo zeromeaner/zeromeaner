@@ -24,11 +24,13 @@ import org.zeromeaner.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.knet.obj.PieceHold;
 import org.zeromeaner.knet.obj.PieceMovement;
 import org.zeromeaner.knet.ser.BlockSerializer;
+import org.zeromeaner.knet.ser.DiffFieldSerializer;
 import org.zeromeaner.knet.ser.PieceSerializer;
 import org.zeromeaner.knet.ser.PropertiesSerializer;
 import org.zeromeaner.knet.ser.SpeedParamSerializer;
 import org.zeromeaner.knet.ser.StatisticsSerializer;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.GeneralUtil;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
@@ -66,7 +68,7 @@ public class KNetKryo {
 		kryo.register(CustomProperties.class, new PropertiesSerializer());
 		kryo.register(Statistics.class, new StatisticsSerializer());
 //		fieldSerializer(kryo, RuleOptions.class);
-		kryo.register(RuleOptions.class, new CompatibleFieldSerializer<RuleOptions>(kryo, RuleOptions.class));
+		kryo.register(RuleOptions.class, new DiffFieldSerializer<RuleOptions>(kryo, RuleOptions.class, GeneralUtil.loadRule("config/rule/Standard.rul")));
 		kryo.register(KNStartInfo.class);
 		
 		fieldSerializer(kryo, AbstractNetMode.DefaultStats.class);

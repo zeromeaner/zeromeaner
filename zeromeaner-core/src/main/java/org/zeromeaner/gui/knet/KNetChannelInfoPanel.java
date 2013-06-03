@@ -2,15 +2,22 @@ package org.zeromeaner.gui.knet;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -24,17 +31,24 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.codec.binary.Base64InputStream;
+import org.apache.commons.codec.binary.Base64OutputStream;
 import org.funcish.core.Predicates;
 import org.funcish.core.fn.Predicate;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.gui.tool.RuleEditorPanel;
+import org.zeromeaner.knet.KNetKryo;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.knet.obj.KNetGameInfo;
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.LstResourceMap;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.RuleList;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 
 
 
@@ -127,6 +141,47 @@ public class KNetChannelInfoPanel extends JPanel {
 	
 	private RuleEditorPanel ruleEditor = new RuleEditorPanel();
 	
+	private JButton generateBase64 = new JButton(new AbstractAction(lz.s("base64_generate")) {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				ByteArrayOutputStream bout = new ByteArrayOutputStream();
+				Base64OutputStream b64 = new Base64OutputStream(bout);
+				Output kout = new Output(b64, 1024);
+				Kryo kryo = new Kryo();
+				KNetKryo.configure(kryo);
+				KNetChannelInfo ci = new KNetChannelInfo();
+				updateChannel(ci);
+				kryo.writeObject(kout, ci);
+				kout.flush();
+				b64.close();
+				base64.setText(new String(bout.toByteArray(), "ASCII"));
+			} catch(Exception ex) {
+				ex.printStackTrace();
+				base64.setText(ex.toString());
+			}
+		}
+	});
+	
+	private JButton loadBase64 = new JButton(new AbstractAction(lz.s("base64_load")) {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				ByteArrayInputStream bin = new ByteArrayInputStream(base64.getText().getBytes("ASCII"));
+				Base64InputStream b64 = new Base64InputStream(bin);
+				Input kin = new Input(b64, 1024);
+				Kryo kryo = new Kryo();
+				KNetKryo.configure(kryo);
+				KNetChannelInfo ci = kryo.readObject(kin, KNetChannelInfo.class);
+				updateEditor(ci);
+			} catch(Exception ex) {
+				ex.printStackTrace();
+				base64.setText(ex.toString());
+			}
+		}
+	});
+	
+	private JTextField base64 = new JTextField("", 80);
 	
 	public KNetChannelInfoPanel(KNetChannelInfo channel) {
 		this.channel = channel;
@@ -145,6 +200,16 @@ public class KNetChannelInfoPanel extends JPanel {
 		p.add(new JLabel(lz.s("rule_lock"))); p.add(ruleLock);
 		tabs.addTab(lz.s("tab_general"), p);
 		
+		p = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10,10,10,10), 0, 0);
+		
+		p.add(generateBase64, c);
+		
+		c.gridx++; p.add(loadBase64, c);
+		
+		c.gridx = 0; c.gridy++; c.gridwidth = 2; p.add(base64, c);
+		tabs.addTab(lz.s("tab_base64"), p);
+
 		for(int i = 0; i < gameEditor.getTabCount();) { // Don't need to increment
 			tabs.addTab(lz.s("tab_game") + gameEditor.getTitleAt(i), new JScrollPane(gameEditor.getComponentAt(i)));
 		}
@@ -152,6 +217,7 @@ public class KNetChannelInfoPanel extends JPanel {
 		for(int i = 0; i < ruleEditor.getTabPane().getTabCount();) { // Don't need to increment
 			tabs.addTab(lz.s("tab_rule") + ruleEditor.getTabPane().getTitleAt(i), new JScrollPane(ruleEditor.getTabPane().getComponentAt(i)));
 		}
+		
 	}
 	
 	public void setEditable(boolean editable) {
@@ -183,6 +249,10 @@ public class KNetChannelInfoPanel extends JPanel {
 	}
 	
 	public void updateChannel() {
+		updateChannel(channel);
+	}
+	
+	public void updateChannel(KNetChannelInfo channel) {
 		channel.setName(name.getText());
 		channel.setMaxPlayers((Integer) maxPlayers.getValue());
 		channel.setAutoStart(autoStart.isSelected());
@@ -197,6 +267,10 @@ public class KNetChannelInfoPanel extends JPanel {
 	}
 	
 	public void updateEditor() {
+		updateEditor(channel);
+	}
+	
+	public void updateEditor(KNetChannelInfo channel) {
 		name.setText(channel.getName());
 		if(channel.getMaxPlayers() != 0)
 			maxPlayers.setValue(channel.getMaxPlayers());

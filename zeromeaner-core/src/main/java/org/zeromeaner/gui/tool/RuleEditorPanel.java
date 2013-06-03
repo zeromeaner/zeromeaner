@@ -1245,7 +1245,7 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 		base64Panel.add(loadBase64, c);
 		
 		c.gridx = 0; c.gridy++; c.gridwidth = 2;
-		base64 = new JTextField("");
+		base64 = new JTextField("", 80);
 		base64Panel.add(base64, c);
 		
 	}
@@ -1665,6 +1665,7 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 				b64.close();
 				base64.setText(new String(bout.toByteArray(), "ASCII"));
 			} catch(Exception ex) {
+				ex.printStackTrace();
 				base64.setText(ex.toString());
 			}
 			
@@ -1679,6 +1680,7 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 				RuleOptions rule = kryo.readObject(kin, RuleOptions.class);
 				readRuleToUI(rule);
 			} catch(Exception ex) {
+				ex.printStackTrace();
 				base64.setText(ex.toString());
 			}
 		}
