@@ -28,8 +28,8 @@ public class DiffFieldSerializer<T> extends FieldSerializer<T> {
 		byte[][] typicalFields;
 		
 		if(!context.containsKey(this)) {
-			context.put(this, null);
 			typicalFields = new byte[fields.length][];
+			context.put(this, typicalFields);
 			for(int i = 0; i < fields.length; i++) {
 				try {
 					ByteArrayOutputStream bout = new ByteArrayOutputStream();
