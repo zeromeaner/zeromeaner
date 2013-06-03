@@ -145,11 +145,11 @@ public class KNetChannelInfoPanel extends JPanel {
 		p.add(new JLabel(lz.s("rule_lock"))); p.add(ruleLock);
 		tabs.addTab(lz.s("tab_general"), p);
 		
-		for(int i = 0; i < gameEditor.getTabCount(); i++) {
+		for(int i = 0; i < gameEditor.getTabCount();) { // Don't need to increment
 			tabs.addTab(lz.s("tab_game") + gameEditor.getTitleAt(i), new JScrollPane(gameEditor.getComponentAt(i)));
 		}
 		
-		for(int i = 0; i < ruleEditor.getTabPane().getTabCount(); i++) {
+		for(int i = 0; i < ruleEditor.getTabPane().getTabCount();) { // Don't need to increment
 			tabs.addTab(lz.s("tab_rule") + ruleEditor.getTabPane().getTitleAt(i), new JScrollPane(ruleEditor.getTabPane().getComponentAt(i)));
 		}
 	}
