@@ -68,22 +68,11 @@ public class DiffFieldSerializer<T> extends FieldSerializer<T> {
 	@Override
 	public T read(Kryo kryo, Input input, Class<T> type) {
 		CachedField[] fields = getFields();
-		ObjectMap context = kryo.getGraphContext();
-		Object[] typicalFields;
 		
 		T object = kryo.newInstance(type);
 		
-		if(!context.containsKey(this)) {
-			context.put(this, null);
-			typicalFields = new Object[fields.length];
-			for(int i = 0; i < fields.length; i++) {
-				try {
-					typicalFields[i] = fields[i].getField().get(typical);
-				} catch(Exception ex) {
-				}
-			}
-		} else {
-			typicalFields = (Object[]) context.get(this);
+		for(int i = 0; i < fields.length; i++) {
+			fields[i].copy(typical, object);
 		}
 		
 		for(int i = input.readInt(true); i != -1; i = input.readInt(true)) {
