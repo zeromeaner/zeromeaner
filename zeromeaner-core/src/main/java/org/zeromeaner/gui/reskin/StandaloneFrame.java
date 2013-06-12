@@ -433,19 +433,20 @@ public class StandaloneFrame extends JFrame {
 
 			AbstractNetMode newMode = (AbstractNetMode)newModeTemp;
 
-			if(previousMode != null) {
+			if(previousMode != null && gameManager.engine.length > 0) {
 				if(gameManager.engine[0].ai != null) {
 					gameManager.engine[0].ai.shutdown(gameManager.engine[0], 0);
 					gameManager.engine[0].ai = null;
 				}
 				previousMode.netplayUnload(netLobby);
 			}
-			
+
+			newMode.modeInit(gameManager);
 			newMode.netplayInit(netLobby);
 			
 			gameManager.mode = newMode;
 			gameManager.init();
-
+			
 			// Tuning
 			gameManager.engine[0].owRotateButtonDefaultRight = StandaloneMain.propConfig.getProperty(0 + ".tuning.owRotateButtonDefaultRight", -1);
 			gameManager.engine[0].owSkin = StandaloneMain.propConfig.getProperty(0 + ".tuning.owSkin", -1);

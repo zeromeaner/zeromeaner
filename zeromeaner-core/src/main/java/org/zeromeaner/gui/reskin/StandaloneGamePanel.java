@@ -600,6 +600,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 */
 	protected void gameUpdateNet() {
 		if(owner.gameManager == null) return;
+		if(owner.gameManager.engine.length == 0) return;
 
 		try {
 			// Set ingame flag
@@ -637,7 +638,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			}
 
 			// Execute game loops
-			if((owner.gameManager != null) && (owner.gameManager.mode != null)) {
+			if((owner.gameManager != null) && (owner.gameManager.mode != null) && owner.gameManager.engine != null && owner.gameManager.engine.length > 0) {
 				StandaloneGameKey.gamekey[0].inputStatusUpdate(owner.gameManager.engine[0].ctrl);
 				owner.gameManager.updateAll();
 

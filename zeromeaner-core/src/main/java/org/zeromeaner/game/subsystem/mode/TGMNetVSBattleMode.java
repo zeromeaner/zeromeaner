@@ -6,6 +6,7 @@ import java.util.Deque;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.play.GameEngine;
+import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -56,6 +57,7 @@ public class TGMNetVSBattleMode extends NetVSBattleMode {
 	}
 	
 	protected Piece lastPiece;
+	protected Piece sentPiece;
 	protected int lastPieceX;
 	protected Deque<TGMAttackInfo> pendingGarbage = new ArrayDeque<TGMAttackInfo>();
 	
@@ -71,6 +73,8 @@ public class TGMNetVSBattleMode extends NetVSBattleMode {
 	
 	@Override
 	protected void sendGarbage(int playerID, int targetSeatID, int[] pts) {
+		if(lastPiece == sentPiece)
+			return;
 		TGMAttackInfo attack = new TGMAttackInfo();
 		attack.setPoints(pts);
 		attack.setLastEvent(lastevent[playerID]);
@@ -82,7 +86,8 @@ public class TGMNetVSBattleMode extends NetVSBattleMode {
 		
 		attack.setPiece(lastPiece);
 		attack.setX(lastPieceX);
-		knetClient().fireTCP(GAME, TGMNETVSBATTLE_GAME_ATTACK, attack);
+		knetClient().fireTCP(GAME, TGMNETVSBATTLE_GAME_ATTACK, attack, CHANNEL_ID, channelInfo().getId());
+		sentPiece = lastPiece;
 	}
 	
 	@Override
@@ -93,11 +98,18 @@ public class TGMNetVSBattleMode extends NetVSBattleMode {
 	@Override
 	protected void receiveGarbage(KNetEvent e, int uid, int seatID, int playerID) {
 		TGMAttackInfo attack = (TGMAttackInfo) e.get(TGMNETVSBATTLE_GAME_ATTACK);
-		if(netvsPlayerSeatID[0] != attack.getTargetSeatId())
+		int mySeatId = channelInfo().getPlayers().indexOf(knetClient().getSource());
+		System.out.println("Attack received.  My seat ID:" + mySeatId + " target ID:" + attack.getTargetSeatId());
+		if(attack.getTargetSeatId() != channelInfo().getPlayers().indexOf(knetClient().getSource()))
 			return;
+		System.out.println("Attacking with " + attack);
 		synchronized(pendingGarbage) {
 			pendingGarbage.offer(attack);
 		}
+	}
+	
+	@Override
+	protected void spawnPendingGarbage(GameEngine engine, int playerID) {
 	}
 	
 	@Override
@@ -134,6 +146,21 @@ public class TGMNetVSBattleMode extends NetVSBattleMode {
 				}
 			}
 			pendingGarbage.clear();
+		}
+	}
+	
+	@Override
+	public void knetEvented(KNetClient client, KNetEvent e) {
+		super.knetEvented(client, e);
+		if(e.is(GAME) && channelInfo().getSeatId(e) != -1) {
+			int uid = e.getSource().getId();
+			int seatID = channelInfo().getPlayers().indexOf(e.getSource());
+			int playerID = netvsGetPlayerIDbySeatID(seatID);
+
+			// Attack
+			if(e.is(TGMNETVSBATTLE_GAME_ATTACK)) { 
+				receiveGarbage(e, uid, seatID, playerID);
+			}
 		}
 	}
 }

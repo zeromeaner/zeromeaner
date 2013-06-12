@@ -372,14 +372,16 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	 * Set new target
 	 */
 	protected void setNewTarget() {
-		if((getNumberOfPossibleTargets() >= 1) && (channelInfo() != null) && (currentGame().isTargettedGarbage()) &&
+		if((getNumberOfPossibleTargets() >= 1) && (channelInfo() != null) &&
 		   (!netvsIsWatch()) && (!netvsIsPractice))
 		{
+			System.out.println("Choosing a target");
 			do {
 				targetID++;
 				if(targetID >= getPlayers()) targetID = 1;
 			} while (!netvsIsAttackable(targetID));
 		} else {
+			System.out.println("Not choosing a target: No targets.");
 			targetID = -1;
 		}
 	}
@@ -897,6 +899,18 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 
 	}
 	
+	protected void spawnPendingGarbage(GameEngine engine, int playerID) {
+		if(pendingGarbageLines[playerID] > 0 && engine.fieldShift == 0) {
+			pendingGarbageLines[playerID]--;
+			engine.fieldShift = 1;
+			engine.field.addSingleHoleGarbage(
+					engine.random.nextInt(engine.fieldWidth), 
+					Block.BLOCK_COLOR_GRAY, 
+					engine.getSkin(), 
+					1);
+		}
+	}
+	
 	/*
 	 * Executed at the end of each frame
 	 */
@@ -945,15 +959,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			engine.fieldShift = Math.max(0, engine.fieldShift - 1/20.);
 		}
 		
-		if(pendingGarbageLines[playerID] > 0 && engine.fieldShift == 0) {
-			pendingGarbageLines[playerID]--;
-			engine.fieldShift = 1;
-			engine.field.addSingleHoleGarbage(
-					engine.random.nextInt(engine.fieldWidth), 
-					Block.BLOCK_COLOR_GRAY, 
-					engine.getSkin(), 
-					1);
-		}
+		spawnPendingGarbage(engine, playerID);
 		
 		// APL & APM
 		if((playerID == 0) && (engine.gameActive) && (engine.timerActive) && !netvsIsWatch()) {

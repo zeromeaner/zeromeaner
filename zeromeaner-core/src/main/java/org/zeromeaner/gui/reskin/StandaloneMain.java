@@ -35,6 +35,8 @@ public class StandaloneMain {
 	}
 	
 	public static void loadGlobalConfig() {
+		if(offline)
+			return;
 		try {
 			InputStream in = new ResourceInputStream("config/setting/swing.cfg");
 			propConfig.load(in);
@@ -88,8 +90,10 @@ public class StandaloneMain {
 		StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 		StandaloneGameKey.gamekey[1].loadDefaultKeymap();
 		
-		StandaloneGameKey.gamekey[0].loadConfig(propConfig);
-		StandaloneGameKey.gamekey[1].loadConfig(propConfig);
+		if(!offline) {
+			StandaloneGameKey.gamekey[0].loadConfig(propConfig);
+			StandaloneGameKey.gamekey[1].loadConfig(propConfig);
+		}
 		
 		StandaloneResourceHolder.load();
 		

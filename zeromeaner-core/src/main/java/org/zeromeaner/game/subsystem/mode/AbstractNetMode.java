@@ -175,7 +175,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	}
 
 	/** NET: GameManager (Declared in NetDummyMode; Don't override it!) */
-	protected GameManager owner;
+	public GameManager owner;
 
 	/** NET: true if netplay (Declared in NetDummyMode) */
 	protected boolean netIsNetPlay;
