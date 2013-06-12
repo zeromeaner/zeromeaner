@@ -9,7 +9,8 @@ import com.esotericsoftware.kryo.io.Output;
 
 public class KNetPlayerInfo implements KryoSerializable {
 	private KNetEventSource player;
-	private KNetChannelInfo channel;
+//	private KNetChannelInfo channel;
+	private int channelId;
 	private boolean ready;
 	private boolean playing;
 	private int playCount;
@@ -20,7 +21,8 @@ public class KNetPlayerInfo implements KryoSerializable {
 	@Override
 	public void write(Kryo kryo, Output output) {
 		kryo.writeObject(output, player);
-		kryo.writeObject(output, channel);
+//		kryo.writeObject(output, channel);
+		output.writeInt(channelId, true);
 		output.writeBoolean(ready);
 		output.writeBoolean(playing);
 		output.writeInt(playCount, true);
@@ -32,7 +34,8 @@ public class KNetPlayerInfo implements KryoSerializable {
 	@Override
 	public void read(Kryo kryo, Input input) {
 		player = kryo.readObject(input, KNetEventSource.class);
-		channel = kryo.readObject(input, KNetChannelInfo.class);
+//		channel = kryo.readObject(input, KNetChannelInfo.class);
+		channelId = input.readInt(true);
 		ready = input.readBoolean();
 		playing = input.readBoolean();
 		playCount = input.readInt(true);
@@ -41,7 +44,7 @@ public class KNetPlayerInfo implements KryoSerializable {
 		bravo = input.readBoolean();
 	}
 	
-	public int getSeatId() {
+	public int getSeatId(KNetChannelInfo channel) {
 		return channel.getPlayerInfo().indexOf(this);
 	}
 	
@@ -82,13 +85,13 @@ public class KNetPlayerInfo implements KryoSerializable {
 		this.team = team;
 	}
 
-	public KNetChannelInfo getChannel() {
-		return channel;
-	}
-
-	public void setChannel(KNetChannelInfo channel) {
-		this.channel = channel;
-	}
+//	public KNetChannelInfo getChannel() {
+//		return channel;
+//	}
+//
+//	public void setChannel(KNetChannelInfo channel) {
+//		this.channel = channel;
+//	}
 
 	public boolean isBravo() {
 		return bravo;
@@ -96,5 +99,13 @@ public class KNetPlayerInfo implements KryoSerializable {
 
 	public void setBravo(boolean bravo) {
 		this.bravo = bravo;
+	}
+
+	public int getChannelId() {
+		return channelId;
+	}
+
+	public void setChannelId(int channelId) {
+		this.channelId = channelId;
 	}
 }

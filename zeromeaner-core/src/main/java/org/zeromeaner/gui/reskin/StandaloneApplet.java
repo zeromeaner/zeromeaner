@@ -64,6 +64,8 @@ public class StandaloneApplet extends Applet {
 					userId = "default";
 			}
 		}
+		
+		StandaloneMain.offline = Boolean.parseBoolean(System.getProperty("offline"));
 	
 		try {
 			try {

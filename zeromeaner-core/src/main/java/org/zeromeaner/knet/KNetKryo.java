@@ -39,7 +39,7 @@ import com.esotericsoftware.kryo.serializers.FieldSerializer;
 
 public class KNetKryo {
 	public static void configure(Kryo kryo) {
-		kryo.setReferences(true);
+		kryo.setReferences(false);
 		kryo.setAutoReset(true);
 		
 		kryo.register(String[].class);

@@ -187,13 +187,17 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 	}
 	
 	protected void join(KNetChannelInfo channel, KNetEvent e) {
-		if(!channel.getMembers().contains(e.getSource()))
-			channel.getMembers().add(e.getSource());
+		if(!channel.getMembers().contains(e.getSource())) {
+			List<KNetEventSource> members = new ArrayList<KNetEventSource>(channel.getMembers());
+			members.add(e.getSource());
+			channel.setMembers(members);
+//			channel.getMembers().add(e.getSource());
+		}
 		KNetPlayerInfo newPlayer = null;
 		if(channel.getPlayers().size() < channel.getMaxPlayers() && !channel.isPlaying() && !e.is(KNetEventArgs.CHANNEL_SPECTATE)) {
 			channel.getPlayers().add(e.getSource());
 			newPlayer = new KNetPlayerInfo();
-			newPlayer.setChannel(channel);
+			newPlayer.setChannelId(channel.getId());
 			newPlayer.setPlayer(e.getSource());
 			newPlayer.setTeam(e.getSource().getName() + e.getSource().getId());
 			channel.getPlayerInfo().add(newPlayer);
@@ -209,15 +213,18 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				maybeAutostart(channel);
 			}
 		}
+		if(newPlayer != null) {
+			fireTCP(PLAYER_ENTER, newPlayer, CHANNEL_ID, channel.getId());
+			maybeAutostart(channel);
+		}
 		reply(e, 
 				CHANNEL_JOIN,
 				CHANNEL_ID, channel.getId(),
 				PAYLOAD, e.getSource(),
 				CHANNEL_INFO, new KNetChannelInfo[] { channel });
-		if(newPlayer != null) {
-			fireTCP(PLAYER_ENTER, newPlayer, CHANNEL_ID, channel.getId());
-			maybeAutostart(channel);
-		}
+		reply(e,
+				CHANNEL_LIST,
+				CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
 	}
 	
 	protected void maybeAutostart(KNetChannelInfo channel) {

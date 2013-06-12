@@ -35,18 +35,18 @@ public class KNetChannelInfo implements KryoSerializable {
 		this.name = name;
 	}
 	
-	public KNetPlayerInfo getPlayerInfo(KNetEventSource source) {
+	public synchronized KNetPlayerInfo getPlayerInfo(KNetEventSource source) {
 		int index = players.indexOf(source);
 		if(index == -1)
 			return null;
 		return playerInfo.get(index);
 	}
 	
-	public int getSeatId(KNetEvent e) {
+	public synchronized int getSeatId(KNetEvent e) {
 		return players.indexOf(e.getSource());
 	}
 	
-	public void depart(KNetEventSource source) {
+	public synchronized void depart(KNetEventSource source) {
 		members.remove(source);
 		int index = players.indexOf(source);
 		players.remove(source);
@@ -55,54 +55,54 @@ public class KNetChannelInfo implements KryoSerializable {
 	}
 	
 	@Override
-	public String toString() {
+	public synchronized String toString() {
 		return "[" + id + ":" + name + members + "]";
 	}
 	
 	@Override
-	public int hashCode() {
+	public synchronized int hashCode() {
 		return id;
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
+	public synchronized boolean equals(Object obj) {
 		if(obj instanceof KNetChannelInfo) {
 			return id == ((KNetChannelInfo) obj).id;
 		}
 		return false;
 	}
 	
-	public int getId() {
+	public synchronized int getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public synchronized void setId(int id) {
 		this.id = id;
 	}
-	public String getName() {
+	public synchronized String getName() {
 		return name;
 	}
-	public void setName(String name) {
+	public synchronized void setName(String name) {
 		this.name = name;
 	}
 	
-	public List<KNetEventSource> getMembers() {
+	public synchronized List<KNetEventSource> getMembers() {
 		return members;
 	}
 	
-	public void setMembers(List<KNetEventSource> members) {
+	public synchronized void setMembers(List<KNetEventSource> members) {
 		this.members = members;
 	}
 	
-	public List<KNetEventSource> getPlayers() {
+	public synchronized List<KNetEventSource> getPlayers() {
 		return players;
 	}
 	
-	public void setPlayers(List<KNetEventSource> players) {
+	public synchronized void setPlayers(List<KNetEventSource> players) {
 		this.players = players;
 	}
 	
 	@Override
-	public void write(Kryo kryo, Output output) {
+	public synchronized void write(Kryo kryo, Output output) {
 		output.writeInt(id, true);
 		output.writeString(name);
 		output.writeInt(members.size(), true);
@@ -127,7 +127,7 @@ public class KNetChannelInfo implements KryoSerializable {
 	}
 	
 	@Override
-	public void read(Kryo kryo, Input input) {
+	public synchronized void read(Kryo kryo, Input input) {
 		id = input.readInt(true);
 		name = input.readString();
 		int msize = input.readInt(true);
@@ -151,67 +151,67 @@ public class KNetChannelInfo implements KryoSerializable {
 		autoStart = input.readBoolean();
 	}
 
-	public boolean isRuleLock() {
+	public synchronized boolean isRuleLock() {
 		return ruleLock;
 	}
 
-	public void setRuleLock(boolean ruleLock) {
+	public synchronized void setRuleLock(boolean ruleLock) {
 		this.ruleLock = ruleLock;
 	}
 
-	public RuleOptions getRule() {
+	public synchronized RuleOptions getRule() {
 		return rule;
 	}
 
-	public void setRule(RuleOptions rule) {
+	public synchronized void setRule(RuleOptions rule) {
 		this.rule = rule;
 	}
 
-	public List<KNetPlayerInfo> getPlayerInfo() {
+	public synchronized List<KNetPlayerInfo> getPlayerInfo() {
 		return playerInfo;
 	}
 
-	public void setPlayerInfo(List<KNetPlayerInfo> playerInfo) {
+	public synchronized void setPlayerInfo(List<KNetPlayerInfo> playerInfo) {
 		this.playerInfo = playerInfo;
 	}
 
-	public boolean isPlaying() {
+	public synchronized boolean isPlaying() {
 		return playing;
 	}
 
-	public void setPlaying(boolean playing) {
+	public synchronized void setPlaying(boolean playing) {
 		this.playing = playing;
 	}
 
-	public int getMaxPlayers() {
+	public synchronized int getMaxPlayers() {
 		return maxPlayers;
 	}
 
-	public void setMaxPlayers(int maxPlayers) {
+	public synchronized void setMaxPlayers(int maxPlayers) {
 		this.maxPlayers = maxPlayers;
 	}
 
-	public KNetGameInfo getGame() {
+	public synchronized KNetGameInfo getGame() {
 		return game;
 	}
 
-	public void setGame(KNetGameInfo game) {
+	public synchronized void setGame(KNetGameInfo game) {
 		this.game = game;
 	}
 
-	public boolean isAutoStart() {
+	public synchronized boolean isAutoStart() {
 		return autoStart;
 	}
 
-	public void setAutoStart(boolean autoStart) {
+	public synchronized void setAutoStart(boolean autoStart) {
 		this.autoStart = autoStart;
 	}
 
-	public String getMode() {
+	public synchronized String getMode() {
 		return mode;
 	}
 
-	public void setMode(String mode) {
+	public synchronized void setMode(String mode) {
 		this.mode = mode;
 	}
 }

@@ -24,6 +24,8 @@ public class StandaloneMain {
 	public static ModeList<GameMode> modeManager;
 	public static String userId;
 	
+	public static boolean offline = false;
+	
 	public static void main(String[] args) {
 		try {
 			_main(args);
@@ -67,6 +69,7 @@ public class StandaloneMain {
 		if(CookieAccess.get("userId") != null)
 			userId = CookieAccess.get("userId");
 
+		offline = Boolean.parseBoolean(System.getProperty("offline"));
 		
 		try {
 			PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));

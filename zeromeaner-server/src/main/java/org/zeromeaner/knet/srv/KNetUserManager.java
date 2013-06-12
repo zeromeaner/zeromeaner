@@ -1,5 +1,6 @@
 package org.zeromeaner.knet.srv;
 
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.log4j.Logger;
 import org.zeromeaner.dbo.Users;
 import org.zeromeaner.knet.KNetClient;
@@ -27,7 +28,10 @@ public class KNetUserManager extends KNetClient implements KNetListener {
 				boolean success = false;
 				try {
 					success = Users.checkPassword(email, pw);
+				} catch(PersistenceException ex) {
+					success = true; // if the database is down, authenticate anyway
 				} catch(Exception ex) {
+					ex.printStackTrace();
 				}
 				reply(e, USER_AUTHENTICATED, success);
 			}

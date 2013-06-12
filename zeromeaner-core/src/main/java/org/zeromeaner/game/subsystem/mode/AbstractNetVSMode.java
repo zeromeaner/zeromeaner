@@ -1248,8 +1248,8 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			KNetPlayerInfo info = (KNetPlayerInfo) e.get(PLAYER_UPDATE);
 
 			// Ready status change
-			if(info.getChannel().getId() == channelInfo().getId() && info.getSeatId() != -1) {
-				int playerID = netvsGetPlayerIDbySeatID(info.getSeatId());
+			if(info.getChannelId() == channelInfo().getId() && info.getSeatId(channelInfo()) != -1) {
+				int playerID = netvsGetPlayerIDbySeatID(info.getSeatId(channelInfo()));
 
 				if(netvsPlayerReady[playerID] != info.isReady()) {
 					netvsPlayerReady[playerID] = info.isReady();
@@ -1271,7 +1271,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			KNetEventSource info = (KNetEventSource) e.get(PLAYER_LOGOUT);
 			KNetPlayerInfo player = channelInfo().getPlayerInfo(info);
 
-			if((player.getChannel().getId() == channelInfo().getId()) && (player.getSeatId() != -1)) {
+			if((player.getChannelId() == channelInfo().getId()) && (player.getSeatId(channelInfo()) != -1)) {
 				netUpdatePlayerExist();
 			}
 		}
@@ -1308,7 +1308,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 		// Someone entered here
 		if(e.is(PLAYER_ENTER)) {
 			KNetPlayerInfo player = (KNetPlayerInfo) e.get(PLAYER_ENTER);
-			int seatID = player.getSeatId();
+			int seatID = player.getSeatId(channelInfo());
 			if((seatID != -1) && (netvsNumPlayers() < 2)) {
 				owner.receiver.playSE("levelstop");
 			}
