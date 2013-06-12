@@ -196,7 +196,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 	/** FPSDisplay */
 	protected boolean showfps = true;
-
+	
 	/** Ingame flag */
 	public boolean[] isInGame;
 

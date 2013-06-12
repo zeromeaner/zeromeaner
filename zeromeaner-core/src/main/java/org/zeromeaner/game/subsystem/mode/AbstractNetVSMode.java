@@ -688,7 +688,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			engine.enableSE = true;
 			engine.isVisible = true;
 
-			if((!netvsIsReadyChangePending) && (netvsNumPlayers() >= 2) && (!netvsIsNewcomer) && (menuTime >= 5)) {
+			if((netvsNumPlayers() >= 2) && (!netvsIsNewcomer)) {
 				// Ready ON
 				if(engine.ctrl.isPush(Controller.BUTTON_A) && !netvsPlayerReady[0]) {
 					engine.playSE("decide");
@@ -712,7 +712,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 		}
 
 		// Random Map Preview
-		if((channelInfo() != null) && channelInfo().getGame().getMap() != null && !knetClient().getMaps().isEmpty()) {
+		if((channelInfo() != null) && channelInfo().getGame() != null && channelInfo().getGame().getMap() != null && !knetClient().getMaps().isEmpty()) {
 			if(netvsPlayerExist[playerID]) {
 				if(menuTime % 30 == 0) {
 					engine.statc[5]++;

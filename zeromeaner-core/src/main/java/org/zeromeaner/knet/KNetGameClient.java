@@ -5,12 +5,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.funcish.core.Predicates;
 import org.funcish.core.fn.Predicate;
 import org.funcish.core.impl.AbstractPredicate;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.util.KryoCopy;
+
+import com.esotericsoftware.kryonet.Connection;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
@@ -63,7 +66,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 
 	public KNetGameClient(String type, String host, int port) {
 		super(type, host, port);
-		addKNetListener(this);
+//		addKNetListener(this);
 	}
 	
 	@Override
@@ -90,8 +93,10 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 			issue = true;
 		if(getSource().equals(e.get(ADDRESS)))
 			issue = true;
-		if(issue)
+		if(issue) {
+			knetEvented(this, e);
 			super.issue(e);
+		}
 	}
 	
 	protected KNetChannelInfo updateChannel(KNetEvent ke, KNetChannelInfo c) {
@@ -99,9 +104,10 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 		fireChannelUpdated(ke, channels.get(c.getId()));
 		return channels.get(c.getId());
 	}
-	
+
 	@Override
 	public void knetEvented(KNetClient client, KNetEvent e) {
+
 		if(e.is(MAPS))
 			maps = Arrays.asList((Field[]) e.get(MAPS));
 		else if(e.is(CONNECTED)) {

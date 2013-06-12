@@ -31,6 +31,7 @@ org.zeromeaner.game.subsystem.mode.VSDigRaceMode
 org.zeromeaner.game.subsystem.mode.VSBattleMode
 org.zeromeaner.game.subsystem.mode.ToolVSMapEditMode
 org.zeromeaner.game.subsystem.mode.NetVSBattleMode
+org.zeromeaner.game.subsystem.mode.TGMNetVSBattleMode
 org.zeromeaner.game.subsystem.mode.NetVSLineRaceMode
 org.zeromeaner.game.subsystem.mode.NetVSDigRaceMode
 org.zeromeaner.game.subsystem.mode.AvalancheMode

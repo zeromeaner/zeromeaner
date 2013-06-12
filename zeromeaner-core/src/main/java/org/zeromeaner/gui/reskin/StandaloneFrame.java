@@ -110,6 +110,15 @@ public class StandaloneFrame extends JFrame {
 				content.revalidate();
 				content.repaint();
 			}
+			@Override
+			public void knetPanelJoined(KNetPanelEvent e) {
+				enterNewMode(e.getChannel().getMode());
+			}
+			
+			@Override
+			public void knetPanelParted(KNetPanelEvent e) {
+				enterNewMode(null);
+			}
 		});
 		
 		gamePanel = new StandaloneGamePanel(this);
@@ -495,6 +504,7 @@ public class StandaloneFrame extends JFrame {
 				gameManager.engine[i].init();
 			}
 
+			gamePanel.isNetPlay = true;
 			
 		} else {
 			log.error("This mode does not support netplay:" + modeName);
