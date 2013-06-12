@@ -754,12 +754,12 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 
 			if((playerID == 0) && !netvsIsWatch() && (!netvsIsReadyChangePending) && (netvsNumPlayers() >= 2) && !netvsIsNewcomer) {
 				if(!netvsPlayerReady[playerID]) {
-					String strTemp = "A(" + owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_A) + " KEY):";
+					String strTemp = "A(" + owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_A).toUpperCase() + " KEY):";
 					if(strTemp.length() > 10) strTemp = strTemp.substring(0, 10);
 					owner.receiver.drawMenuFont(engine, playerID, 0, 16, strTemp, EventRenderer.COLOR_CYAN);
 					owner.receiver.drawMenuFont(engine, playerID, 1, 17, "READY", EventRenderer.COLOR_CYAN);
 				} else {
-					String strTemp = "B(" + owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_B) + " KEY):";
+					String strTemp = "B(" + owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_B).toUpperCase() + " KEY):";
 					if(strTemp.length() > 10) strTemp = strTemp.substring(0, 10);
 					owner.receiver.drawMenuFont(engine, playerID, 0, 16, strTemp, EventRenderer.COLOR_BLUE);
 					owner.receiver.drawMenuFont(engine, playerID, 1, 17, "CANCEL", EventRenderer.COLOR_BLUE);
