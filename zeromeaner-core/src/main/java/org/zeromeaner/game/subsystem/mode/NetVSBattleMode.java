@@ -616,7 +616,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 				if((targetID != -1) && !netvsIsAttackable(targetID)) setNewTarget();
 				int targetSeatID = (targetID == -1) ? -1 : netvsPlayerSeatID[targetID];
 
-				sendGarbage(playerID, targetSeatID, pts);
+				sendGarbage(engine, playerID, targetSeatID, pts);
 
 				/*
 				AttackInfo attack = new AttackInfo();
@@ -746,7 +746,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 		}
 	}
 
-	protected void sendGarbage(int playerID, int targetSeatID, int[] pts) {
+	protected void sendGarbage(GameEngine engine, int playerID, int targetSeatID, int[] pts) {
 		AttackInfo attack = new AttackInfo();
 		attack.setPoints(pts);
 		attack.setLastEvent(lastevent[playerID]);

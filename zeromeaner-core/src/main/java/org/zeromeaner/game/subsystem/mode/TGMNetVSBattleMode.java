@@ -1,6 +1,7 @@
 package org.zeromeaner.game.subsystem.mode;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 
 import org.zeromeaner.game.component.Block;
@@ -22,37 +23,26 @@ public class TGMNetVSBattleMode extends NetVSBattleMode {
 	}
 	
 	public static class TGMAttackInfo extends NetVSBattleMode.AttackInfo {
-		private Piece piece;
-		private int x;
+		private ArrayList<Block[]> cleared;
 		
 		@Override
 		public void write(Kryo kryo, Output output) {
 			super.write(kryo, output);
-			kryo.writeObject(output, piece);
-			output.writeInt(x, true);
+			kryo.writeObject(output, cleared);
 		}
 		
 		@Override
 		public void read(Kryo kryo, Input input) {
 			super.read(kryo, input);
-			piece = kryo.readObject(input, Piece.class);
-			x = input.readInt(true);
+			cleared = kryo.readObject(input, ArrayList.class);
 		}
 
-		public Piece getPiece() {
-			return piece;
+		public ArrayList<Block[]> getCleared() {
+			return cleared;
 		}
 
-		public void setPiece(Piece piece) {
-			this.piece = piece;
-		}
-
-		public int getX() {
-			return x;
-		}
-
-		public void setX(int x) {
-			this.x = x;
+		public void setCleared(ArrayList<Block[]> cleared) {
+			this.cleared = cleared;
 		}
 	}
 	
@@ -72,7 +62,7 @@ public class TGMNetVSBattleMode extends NetVSBattleMode {
 	}
 	
 	@Override
-	protected void sendGarbage(int playerID, int targetSeatID, int[] pts) {
+	protected void sendGarbage(GameEngine engine, int playerID, int targetSeatID, int[] pts) {
 		if(lastPiece == sentPiece)
 			return;
 		TGMAttackInfo attack = new TGMAttackInfo();
@@ -84,8 +74,7 @@ public class TGMNetVSBattleMode extends NetVSBattleMode {
 		attack.setLastPiece(lastpiece[playerID]);
 		attack.setTargetSeatId(targetSeatID);
 		
-		attack.setPiece(lastPiece);
-		attack.setX(lastPieceX);
+		attack.setCleared(engine.field.getLastLinesCleared());
 		knetClient().fireTCP(GAME, TGMNETVSBATTLE_GAME_ATTACK, attack, CHANNEL_ID, channelInfo().getId());
 		sentPiece = lastPiece;
 	}
@@ -116,36 +105,21 @@ public class TGMNetVSBattleMode extends NetVSBattleMode {
 	public void onLast(GameEngine engine, int playerID) {
 		super.onLast(engine, playerID);
 		
-		synchronized(pendingGarbage) {
-			for(TGMAttackInfo attack : pendingGarbage) {
-				Piece g = attack.getPiece();
-				engine.field.pushUp(g.getHeight() - 1);
-				int h = 0;
-				for(
-						int y = engine.field.getHeightWithoutHurryupFloor() - g.getHeight() + 1; 
-						y < engine.field.getHeightWithoutHurryupFloor(); 
-						y++) 
-				{
-					for(int x = 0; x < engine.field.getWidth(); x++) {
-						boolean hole = false;
-						for(int i = 0; i < g.dataX[g.direction].length; i++) {
-							int gx = attack.getX() + g.dataX[g.direction][i];
-							int gy = engine.field.getHeightWithoutHurryupFloor() - g.getHeight() + 1 + g.dataY[g.direction][i];
-							if(gx == x && gy == y)
-								hole = true;
+		if(playerID == 0) {
+			synchronized(pendingGarbage) {
+				for(TGMAttackInfo attack : pendingGarbage) {
+					int y = engine.field.getHeightWithoutHurryupFloor() - 1;
+					ArrayList<Block[]> cleared = attack.getCleared();
+					cleared.remove(0);
+					for(Block[] blocks : cleared) {
+						engine.field.pushUp(1);
+						for(int x = 0; x < blocks.length; x++) {
+							engine.field.setBlock(x, y, blocks[x]);
 						}
-						if(hole)
-							continue;
-						Block blk = new Block();
-						blk.color = Block.BLOCK_COLOR_GRAY;
-						blk.skin = engine.getSkin();
-						blk.attribute = Block.BLOCK_ATTRIBUTE_VISIBLE | Block.BLOCK_ATTRIBUTE_OUTLINE | Block.BLOCK_ATTRIBUTE_GARBAGE;
-						engine.field.setBlock(x, y, blk);
 					}
-					h++;
 				}
+				pendingGarbage.clear();
 			}
-			pendingGarbage.clear();
 		}
 	}
 	

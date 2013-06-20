@@ -18,6 +18,7 @@ import org.zeromeaner.game.subsystem.mode.ExtremeMode;
 import org.zeromeaner.game.subsystem.mode.MarathonMode;
 import org.zeromeaner.game.subsystem.mode.MarathonPlusMode;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
+import org.zeromeaner.game.subsystem.mode.TGMNetVSBattleMode;
 import org.zeromeaner.knet.obj.KNStartInfo;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.knet.obj.KNetGameInfo;
@@ -91,6 +92,8 @@ public class KNetKryo {
 		kryo.register(NetVSBattleMode.AttackInfo.class);
 		kryo.register(NetVSBattleMode.StatsInfo.class);
 		fieldSerializer(kryo, NetVSBattleMode.EndGameStats.class);
+		
+		kryo.register(TGMNetVSBattleMode.TGMAttackInfo.class);
 		
 		fieldSerializer(kryo, ComboRaceMode.Stats.class);
 		fieldSerializer(kryo, ComboRaceMode.Options.class);
