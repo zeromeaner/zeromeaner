@@ -67,6 +67,20 @@ public class TNBot extends AbstractAI {
 		}
 	}
 	
+	public static class SlowRace extends Race {
+		@Override
+		public String getName() {
+			return super.getName() + " [Slow]";
+		}
+		
+		@Override
+		public void init(GameEngine engine, int playerID) {
+			super.init(engine, playerID);
+			skipLookahead = false;
+			lookahead = 3;
+		}
+	}
+	
 	public static class Dig extends TNBot {
 		@Override
 		public String getName() {

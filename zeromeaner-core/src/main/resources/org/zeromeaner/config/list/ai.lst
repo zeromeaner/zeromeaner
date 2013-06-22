@@ -7,6 +7,7 @@ org.zeromeaner.game.subsystem.ai.Nohoho
 org.zeromeaner.game.subsystem.ai.ComboRaceBot
 org.zeromeaner.game.evil.TNBot
 org.zeromeaner.game.evil.TNBot$Race
+org.zeromeaner.game.evil.TNBot$SlowRace
 org.zeromeaner.game.evil.TNBot$Dig
 org.zeromeaner.game.evil.TNBot$Clairevoyant
 org.zeromeaner.game.evil.TNElTetrisBot
