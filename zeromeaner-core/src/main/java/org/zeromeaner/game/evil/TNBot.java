@@ -22,7 +22,7 @@ import org.eviline.ShapeType;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
-import org.eviline.clj.ClojureAIKernel;
+
 
 public class TNBot extends AbstractAI {
 
