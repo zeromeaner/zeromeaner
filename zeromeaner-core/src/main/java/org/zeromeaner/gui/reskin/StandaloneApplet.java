@@ -122,7 +122,14 @@ public class StandaloneApplet extends Applet {
 	}
 	
 	@Override
+	public void stop() {
+		StandaloneMain.saveConfig();
+		System.exit(0);
+	}
+	
+	@Override
 	public void destroy() {
 		StandaloneMain.saveConfig();
+		System.exit(0);
 	}
 }
