@@ -2,6 +2,7 @@ package org.zeromeaner.gui.reskin;
 
 import java.applet.Applet;
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
@@ -92,7 +93,7 @@ public class StandaloneApplet extends Applet {
 			
 			StandaloneResourceHolder.load();
 			
-			StandaloneFrame frame = new StandaloneFrame();
+			final StandaloneFrame frame = new StandaloneFrame();
 			frame.setUndecorated(false);
 			
 			setLayout(new BorderLayout());
@@ -101,9 +102,14 @@ public class StandaloneApplet extends Applet {
 			if(url.getQuery() != null) {
 				String[] qf = url.getQuery().split("&");
 				for(String qpp : qf) {
-					String[] qp = qpp.split("=", 2);
+					final String[] qp = qpp.split("=", 2);
 					if("replay".equals(qp[0]) && qp.length > 1) {
-						frame.startReplayGame(qp[1]);
+						EventQueue.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								frame.startReplayGame(qp[1]);
+							}
+						});
 						break;
 					}
 						
