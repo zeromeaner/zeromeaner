@@ -98,6 +98,18 @@ public class StandaloneApplet extends Applet {
 			setLayout(new BorderLayout());
 			add(frame.getRootPane(), BorderLayout.CENTER);
 			
+			if(url.getQuery() != null) {
+				String[] qf = url.getQuery().split("&");
+				for(String qpp : qf) {
+					String[] qp = qpp.split("=", 2);
+					if("replay".equals(qp[0]) && qp.length > 1) {
+						frame.startReplayGame(qp[1]);
+						break;
+					}
+						
+				}
+			}
+			
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}

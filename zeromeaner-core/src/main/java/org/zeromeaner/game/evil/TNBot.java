@@ -28,9 +28,9 @@ public class TNBot extends AbstractAI {
 		case DOWN_ONE:
 			return Controller.BUTTON_DOWN;
 		case ROTATE_LEFT:
-			return Controller.BUTTON_A;
-		case ROTATE_RIGHT:
 			return Controller.BUTTON_B;
+		case ROTATE_RIGHT:
+			return Controller.BUTTON_A;
 		case SHIFT_LEFT:
 		case DAS_LEFT:
 			return Controller.BUTTON_LEFT;
