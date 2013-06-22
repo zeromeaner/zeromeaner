@@ -362,12 +362,20 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 					;
 				totalFPS = fps.size();
 				visibleFPS = vps.size();
+				int unrenderedFrames = 0;
 				while(totalFPS < maxfps) {
 					fps.add(new FramePerSecond());
-					doFrame(false);
+					unrenderedFrames++;
+					boolean render = unrenderedFrames % (maxfps / 4) == 0;
+					doFrame(render);
+					if(render)
+						vps.add(new FramePerSecond());
 					while(fps.poll() != null)
 						;
+					while(vps.poll() != null)
+						;
 					totalFPS = fps.size();
+					visibleFPS = vps.size();
 				}
 			}
 		};

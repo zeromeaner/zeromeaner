@@ -77,10 +77,12 @@ public class TNBot extends AbstractAI {
 		public void init(GameEngine engine, int playerID) {
 			super.init(engine, playerID);
 			lookahead = 2;
+			/*
 			double[] fp = kernel.getFitness().getParams();
 			fp[EvilineFitness.Weights.TRANSITION_EXP] += 2;
 			fp[EvilineFitness.Weights.IMPOSSIBLE_POWER] += 2;
 			fp[EvilineFitness.Weights.SMOOTHNESS_MULT] *= 3;
+			*/
 		}
 	}
 	
