@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+
 import org.eviline.Field;
 import org.eviline.PlayerAction;
 import org.eviline.PlayerActionType;
@@ -15,11 +16,13 @@ import org.eviline.ai.Decision;
 import org.eviline.ai.DefaultAIKernel;
 import org.eviline.ai.QueueContext;
 import org.eviline.fitness.EvilineFitness;
+import org.eviline.fitness.EvilineFitness2;
 import org.eviline.Shape;
 import org.eviline.ShapeType;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
+import org.eviline.clj.ClojureAIKernel;
 
 public class TNBot extends AbstractAI {
 
@@ -46,6 +49,9 @@ public class TNBot extends AbstractAI {
 	}
 
 	public static class Race extends TNBot {
+		public Race() {
+		}
+		
 		@Override
 		public String getName() {
 			return super.getName() + " [Race]";
@@ -57,7 +63,7 @@ public class TNBot extends AbstractAI {
 			kernel.setHardDropOnly(false);
 			highGravity = false;
 			skipHold = true;
-			skipLookahead = true;
+			skipLookahead = false;
 		}
 	}
 	
