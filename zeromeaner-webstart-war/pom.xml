@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>zeromeaner-parent</artifactId>
 		<groupId>org.zeromeaner</groupId>
-		<version>1.0.17</version>
+		<version>1.0.18-SNAPSHOT</version>
 		<relativePath>../zeromeaner-parent</relativePath>
 	</parent>
 	<artifactId>zeromeaner-webstart-war</artifactId>
@@ -24,6 +24,7 @@
 					<warName>zero${war.suffix}</warName>
 					<webXml>src/main/webapp/web.xml</webXml>
 					<webappDirectory>${project.build.directory}/zero</webappDirectory>
+					<filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -155,7 +156,7 @@
 		<dependency>
 			<groupId>org.zeromeaner</groupId>
 			<artifactId>zeromeaner-server</artifactId>
-			<version>1.0.17</version>
+			<version>1.0.18-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

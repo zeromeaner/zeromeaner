@@ -1,12 +1,12 @@
 package org.zeromeaner.knet;
 
 import java.lang.annotation.RetentionPolicy;
-
 import java.lang.annotation.Retention;
 
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
+import org.zeromeaner.game.subsystem.mode.TGMNetVSBattleMode;
 import org.zeromeaner.knet.obj.KNStartInfo;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.knet.obj.KNetPlayerInfo;
@@ -15,6 +15,7 @@ import org.zeromeaner.knet.obj.PieceMovement;
 import org.zeromeaner.knet.obj.Replay;
 
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
@@ -230,6 +231,8 @@ public enum KNetEventArgs {
 	NETVSBATTLE_GAME_ATTACK(NetVSBattleMode.AttackInfo.class),
 	NETVSBATTLE_GAME_STATS(NetVSBattleMode.StatsInfo.class),
 	
+	TGMNETVSBATTLE_GAME_ATTACK(TGMNetVSBattleMode.TGMAttackInfo.class),
+	
 	;
 	
 	@Retention(RetentionPolicy.RUNTIME)
@@ -264,6 +267,10 @@ public enum KNetEventArgs {
 		}
 	}
 	
+	public Class<?> getType() {
+		return type;
+	}
+	
 	public boolean isGlobal() {
 		return global;
 	}
@@ -275,9 +282,10 @@ public enum KNetEventArgs {
 			new Throwable("Invalid arg for " + this + ":" + argValue).printStackTrace();
 			throw new ClassCastException();
 		}
-		if(nullable)
+		if(nullable) {
+			System.err.println(this + " writing " + argValue);
 			kryo.writeClassAndObject(output, argValue);
-		else
+		} else
 			kryo.writeObject(output, argValue);
 		
 	}
@@ -286,12 +294,12 @@ public enum KNetEventArgs {
 		try {
 			if(type == null)
 				return true;
-			if(nullable)
-				return kryo.readClassAndObject(input);
-			else
+			if(nullable) {
+				return type.cast(kryo.readClassAndObject(input));
+			} else
 				return kryo.readObject(input, type);
-		} catch(Error er) {
-			throw new Error("reading " + this, er);
+		} catch(RuntimeException er) {
+			throw new KryoException("reading " + this, er);
 		}
 	}
 }

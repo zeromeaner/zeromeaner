@@ -76,6 +76,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 	public void knetEvented(KNetClient client, KNetEvent e) {
 		if(client.isLocal(e))
 			return;
+//		System.out.println(e);
 		try {
 			if(e.is(CHANNEL_LIST)) {
 				client.reply(e,
@@ -115,7 +116,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				channels.put(request.getId(), request);
 				states.put(request, new ChannelState(request));
 				client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
-				join(request, e);
+//				join(request, e);
 			}
 			if(e.is(CHANNEL_DELETE)) {
 				int id = (Integer) e.get(CHANNEL_DELETE);
@@ -153,7 +154,8 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				//			client.fireTCP(START, CHANNEL_ID, e.get(CHANNEL_ID));
 				KNetChannelInfo c = channels.get(e.get(CHANNEL_ID));
 				ChannelState s = states.get(c);
-				if(s.requiredAutostartResponses.remove(e.getSource()) && s.requiredAutostartResponses.size() == 0) {
+				s.requiredAutostartResponses.remove(e.getSource());
+				if(s.requiredAutostartResponses.size() == 0) {
 					c.setPlaying(true);
 					client.fireTCP(CHANNEL_UPDATE, c);
 					KNStartInfo startInfo = new KNStartInfo();
@@ -187,13 +189,17 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 	}
 	
 	protected void join(KNetChannelInfo channel, KNetEvent e) {
-		if(!channel.getMembers().contains(e.getSource()))
-			channel.getMembers().add(e.getSource());
+		if(!channel.getMembers().contains(e.getSource())) {
+			List<KNetEventSource> members = new ArrayList<KNetEventSource>(channel.getMembers());
+			members.add(e.getSource());
+			channel.setMembers(members);
+//			channel.getMembers().add(e.getSource());
+		}
 		KNetPlayerInfo newPlayer = null;
 		if(channel.getPlayers().size() < channel.getMaxPlayers() && !channel.isPlaying() && !e.is(KNetEventArgs.CHANNEL_SPECTATE)) {
 			channel.getPlayers().add(e.getSource());
 			newPlayer = new KNetPlayerInfo();
-			newPlayer.setChannel(channel);
+			newPlayer.setChannelId(channel.getId());
 			newPlayer.setPlayer(e.getSource());
 			newPlayer.setTeam(e.getSource().getName() + e.getSource().getId());
 			channel.getPlayerInfo().add(newPlayer);
@@ -214,6 +220,9 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				CHANNEL_ID, channel.getId(),
 				PAYLOAD, e.getSource(),
 				CHANNEL_INFO, new KNetChannelInfo[] { channel });
+		reply(e,
+				CHANNEL_LIST,
+				CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
 		if(newPlayer != null) {
 			fireTCP(PLAYER_ENTER, newPlayer, CHANNEL_ID, channel.getId());
 			maybeAutostart(channel);

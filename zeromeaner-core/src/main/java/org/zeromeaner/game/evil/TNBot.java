@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+
 import org.eviline.Field;
 import org.eviline.PlayerAction;
 import org.eviline.PlayerActionType;
@@ -15,11 +16,13 @@ import org.eviline.ai.Decision;
 import org.eviline.ai.DefaultAIKernel;
 import org.eviline.ai.QueueContext;
 import org.eviline.fitness.EvilineFitness;
+import org.eviline.fitness.EvilineFitness2;
 import org.eviline.Shape;
 import org.eviline.ShapeType;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
+
 
 public class TNBot extends AbstractAI {
 
@@ -28,9 +31,9 @@ public class TNBot extends AbstractAI {
 		case DOWN_ONE:
 			return Controller.BUTTON_DOWN;
 		case ROTATE_LEFT:
-			return Controller.BUTTON_A;
-		case ROTATE_RIGHT:
 			return Controller.BUTTON_B;
+		case ROTATE_RIGHT:
+			return Controller.BUTTON_A;
 		case SHIFT_LEFT:
 		case DAS_LEFT:
 			return Controller.BUTTON_LEFT;
@@ -46,6 +49,9 @@ public class TNBot extends AbstractAI {
 	}
 
 	public static class Race extends TNBot {
+		public Race() {
+		}
+		
 		@Override
 		public String getName() {
 			return super.getName() + " [Race]";
@@ -57,7 +63,21 @@ public class TNBot extends AbstractAI {
 			kernel.setHardDropOnly(false);
 			highGravity = false;
 			skipHold = true;
-			skipLookahead = true;
+			skipLookahead = false;
+		}
+	}
+	
+	public static class SlowRace extends Race {
+		@Override
+		public String getName() {
+			return super.getName() + " [Slow]";
+		}
+		
+		@Override
+		public void init(GameEngine engine, int playerID) {
+			super.init(engine, playerID);
+			skipLookahead = false;
+			lookahead = 3;
 		}
 	}
 	
@@ -71,10 +91,12 @@ public class TNBot extends AbstractAI {
 		public void init(GameEngine engine, int playerID) {
 			super.init(engine, playerID);
 			lookahead = 2;
+			/*
 			double[] fp = kernel.getFitness().getParams();
 			fp[EvilineFitness.Weights.TRANSITION_EXP] += 2;
 			fp[EvilineFitness.Weights.IMPOSSIBLE_POWER] += 2;
 			fp[EvilineFitness.Weights.SMOOTHNESS_MULT] *= 3;
+			*/
 		}
 	}
 	

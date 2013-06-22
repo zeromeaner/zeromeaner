@@ -34,6 +34,8 @@ import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import org.zeromeaner.game.component.Block;
@@ -55,6 +57,8 @@ public class StandaloneRenderer extends EventRenderer {
 	/** Log */
 	//static Logger log = Logger.getLogger(RendererSwing.class);
 
+	protected StandaloneFrame frame;
+	
 	/** Surface to draw */
 	protected Graphics2D graphics;
 
@@ -156,7 +160,9 @@ public class StandaloneRenderer extends EventRenderer {
 	/**
 	 * Constructor
 	 */
-	public StandaloneRenderer() {
+	public StandaloneRenderer(StandaloneFrame frame) {
+		this.frame = frame;
+		
 		graphics = null;
 		effectlist = new ArrayList<EffectObject>(10*4);
 
@@ -348,8 +354,14 @@ public class StandaloneRenderer extends EventRenderer {
 
 		String filename = saveReplay(owner, prop, StandaloneMain.propConfig.getProperty("custom.replay.directory", "replay"));
 
-/*
-		String replayUrl = AppletMain.url + "?../" + AppletMain.userId + "/" + filename;
+		
+		
+		String replayUrl = StandaloneApplet.url + "?replay=replay/../../" + StandaloneMain.userId + "/" + filename;
+		try {
+			frame.setReplayUrl(new URL(replayUrl));
+		} catch (MalformedURLException e) {
+		}
+		/*
 		StringSelection ss = new StringSelection(replayUrl);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, ss);
 //		JOptionPane.showInternalMessageDialog(

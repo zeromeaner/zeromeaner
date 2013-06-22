@@ -1,12 +1,15 @@
 package org.zeromeaner.knet;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 import javax.swing.event.EventListenerList;
 
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.KryoSerialization;
 import com.esotericsoftware.kryonet.Listener;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
@@ -31,7 +34,8 @@ public class KNetClient {
 		
 		@Override
 		public void disconnected(Connection connection) {
-			issue(source.event(DISCONNECTED, true));
+			if(source != null)
+				issue(source.event(DISCONNECTED, true));
 		}
 	};
 	
@@ -43,8 +47,9 @@ public class KNetClient {
 		this.type = type;
 		this.host = host;
 		this.port = port;
-		client = new Client(1024 * 256, 1024 * 256);
-		KNetKryo.configure(client.getKryo());
+		Kryo kryo = new Kryo();
+		KNetKryo.configure(kryo);
+		client = new Client(1024 * 256, 1024 * 256, new KryoSerialization(kryo));
 		client.addListener(listener);
 	}
 	
@@ -147,13 +152,16 @@ public class KNetClient {
 	}
 	
 	public void fireTCP(Object... args) {
+		System.err.println(Arrays.asList(args));
 		fireTCP(event(args));
 	}
 	
 	public void fireTCP(KNetEvent e) {
+		System.err.println(e);
 		e = process(e);
 		e.getArgs().remove(UDP);
 		issue(e);
+		e.getSource();
 		client.sendTCP(e);
 	}
 	

@@ -16,8 +16,9 @@ import org.zeromeaner.knet.KNetEventArgs;
 import org.zeromeaner.knet.KNetEventSource;
 import org.zeromeaner.knet.KNetKryo;
 
-
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.KryoSerialization;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
@@ -35,7 +36,7 @@ public class KNetServer {
 	
 	protected Map<Integer, KNetEventSource> sourcesByConnectionId = new HashMap<Integer, KNetEventSource>();
 	protected Map<KNetEventSource, Integer> connectionIds = new HashMap<KNetEventSource, Integer>();
-	protected Map<Integer, ExecutorService> senders = new HashMap<Integer, ExecutorService>();
+//	protected Map<Integer, ExecutorService> senders = new HashMap<Integer, ExecutorService>();
 	
 	protected KNetEventSource source;
 
@@ -49,7 +50,7 @@ public class KNetServer {
 				KNetEventSource evs = new KNetEventSource(nextClientId.incrementAndGet());
 				sourcesByConnectionId.put(connection.getID(), evs);
 				connectionIds.put(evs, connection.getID());
-				senders.put(connection.getID(), Executors.newSingleThreadExecutor());
+//				senders.put(connection.getID(), Executors.newSingleThreadExecutor());
 				connection.sendTCP(source.event(
 						ASSIGN_SOURCE, evs
 						));
@@ -70,9 +71,10 @@ public class KNetServer {
 				if(evs != null) {
 					if(e.is(UPDATE_SOURCE)) {
 						evs.updateFrom((KNetEventSource) e.get(UPDATE_SOURCE));
+						log.info("Client updated source info:" + evs);
+						return;
 					}
 					e.getSource().updateFrom(evs);
-					log.info("Client updated source info:" + evs);
 				}
 
 				boolean global = true;
@@ -107,13 +109,13 @@ public class KNetServer {
 					if(e.is(UDP))
 						server.sendToUDP(connectionIds.get(r), object);
 					else {
-						if(senders.get(connectionIds.get(r)) != null)
-							senders.get(connectionIds.get(r)).execute(new Runnable() {
-								@Override
-								public void run() {
+//						if(senders.get(connectionIds.get(r)) != null)
+//							senders.get(connectionIds.get(r)).execute(new Runnable() {
+//								@Override
+//								public void run() {
 									server.sendToTCP(connectionIds.get(r), object);
-								}
-							});
+//								}
+//							});
 					}
 				}
 			} catch(Throwable t) {
@@ -125,9 +127,11 @@ public class KNetServer {
 		public void disconnected(Connection connection) {
 			try {
 				KNetEventSource es = sourcesByConnectionId.get(connection.getID());
+				if(es == null)
+					return;
 				KNetEvent e = new KNetEvent(es, DISCONNECTED);
 				server.sendToAllExceptTCP(connection.getID(), e);
-				senders.remove(connection.getID()).shutdown();
+//				senders.remove(connection.getID()).shutdown();
 				log.info("Client disconnected:" + es);
 			} catch(Throwable t) {
 				t.printStackTrace();
@@ -138,8 +142,9 @@ public class KNetServer {
 	public KNetServer(int port) throws IOException, InterruptedException {
 		this.port = port;
 		source = new KNetEventSource(nextClientId.incrementAndGet());
-		server = new Server(1024 * 256, 1024 * 256);
-		KNetKryo.configure(server.getKryo());
+		Kryo kryo = new Kryo();
+		KNetKryo.configure(kryo);
+		server = new Server(1024 * 256, 1024 * 256, new KryoSerialization(kryo));
 		server.getKryo().setClassLoader(KNetServer.class.getClassLoader());
 		server.start();
 		server.bind(port, port);

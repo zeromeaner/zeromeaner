@@ -196,7 +196,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 	/** FPSDisplay */
 	protected boolean showfps = true;
-
+	
 	/** Ingame flag */
 	public boolean[] isInGame;
 
@@ -362,12 +362,20 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 					;
 				totalFPS = fps.size();
 				visibleFPS = vps.size();
+				int unrenderedFrames = 0;
 				while(totalFPS < maxfps) {
 					fps.add(new FramePerSecond());
-					doFrame(false);
+					unrenderedFrames++;
+					boolean render = unrenderedFrames % (maxfps / 4) == 0;
+					doFrame(render);
+					if(render)
+						vps.add(new FramePerSecond());
 					while(fps.poll() != null)
 						;
+					while(vps.poll() != null)
+						;
 					totalFPS = fps.size();
+					visibleFPS = vps.size();
 				}
 			}
 		};
@@ -600,6 +608,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 */
 	protected void gameUpdateNet() {
 		if(owner.gameManager == null) return;
+		if(owner.gameManager.engine.length == 0) return;
 
 		try {
 			// Set ingame flag
@@ -637,7 +646,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			}
 
 			// Execute game loops
-			if((owner.gameManager != null) && (owner.gameManager.mode != null)) {
+			if((owner.gameManager != null) && (owner.gameManager.mode != null) && owner.gameManager.engine != null && owner.gameManager.engine.length > 0) {
 				StandaloneGameKey.gamekey[0].inputStatusUpdate(owner.gameManager.engine[0].ctrl);
 				owner.gameManager.updateAll();
 

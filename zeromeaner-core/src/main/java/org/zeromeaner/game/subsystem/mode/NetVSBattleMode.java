@@ -54,13 +54,13 @@ import static org.zeromeaner.knet.KNetEventArgs.*;
  */
 public class NetVSBattleMode extends AbstractNetVSMode {
 	public static class AttackInfo implements KryoSerializable {
-		private int[] points;
-		private int lastEvent;
-		private boolean lastB2b;
-		private int lastCombo;
-		private int garbage;
-		private int lastPiece;
-		private int targetSeatId;
+		protected int[] points;
+		protected int lastEvent;
+		protected boolean lastB2b;
+		protected int lastCombo;
+		protected int garbage;
+		protected int lastPiece;
+		protected int targetSeatId;
 		
 		@Override
 		public void write(Kryo kryo, Output output) {
@@ -142,7 +142,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	}
 	
 	public static class StatsInfo implements KryoSerializable {
-		private int garbage;
+		protected int garbage;
 		@Override
 		public void write(Kryo kryo, Output output) {
 			output.writeInt(garbage, true);
@@ -160,10 +160,10 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	}
 	
 	public static class EndGameStats {
-		private float tempGarbageSent;
-		private float playerAPL;
-		private float playerAPM;
-		private Statistics stats;
+		protected float tempGarbageSent;
+		protected float playerAPL;
+		protected float playerAPM;
+		protected Statistics stats;
 		public float getTempGarbageSent() {
 			return tempGarbageSent;
 		}
@@ -266,63 +266,63 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	};
 
 	/** Garbage denominator (can be divided by 2,3,4,5) */
-	private static int GARBAGE_DENOMINATOR = 60;
+	protected static int GARBAGE_DENOMINATOR = 60;
 
 	/** Column number of hole in most recent garbage line */
-	private int lastHole = -1;
+	protected int lastHole = -1;
 
 	/** true if Hurry Up has been started */
-	private boolean hurryupStarted;
+	protected boolean hurryupStarted;
 
 	/** Number of frames left to show "HURRY UP!" text */
-	private int hurryupShowFrames;
+	protected int hurryupShowFrames;
 
 	/** Number of pieces placed after Hurry Up has started */
-	private int hurryupCount;
+	protected int hurryupCount;
 
 	/** true if you KO'd player */
-	private boolean[] playerKObyYou;
+	protected boolean[] playerKObyYou;
 
 	/** Your KO count */
-	private int currentKO;
+	protected int currentKO;
 
 	/** Time to display the most recent increase in score */
-	private int[] scgettime;
+	protected int[] scgettime;
 
 	/** Most recent scoring event type */
-	private int[] lastevent;
+	protected int[] lastevent;
 
 	/** true if most recent scoring event was B2B */
-	private boolean[] lastb2b;
+	protected boolean[] lastb2b;
 
 	/** Most recent scoring event Combo count */
-	private int[] lastcombo;
+	protected int[] lastcombo;
 
 	/** Most recent scoring event piece type */
-	private int[] lastpiece;
+	protected int[] lastpiece;
 
 	/** Count of garbage lines send */
-	private int[] garbageSent;
+	protected int[] garbageSent;
 
 	/** Amount of garbage in garbage queue */
-	private int[] garbage;
+	protected int[] garbage;
 
 	/** Recieved garbage entries */
-	private LinkedList<GarbageEntry> garbageEntries;
+	protected LinkedList<GarbageEntry> garbageEntries;
 
 	/** APL (Attack Per Line) */
-	private float[] playerAPL;
+	protected float[] playerAPL;
 
 	/** APM (Attack Per Minute) */
-	private float[] playerAPM;
+	protected float[] playerAPM;
 
 	/** Target ID (-1:All) */
-	private int targetID;
+	protected int targetID;
 
 	/** Target Timer */
-	private int targetTimer;
+	protected int targetTimer;
 	
-	private int[] pendingGarbageLines;
+	protected int[] pendingGarbageLines;
 
 	/*
 	 * Mode name
@@ -360,7 +360,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	 * Get number of possible targets (number of opponents)
 	 * @return Number of possible targets (number of opponents)
 	 */
-	private int getNumberOfPossibleTargets() {
+	protected int getNumberOfPossibleTargets() {
 		int count = 0;
 		for(int i = 1; i < getPlayers(); i++) {
 			if(netvsIsAttackable(i)) count++;
@@ -371,15 +371,17 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	/**
 	 * Set new target
 	 */
-	private void setNewTarget() {
-		if((getNumberOfPossibleTargets() >= 1) && (channelInfo() != null) && (currentGame().isTargettedGarbage()) &&
+	protected void setNewTarget() {
+		if((getNumberOfPossibleTargets() >= 1) && (channelInfo() != null) &&
 		   (!netvsIsWatch()) && (!netvsIsPractice))
 		{
+			System.out.println("Choosing a target");
 			do {
 				targetID++;
 				if(targetID >= getPlayers()) targetID = 1;
 			} while (!netvsIsAttackable(targetID));
 		} else {
+			System.out.println("Not choosing a target: No targets.");
 			targetID = -1;
 		}
 	}
@@ -388,7 +390,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	 * Get number of garbage lines the local player has
 	 * @return Number of garbage lines
 	 */
-	private int getTotalGarbageLines() {
+	protected int getTotalGarbageLines() {
 		int count = 0;
 		for(GarbageEntry entry: garbageEntries) {
 			count += entry.lines;
@@ -614,6 +616,9 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 				if((targetID != -1) && !netvsIsAttackable(targetID)) setNewTarget();
 				int targetSeatID = (targetID == -1) ? -1 : netvsPlayerSeatID[targetID];
 
+				sendGarbage(engine, playerID, targetSeatID, pts);
+
+				/*
 				AttackInfo attack = new AttackInfo();
 				attack.setPoints(pts);
 				attack.setLastEvent(lastevent[playerID]);
@@ -623,9 +628,137 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 				attack.setLastPiece(lastpiece[playerID]);
 				attack.setTargetSeatId(targetSeatID);
 				knetClient().fireTCP(GAME, NETVSBATTLE_GAME_ATTACK, attack);
+				*/
 			}
 		}
 
+		spawnGarbage(engine, playerID, lines);
+		
+		/*
+		// Garbage lines appear
+		if( ((lines == 0) || (!currentGame().isRensaBlock())) && (getTotalGarbageLines() >= GARBAGE_DENOMINATOR) && (!netvsIsPractice) ) {
+			engine.playSE("garbage");
+
+			int smallGarbageCount = 0;
+			int hole = lastHole;
+			int newHole;
+			if(hole == -1) {
+				hole = engine.random.nextInt(engine.field.getWidth());
+			}
+
+			int finalGarbagePercent = currentGame().getGarbagePercent();
+			if(currentGame().isDivideChangeRateByPlayers()){
+				finalGarbagePercent /= (netvsGetNumberOfTeamsAlive() - 1);
+			}
+
+			// Make regular garbage lines appear
+			while(!garbageEntries.isEmpty()) {
+				GarbageEntry garbageEntry = garbageEntries.poll();
+				
+				smallGarbageCount += garbageEntry.lines % GARBAGE_DENOMINATOR;
+
+				if(garbageEntry.lines / GARBAGE_DENOMINATOR > 0) {
+					int seatFrom = netvsPlayerSeatID[garbageEntry.playerID];
+					int garbageColor = (seatFrom < 0) ? Block.BLOCK_COLOR_GRAY : NETVS_PLAYER_COLOR_BLOCK[seatFrom];
+					netvsLastAttackerUID = garbageEntry.uid;
+					if(currentGame().isGarbageChangePerAttack()){
+						if(engine.random.nextInt(100) < finalGarbagePercent) {
+							newHole = engine.random.nextInt(engine.field.getWidth() - 1);
+							if(newHole >= hole) {
+								newHole++;
+							}
+							hole = newHole;
+						}
+//						engine.field.addSingleHoleGarbage(hole, garbageColor, engine.getSkin(),
+//								  garbageEntry.lines / GARBAGE_DENOMINATOR);
+						pendingGarbageLines[playerID] += garbageEntry.lines / GARBAGE_DENOMINATOR;
+					} else {
+						for(int i = garbageEntry.lines / GARBAGE_DENOMINATOR; i > 0; i--) {
+							if(engine.random.nextInt(100) < finalGarbagePercent) {
+								newHole = engine.random.nextInt(engine.field.getWidth() - 1);
+								if(newHole >= hole) {
+									newHole++;
+								}
+								hole = newHole;
+							}
+
+//							engine.field.addSingleHoleGarbage(hole, garbageColor, engine.getSkin(), 1);
+							pendingGarbageLines[playerID] += 1;
+						}
+					}
+				}
+			}
+
+			// Make small garbage lines appear
+			if(smallGarbageCount > 0) {
+				if(smallGarbageCount / GARBAGE_DENOMINATOR > 0) {
+					netvsLastAttackerUID = -1;
+
+					if(currentGame().isGarbageChangePerAttack()){
+						if(engine.random.nextInt(100) < finalGarbagePercent) {
+							newHole = engine.random.nextInt(engine.field.getWidth() - 1);
+							if(newHole >= hole) {
+								newHole++;
+							}
+							hole = newHole;
+						}
+//						engine.field.addSingleHoleGarbage(hole, Block.BLOCK_COLOR_GRAY, engine.getSkin(),
+//								  smallGarbageCount / GARBAGE_DENOMINATOR);
+						pendingGarbageLines[playerID] += smallGarbageCount / GARBAGE_DENOMINATOR;
+					} else {
+						for(int i = smallGarbageCount / GARBAGE_DENOMINATOR; i > 0; i--) {
+							if(engine.random.nextInt(100) < finalGarbagePercent) {
+								newHole = engine.random.nextInt(engine.field.getWidth() - 1);
+								if(newHole >= hole) {
+									newHole++;
+								}
+								hole = newHole;
+							}
+
+//							engine.field.addSingleHoleGarbage(hole, Block.BLOCK_COLOR_GRAY, engine.getSkin(), 1);
+							pendingGarbageLines[playerID] += 1;
+						}
+					}
+				}
+
+				if(smallGarbageCount % GARBAGE_DENOMINATOR > 0) {
+					GarbageEntry smallGarbageEntry = new GarbageEntry(smallGarbageCount % GARBAGE_DENOMINATOR, -1);
+					garbageEntries.add(smallGarbageEntry);
+				}
+			}
+
+			lastHole = hole;
+			garbage[playerID] = getTotalGarbageLines();
+		}
+		*/
+
+		// HURRY UP!
+		if((currentGame().getHurryupSeconds() >= 0) && (engine.timerActive) && (!netvsIsPractice)) {
+			if(hurryupStarted) {
+				hurryupCount++;
+
+				if(hurryupCount % currentGame().getHurryupInterval() == 0) {
+					engine.field.addHurryupFloor(1, engine.getSkin());
+				}
+			} else {
+				hurryupCount = currentGame().getHurryupInterval() - 1;
+			}
+		}
+	}
+
+	protected void sendGarbage(GameEngine engine, int playerID, int targetSeatID, int[] pts) {
+		AttackInfo attack = new AttackInfo();
+		attack.setPoints(pts);
+		attack.setLastEvent(lastevent[playerID]);
+		attack.setLastB2b(lastb2b[playerID]);
+		attack.setLastCombo(lastcombo[playerID]);
+		attack.setGarbage(garbage[playerID]);
+		attack.setLastPiece(lastpiece[playerID]);
+		attack.setTargetSeatId(targetSeatID);
+		knetClient().fireTCP(GAME, NETVSBATTLE_GAME_ATTACK, attack);
+	}
+	
+	protected void spawnGarbage(GameEngine engine, int playerID, int lines) {
 		// Garbage lines appear
 		if( ((lines == 0) || (!currentGame().isRensaBlock())) && (getTotalGarbageLines() >= GARBAGE_DENOMINATOR) && (!netvsIsPractice) ) {
 			engine.playSE("garbage");
@@ -722,20 +855,62 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			garbage[playerID] = getTotalGarbageLines();
 		}
 
-		// HURRY UP!
-		if((currentGame().getHurryupSeconds() >= 0) && (engine.timerActive) && (!netvsIsPractice)) {
-			if(hurryupStarted) {
-				hurryupCount++;
+	}
+	
+	protected void receiveGarbage(KNetEvent e, int uid, int seatID, int playerID) {
+		AttackInfo attack = (AttackInfo) e.get(NETVSBATTLE_GAME_ATTACK);
+//		int[] pts = new int[ATTACK_CATEGORIES];
+		int[] pts = attack.getPoints();
+		int sumPts = 0;
 
-				if(hurryupCount % currentGame().getHurryupInterval() == 0) {
-					engine.field.addHurryupFloor(1, engine.getSkin());
-				}
-			} else {
-				hurryupCount = currentGame().getHurryupInterval() - 1;
+		for(int i = 0; i < pts.length; i++){
+			sumPts += pts[i];
+		}
+
+		lastevent[playerID] = attack.getLastEvent();
+		lastb2b[playerID] = attack.isLastB2b();
+		lastcombo[playerID] = attack.getLastCombo();
+		garbage[playerID] = attack.getGarbage();
+		lastpiece[playerID] = attack.getLastPiece();
+		scgettime[playerID] = 0;
+		int targetSeatID = attack.getTargetSeatId();
+
+		if( !netvsIsWatch() && (owner.engine[0].timerActive) && (sumPts > 0) && (!netvsIsPractice) && (!netvsIsNewcomer) &&
+			((targetSeatID == -1) || (netvsPlayerSeatID[0] == targetSeatID) || (!currentGame().isTargettedGarbage())) &&
+			netvsIsAttackable(playerID) )
+		{
+			int secondAdd = 0; //TODO: Allow for chunking of attack types other than b2b.
+			if(currentGame().isB2bChunk()){
+				secondAdd = pts[ATTACK_CATEGORY_B2B];
 			}
+
+			GarbageEntry garbageEntry = new GarbageEntry(sumPts - secondAdd, playerID, uid);
+			garbageEntries.add(garbageEntry);
+
+			if(secondAdd > 0){
+				garbageEntry = new GarbageEntry(secondAdd, playerID, uid);
+				garbageEntries.add(garbageEntry);
+			}
+
+			garbage[0] = getTotalGarbageLines();
+			if(garbage[0] >= 4*GARBAGE_DENOMINATOR) owner.engine[0].playSE("danger");
+			netSendStats(owner.engine[0]);
+		}
+
+	}
+	
+	protected void spawnPendingGarbage(GameEngine engine, int playerID) {
+		if(pendingGarbageLines[playerID] > 0 && engine.fieldShift == 0) {
+			pendingGarbageLines[playerID]--;
+			engine.fieldShift = 1;
+			engine.field.addSingleHoleGarbage(
+					engine.random.nextInt(engine.fieldWidth), 
+					Block.BLOCK_COLOR_GRAY, 
+					engine.getSkin(), 
+					1);
 		}
 	}
-
+	
 	/*
 	 * Executed at the end of each frame
 	 */
@@ -784,15 +959,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 			engine.fieldShift = Math.max(0, engine.fieldShift - 1/20.);
 		}
 		
-		if(pendingGarbageLines[playerID] > 0 && engine.fieldShift == 0) {
-			pendingGarbageLines[playerID]--;
-			engine.fieldShift = 1;
-			engine.field.addSingleHoleGarbage(
-					engine.random.nextInt(engine.fieldWidth), 
-					Block.BLOCK_COLOR_GRAY, 
-					engine.getSkin(), 
-					1);
-		}
+		spawnPendingGarbage(engine, playerID);
 		
 		// APL & APM
 		if((playerID == 0) && (engine.gameActive) && (engine.timerActive) && !netvsIsWatch()) {
@@ -1173,6 +1340,8 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 
 			// Attack
 			if(e.is(NETVSBATTLE_GAME_ATTACK)) {
+				receiveGarbage(e, uid, seatID, playerID);
+				/*
 				AttackInfo attack = (AttackInfo) e.get(NETVSBATTLE_GAME_ATTACK);
 //				int[] pts = new int[ATTACK_CATEGORIES];
 				int[] pts = attack.getPoints();
@@ -1211,6 +1380,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 					if(garbage[0] >= 4*GARBAGE_DENOMINATOR) owner.engine[0].playSE("danger");
 					netSendStats(owner.engine[0]);
 				}
+				*/
 			}
 			// HurryUp
 			if(e.is(HURRY_UP)) {
@@ -1228,7 +1398,7 @@ public class NetVSBattleMode extends AbstractNetVSMode {
 	/**
 	 * Garbage data
 	 */
-	private class GarbageEntry {
+	protected class GarbageEntry {
 		/** Number of garbage lines */
 		public int lines = 0;
 

@@ -2,6 +2,7 @@ package org.zeromeaner.knet;
 
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
@@ -9,7 +10,6 @@ import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.Statistics;
-
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.ComboRaceMode;
 import org.zeromeaner.game.subsystem.mode.DigChallengeMode;
@@ -18,6 +18,7 @@ import org.zeromeaner.game.subsystem.mode.ExtremeMode;
 import org.zeromeaner.game.subsystem.mode.MarathonMode;
 import org.zeromeaner.game.subsystem.mode.MarathonPlusMode;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
+import org.zeromeaner.game.subsystem.mode.TGMNetVSBattleMode;
 import org.zeromeaner.knet.obj.KNStartInfo;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.knet.obj.KNetGameInfo;
@@ -25,18 +26,21 @@ import org.zeromeaner.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.knet.obj.PieceHold;
 import org.zeromeaner.knet.obj.PieceMovement;
 import org.zeromeaner.knet.ser.BlockSerializer;
+import org.zeromeaner.knet.ser.DiffFieldSerializer;
 import org.zeromeaner.knet.ser.PieceSerializer;
 import org.zeromeaner.knet.ser.PropertiesSerializer;
 import org.zeromeaner.knet.ser.SpeedParamSerializer;
 import org.zeromeaner.knet.ser.StatisticsSerializer;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.GeneralUtil;
 
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 
 public class KNetKryo {
 	public static void configure(Kryo kryo) {
-		kryo.setReferences(true);
+		kryo.setReferences(false);
 		kryo.setAutoReset(true);
 		
 		kryo.register(String[].class);
@@ -65,7 +69,21 @@ public class KNetKryo {
 		kryo.register(Properties.class, new PropertiesSerializer());
 		kryo.register(CustomProperties.class, new PropertiesSerializer());
 		kryo.register(Statistics.class, new StatisticsSerializer());
-		fieldSerializer(kryo, RuleOptions.class);
+//		fieldSerializer(kryo, RuleOptions.class);
+		kryo.register(
+				RuleOptions.class, 
+				new DiffFieldSerializer<RuleOptions>(
+						kryo, 
+						RuleOptions.class, 
+						GeneralUtil.loadRule("config/rule/Standard.rul"),
+						new Callable<Kryo>() {
+							@Override
+							public Kryo call() throws Exception {
+								Kryo ret = new Kryo();
+								KNetKryo.configure(ret);
+								return ret;
+							}
+						}));
 		kryo.register(KNStartInfo.class);
 		
 		fieldSerializer(kryo, AbstractNetMode.DefaultStats.class);
@@ -74,6 +92,8 @@ public class KNetKryo {
 		kryo.register(NetVSBattleMode.AttackInfo.class);
 		kryo.register(NetVSBattleMode.StatsInfo.class);
 		fieldSerializer(kryo, NetVSBattleMode.EndGameStats.class);
+		
+		kryo.register(TGMNetVSBattleMode.TGMAttackInfo.class);
 		
 		fieldSerializer(kryo, ComboRaceMode.Stats.class);
 		fieldSerializer(kryo, ComboRaceMode.Options.class);

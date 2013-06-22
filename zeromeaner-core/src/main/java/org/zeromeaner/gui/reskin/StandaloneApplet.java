@@ -2,6 +2,7 @@ package org.zeromeaner.gui.reskin;
 
 import java.applet.Applet;
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
@@ -64,6 +65,8 @@ public class StandaloneApplet extends Applet {
 					userId = "default";
 			}
 		}
+		
+		StandaloneMain.offline = Boolean.parseBoolean(System.getProperty("offline"));
 	
 		try {
 			try {
@@ -83,16 +86,35 @@ public class StandaloneApplet extends Applet {
 			StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 			StandaloneGameKey.gamekey[1].loadDefaultKeymap();
 			
-			StandaloneGameKey.gamekey[0].loadConfig(StandaloneMain.propConfig);
-			StandaloneGameKey.gamekey[1].loadConfig(StandaloneMain.propConfig);
+			if(!StandaloneMain.offline) {
+				StandaloneGameKey.gamekey[0].loadConfig(StandaloneMain.propConfig);
+				StandaloneGameKey.gamekey[1].loadConfig(StandaloneMain.propConfig);
+			}
 			
 			StandaloneResourceHolder.load();
 			
-			StandaloneFrame frame = new StandaloneFrame();
+			final StandaloneFrame frame = new StandaloneFrame();
 			frame.setUndecorated(false);
 			
 			setLayout(new BorderLayout());
 			add(frame.getRootPane(), BorderLayout.CENTER);
+			
+			if(url.getQuery() != null) {
+				String[] qf = url.getQuery().split("&");
+				for(String qpp : qf) {
+					final String[] qp = qpp.split("=", 2);
+					if("replay".equals(qp[0]) && qp.length > 1) {
+						EventQueue.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								frame.startReplayGame(qp[1]);
+							}
+						});
+						break;
+					}
+						
+				}
+			}
 			
 		} catch(Exception ex) {
 			ex.printStackTrace();
@@ -100,7 +122,14 @@ public class StandaloneApplet extends Applet {
 	}
 	
 	@Override
+	public void stop() {
+		StandaloneMain.saveConfig();
+		System.exit(0);
+	}
+	
+	@Override
 	public void destroy() {
 		StandaloneMain.saveConfig();
+		System.exit(0);
 	}
 }

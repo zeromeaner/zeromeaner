@@ -292,7 +292,8 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			netvsPlayerPlayCount[i] = 0;
 			netvsPlayerName[i] = "";
 			netvsPlayerTeam[i] = "";
-			owner.engine[i].framecolor = GameEngine.FRAME_COLOR_GRAY;
+			if(owner != null && owner.engine[i] != null)
+				owner.engine[i].framecolor = GameEngine.FRAME_COLOR_GRAY;
 		}
 
 		//		LinkedList<NetPlayerInfo> pList = netLobby.updateSameRoomPlayerInfoList();
@@ -688,7 +689,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			engine.enableSE = true;
 			engine.isVisible = true;
 
-			if((!netvsIsReadyChangePending) && (netvsNumPlayers() >= 2) && (!netvsIsNewcomer) && (menuTime >= 5)) {
+			if((netvsNumPlayers() >= 2) && (!netvsIsNewcomer)) {
 				// Ready ON
 				if(engine.ctrl.isPush(Controller.BUTTON_A) && !netvsPlayerReady[0]) {
 					engine.playSE("decide");
@@ -712,7 +713,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 		}
 
 		// Random Map Preview
-		if((channelInfo() != null) && channelInfo().getGame().getMap() != null && !knetClient().getMaps().isEmpty()) {
+		if((channelInfo() != null) && channelInfo().getGame() != null && channelInfo().getGame().getMap() != null && !knetClient().getMaps().isEmpty()) {
 			if(netvsPlayerExist[playerID]) {
 				if(menuTime % 30 == 0) {
 					engine.statc[5]++;
@@ -754,12 +755,12 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 
 			if((playerID == 0) && !netvsIsWatch() && (!netvsIsReadyChangePending) && (netvsNumPlayers() >= 2) && !netvsIsNewcomer) {
 				if(!netvsPlayerReady[playerID]) {
-					String strTemp = "A(" + owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_A) + " KEY):";
+					String strTemp = "A(" + owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_A).toUpperCase() + " KEY):";
 					if(strTemp.length() > 10) strTemp = strTemp.substring(0, 10);
 					owner.receiver.drawMenuFont(engine, playerID, 0, 16, strTemp, EventRenderer.COLOR_CYAN);
 					owner.receiver.drawMenuFont(engine, playerID, 1, 17, "READY", EventRenderer.COLOR_CYAN);
 				} else {
-					String strTemp = "B(" + owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_B) + " KEY):";
+					String strTemp = "B(" + owner.receiver.getKeyNameByButtonID(engine, Controller.BUTTON_B).toUpperCase() + " KEY):";
 					if(strTemp.length() > 10) strTemp = strTemp.substring(0, 10);
 					owner.receiver.drawMenuFont(engine, playerID, 0, 16, strTemp, EventRenderer.COLOR_BLUE);
 					owner.receiver.drawMenuFont(engine, playerID, 1, 17, "CANCEL", EventRenderer.COLOR_BLUE);
@@ -1248,8 +1249,8 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			KNetPlayerInfo info = (KNetPlayerInfo) e.get(PLAYER_UPDATE);
 
 			// Ready status change
-			if(info.getChannel().getId() == channelInfo().getId() && info.getSeatId() != -1) {
-				int playerID = netvsGetPlayerIDbySeatID(info.getSeatId());
+			if(info.getChannelId() == channelInfo().getId() && info.getSeatId(channelInfo()) != -1) {
+				int playerID = netvsGetPlayerIDbySeatID(info.getSeatId(channelInfo()));
 
 				if(netvsPlayerReady[playerID] != info.isReady()) {
 					netvsPlayerReady[playerID] = info.isReady();
@@ -1271,7 +1272,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			KNetEventSource info = (KNetEventSource) e.get(PLAYER_LOGOUT);
 			KNetPlayerInfo player = channelInfo().getPlayerInfo(info);
 
-			if((player.getChannel().getId() == channelInfo().getId()) && (player.getSeatId() != -1)) {
+			if((player.getChannelId() == channelInfo().getId()) && (player.getSeatId(channelInfo()) != -1)) {
 				netUpdatePlayerExist();
 			}
 		}
@@ -1308,7 +1309,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 		// Someone entered here
 		if(e.is(PLAYER_ENTER)) {
 			KNetPlayerInfo player = (KNetPlayerInfo) e.get(PLAYER_ENTER);
-			int seatID = player.getSeatId();
+			int seatID = player.getSeatId(channelInfo());
 			if((seatID != -1) && (netvsNumPlayers() < 2)) {
 				owner.receiver.playSE("levelstop");
 			}

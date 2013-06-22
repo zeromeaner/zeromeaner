@@ -7,6 +7,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -91,6 +94,9 @@ public class StandaloneFrame extends JFrame {
 	private StandaloneGamePanel gamePanel;
 	private StandaloneMusicVolumePanel musicPanel;
 	
+	private JButton replayButton;
+	private URL replayUrl;
+	
 	public StandaloneFrame() {
 		setTitle("0mino");
 		setUndecorated(true);
@@ -110,12 +116,34 @@ public class StandaloneFrame extends JFrame {
 				content.revalidate();
 				content.repaint();
 			}
+			@Override
+			public void knetPanelJoined(KNetPanelEvent e) {
+				enterNewMode(e.getChannel().getMode());
+			}
+			
+			@Override
+			public void knetPanelParted(KNetPanelEvent e) {
+				enterNewMode(null);
+			}
 		});
 		
 		gamePanel = new StandaloneGamePanel(this);
 		musicPanel = new StandaloneMusicVolumePanel();
 		
+		replayButton = new JButton(new AbstractAction("") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(replayUrl == null)
+					return;
+				StringSelection url = new StringSelection(replayUrl.toString());
+				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(url, url);
+			}
+		});
+		
+		setReplayUrl(null);
+		
 		createCards();
+		
 	}
 	
 	private static void add(JToolBar toolbar, ButtonGroup g, AbstractButton b) {
@@ -264,6 +292,7 @@ public class StandaloneFrame extends JFrame {
 	private void playCardSelected() {
 		playCard.add(gamePanel, BorderLayout.CENTER);
 		playCard.add(musicPanel, BorderLayout.WEST);
+		playCard.add(replayButton, BorderLayout.SOUTH);
 		gamePanel.shutdown();
 		try {
 			gamePanel.shutdownWait();
@@ -342,9 +371,9 @@ public class StandaloneFrame extends JFrame {
 		b = new JToggleButton(new ToolbarAction("toolbar.tuning_2p"));
 		add(t, g, b);
 		
+		*/
 		b = new JToggleButton(new ToolbarAction("toolbar.ai_2p"));
 		add(t, g, b);
-		*/
 		
 		b = new JToggleButton(new ToolbarAction("toolbar.general"));
 		add(t, g, b);
@@ -408,9 +437,9 @@ public class StandaloneFrame extends JFrame {
 	 */
 	public void enterNewMode(String modeName) {
 		StandaloneMain.loadGlobalConfig();	// Reload global config file
-
+		
 		if(gameManager == null) {
-			StandaloneRenderer rendererSwing = new StandaloneRenderer();
+			StandaloneRenderer rendererSwing = new StandaloneRenderer(this);
 			gameManager = new GameManager(rendererSwing);
 		}
 		
@@ -424,19 +453,20 @@ public class StandaloneFrame extends JFrame {
 
 			AbstractNetMode newMode = (AbstractNetMode)newModeTemp;
 
-			if(previousMode != null) {
+			if(previousMode != null && gameManager.engine.length > 0) {
 				if(gameManager.engine[0].ai != null) {
 					gameManager.engine[0].ai.shutdown(gameManager.engine[0], 0);
 					gameManager.engine[0].ai = null;
 				}
 				previousMode.netplayUnload(netLobby);
 			}
-			
+
+			newMode.modeInit(gameManager);
 			newMode.netplayInit(netLobby);
 			
 			gameManager.mode = newMode;
 			gameManager.init();
-
+			
 			// Tuning
 			gameManager.engine[0].owRotateButtonDefaultRight = StandaloneMain.propConfig.getProperty(0 + ".tuning.owRotateButtonDefaultRight", -1);
 			gameManager.engine[0].owSkin = StandaloneMain.propConfig.getProperty(0 + ".tuning.owSkin", -1);
@@ -495,6 +525,7 @@ public class StandaloneFrame extends JFrame {
 				gameManager.engine[i].init();
 			}
 
+			gamePanel.isNetPlay = true;
 			
 		} else {
 			log.error("This mode does not support netplay:" + modeName);
@@ -518,9 +549,11 @@ public class StandaloneFrame extends JFrame {
 	 * @param strRulePath Rule file path (null if you want to use user-selected one)
 	 */
 	public void startNewGame(String strRulePath) {
-		StandaloneRenderer rendererSwing = new StandaloneRenderer();
+		StandaloneRenderer rendererSwing = new StandaloneRenderer(this);
 		gameManager = new GameManager(rendererSwing);
 
+		setReplayUrl(null);
+		
 		// Mode
 		String modeName = StandaloneMain.propConfig.getProperty("name.mode", "");
 		GameMode modeObj = StandaloneMain.modeManager.get(modeName);
@@ -619,7 +652,7 @@ public class StandaloneFrame extends JFrame {
 			return;
 		}
 
-		StandaloneRenderer rendererSwing = new StandaloneRenderer();
+		StandaloneRenderer rendererSwing = new StandaloneRenderer(this);
 		gameManager = new GameManager(rendererSwing);
 		gameManager.replayMode = true;
 		gameManager.replayProp = prop;
@@ -671,6 +704,19 @@ public class StandaloneFrame extends JFrame {
 			// Called at initialization
 			gameManager.engine[i].init();
 		}
+	}
+
+	public URL getReplayUrl() {
+		return replayUrl;
+	}
+
+	public void setReplayUrl(URL replayUrl) {
+		this.replayUrl = replayUrl;
+		if(replayUrl == null) {
+			replayButton.setText("No replay URL available");
+			return;
+		}
+		replayButton.setText("Copy replay URL " + replayUrl + " to clipboard");
 	}
 
 }
