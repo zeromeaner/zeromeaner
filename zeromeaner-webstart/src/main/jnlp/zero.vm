@@ -2,7 +2,7 @@
 <jnlp
     spec="$jnlpspec"
     codebase="$jnlpCodebase"
-    href="$outputFile?">
+    href="zero-${project.version}.jnlp?">
   <information>
 #if($project.Name)
     <title>$project.Name</title>

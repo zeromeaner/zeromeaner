@@ -29,6 +29,10 @@
 		<url-pattern>/zero.jnlp</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
+		<servlet-name>zero</servlet-name>
+		<url-pattern>/zero-${project.version}.jnlp</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
 		<servlet-name>rest</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
