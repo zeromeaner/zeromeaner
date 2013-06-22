@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.zeromeaner</groupId>
     <artifactId>zeromeaner-parent</artifactId>
-    <version>1.0.18-SNAPSHOT</version>
+    <version>1.0.18</version>
     <relativePath>../zeromeaner-parent</relativePath>
   </parent>
   <artifactId>zeromeaner-laf</artifactId>
