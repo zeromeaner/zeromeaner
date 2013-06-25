@@ -292,7 +292,8 @@ public class StandaloneFrame extends JFrame {
 	private void playCardSelected() {
 		playCard.add(gamePanel, BorderLayout.CENTER);
 		playCard.add(musicPanel, BorderLayout.WEST);
-		playCard.add(replayButton, BorderLayout.SOUTH);
+		if(StandaloneApplet.isApplet())
+			playCard.add(replayButton, BorderLayout.SOUTH);
 		gamePanel.shutdown();
 		try {
 			gamePanel.shutdownWait();

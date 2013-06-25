@@ -355,7 +355,6 @@ public class StandaloneRenderer extends EventRenderer {
 		String filename = saveReplay(owner, prop, StandaloneMain.propConfig.getProperty("custom.replay.directory", "replay"));
 
 		
-		
 		String replayUrl = StandaloneApplet.url + "?replay=replay/../../" + StandaloneMain.userId + "/" + filename;
 		try {
 			frame.setReplayUrl(new URL(replayUrl));
