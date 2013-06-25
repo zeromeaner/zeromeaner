@@ -2,7 +2,9 @@ package org.zeromeaner.game.evil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -11,14 +13,18 @@ import java.util.concurrent.FutureTask;
 
 import org.eviline.Field;
 import org.eviline.PlayerAction;
+import org.eviline.PlayerActionNode;
 import org.eviline.PlayerActionType;
 import org.eviline.ai.Decision;
 import org.eviline.ai.DefaultAIKernel;
 import org.eviline.ai.QueueContext;
+import org.eviline.fitness.AbstractFitness;
+import org.eviline.fitness.DefaultFitness;
 import org.eviline.fitness.EvilineFitness;
 import org.eviline.fitness.EvilineFitness2;
 import org.eviline.Shape;
 import org.eviline.ShapeType;
+import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
@@ -77,26 +83,205 @@ public class TNBot extends AbstractAI {
 		public void init(GameEngine engine, int playerID) {
 			super.init(engine, playerID);
 			skipLookahead = false;
-			lookahead = 3;
+			skipHold = true;
+			lookahead = 2;
 		}
 	}
 	
 	public static class Dig extends TNBot {
 		@Override
 		public String getName() {
-			return super.getName() + " [Dig]";
+			return super.getName() + " [Dig Challenge]";
 		}
 		
 		@Override
 		public void init(GameEngine engine, int playerID) {
 			super.init(engine, playerID);
-			lookahead = 2;
-			/*
-			double[] fp = kernel.getFitness().getParams();
-			fp[EvilineFitness.Weights.TRANSITION_EXP] += 2;
-			fp[EvilineFitness.Weights.IMPOSSIBLE_POWER] += 2;
-			fp[EvilineFitness.Weights.SMOOTHNESS_MULT] *= 3;
-			*/
+			AntiGarbageFitness fitness = new AntiGarbageFitness();
+			kernel.setFitness(fitness);
+			fitness.getParams()[EvilineFitness.Weights.BLOCK_HEIGHT] *= 15;
+			fitness.getParams()[EvilineFitness.Weights.TRANSITION_EXP] *= 2;
+			fitness.getParams()[EvilineFitness.Weights.SMOOTHNESS_MULT] += 2;
+			fitness.getParams()[EvilineFitness.Weights.IMPOSSIBLE_POWER] += 4;
+			fitness.getParams()[EvilineFitness.Weights.CLEARED_LINES] += 2;
+			lookahead = 1;
+//			fuzzyLookahead = 0.3;
+//			kernel.setHardDropOnly(true);
+//			skipHold = true;
+		}
+
+		@Override
+		public void setControl(GameEngine engine, int playerID, Controller ctrl) {
+			org.zeromeaner.game.component.Field field = engine.field;
+			boolean garbage = false;
+			for(int x = 0; x < field.getWidth(); x++) {
+				Block b = field.getBlock(x, field.getHeight() - 1);
+				if(b.getAttribute(Block.BLOCK_ATTRIBUTE_GARBAGE)) {
+					garbage = true;
+					break;
+				}
+			}
+			if(!garbage)
+				return;
+			super.setControl(engine, playerID, ctrl);
+		}
+		
+		private class AntiGarbageFitness extends EvilineFitness {
+			@Override
+			public double score(Field field) {
+				int garbage = 0;
+				double gholes = 0;
+				for(int y = 2; y <= Field.HEIGHT + Field.BUFFER - 1; y++) {
+					int hole = 0;
+					for(int x = Field.BUFFER; x < Field.WIDTH + Field.BUFFER; x++) {
+						if(field.getBlock(x, y) == org.eviline.Block.GARBAGE) {
+							garbage++;
+						} else if(field.getBlock(x, y) == null)
+							hole = x;
+					}
+					for(int yy = y-1; yy > 0; yy--) {
+						if(garbage > 0 && field.getBlock(hole, yy) != null) {
+							gholes++;
+							if(field.getBlock(hole, yy) != org.eviline.Block.GARBAGE)
+								gholes += 10;
+							break;
+						}
+					}
+					if(garbage > 0)
+						break;
+				}
+//				double bhp = getParams()[EvilineFitness.Weights.BLOCK_HEIGHT];
+//				getParams()[EvilineFitness.Weights.BLOCK_HEIGHT] *= (Math.pow(gholes, 1.05) * 2);
+				double score = super.score(field);
+				score += Math.pow(gholes, 3);
+//				getParams()[EvilineFitness.Weights.BLOCK_HEIGHT] = bhp;
+				return score;
+			}
+		}
+		
+		private class FuzzyAIKernel extends DefaultAIKernel {
+			@Override
+			public Decision bestFor(final QueueContext context) {
+				final Decision best = new Decision(context.type, context.original);
+				if(context.remainingDepth == 0) {
+					double score = fitness.score(context.paintedImpossible);
+//					if(context.original.lines != context.shallowest().original.lines)
+//						score -= 10000 * Math.pow(context.original.lines - context.shallowest().original.lines, 2.5);
+					best.score = score;
+					return best;
+				}
+				
+				best.score = Double.POSITIVE_INFINITY;
+				
+				final Map<PlayerActionNode, List<PlayerAction>> paths;
+				List<Shape> orientations = new ArrayList<Shape>(Arrays.asList(context.type.searchOrientations()));
+				if(context.shallower == null) {
+					context.original.setLines(0);
+					Field starter = context.original.copy();
+					if(starter.getShape() == null) {
+						starter.setShape(context.type.starter());
+						starter.setShapeY(context.type.starterY());
+//						starter.shapeX = Field.WIDTH / 2 + Field.BUFFER - 2 + context.type.starterX();
+//						starter.shapeX = (Field.WIDTH + Field.BUFFER * 2 - starter.shape.width()) / 2;
+						starter.setShapeX(context.type.starterX());
+						if(!starter.getShape().intersects(starter.getField(), starter.getShapeX(), starter.getShapeY() + 1))
+							starter.setShapeY(starter.getShapeY() + 1);
+					} else {
+						orientations.remove(starter.getShape());
+						orientations.add(0, starter.getShape());
+					}
+					paths = Collections.synchronizedMap(allPathsFrom(starter));
+				} else
+					paths = null;
+				if(context.type == ShapeType.O) { // Paint the unlikelies as impossible for O pieces
+					fitness.paintUnlikelies(context.paintedImpossible);
+					for(int y = Field.BUFFER; y < Field.BUFFER + Field.HEIGHT; y++) {
+						for(int x = Field.BUFFER; x < Field.BUFFER + Field.WIDTH; x++)
+							if(context.paintedImpossible.getField()[y][x] == org.eviline.Block.G)
+								context.paintedImpossible.getField()[y][x] = org.eviline.Block.X;
+					}
+				}
+				List<Future<?>> futures = new ArrayList<Future<?>>();
+				for(final Shape shape : orientations) {
+					Runnable task = new Runnable() {
+						@Override
+						public void run() {
+							for(int ix = Field.BUFFER - 2; ix < Field.WIDTH + Field.BUFFER + 2; ix++) {
+								final int x = ix;
+								Field possibility = new Field();
+								boolean grounded = shape.intersects(context.paintedImpossible.getField(), x, 0);
+								for(int y = 0; y < Field.HEIGHT + Field.BUFFER + 2; y++) {
+									boolean groundedAbove = grounded;
+									grounded = shape.intersects(paths == null ? context.paintedImpossible.getField() : context.original.getField(), x, y+1);
+									PlayerActionNode n = new PlayerActionNode(shape, x, y);
+									if(paths != null && !paths.containsKey(n))
+										continue;
+									if(!groundedAbove && grounded && 1 - Math.pow(fuzzyLookahead, context.depth()) < Math.random()) {
+										context.original.copyInto(possibility);
+										possibility.setShape(shape);
+										possibility.setShapeX(x);
+										possibility.setShapeY(y);
+										possibility.clockTick();
+										possibility.setShape(shape);
+										possibility.setShapeX(x);
+										possibility.setShapeY(y);
+										double base = fitness.scoreWithPaint(possibility);
+										QueueContext deeper = context.deeper(possibility);
+										Decision option = bestFor(deeper);
+										synchronized(best) {
+											if(best.deeper == null || option.score + base < best.score) {
+												context.deeper = deeper;
+												best.bestShape = shape;
+												best.bestShapeX = x;
+												best.bestShapeY = y;
+												if(paths != null)
+													best.bestPath = paths.get(n);
+												best.deeper = option;
+												best.score = (option.score + base) / 2;
+												best.field = possibility.copy();
+											}
+											if(best.worstScore < option.score)
+												best.worstScore = option.score;
+										}
+									}
+								}
+							}
+						}
+					};
+					if(context.shallower != null)
+						task.run();
+					else
+						futures.add(pool.submit(task));
+				}
+				
+				for(Future<?> f : futures) {
+					try {
+						f.get();
+					} catch(Exception ex) {
+						ex.printStackTrace();
+					}
+				}
+				
+				if(context.shallower == null) {
+					Decision d = best.deeper;
+					Field df = best.field.copy();
+					while(d != null) {
+						if(d.type == null)
+							break;
+						df.setShape(d.type.starter());
+						df.setShapeX(d.type.starterX());
+						df.setShapeY(d.type.starterY());
+						Map<PlayerActionNode, List<PlayerAction>> pla = allPathsFrom(df);
+						d.bestPath = pla.get(new PlayerActionNode(d.bestShape, d.bestShapeX, d.bestShapeY));
+						df = d.field.copy();
+						if(d == d.deeper)
+							break;
+						d = d.deeper;
+					}
+				}
+				
+				return best.copy();
+			}
 		}
 	}
 	
@@ -146,6 +331,8 @@ public class TNBot extends AbstractAI {
 	protected int das = 0;
 	protected Integer buttonId;
 	protected double worst = 0;
+	
+	protected double fuzzyLookahead = 0;
 	
 	@Override
 	public String getName() {
@@ -292,7 +479,9 @@ public class TNBot extends AbstractAI {
 //					}
 //				}
 				
-				return best.bestPath;
+				List<PlayerAction> bestPath = new ArrayList<PlayerAction>(best.bestPath);
+				bestPath.add(new PlayerAction(bestPath.get(bestPath.size() - 1).getEndField(), PlayerActionType.DOWN_ONE));
+				return bestPath;
 			}
 		};
 

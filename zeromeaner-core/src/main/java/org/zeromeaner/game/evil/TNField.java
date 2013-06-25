@@ -47,6 +47,8 @@ public class TNField extends Field {
 				default:
 					b = org.eviline.Block.X;
 				}
+				if(npblock.getAttribute(Block.BLOCK_ATTRIBUTE_GARBAGE))
+					b = org.eviline.Block.GARBAGE;
 				field[y + BUFFER][x + BUFFER] = b;
 			}
 		}
