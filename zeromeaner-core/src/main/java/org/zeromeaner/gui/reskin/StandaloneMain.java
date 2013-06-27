@@ -16,7 +16,8 @@ import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.plaf.ZeroMetalTheme;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ModeList;
-import org.zeromeaner.util.PropertyConstants;
+import org.zeromeaner.util.Options;
+import org.zeromeaner.util.PropertyConstant;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
@@ -36,7 +37,7 @@ public class StandaloneMain {
 	public static void loadGlobalConfig() {
 		try {
 			InputStream in = new ResourceInputStream("config/setting/global.cfg");
-			PropertyConstants.GLOBAL_PROPERTIES.load(in);
+			Options.GLOBAL_PROPERTIES.load(in);
 			in.close();
 		} catch(FileNotFoundException fnfe) {
 		} catch(IOException ioe) {
@@ -44,29 +45,29 @@ public class StandaloneMain {
 		}
 		try {
 			InputStream in = new ResourceInputStream("config/setting/swing.cfg");
-			PropertyConstants.GUI_PROPERTIES.load(in);
+			Options.GUI_PROPERTIES.load(in);
 			in.close();
 		} catch(FileNotFoundException fnfe) {
 		} catch(IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
-		PropertyConstants.RUNTIME_PROPERTIES.putAll(CookieAccess.getInstance().get());
+		Options.RUNTIME_PROPERTIES.putAll(CookieAccess.getInstance().get());
 	}
 
 	public static void saveConfig() {
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/global.cfg");
-			PropertyConstants.GLOBAL_PROPERTIES.store(out, "zeromeaner global Config");
+			Options.GLOBAL_PROPERTIES.store(out, "zeromeaner global Config");
 			out.close();
 		} catch(IOException e) {
 		}
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/swing.cfg");
-			PropertyConstants.GUI_PROPERTIES.store(out, "zeromeaner Swing-frontend Config");
+			Options.GUI_PROPERTIES.store(out, "zeromeaner Swing-frontend Config");
 			out.close();
 		} catch(IOException e) {
 		}
-		CookieAccess.getInstance().set(PropertyConstants.RUNTIME_PROPERTIES.getAll());
+		CookieAccess.getInstance().set(Options.RUNTIME_PROPERTIES.getAll());
 		try {
 			ResourceDownloadStream.commitCache();
 		} catch(IOException ioe) {
@@ -101,15 +102,14 @@ public class StandaloneMain {
 		StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 		StandaloneGameKey.gamekey[1].loadDefaultKeymap();
 		
-		StandaloneGameKey.gamekey[0].loadConfig(PropertyConstants.GUI_PROPERTIES);
-		StandaloneGameKey.gamekey[1].loadConfig(PropertyConstants.GUI_PROPERTIES);
+		StandaloneGameKey.gamekey[0].loadConfig(Options.GUI_PROPERTIES);
+		StandaloneGameKey.gamekey[1].loadConfig(Options.GUI_PROPERTIES);
 		
 		StandaloneResourceHolder.load();
 		
 		StandaloneFrame frame = new StandaloneFrame();
 		
-		boolean fullScreen = PropertyConstants.GUI_PROPERTIES.getProperty(PropertyConstants.FULL_SCREEN, false);
-		if(fullScreen) {
+		if(PropertyConstant.is(Options.FULL_SCREEN)) {
 			frame.setUndecorated(true);
 			frame.setVisible(true);
 			frame.setExtendedState(JFrame.MAXIMIZED_BOTH);

@@ -15,7 +15,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.plaf.ZeroMetalTheme;
 import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.ModeList;
-import org.zeromeaner.util.PropertyConstants;
+import org.zeromeaner.util.Options;
 import org.zeromeaner.util.ResourceInputStream;
 
 import static org.zeromeaner.gui.reskin.StandaloneMain.userId;
@@ -85,8 +85,8 @@ public class StandaloneApplet extends Applet {
 			StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 			StandaloneGameKey.gamekey[1].loadDefaultKeymap();
 			
-			StandaloneGameKey.gamekey[0].loadConfig(PropertyConstants.GUI_PROPERTIES);
-			StandaloneGameKey.gamekey[1].loadConfig(PropertyConstants.GUI_PROPERTIES);
+			StandaloneGameKey.gamekey[0].loadConfig(Options.GUI_PROPERTIES);
+			StandaloneGameKey.gamekey[1].loadConfig(Options.GUI_PROPERTIES);
 			
 			StandaloneResourceHolder.load();
 			

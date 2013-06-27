@@ -57,7 +57,7 @@ import org.apache.log4j.Logger;
 import org.zeromeaner.game.subsystem.ai.AIPlayer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.util.CustomProperties;
-import org.zeromeaner.util.PropertyConstants;
+import org.zeromeaner.util.Options;
 import org.zeromeaner.util.Zeroflections;
 
 import static org.zeromeaner.gui.reskin.Localizations.lz;
@@ -146,7 +146,7 @@ public class StandaloneAISelectPanel extends JPanel implements ActionListener {
 	public void load(int pl) {
 		this.playerID = pl;
 
-		CustomProperties p = PropertyConstants.GLOBAL_PROPERTIES;
+		CustomProperties p = Options.GLOBAL_PROPERTIES;
 		
 		currentAI = p.getProperty(playerID + ".ai", "");
 		aiMoveDelay = p.getProperty(playerID + ".aiMoveDelay", 0);
@@ -330,7 +330,7 @@ public class StandaloneAISelectPanel extends JPanel implements ActionListener {
 			aiPrethink = chkBoxAIPrethink.isSelected();
 			aiShowState = chkBoxAIShowState.isSelected();
 
-			CustomProperties p = PropertyConstants.GLOBAL_PROPERTIES;
+			CustomProperties p = Options.GLOBAL_PROPERTIES;
 			
 			if(aiID >= 0) 
 				p.setProperty(playerID + ".ai", aiPathList[aiID]);

@@ -3,6 +3,9 @@ package org.zeromeaner.util;
 import java.util.regex.Pattern;
 
 public final class PropertyConstant {
+	public static boolean is(Constant<Boolean> c) {
+		return c.value();
+	}
 	
 	public static final ConstantParser<Boolean> BOOLEAN = new AbstractConstantParser<Boolean>("true|false") {
 		@Override

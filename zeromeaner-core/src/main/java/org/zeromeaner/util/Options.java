@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import static org.zeromeaner.util.PropertyConstant.*;
 
-public final class PropertyConstants {
+public final class Options {
 	public static final CustomProperties ROOT_PROPERTIES = new CustomProperties();
 	public static final CustomProperties GLOBAL_PROPERTIES = new CustomProperties(ROOT_PROPERTIES, "0mino");
 	public static final CustomProperties GUI_PROPERTIES = new CustomProperties(GLOBAL_PROPERTIES, "gui");
@@ -16,8 +16,5 @@ public final class PropertyConstants {
 	public static final Constant<String> BGM_SELECTION = GUI_PROPERTIES.create(STRING, "0mino.bgm.selection");
 	public static final Constant<Boolean> FULL_SCREEN = RUNTIME_PROPERTIES.create(BOOLEAN, "0mino.standalone.full-screen", false);
 	
-
-	
-	
-	private PropertyConstants() {}
+	private Options() {}
 }

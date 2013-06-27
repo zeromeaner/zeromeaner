@@ -46,7 +46,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import org.zeromeaner.util.PropertyConstants;
+import org.zeromeaner.util.Options;
 import org.zeromeaner.util.SwingUtils;
 
 import static org.zeromeaner.gui.reskin.Localizations.lz;
@@ -329,7 +329,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			}
 		}
 
-		maximizeStandalone.setSelected(StandaloneMain.propConfig.getProperty(PropertyConstants.FULL_SCREEN, false));
+		maximizeStandalone.setSelected(StandaloneMain.propConfig.getProperty(Options.FULL_SCREEN, false));
 		txtfldMaxFPS.setText(String.valueOf(StandaloneMain.propConfig.getProperty("option.maxfps", 60)));
 		txtfldSEVolume.setText(String.valueOf(StandaloneMain.propConfig.getProperty("option.sevolume", 1.0d)));
 		txtfldLineClearEffectSpeed.setText(String.valueOf(StandaloneMain.propConfig.getProperty("option.lineeffectspeed", 0) + 1));
@@ -378,7 +378,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			if(lineeffectspeed < 0) lineeffectspeed = 0;
 			StandaloneMain.propConfig.setProperty("option.lineeffectspeed", lineeffectspeed);
 
-			StandaloneMain.propConfig.setProperty(PropertyConstants.FULL_SCREEN, maximizeStandalone.isSelected());
+			StandaloneMain.propConfig.setProperty(Options.FULL_SCREEN, maximizeStandalone.isSelected());
 			StandaloneMain.propConfig.setProperty("option.showfps", chkboxShowFPS.isSelected());
 			StandaloneMain.propConfig.setProperty("option.showbg", chkboxShowBackground.isSelected());
 			StandaloneMain.propConfig.setProperty("option.showmeter", chkboxShowMeter.isSelected());
