@@ -22,6 +22,7 @@ import org.eviline.fitness.AbstractFitness;
 import org.eviline.fitness.DefaultFitness;
 import org.eviline.fitness.EvilineFitness;
 import org.eviline.fitness.EvilineFitness2;
+import org.eviline.fitness.LandingFitness;
 import org.eviline.Shape;
 import org.eviline.ShapeType;
 import org.zeromeaner.game.component.Block;
@@ -73,6 +74,21 @@ public class TNBot extends AbstractAI {
 		}
 	}
 	
+	public static class Lander extends TNBot {
+		@Override
+		public String getName() {
+			return super.getName() + " [Lander]";
+		}
+		
+		@Override
+		public void init(GameEngine engine, int playerID) {
+			super.init(engine, playerID);
+			kernel.setFitness(new LandingFitness());
+			skipHold = true;
+			skipLookahead = true;
+		}
+	}
+	
 	public static class SlowRace extends Race {
 		@Override
 		public String getName() {
@@ -97,6 +113,10 @@ public class TNBot extends AbstractAI {
 		@Override
 		public void init(GameEngine engine, int playerID) {
 			super.init(engine, playerID);
+			
+			LandingFitness f = new LandingFitness();
+			kernel.setFitness(f);
+/*			
 			AntiGarbageFitness fitness = new AntiGarbageFitness();
 			kernel.setFitness(fitness);
 			fitness.getParams()[EvilineFitness.Weights.BLOCK_HEIGHT] *= 15;
@@ -104,6 +124,7 @@ public class TNBot extends AbstractAI {
 			fitness.getParams()[EvilineFitness.Weights.SMOOTHNESS_MULT] += 2;
 			fitness.getParams()[EvilineFitness.Weights.IMPOSSIBLE_POWER] += 4;
 			fitness.getParams()[EvilineFitness.Weights.CLEARED_LINES] += 2;
+*/
 			lookahead = 1;
 //			fuzzyLookahead = 0.3;
 //			kernel.setHardDropOnly(true);
