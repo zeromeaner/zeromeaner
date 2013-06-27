@@ -111,6 +111,14 @@ public final class PropertyConstant {
 		private String key;
 		private T defaultValue;
 		
+		public Constant(ConstantParser<T> parser, String key) {
+			this(parser, key, null);
+		}
+		
+		public Constant(ConstantParser<T> parser, String key, T defaultValue) {
+			this(null, parser, key, defaultValue);
+		}
+		
 		public Constant(CustomProperties backing, ConstantParser<T> parser, String key, T defaultValue) {
 			this.backing = backing;
 			this.parser = parser;

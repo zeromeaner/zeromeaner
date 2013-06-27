@@ -12,9 +12,18 @@ public final class Options {
 	public static final CustomProperties RUNTIME_PROPERTIES = new CustomProperties(GUI_PROPERTIES, "runtime");
 	
 	
-	public static final Constant<Boolean> BGM_ENABLE = GUI_PROPERTIES.create(BOOLEAN, "0mino.bgm.enable", true);
-	public static final Constant<String> BGM_SELECTION = GUI_PROPERTIES.create(STRING, "0mino.bgm.selection");
-	public static final Constant<Boolean> FULL_SCREEN = RUNTIME_PROPERTIES.create(BOOLEAN, "0mino.standalone.full-screen", false);
+	public static final class GeneralOptions {
+		public static final Constant<Boolean> BGM_ENABLE = GUI_PROPERTIES.create(BOOLEAN, "0mino.bgm.enable", true);
+		public static final Constant<String> BGM_SELECTION = GUI_PROPERTIES.create(STRING, "0mino.bgm.selection");
+		public static final Constant<Boolean> FULL_SCREEN = RUNTIME_PROPERTIES.create(BOOLEAN, "0mino.standalone.full-screen", false);
+		private GeneralOptions() {}
+	}
+
+	public static final class TuningOptions {
+		public static final Constant<Integer> OW_ROTATE_BUTTON_DEFAULT_RIGHT = new Constant<Integer>(INTEGER, "owRotateButtonDefaultRight", -1);
+		
+		private TuningOptions() {}
+	}
 	
 	private Options() {}
 }
