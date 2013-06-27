@@ -74,8 +74,9 @@ public class StandaloneModeselectPanel extends JPanel {
 		private RuleButton rule;
 		
 		public ModeButton(GameMode m) {
-			super(m.getName());
+			super("<html>" + m.getName().replaceAll("-+", "<br>"));
 			this.mode = m;
+			setFont(getFont().deriveFont(8f));
 			setMargin(new Insets(10, 10, 10, 10));
 			addActionListener(new ActionListener() {
 				@Override
@@ -99,8 +100,9 @@ public class StandaloneModeselectPanel extends JPanel {
 	private class RuleButton extends JToggleButton implements ActionListener {
 		private RuleOptions rule;
 		public RuleButton(RuleOptions r) {
-			super(r.strRuleName);
+			super("<html>" + r.strRuleName.replaceAll("-+", "<br>"));
 			this.rule = r;
+			setFont(getFont().deriveFont(8f));
 			setMargin(new Insets(10, 10, 10, 10));
 			addActionListener(new ActionListener() {
 				@Override
@@ -121,7 +123,7 @@ public class StandaloneModeselectPanel extends JPanel {
 			if(!(e.getSource() instanceof ModeButton))
 				return;
 			ModeButton mb = (ModeButton) e.getSource();
-			if(recommended.get(mb.getText()).contains(rule.resourceName))
+			if(recommended.get(mb.mode.getName()).contains(rule.resourceName))
 				setBorderPainted(true);
 			else
 				setBorderPainted(false);
