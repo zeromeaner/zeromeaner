@@ -29,7 +29,7 @@ public class CookieAccess {
 		return c;
 	}
 	
-	protected Map<String, String> get() {
+	public Map<String, String> get() {
 		return get(StandaloneApplet.instance);
 	}
 	
@@ -63,7 +63,7 @@ public class CookieAccess {
 		}
 	}
 	
-	protected void set(Map<String, String> cookie) {
+	public void set(Map<String, String> cookie) {
 		set(StandaloneApplet.instance, cookie);
 	}
 	

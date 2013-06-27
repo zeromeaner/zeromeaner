@@ -50,6 +50,10 @@ import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.ResourceFileSystemView;
 import org.zeromeaner.util.ResourceInputStream;
 
+import static org.zeromeaner.util.PropertyConstants.GLOBAL_PROPERTIES;
+import static org.zeromeaner.util.PropertyConstants.GUI_PROPERTIES;
+import static org.zeromeaner.util.PropertyConstants.RUNTIME_PROPERTIES;
+
 public class StandaloneFrame extends JFrame {
 	private static final Logger log = Logger.getLogger(StandaloneFrame.class);
 	private static final Localization lz = new Localization();

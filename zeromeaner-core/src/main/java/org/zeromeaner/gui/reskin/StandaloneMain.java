@@ -22,7 +22,6 @@ import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 
 public class StandaloneMain {
-	public static CustomProperties propConfig = new CustomProperties();
 	public static ModeList<GameMode> modeManager;
 	public static String userId;
 	
@@ -36,22 +35,38 @@ public class StandaloneMain {
 	
 	public static void loadGlobalConfig() {
 		try {
-			InputStream in = new ResourceInputStream("config/setting/swing.cfg");
-			propConfig.load(in);
+			InputStream in = new ResourceInputStream("config/setting/global.cfg");
+			PropertyConstants.GLOBAL_PROPERTIES.load(in);
 			in.close();
 		} catch(FileNotFoundException fnfe) {
 		} catch(IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
+		try {
+			InputStream in = new ResourceInputStream("config/setting/swing.cfg");
+			PropertyConstants.GUI_PROPERTIES.load(in);
+			in.close();
+		} catch(FileNotFoundException fnfe) {
+		} catch(IOException ioe) {
+			throw new RuntimeException(ioe);
+		}
+		PropertyConstants.RUNTIME_PROPERTIES.putAll(CookieAccess.getInstance().get());
 	}
 
 	public static void saveConfig() {
 		try {
-			ResourceOutputStream out = new ResourceOutputStream("config/setting/swing.cfg");
-			propConfig.store(out, "zeromeaner Swing-frontend Config");
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/global.cfg");
+			PropertyConstants.GLOBAL_PROPERTIES.store(out, "zeromeaner global Config");
 			out.close();
 		} catch(IOException e) {
 		}
+		try {
+			ResourceOutputStream out = new ResourceOutputStream("config/setting/swing.cfg");
+			PropertyConstants.GUI_PROPERTIES.store(out, "zeromeaner Swing-frontend Config");
+			out.close();
+		} catch(IOException e) {
+		}
+		CookieAccess.getInstance().set(PropertyConstants.RUNTIME_PROPERTIES.getAll());
 		try {
 			ResourceDownloadStream.commitCache();
 		} catch(IOException ioe) {
@@ -86,14 +101,14 @@ public class StandaloneMain {
 		StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 		StandaloneGameKey.gamekey[1].loadDefaultKeymap();
 		
-		StandaloneGameKey.gamekey[0].loadConfig(propConfig);
-		StandaloneGameKey.gamekey[1].loadConfig(propConfig);
+		StandaloneGameKey.gamekey[0].loadConfig(PropertyConstants.GUI_PROPERTIES);
+		StandaloneGameKey.gamekey[1].loadConfig(PropertyConstants.GUI_PROPERTIES);
 		
 		StandaloneResourceHolder.load();
 		
 		StandaloneFrame frame = new StandaloneFrame();
 		
-		boolean fullScreen = propConfig.getProperty(PropertyConstants.FULL_SCREEN, false);
+		boolean fullScreen = PropertyConstants.GUI_PROPERTIES.getProperty(PropertyConstants.FULL_SCREEN, false);
 		if(fullScreen) {
 			frame.setUndecorated(true);
 			frame.setVisible(true);
