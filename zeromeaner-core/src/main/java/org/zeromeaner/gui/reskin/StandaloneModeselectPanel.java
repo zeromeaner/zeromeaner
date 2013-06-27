@@ -16,6 +16,7 @@ import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.util.LstResourceMap;
 import org.zeromeaner.util.ModeList;
+import org.zeromeaner.util.Options;
 import org.zeromeaner.util.RuleList;
 
 public class StandaloneModeselectPanel extends JPanel {
@@ -53,14 +54,16 @@ public class StandaloneModeselectPanel extends JPanel {
 			for(ModeButton mb : this.modeButtons) {
 				mb.addActionListener(b);
 			}
-			if(rule.resourceName.equals(StandaloneMain.propConfig.getProperty("0.rule")))
+//			if(rule.resourceName.equals(StandaloneMain.propConfig.getProperty("0.rule")))
+			if(rule.resourceName.equals(Options.general().RULE_NAME.value()))
 				b.setSelected(true);
 		}
 		p.add(ruleButtons, BorderLayout.CENTER);
 		add(p, BorderLayout.SOUTH);
 		
 		for(ModeButton mb : this.modeButtons) {
-			if(mb.mode.getName().equals(StandaloneMain.propConfig.getProperty("name.mode")))
+//			if(mb.mode.getName().equals(StandaloneMain.propConfig.getProperty("name.mode")))
+			if(mb.mode.getName().equals(Options.general().MODE_NAME.value()))
 				mb.doClick();
 
 		}
@@ -78,8 +81,10 @@ public class StandaloneModeselectPanel extends JPanel {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					currentMode = ModeButton.this;
-					StandaloneMain.propConfig.setProperty("name.mode", mode.getName());
-					String ruleResource = StandaloneMain.propConfig.getProperty("mode." + mode.getName() + ".rule");
+//					StandaloneMain.propConfig.setProperty("name.mode", mode.getName());
+					Options.general().MODE_NAME.set(mode.getName());
+//					String ruleResource = StandaloneMain.propConfig.getProperty("mode." + mode.getName() + ".rule");
+					String ruleResource = Options.mode(mode.getName()).RULE_RSOURCE.value();
 					if(ruleResource != null) {
 						for(RuleButton rb : ruleButtons) {
 							if(ruleResource.equals(rb.rule.resourceName))
@@ -103,8 +108,10 @@ public class StandaloneModeselectPanel extends JPanel {
 					if(currentMode != null)
 						currentMode.rule = RuleButton.this;
 					currentRule = RuleButton.this;
-					StandaloneMain.propConfig.setProperty("0.rule", rule.resourceName);
-					StandaloneMain.propConfig.setProperty("mode." + currentMode.mode.getName() + ".rule", rule.resourceName);
+//					StandaloneMain.propConfig.setProperty("0.rule", rule.resourceName);
+					Options.general().RULE_NAME.set(rule.resourceName);
+//					StandaloneMain.propConfig.setProperty("mode." + currentMode.mode.getName() + ".rule", rule.resourceName);
+					Options.mode(currentMode.mode.getName()).RULE_RSOURCE.set(rule.resourceName);
 				}
 			});
 		}

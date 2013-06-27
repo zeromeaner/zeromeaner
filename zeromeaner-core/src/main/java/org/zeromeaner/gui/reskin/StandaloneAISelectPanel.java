@@ -51,9 +51,13 @@ import javax.swing.JTextField;
 
 
 
+
+
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.subsystem.ai.AIPlayer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
+import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.Options;
 import org.zeromeaner.util.Zeroflections;
 
 import static org.zeromeaner.gui.reskin.Localizations.lz;
@@ -142,13 +146,15 @@ public class StandaloneAISelectPanel extends JPanel implements ActionListener {
 	public void load(int pl) {
 		this.playerID = pl;
 
-		currentAI = StandaloneMain.propConfig.getProperty(playerID + ".ai", "");
-		aiMoveDelay = StandaloneMain.propConfig.getProperty(playerID + ".aiMoveDelay", 0);
-		aiThinkDelay = StandaloneMain.propConfig.getProperty(playerID + ".aiThinkDelay", 0);
-		aiUseThread = StandaloneMain.propConfig.getProperty(playerID + ".aiUseThread", true);
-		aiShowHint = StandaloneMain.propConfig.getProperty(playerID + ".aiShowHint", false);
-		aiPrethink = StandaloneMain.propConfig.getProperty(playerID + ".aiPrethink", false);
-		aiShowState = StandaloneMain.propConfig.getProperty(playerID + ".aiShowState", false);
+		CustomProperties p = Options.GLOBAL_PROPERTIES;
+		
+		currentAI = p.getProperty(playerID + ".ai", "");
+		aiMoveDelay = p.getProperty(playerID + ".aiMoveDelay", 0);
+		aiThinkDelay = p.getProperty(playerID + ".aiThinkDelay", 0);
+		aiUseThread = p.getProperty(playerID + ".aiUseThread", true);
+		aiShowHint = p.getProperty(playerID + ".aiShowHint", false);
+		aiPrethink = p.getProperty(playerID + ".aiPrethink", false);
+		aiShowState = p.getProperty(playerID + ".aiShowState", false);
 
 		aiID = -1;
 		listboxAI.clearSelection();
@@ -324,14 +330,18 @@ public class StandaloneAISelectPanel extends JPanel implements ActionListener {
 			aiPrethink = chkBoxAIPrethink.isSelected();
 			aiShowState = chkBoxAIShowState.isSelected();
 
-			if(aiID >= 0) StandaloneMain.propConfig.setProperty(playerID + ".ai", aiPathList[aiID]);
-			else StandaloneMain.propConfig.setProperty(playerID + ".ai", "");
-			StandaloneMain.propConfig.setProperty(playerID + ".aiMoveDelay", aiMoveDelay);
-			StandaloneMain.propConfig.setProperty(playerID + ".aiThinkDelay", aiThinkDelay);
-			StandaloneMain.propConfig.setProperty(playerID + ".aiUseThread", aiUseThread);
-			StandaloneMain.propConfig.setProperty(playerID + ".aiShowHint", aiShowHint);
-			StandaloneMain.propConfig.setProperty(playerID + ".aiPrethink", aiPrethink);
-			StandaloneMain.propConfig.setProperty(playerID + ".aiShowState", aiShowState);
+			CustomProperties p = Options.GLOBAL_PROPERTIES;
+			
+			if(aiID >= 0) 
+				p.setProperty(playerID + ".ai", aiPathList[aiID]);
+			else 
+				p.setProperty(playerID + ".ai", "");
+			p.setProperty(playerID + ".aiMoveDelay", aiMoveDelay);
+			p.setProperty(playerID + ".aiThinkDelay", aiThinkDelay);
+			p.setProperty(playerID + ".aiUseThread", aiUseThread);
+			p.setProperty(playerID + ".aiShowHint", aiShowHint);
+			p.setProperty(playerID + ".aiPrethink", aiPrethink);
+			p.setProperty(playerID + ".aiShowState", aiShowState);
 			StandaloneMain.saveConfig();
 		}
 		// Cancel

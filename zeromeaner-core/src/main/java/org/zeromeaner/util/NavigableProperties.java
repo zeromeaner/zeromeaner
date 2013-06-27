@@ -3,6 +3,7 @@ package org.zeromeaner.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Properties;
 import java.util.Set;
@@ -30,6 +31,14 @@ public class NavigableProperties {
 	
 	public void clear() {
 		backing.clear();
+	}
+	
+	public void putAll(Map<String, String> props) {
+		backing.putAll(props);
+	}
+	
+	public NavigableMap<String, String> getAll() {
+		return new TreeMap<String, String>(backing);
 	}
 	
 	public String getProperty(String key) {
