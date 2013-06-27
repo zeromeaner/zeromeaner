@@ -34,6 +34,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.NavigableMap;
+import java.util.Properties;
+import java.util.TreeMap;
 
 /**
  * StringSet of properties that can be stored in non-
@@ -43,13 +45,16 @@ public class CustomProperties extends NavigableProperties {
 	
 	public CustomProperties() {
 	}
+	
+	public CustomProperties(NavigableProperties parent, String prefix) {
+		super(parent, new TreeMap<String, String>(), prefix);
+	}
 
 	protected CustomProperties(
 			NavigableProperties parent,
 			NavigableMap<String, String> backing, 
 			String prefix) {
 		super(parent, backing, prefix);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -327,5 +332,13 @@ public class CustomProperties extends NavigableProperties {
 	@Override
 	public CustomProperties subProperties(String keyPrefix) {
 		return (CustomProperties) super.subProperties(keyPrefix);
+	}
+	
+	public String getPrefix() {
+		return prefix;
+	}
+	
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
 	}
 }
