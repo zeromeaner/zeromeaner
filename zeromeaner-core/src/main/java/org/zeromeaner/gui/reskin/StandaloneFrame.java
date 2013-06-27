@@ -99,7 +99,7 @@ public class StandaloneFrame extends JFrame {
 	
 	public StandaloneFrame() {
 		setTitle("0mino");
-		setUndecorated(true);
+		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		

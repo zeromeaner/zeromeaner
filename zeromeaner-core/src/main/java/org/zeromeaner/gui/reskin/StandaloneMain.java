@@ -9,12 +9,14 @@ import java.net.URL;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
+
 import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.plaf.ZeroMetalTheme;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ModeList;
+import org.zeromeaner.util.PropertyConstants;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
@@ -99,7 +101,14 @@ public class StandaloneMain {
 		
 		StandaloneFrame frame = new StandaloneFrame();
 		
-		frame.setVisible(true);
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		boolean fullScreen = propConfig.getProperty(PropertyConstants.FULL_SCREEN, false);
+		if(fullScreen) {
+			frame.setUndecorated(true);
+			frame.setVisible(true);
+			frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		} else {
+			frame.setSize(1366, 768);
+			frame.setVisible(true);
+		}
 	}
 }

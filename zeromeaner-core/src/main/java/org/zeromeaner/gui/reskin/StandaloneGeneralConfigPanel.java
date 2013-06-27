@@ -46,6 +46,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import org.zeromeaner.util.PropertyConstants;
 import org.zeromeaner.util.SwingUtils;
 
 import static org.zeromeaner.gui.reskin.Localizations.lz;
@@ -62,6 +63,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	{
 		{320,240}, {400,300}, {480,360}, {512,384}, {640,480}, {800,600}, {1024,768}, {1152,864}, {1280,960}
 	};
+	
+	protected JCheckBox maximizeStandalone;
 
 	/** Model of screen size combobox */
 	protected DefaultComboBoxModel modelScreenSize;
@@ -175,6 +178,11 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		pSEVolume.add(txtfldSEVolume);
 
 		// ---------- checkBox ----------
+		maximizeStandalone = new JCheckBox(lz.s("GeneralConfig_MaximizeStandalone"));
+		maximizeStandalone.setHorizontalAlignment(SwingConstants.CENTER);
+		if(!StandaloneApplet.isApplet())
+			pBasicTab.add(maximizeStandalone);
+		
 		chkboxShowBackground = new JCheckBox(lz.s("GeneralConfig_ShowBackground"));
 		chkboxShowBackground.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxShowBackground);
@@ -321,6 +329,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			}
 		}
 
+		maximizeStandalone.setSelected(StandaloneMain.propConfig.getProperty(PropertyConstants.FULL_SCREEN, false));
 		txtfldMaxFPS.setText(String.valueOf(StandaloneMain.propConfig.getProperty("option.maxfps", 60)));
 		txtfldSEVolume.setText(String.valueOf(StandaloneMain.propConfig.getProperty("option.sevolume", 1.0d)));
 		txtfldLineClearEffectSpeed.setText(String.valueOf(StandaloneMain.propConfig.getProperty("option.lineeffectspeed", 0) + 1));
@@ -369,6 +378,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			if(lineeffectspeed < 0) lineeffectspeed = 0;
 			StandaloneMain.propConfig.setProperty("option.lineeffectspeed", lineeffectspeed);
 
+			StandaloneMain.propConfig.setProperty(PropertyConstants.FULL_SCREEN, maximizeStandalone.isSelected());
 			StandaloneMain.propConfig.setProperty("option.showfps", chkboxShowFPS.isSelected());
 			StandaloneMain.propConfig.setProperty("option.showbg", chkboxShowBackground.isSelected());
 			StandaloneMain.propConfig.setProperty("option.showmeter", chkboxShowMeter.isSelected());
