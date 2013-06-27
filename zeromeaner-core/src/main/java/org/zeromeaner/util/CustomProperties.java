@@ -37,6 +37,9 @@ import java.util.NavigableMap;
 import java.util.Properties;
 import java.util.TreeMap;
 
+import org.zeromeaner.util.PropertyConstant.Constant;
+import org.zeromeaner.util.PropertyConstant.ConstantParser;
+
 /**
  * StringSet of properties that can be stored in non-
  */
@@ -57,6 +60,23 @@ public class CustomProperties extends NavigableProperties {
 		super(parent, backing, prefix);
 	}
 
+	
+	public <T> Constant<T> create(ConstantParser<T> parser, String key, T defaultValue) {
+		return new Constant<T>(this, parser, key, defaultValue);
+	}
+	
+	public <T> Constant<T> create(ConstantParser<T> parser, String key) {
+		return create(parser, key, null);
+	}
+	
+	public <T> T get(Constant<T> property) {
+		return property.value(this);
+	}
+	
+	public <T> void set(Constant<T> property, T value) {
+		property.set(this, value);
+	}
+	
 	/**
 	 * byteSet the properties of the type
 	 * @param key Key
