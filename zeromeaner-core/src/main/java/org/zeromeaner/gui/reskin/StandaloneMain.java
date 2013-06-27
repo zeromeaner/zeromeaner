@@ -109,7 +109,7 @@ public class StandaloneMain {
 		
 		StandaloneFrame frame = new StandaloneFrame();
 		
-		if(PropertyConstant.is(Options.FULL_SCREEN)) {
+		if(PropertyConstant.is(Options.standalone().FULL_SCREEN)) {
 			frame.setUndecorated(true);
 			frame.setVisible(true);
 			frame.setExtendedState(JFrame.MAXIMIZED_BOTH);

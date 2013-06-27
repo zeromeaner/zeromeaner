@@ -52,7 +52,9 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 
+import org.zeromeaner.util.Options;
 import org.zeromeaner.util.SwingUtils;
+import org.zeromeaner.util.Options.TuningOptions;
 
 import static org.zeromeaner.gui.reskin.Localizations.lz;
 
@@ -335,69 +337,73 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 	public void load(int pl) {
 		this.playerID = pl;
 
-		int owRotateButtonDefaultRight = StandaloneMain.propConfig.getProperty(playerID + ".tuning.owRotateButtonDefaultRight", -1);
+		TuningOptions tune = Options.player(pl).tuning;
+		
+		int owRotateButtonDefaultRight = tune.ROTATE_BUTTON_DEFAULT_RIGHT.value();
 		if(owRotateButtonDefaultRight == -1) radioRotateButtonDefaultRightAuto.setSelected(true);
 		if(owRotateButtonDefaultRight ==  0) radioRotateButtonDefaultRightLeft.setSelected(true);
 		if(owRotateButtonDefaultRight ==  1) radioRotateButtonDefaultRightRight.setSelected(true);
 
-		int owMoveDiagonal = StandaloneMain.propConfig.getProperty(playerID + ".tuning.owMoveDiagonal", -1);
+		int owMoveDiagonal = tune.MOVE_DIAGONAL.value();
 		if(owMoveDiagonal == -1) radioMoveDiagonalAuto.setSelected(true);
 		if(owMoveDiagonal ==  0) radioMoveDiagonalDisable.setSelected(true);
 		if(owMoveDiagonal ==  1) radioMoveDiagonalEnable.setSelected(true);
 
-		int owBlockShowOutlineOnly = StandaloneMain.propConfig.getProperty(playerID + ".tuning.owBlockShowOutlineOnly", -1);
+		int owBlockShowOutlineOnly = tune.BLOCK_SHOW_OUTLINE_ONLY.value();
 		if(owBlockShowOutlineOnly == -1) radioBlockShowOutlineOnlyAuto.setSelected(true);
 		if(owBlockShowOutlineOnly ==  0) radioBlockShowOutlineOnlyDisable.setSelected(true);
 		if(owBlockShowOutlineOnly ==  1) radioBlockShowOutlineOnlyEnable.setSelected(true);
 
-		int owSkin = StandaloneMain.propConfig.getProperty(playerID + ".tuning.owSkin", -1);
+		int owSkin = tune.SKIN.value();
 		comboboxSkin.setSelectedIndex(owSkin + 1);
 
-		int owBlockOutlineType = StandaloneMain.propConfig.getProperty(playerID + ".tuning.owBlockOutlineType", -1);
+		int owBlockOutlineType = tune.BLOCK_OUTLINE_TYPE.value();
 		comboboxBlockOutlineType.setSelectedIndex(owBlockOutlineType + 1);
 
-		txtfldMinDAS.setText(StandaloneMain.propConfig.getProperty(playerID + ".tuning.owMinDAS", "-1"));
-		txtfldMaxDAS.setText(StandaloneMain.propConfig.getProperty(playerID + ".tuning.owMaxDAS", "-1"));
-		txtfldDasDelay.setText(StandaloneMain.propConfig.getProperty(playerID + ".tuning.owDasDelay", "-1"));
-		chkboxReverseUpDown.setSelected(StandaloneMain.propConfig.getProperty(playerID + ".tuning.owReverseUpDown", false));
+		txtfldMinDAS.setText("" + tune.MIN_DAS.value());
+		txtfldMaxDAS.setText("" + tune.MAX_DAS.value());
+		txtfldDasDelay.setText("" + tune.DAS_DELAY.value());
+		chkboxReverseUpDown.setSelected(tune.REVERSE_UP_DOWN.value());
 	}
 
 	/**
 	 * Save
 	 */
 	protected void save() {
+		TuningOptions tune = Options.player(playerID).tuning;
+		
 		int owRotateButtonDefaultRight = -1;
 		if(radioRotateButtonDefaultRightAuto.isSelected()) owRotateButtonDefaultRight = -1;
 		if(radioRotateButtonDefaultRightLeft.isSelected()) owRotateButtonDefaultRight =  0;
 		if(radioRotateButtonDefaultRightRight.isSelected()) owRotateButtonDefaultRight = 1;
-		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owRotateButtonDefaultRight", owRotateButtonDefaultRight);
+		tune.ROTATE_BUTTON_DEFAULT_RIGHT.set(owRotateButtonDefaultRight);
 
 		int owMoveDiagonal = -1;
 		if(radioMoveDiagonalAuto.isSelected()) owMoveDiagonal = -1;
 		if(radioMoveDiagonalDisable.isSelected()) owMoveDiagonal = 0;
 		if(radioMoveDiagonalEnable.isSelected()) owMoveDiagonal = 1;
-		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owMoveDiagonal", owMoveDiagonal);
+		tune.MOVE_DIAGONAL.set(owMoveDiagonal);
 
 		int owBlockShowOutlineOnly = -1;
 		if(radioBlockShowOutlineOnlyAuto.isSelected()) owBlockShowOutlineOnly = -1;
 		if(radioBlockShowOutlineOnlyDisable.isSelected()) owBlockShowOutlineOnly = 0;
 		if(radioBlockShowOutlineOnlyEnable.isSelected()) owBlockShowOutlineOnly = 1;
-		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owBlockShowOutlineOnly", owBlockShowOutlineOnly);
+		tune.BLOCK_SHOW_OUTLINE_ONLY.set(owBlockShowOutlineOnly);
 
 		int owSkin = comboboxSkin.getSelectedIndex() - 1;
-		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owSkin", owSkin);
+		tune.SKIN.set(owSkin);
 
 		int owBlockOutlineType = comboboxBlockOutlineType.getSelectedIndex() - 1;
-		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owBlockOutlineType", owBlockOutlineType);
+		tune.BLOCK_OUTLINE_TYPE.set(owBlockOutlineType);
 
 		int owMinDAS = SwingUtils.getIntTextField(-1, txtfldMinDAS);
-		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owMinDAS", owMinDAS);
+		tune.MIN_DAS.set(owMinDAS);
 		int owMaxDAS = SwingUtils.getIntTextField(-1, txtfldMaxDAS);
-		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owMaxDAS", owMaxDAS);
+		tune.MAX_DAS.set(owMaxDAS);
 		int owDasDelay = SwingUtils.getIntTextField(-1, txtfldDasDelay);
-		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owDasDelay", owDasDelay);
+		tune.DAS_DELAY.set(owDasDelay);
 		boolean owReverseUpDown = chkboxReverseUpDown.isSelected();
-		StandaloneMain.propConfig.setProperty(playerID + ".tuning.owReverseUpDown", owReverseUpDown);
+		tune.REVERSE_UP_DOWN.set(owReverseUpDown);
 
 		StandaloneMain.saveConfig();
 	}

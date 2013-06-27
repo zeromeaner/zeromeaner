@@ -47,6 +47,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import org.zeromeaner.util.Options;
+import org.zeromeaner.util.Options.StandaloneOptions;
 import org.zeromeaner.util.SwingUtils;
 
 import static org.zeromeaner.gui.reskin.Localizations.lz;
@@ -98,9 +99,6 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 
 	/** Sound effects */
 	protected JCheckBox chkboxSE;
-
-	/** NativeLook and FeelI use */
-	protected JCheckBox chkboxUseNativeLookAndFeel;
 
 	/**  frame Step */
 	protected JCheckBox chkboxEnableFrameStep;
@@ -279,10 +277,6 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxShowFPS.setHorizontalAlignment(SwingConstants.CENTER);
 		pAdvancedTab.add(chkboxShowFPS);
 
-		chkboxUseNativeLookAndFeel = new JCheckBox(lz.s("GeneralConfig_UseNativeLookAndFeel"));
-		chkboxUseNativeLookAndFeel.setHorizontalAlignment(SwingConstants.CENTER);
-		pAdvancedTab.add(chkboxUseNativeLookAndFeel);
-
 		chkboxEnableFrameStep = new JCheckBox(lz.s("GeneralConfig_EnableFrameStep"));
 		chkboxEnableFrameStep.setHorizontalAlignment(SwingConstants.CENTER);
 		pAdvancedTab.add(chkboxEnableFrameStep);
@@ -319,8 +313,10 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	public void load() {
 		userId.setText(StandaloneMain.userId);
 		
-		int sWidth = StandaloneMain.propConfig.getProperty("option.screenwidth", 640);
-		int sHeight = StandaloneMain.propConfig.getProperty("option.screenheight", 480);
+		StandaloneOptions opt = Options.standalone();
+		
+		int sWidth = opt.SCREEN_WIDTH.value();
+		int sHeight = opt.SCREEN_HEIGHT.value();
 		comboboxScreenSize.setSelectedIndex(4);	// Default to 640x480
 		for(int i = 0; i < SCREENSIZE_TABLE.length; i++) {
 			if((sWidth == SCREENSIZE_TABLE[i][0]) && (sHeight == SCREENSIZE_TABLE[i][1])) {
@@ -329,27 +325,26 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			}
 		}
 
-		maximizeStandalone.setSelected(StandaloneMain.propConfig.getProperty(Options.FULL_SCREEN, false));
-		txtfldMaxFPS.setText(String.valueOf(StandaloneMain.propConfig.getProperty("option.maxfps", 60)));
-		txtfldSEVolume.setText(String.valueOf(StandaloneMain.propConfig.getProperty("option.sevolume", 1.0d)));
-		txtfldLineClearEffectSpeed.setText(String.valueOf(StandaloneMain.propConfig.getProperty("option.lineeffectspeed", 0) + 1));
-		chkboxShowFPS.setSelected(StandaloneMain.propConfig.getProperty("option.showfps", true));
-		chkboxShowBackground.setSelected(StandaloneMain.propConfig.getProperty("option.showbg", true));
-		chkboxShowMeter.setSelected(StandaloneMain.propConfig.getProperty("option.showmeter", true));
-		chkboxShowFieldBlockGraphics.setSelected(StandaloneMain.propConfig.getProperty("option.showfieldblockgraphics", true));
-		chkboxSimpleBlock.setSelected(StandaloneMain.propConfig.getProperty("option.simpleblock", false));
-		chkboxSE.setSelected(StandaloneMain.propConfig.getProperty("option.se", true));
-		chkboxUseNativeLookAndFeel.setSelected(StandaloneMain.propConfig.getProperty("option.usenativelookandfeel", true));
-		chkboxEnableFrameStep.setSelected(StandaloneMain.propConfig.getProperty("option.enableframestep", false));
-		chkboxNextShadow.setSelected(StandaloneMain.propConfig.getProperty("option.nextshadow", false));
-		chkboxOutlineGhost.setSelected(StandaloneMain.propConfig.getProperty("option.outlineghost", false));
-		chkboxSideNext.setSelected(StandaloneMain.propConfig.getProperty("option.sidenext", false));
-		chkboxBigSideNext.setSelected(StandaloneMain.propConfig.getProperty("option.bigsidenext", false));
-		chkboxDarkNextArea.setSelected(StandaloneMain.propConfig.getProperty("option.darknextarea", true));
-		chkboxShowFieldBGGrid.setSelected(StandaloneMain.propConfig.getProperty("option.showfieldbggrid", true));
-		chkboxShowInput.setSelected(StandaloneMain.propConfig.getProperty("option.showInput", false));
-		chkboxSyncDisplay.setSelected(StandaloneMain.propConfig.getProperty("option.syncDisplay", true));
-		chkboxShowLineClearEffect.setSelected(StandaloneMain.propConfig.getProperty("option.showlineeffect", false));
+		maximizeStandalone.setSelected(opt.FULL_SCREEN.value());
+		txtfldMaxFPS.setText("" + opt.MAX_FPS.value());
+		txtfldSEVolume.setText("" + opt.SE_VOLUME.value());
+		txtfldLineClearEffectSpeed.setText("" + opt.LINE_EFFECT_SPEED.value());
+		chkboxShowFPS.setSelected(opt.SHOW_FPS.value());
+		chkboxShowBackground.setSelected(opt.SHOW_BG.value());
+		chkboxShowMeter.setSelected(opt.SHOW_METER.value());
+		chkboxShowFieldBlockGraphics.setSelected(opt.SHOW_FIELD_BLOCK_GRAPHICS.value());
+		chkboxSimpleBlock.setSelected(opt.SIMPLE_BLOCK.value());
+		chkboxSE.setSelected(opt.SE_ENABLED.value());
+		chkboxEnableFrameStep.setSelected(opt.ENABLE_FRAME_STEP.value());
+		chkboxNextShadow.setSelected(opt.NEXT_SHADOW.value());
+		chkboxOutlineGhost.setSelected(opt.OUTLINE_GHOST.value());
+		chkboxSideNext.setSelected(opt.SIDE_NEXT.value());
+		chkboxBigSideNext.setSelected(opt.BIG_SIDE_NEXT.value());
+		chkboxDarkNextArea.setSelected(opt.DARK_NEXT_AREA.value());
+		chkboxShowFieldBGGrid.setSelected(opt.SHOW_FIELD_BG_GRID.value());
+		chkboxShowInput.setSelected(opt.SHOW_INPUT.value());
+		chkboxSyncDisplay.setSelected(opt.SYNC_DISPLAY.value());
+		chkboxShowLineClearEffect.setSelected(opt.SHOW_LINE_EFFECT.value());
 	}
 
 	/*
@@ -362,40 +357,41 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			StandaloneMain.userId = userId.getText();
 			CookieAccess.put("userId", StandaloneMain.userId);
 			
+			StandaloneOptions opt = Options.standalone();
+			
 			int screenSizeIndex = comboboxScreenSize.getSelectedIndex();
 			if((screenSizeIndex >= 0) && (screenSizeIndex < SCREENSIZE_TABLE.length)) {
-				StandaloneMain.propConfig.setProperty("option.screenwidth", SCREENSIZE_TABLE[screenSizeIndex][0]);
-				StandaloneMain.propConfig.setProperty("option.screenheight", SCREENSIZE_TABLE[screenSizeIndex][1]);
+				opt.SCREEN_WIDTH.set(SCREENSIZE_TABLE[screenSizeIndex][0]);
+				opt.SCREEN_HEIGHT.set(SCREENSIZE_TABLE[screenSizeIndex][1]);
 			}
 
 			int maxfps = SwingUtils.getIntTextField(60, txtfldMaxFPS);
-			StandaloneMain.propConfig.setProperty("option.maxfps", maxfps);
+			opt.MAX_FPS.set(maxfps);
 
 			double sevolume = SwingUtils.getDoubleTextField(1.0d, txtfldSEVolume);
-			StandaloneMain.propConfig.setProperty("option.sevolume", sevolume);
+			opt.SE_VOLUME.set(sevolume);
 
 			int lineeffectspeed = SwingUtils.getIntTextField(0, txtfldLineClearEffectSpeed) - 1;
 			if(lineeffectspeed < 0) lineeffectspeed = 0;
-			StandaloneMain.propConfig.setProperty("option.lineeffectspeed", lineeffectspeed);
+			opt.LINE_EFFECT_SPEED.set(lineeffectspeed);
 
-			StandaloneMain.propConfig.setProperty(Options.FULL_SCREEN, maximizeStandalone.isSelected());
-			StandaloneMain.propConfig.setProperty("option.showfps", chkboxShowFPS.isSelected());
-			StandaloneMain.propConfig.setProperty("option.showbg", chkboxShowBackground.isSelected());
-			StandaloneMain.propConfig.setProperty("option.showmeter", chkboxShowMeter.isSelected());
-			StandaloneMain.propConfig.setProperty("option.showfieldblockgraphics", chkboxShowFieldBlockGraphics.isSelected());
-			StandaloneMain.propConfig.setProperty("option.simpleblock", chkboxSimpleBlock.isSelected());
-			StandaloneMain.propConfig.setProperty("option.se", chkboxSE.isSelected());
-			StandaloneMain.propConfig.setProperty("option.usenativelookandfeel", chkboxUseNativeLookAndFeel.isSelected());
-			StandaloneMain.propConfig.setProperty("option.enableframestep", chkboxEnableFrameStep.isSelected());
-			StandaloneMain.propConfig.setProperty("option.nextshadow", chkboxNextShadow.isSelected());
-			StandaloneMain.propConfig.setProperty("option.outlineghost", chkboxOutlineGhost.isSelected());
-			StandaloneMain.propConfig.setProperty("option.sidenext", chkboxSideNext.isSelected());
-			StandaloneMain.propConfig.setProperty("option.bigsidenext", chkboxBigSideNext.isSelected());
-			StandaloneMain.propConfig.setProperty("option.darknextarea", chkboxDarkNextArea.isSelected());
-			StandaloneMain.propConfig.setProperty("option.showfieldbggrid", chkboxShowFieldBGGrid.isSelected());
-			StandaloneMain.propConfig.setProperty("option.showInput", chkboxShowInput.isSelected());
-			StandaloneMain.propConfig.setProperty("option.syncDisplay", chkboxSyncDisplay.isSelected());
-			StandaloneMain.propConfig.setProperty("option.showlineeffect", chkboxShowLineClearEffect.isSelected());
+			opt.FULL_SCREEN.set(maximizeStandalone.isSelected());
+			opt.SHOW_FPS.set(chkboxShowFPS.isSelected());
+			opt.SHOW_BG.set(chkboxShowBackground.isSelected());
+			opt.SHOW_METER.set(chkboxShowMeter.isSelected());
+			opt.SHOW_FIELD_BLOCK_GRAPHICS.set(chkboxShowFieldBlockGraphics.isSelected());
+			opt.SIMPLE_BLOCK.set(chkboxSimpleBlock.isSelected());
+			opt.SE_ENABLED.set(chkboxSE.isSelected());
+			opt.ENABLE_FRAME_STEP.set(chkboxEnableFrameStep.isSelected());
+			opt.NEXT_SHADOW.set(chkboxNextShadow.isSelected());
+			opt.OUTLINE_GHOST.set(chkboxOutlineGhost.isSelected());
+			opt.SIDE_NEXT.set(chkboxSideNext.isSelected());
+			opt.BIG_SIDE_NEXT.set(chkboxBigSideNext.isSelected());
+			opt.DARK_NEXT_AREA.set(chkboxDarkNextArea.isSelected());
+			opt.SHOW_FIELD_BG_GRID.set(chkboxShowFieldBGGrid.isSelected());
+			opt.SHOW_INPUT.set(chkboxShowInput.isSelected());
+			opt.SYNC_DISPLAY.set(chkboxSyncDisplay.isSelected());
+			opt.SHOW_LINE_EFFECT.set(chkboxShowLineClearEffect.isSelected());
 
 			StandaloneMain.saveConfig();
 			StandaloneResourceHolder.soundManager.setVolume(sevolume);

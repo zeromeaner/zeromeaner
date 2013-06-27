@@ -51,6 +51,22 @@ public final class PropertyConstant {
 		}
 	};
 	
+	public static final ConstantParser<Float> FLOAT = new AbstractConstantParser<Float>("\\d+\\.?|\\d*\\.\\d+") {
+		@Override
+		protected Float parseNonNull(String stringValue, Float defaultValue) {
+			try {
+				return Float.parseFloat(stringValue);
+			} catch(NumberFormatException nfe) {
+				return defaultValue;
+			}
+		}
+
+		@Override
+		protected String renderNonNull(Float value) {
+			return "" + value;
+		}
+	};
+	
 	public static final ConstantParser<String> STRING = new AbstractConstantParser<String>() {
 		@Override
 		protected String parseNonNull(String stringValue, String defaultValue) {
@@ -63,6 +79,100 @@ public final class PropertyConstant {
 		}
 	};
 
+	public static final ConstantParser<int[]> INT_ARRAY = new AbstractConstantParser<int[]>() {
+
+		@Override
+		protected int[] parseNonNull(String stringValue, int[] defaultValue) {
+			if(stringValue.isEmpty())
+				return new int[0];
+			String[] s = stringValue.split(",");
+			int[] ret = new int[s.length];
+			try {
+				for(int i = 0; i < s.length; i++)
+					ret[i] = Integer.parseInt(s[i]);
+			} catch(NumberFormatException nfe) {
+				return defaultValue;
+			}
+			return ret;
+		}
+
+		@Override
+		protected String renderNonNull(int[] value) {
+			StringBuilder sb = new StringBuilder();
+			
+			if(value.length > 0) {
+				sb.append(value[0]);
+				for(int i = 1; i < value.length; i++) {
+					sb.append(",");
+					sb.append(value[i]);
+				}
+			}
+			
+			return sb.toString();
+		}
+	};
+	
+	public static final ConstantParser<int[][]> INT_ARRAY2 = new AbstractConstantParser<int[][]>() {
+
+		private String renderArray(int[] value) {
+			StringBuilder sb = new StringBuilder();
+			
+			if(value.length > 0) {
+				sb.append(value[0]);
+				for(int i = 1; i < value.length; i++) {
+					sb.append(",");
+					sb.append(value[i]);
+				}
+			}
+			
+			return sb.toString();
+		}
+		
+		private int[] parseArray(String stringValue) {
+			if(stringValue.isEmpty())
+				return new int[0];
+			String[] s = stringValue.split(",");
+			int[] ret = new int[s.length];
+			try {
+				for(int i = 0; i < s.length; i++)
+					ret[i] = Integer.parseInt(s[i]);
+			} catch(NumberFormatException nfe) {
+				return null;
+			}
+			return ret;
+		}
+		
+		@Override
+		protected int[][] parseNonNull(String stringValue, int[][] defaultValue) {
+			if(stringValue.isEmpty())
+				return new int[0][];
+			String[] s = stringValue.split(";");
+			int[][] ret = new int[s.length][];
+			for(int i = 0; i < s.length; i++) {
+				int[] ary = parseArray(s[i]);
+				if(ary == null)
+					return defaultValue;
+				ret[i] = ary;
+			}
+			
+			return ret;
+		}
+
+		@Override
+		protected String renderNonNull(int[][] value) {
+			StringBuilder sb = new StringBuilder("");
+			if(value.length > 0) {
+				sb.append(renderArray(value[0]));
+				for(int i = 0; i < value.length; i++) {
+					sb.append(";");
+					sb.append(renderArray(value[i]));
+				}
+			}
+			return sb.toString();
+		}
+		
+	};
+	
 	public static interface ConstantParser<T> {
 		public T parse(String stringValue, T defaultValue);
 		public String render(T value);

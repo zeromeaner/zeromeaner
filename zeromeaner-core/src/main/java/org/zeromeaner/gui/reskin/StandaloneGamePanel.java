@@ -73,9 +73,11 @@ import javax.swing.event.InternalFrameEvent;
 
 
 
+
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.MusicList;
+import org.zeromeaner.util.Options;
 
 /**
  * Game screen frame
@@ -232,7 +234,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		imageBufferLabel.setText("No Active Game.  Click \"Play\" to start.");
 		imageBufferLabel.setIcon(null);
 
-		maxfps = StandaloneMain.propConfig.getProperty("option.maxfps", 60);
+		maxfps = Options.standalone().MAX_FPS.value();
 
 
 		log.debug("GameFrame created");
@@ -259,8 +261,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 */
 	public void displayWindow() {
 
-		int screenWidth = StandaloneMain.propConfig.getProperty("option.screenwidth", 640);
-		int screenHeight = StandaloneMain.propConfig.getProperty("option.screenheight", 480);
+		int screenWidth = Options.standalone().SCREEN_WIDTH.value();
+		int screenHeight = Options.standalone().SCREEN_HEIGHT.value();
 
 		imageBuffer = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);
 		imageBufferLabel.setText(null);
@@ -335,9 +337,9 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		updateTitleBarCaption();
 
 		// Settings to take effect
-		enableframestep = StandaloneMain.propConfig.getProperty("option.enableframestep", false);
-		showfps = StandaloneMain.propConfig.getProperty("option.showfps", true);
-		syncDisplay = StandaloneMain.propConfig.getProperty("option.syncDisplay", true);
+		enableframestep = Options.standalone().ENABLE_FRAME_STEP.value();
+		showfps = Options.standalone().SHOW_FPS.value();
+		syncDisplay = Options.standalone().SYNC_DISPLAY.value();
 
 		// Main loop
 		log.debug("Game thread start");
@@ -849,7 +851,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 */
 	protected void saveScreenShot() {
 		// Create filename
-		String dir = StandaloneMain.propConfig.getProperty("custom.screenshot.directory", "ss");
+		String dir = "ss";
 		Calendar c = Calendar.getInstance();
 		DateFormat dfm = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
 		String filename = dir + "/" + dfm.format(c.getTime()) + ".png";

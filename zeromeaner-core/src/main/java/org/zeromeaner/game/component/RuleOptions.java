@@ -706,118 +706,119 @@ public class RuleOptions implements Serializable {
 	 * @param id Player IDOrPresetID
 	 */
 	public void writeProperty(CustomProperties p, int id) {
-		p.setProperty(id + ".ruleopt.strRuleName", strRuleName);
-		p.setProperty(id + ".ruleopt.strWallkick", strWallkick);
-		p.setProperty(id + ".ruleopt.strRandomizer", strRandomizer);
+		p = p.subProperties(id + ".ruleopt.");
+		p.setProperty("strRuleName", strRuleName);
+		p.setProperty("strWallkick", strWallkick);
+		p.setProperty("strRandomizer", strRandomizer);
 
-		p.setProperty(id + ".ruleopt.style", style);
+		p.setProperty("style", style);
 
 		for(int i = 0; i < Piece.PIECE_COUNT; i++) {
 			for(int j = 0; j < Piece.DIRECTION_COUNT; j++) {
-				p.setProperty(id + ".ruleopt.pieceOffsetX." + i + "." + j, pieceOffsetX[i][j]);
-				p.setProperty(id + ".ruleopt.pieceOffsetY." + i + "." + j, pieceOffsetY[i][j]);
-				p.setProperty(id + ".ruleopt.pieceSpawnX." + i + "." + j, pieceSpawnX[i][j]);
-				p.setProperty(id + ".ruleopt.pieceSpawnY." + i + "." + j, pieceSpawnY[i][j]);
-				p.setProperty(id + ".ruleopt.pieceSpawnXBig." + i + "." + j, pieceSpawnXBig[i][j]);
-				p.setProperty(id + ".ruleopt.pieceSpawnYBig." + i + "." + j, pieceSpawnYBig[i][j]);
+				p.setProperty("pieceOffsetX." + i + "." + j, pieceOffsetX[i][j]);
+				p.setProperty("pieceOffsetY." + i + "." + j, pieceOffsetY[i][j]);
+				p.setProperty("pieceSpawnX." + i + "." + j, pieceSpawnX[i][j]);
+				p.setProperty("pieceSpawnY." + i + "." + j, pieceSpawnY[i][j]);
+				p.setProperty("pieceSpawnXBig." + i + "." + j, pieceSpawnXBig[i][j]);
+				p.setProperty("pieceSpawnYBig." + i + "." + j, pieceSpawnYBig[i][j]);
 			}
-			p.setProperty(id + ".ruleopt.pieceColor." + i, pieceColor[i]);
-			p.setProperty(id + ".ruleopt.pieceDefaultDirection." + i, pieceDefaultDirection[i]);
+			p.setProperty("pieceColor." + i, pieceColor[i]);
+			p.setProperty("pieceDefaultDirection." + i, pieceDefaultDirection[i]);
 		}
-		p.setProperty(id + ".ruleopt.pieceEnterAboveField", pieceEnterAboveField);
-		p.setProperty(id + ".ruleopt.pieceEnterMaxDistanceY", pieceEnterMaxDistanceY);
+		p.setProperty("pieceEnterAboveField", pieceEnterAboveField);
+		p.setProperty("pieceEnterMaxDistanceY", pieceEnterMaxDistanceY);
 
-		p.setProperty(id + ".ruleopt.fieldWidth", fieldWidth);
-		p.setProperty(id + ".ruleopt.fieldHeight", fieldHeight);
-		p.setProperty(id + ".ruleopt.fieldHiddenHeight", fieldHiddenHeight);
-		p.setProperty(id + ".ruleopt.fieldCeiling", fieldCeiling);
-		p.setProperty(id + ".ruleopt.fieldLockoutDeath", fieldLockoutDeath);
-		p.setProperty(id + ".ruleopt.fieldPartialLockoutDeath", fieldPartialLockoutDeath);
+		p.setProperty("fieldWidth", fieldWidth);
+		p.setProperty("fieldHeight", fieldHeight);
+		p.setProperty("fieldHiddenHeight", fieldHiddenHeight);
+		p.setProperty("fieldCeiling", fieldCeiling);
+		p.setProperty("fieldLockoutDeath", fieldLockoutDeath);
+		p.setProperty("fieldPartialLockoutDeath", fieldPartialLockoutDeath);
 
-		p.setProperty(id + ".ruleopt.nextDisplay", nextDisplay);
+		p.setProperty("nextDisplay", nextDisplay);
 
-		p.setProperty(id + ".ruleopt.holdEnable", holdEnable);
-		p.setProperty(id + ".ruleopt.holdInitial", holdInitial);
-		p.setProperty(id + ".ruleopt.holdInitialLimit", holdInitialLimit);
-		p.setProperty(id + ".ruleopt.holdResetDirection", holdResetDirection);
-		p.setProperty(id + ".ruleopt.holdLimit", holdLimit);
+		p.setProperty("holdEnable", holdEnable);
+		p.setProperty("holdInitial", holdInitial);
+		p.setProperty("holdInitialLimit", holdInitialLimit);
+		p.setProperty("holdResetDirection", holdResetDirection);
+		p.setProperty("holdLimit", holdLimit);
 
-		p.setProperty(id + ".ruleopt.harddropEnable", harddropEnable);
-		p.setProperty(id + ".ruleopt.harddropLock", harddropLock);
-		p.setProperty(id + ".ruleopt.harddropLimit", harddropLimit);
+		p.setProperty("harddropEnable", harddropEnable);
+		p.setProperty("harddropLock", harddropLock);
+		p.setProperty("harddropLimit", harddropLimit);
 
-		p.setProperty(id + ".ruleopt.softdropEnable", softdropEnable);
-		p.setProperty(id + ".ruleopt.softdropLock", softdropLock);
-		p.setProperty(id + ".ruleopt.softdropLimit", softdropLimit);
-		p.setProperty(id + ".ruleopt.softdropSurfaceLock", softdropSurfaceLock);
-		p.setProperty(id + ".ruleopt.softdropSpeed", softdropSpeed);
-		p.setProperty(id + ".ruleopt.softdropMultiplyNativeSpeed", softdropMultiplyNativeSpeed);
-		p.setProperty(id + ".ruleopt.softdropGravitySpeedLimit", softdropGravitySpeedLimit);
+		p.setProperty("softdropEnable", softdropEnable);
+		p.setProperty("softdropLock", softdropLock);
+		p.setProperty("softdropLimit", softdropLimit);
+		p.setProperty("softdropSurfaceLock", softdropSurfaceLock);
+		p.setProperty("softdropSpeed", softdropSpeed);
+		p.setProperty("softdropMultiplyNativeSpeed", softdropMultiplyNativeSpeed);
+		p.setProperty("softdropGravitySpeedLimit", softdropGravitySpeedLimit);
 
-		p.setProperty(id + ".ruleopt.rotateInitial", rotateInitial);
-		p.setProperty(id + ".ruleopt.rotateInitialLimit", rotateInitialLimit);
-		p.setProperty(id + ".ruleopt.rotateWallkick", rotateWallkick);
-		p.setProperty(id + ".ruleopt.rotateInitialWallkick", rotateInitialWallkick);
-		p.setProperty(id + ".ruleopt.rotateMaxUpwardWallkick", rotateMaxUpwardWallkick);
-		p.setProperty(id + ".ruleopt.rotateButtonDefaultRight", rotateButtonDefaultRight);
-		p.setProperty(id + ".ruleopt.rotateButtonAllowReverse", rotateButtonAllowReverse);
-		p.setProperty(id + ".ruleopt.rotateButtonAllowDouble", rotateButtonAllowDouble);
+		p.setProperty("rotateInitial", rotateInitial);
+		p.setProperty("rotateInitialLimit", rotateInitialLimit);
+		p.setProperty("rotateWallkick", rotateWallkick);
+		p.setProperty("rotateInitialWallkick", rotateInitialWallkick);
+		p.setProperty("rotateMaxUpwardWallkick", rotateMaxUpwardWallkick);
+		p.setProperty("rotateButtonDefaultRight", rotateButtonDefaultRight);
+		p.setProperty("rotateButtonAllowReverse", rotateButtonAllowReverse);
+		p.setProperty("rotateButtonAllowDouble", rotateButtonAllowDouble);
 
-		p.setProperty(id + ".ruleopt.lockresetFall", lockresetFall);
-		p.setProperty(id + ".ruleopt.lockresetMove", lockresetMove);
-		p.setProperty(id + ".ruleopt.lockresetRotate", lockresetRotate);
-		p.setProperty(id + ".ruleopt.lockresetWallkick", lockresetWallkick);
-		p.setProperty(id + ".ruleopt.lockresetLimitMove", lockresetLimitMove);
-		p.setProperty(id + ".ruleopt.lockresetLimitRotate", lockresetLimitRotate);
-		p.setProperty(id + ".ruleopt.lockresetLimitShareCount", lockresetLimitShareCount);
-		p.setProperty(id + ".ruleopt.lockresetLimitOver", lockresetLimitOver);
+		p.setProperty("lockresetFall", lockresetFall);
+		p.setProperty("lockresetMove", lockresetMove);
+		p.setProperty("lockresetRotate", lockresetRotate);
+		p.setProperty("lockresetWallkick", lockresetWallkick);
+		p.setProperty("lockresetLimitMove", lockresetLimitMove);
+		p.setProperty("lockresetLimitRotate", lockresetLimitRotate);
+		p.setProperty("lockresetLimitShareCount", lockresetLimitShareCount);
+		p.setProperty("lockresetLimitOver", lockresetLimitOver);
 
-		p.setProperty(id + ".ruleopt.lockflash", lockflash);
-		p.setProperty(id + ".ruleopt.lockflashOnlyFrame", lockflashOnlyFrame);
-		p.setProperty(id + ".ruleopt.lockflashBeforeLineClear", lockflashBeforeLineClear);
-		p.setProperty(id + ".ruleopt.areCancelMove", areCancelMove);
-		p.setProperty(id + ".ruleopt.areCancelRotate", areCancelRotate);
-		p.setProperty(id + ".ruleopt.areCancelHold", areCancelHold);
+		p.setProperty("lockflash", lockflash);
+		p.setProperty("lockflashOnlyFrame", lockflashOnlyFrame);
+		p.setProperty("lockflashBeforeLineClear", lockflashBeforeLineClear);
+		p.setProperty("areCancelMove", areCancelMove);
+		p.setProperty("areCancelRotate", areCancelRotate);
+		p.setProperty("areCancelHold", areCancelHold);
 
-		p.setProperty(id + ".ruleopt.minARE", minARE);
-		p.setProperty(id + ".ruleopt.maxARE", maxARE);
-		p.setProperty(id + ".ruleopt.minARELine", minARELine);
-		p.setProperty(id + ".ruleopt.maxARELine", maxARELine);
-		p.setProperty(id + ".ruleopt.minLineDelay", minLineDelay);
-		p.setProperty(id + ".ruleopt.maxLineDelay", maxLineDelay);
-		p.setProperty(id + ".ruleopt.minLockDelay", minLockDelay);
-		p.setProperty(id + ".ruleopt.maxLockDelay", maxLockDelay);
-		p.setProperty(id + ".ruleopt.minDAS", minDAS);
-		p.setProperty(id + ".ruleopt.maxDAS", maxDAS);
+		p.setProperty("minARE", minARE);
+		p.setProperty("maxARE", maxARE);
+		p.setProperty("minARELine", minARELine);
+		p.setProperty("maxARELine", maxARELine);
+		p.setProperty("minLineDelay", minLineDelay);
+		p.setProperty("maxLineDelay", maxLineDelay);
+		p.setProperty("minLockDelay", minLockDelay);
+		p.setProperty("maxLockDelay", maxLockDelay);
+		p.setProperty("minDAS", minDAS);
+		p.setProperty("maxDAS", maxDAS);
 
-		p.setProperty(id + ".ruleopt.dasDelay", dasDelay);
+		p.setProperty("dasDelay", dasDelay);
 
-		p.setProperty(id + ".ruleopt.shiftLockEnable", shiftLockEnable);
+		p.setProperty("shiftLockEnable", shiftLockEnable);
 
-		p.setProperty(id + ".ruleopt.dasInReady", dasInReady);
-		p.setProperty(id + ".ruleopt.dasInMoveFirstFrame", dasInMoveFirstFrame);
-		p.setProperty(id + ".ruleopt.dasInLockFlash", dasInLockFlash);
-		p.setProperty(id + ".ruleopt.dasInLineClear", dasInLineClear);
-		p.setProperty(id + ".ruleopt.dasInARE", dasInARE);
-		p.setProperty(id + ".ruleopt.dasInARELastFrame", dasInARELastFrame);
-		p.setProperty(id + ".ruleopt.dasInEndingStart", dasInEndingStart);
-		p.setProperty(id + ".ruleopt.dasOnBlockedMove", dasChargeOnBlockedMove);
-		p.setProperty(id + ".ruleopt.dasStoreChargeOnNeutral", dasStoreChargeOnNeutral);
-		p.setProperty(id + ".ruleopt.dasRedirectInARE", dasRedirectInDelay);
+		p.setProperty("dasInReady", dasInReady);
+		p.setProperty("dasInMoveFirstFrame", dasInMoveFirstFrame);
+		p.setProperty("dasInLockFlash", dasInLockFlash);
+		p.setProperty("dasInLineClear", dasInLineClear);
+		p.setProperty("dasInARE", dasInARE);
+		p.setProperty("dasInARELastFrame", dasInARELastFrame);
+		p.setProperty("dasInEndingStart", dasInEndingStart);
+		p.setProperty("dasOnBlockedMove", dasChargeOnBlockedMove);
+		p.setProperty("dasStoreChargeOnNeutral", dasStoreChargeOnNeutral);
+		p.setProperty("dasRedirectInARE", dasRedirectInDelay);
 
-		p.setProperty(id + ".ruleopt.moveFirstFrame", moveFirstFrame);
-		p.setProperty(id + ".ruleopt.moveDiagonal", moveDiagonal);
-		p.setProperty(id + ".ruleopt.moveUpAndDown", moveUpAndDown);
-		p.setProperty(id + ".ruleopt.moveLeftAndRightAllow", moveLeftAndRightAllow);
-		p.setProperty(id + ".ruleopt.moveLeftAndRightUsePreviousInput", moveLeftAndRightUsePreviousInput);
+		p.setProperty("moveFirstFrame", moveFirstFrame);
+		p.setProperty("moveDiagonal", moveDiagonal);
+		p.setProperty("moveUpAndDown", moveUpAndDown);
+		p.setProperty("moveLeftAndRightAllow", moveLeftAndRightAllow);
+		p.setProperty("moveLeftAndRightUsePreviousInput", moveLeftAndRightUsePreviousInput);
 
-		p.setProperty(id + ".ruleopt.lineFallAnim", lineFallAnim);
-		p.setProperty(id + ".ruleopt.lineCancelMove", lineCancelMove);
-		p.setProperty(id + ".ruleopt.lineCancelRotate", lineCancelRotate);
-		p.setProperty(id + ".ruleopt.lineCancelHold", lineCancelHold);
+		p.setProperty("lineFallAnim", lineFallAnim);
+		p.setProperty("lineCancelMove", lineCancelMove);
+		p.setProperty("lineCancelRotate", lineCancelRotate);
+		p.setProperty("lineCancelHold", lineCancelHold);
 
-		p.setProperty(id + ".ruleopt.skin", skin);
-		p.setProperty(id + ".ruleopt.ghost", ghost);
+		p.setProperty("skin", skin);
+		p.setProperty("ghost", ghost);
 	}
 
 	/**
@@ -826,116 +827,117 @@ public class RuleOptions implements Serializable {
 	 * @param id Player IDOrPresetID
 	 */
 	public void readProperty(CustomProperties p, int id) {
-		strRuleName = p.getProperty(id + ".ruleopt.strRuleName", strRuleName);
-		strWallkick = p.getProperty(id + ".ruleopt.strWallkick", strWallkick);
-		strRandomizer = p.getProperty(id + ".ruleopt.strRandomizer", strRandomizer);
+		p = p.subProperties(id + ".ruleopt.");
+		strRuleName = p.getProperty("strRuleName", strRuleName);
+		strWallkick = p.getProperty("strWallkick", strWallkick);
+		strRandomizer = p.getProperty("strRandomizer", strRandomizer);
 
-		style = p.getProperty(id + ".ruleopt.style", 0);
+		style = p.getProperty("style", 0);
 
 		for(int i = 0; i < Piece.PIECE_COUNT; i++) {
 			for(int j = 0; j < Piece.DIRECTION_COUNT; j++) {
-				pieceOffsetX[i][j] = p.getProperty(id + ".ruleopt.pieceOffsetX." + i + "." + j, pieceOffsetX[i][j]);
-				pieceOffsetY[i][j] = p.getProperty(id + ".ruleopt.pieceOffsetY." + i + "." + j, pieceOffsetY[i][j]);
-				pieceSpawnX[i][j] = p.getProperty(id + ".ruleopt.pieceSpawnX." + i + "." + j, pieceSpawnX[i][j]);
-				pieceSpawnY[i][j] = p.getProperty(id + ".ruleopt.pieceSpawnY." + i + "." + j, pieceSpawnY[i][j]);
-				pieceSpawnXBig[i][j] = p.getProperty(id + ".ruleopt.pieceSpawnXBig." + i + "." + j, pieceSpawnXBig[i][j]);
-				pieceSpawnYBig[i][j] = p.getProperty(id + ".ruleopt.pieceSpawnYBig." + i + "." + j, pieceSpawnYBig[i][j]);
+				pieceOffsetX[i][j] = p.getProperty("pieceOffsetX." + i + "." + j, pieceOffsetX[i][j]);
+				pieceOffsetY[i][j] = p.getProperty("pieceOffsetY." + i + "." + j, pieceOffsetY[i][j]);
+				pieceSpawnX[i][j] = p.getProperty("pieceSpawnX." + i + "." + j, pieceSpawnX[i][j]);
+				pieceSpawnY[i][j] = p.getProperty("pieceSpawnY." + i + "." + j, pieceSpawnY[i][j]);
+				pieceSpawnXBig[i][j] = p.getProperty("pieceSpawnXBig." + i + "." + j, pieceSpawnXBig[i][j]);
+				pieceSpawnYBig[i][j] = p.getProperty("pieceSpawnYBig." + i + "." + j, pieceSpawnYBig[i][j]);
 			}
-			pieceColor[i] = p.getProperty(id + ".ruleopt.pieceColor." + i, pieceColor[i]);
-			pieceDefaultDirection[i] = p.getProperty(id + ".ruleopt.pieceDefaultDirection." + i, pieceDefaultDirection[i]);
+			pieceColor[i] = p.getProperty("pieceColor." + i, pieceColor[i]);
+			pieceDefaultDirection[i] = p.getProperty("pieceDefaultDirection." + i, pieceDefaultDirection[i]);
 		}
-		pieceEnterAboveField = p.getProperty(id + ".ruleopt.pieceEnterAboveField", pieceEnterAboveField);
-		pieceEnterMaxDistanceY = p.getProperty(id + ".ruleopt.pieceEnterMaxDistanceY", pieceEnterMaxDistanceY);
+		pieceEnterAboveField = p.getProperty("pieceEnterAboveField", pieceEnterAboveField);
+		pieceEnterMaxDistanceY = p.getProperty("pieceEnterMaxDistanceY", pieceEnterMaxDistanceY);
 
-		fieldWidth = p.getProperty(id + ".ruleopt.fieldWidth", fieldWidth);
-		fieldHeight = p.getProperty(id + ".ruleopt.fieldHeight", fieldHeight);
-		fieldHiddenHeight = p.getProperty(id + ".ruleopt.fieldHiddenHeight", fieldHiddenHeight);
-		fieldCeiling = p.getProperty(id + ".ruleopt.fieldCeiling", fieldCeiling);
-		fieldLockoutDeath = p.getProperty(id + ".ruleopt.fieldLockoutDeath", fieldLockoutDeath);
-		fieldPartialLockoutDeath = p.getProperty(id + ".ruleopt.fieldPartialLockoutDeath", fieldPartialLockoutDeath);
+		fieldWidth = p.getProperty("fieldWidth", fieldWidth);
+		fieldHeight = p.getProperty("fieldHeight", fieldHeight);
+		fieldHiddenHeight = p.getProperty("fieldHiddenHeight", fieldHiddenHeight);
+		fieldCeiling = p.getProperty("fieldCeiling", fieldCeiling);
+		fieldLockoutDeath = p.getProperty("fieldLockoutDeath", fieldLockoutDeath);
+		fieldPartialLockoutDeath = p.getProperty("fieldPartialLockoutDeath", fieldPartialLockoutDeath);
 
-		nextDisplay = p.getProperty(id + ".ruleopt.nextDisplay", nextDisplay);
+		nextDisplay = p.getProperty("nextDisplay", nextDisplay);
 
-		holdEnable = p.getProperty(id + ".ruleopt.holdEnable", holdEnable);
-		holdInitial = p.getProperty(id + ".ruleopt.holdInitial", holdInitial);
-		holdInitialLimit = p.getProperty(id + ".ruleopt.holdInitialLimit", holdInitialLimit);
-		holdResetDirection = p.getProperty(id + ".ruleopt.holdResetDirection", holdResetDirection);
-		holdLimit = p.getProperty(id + ".ruleopt.holdLimit", holdLimit);
+		holdEnable = p.getProperty("holdEnable", holdEnable);
+		holdInitial = p.getProperty("holdInitial", holdInitial);
+		holdInitialLimit = p.getProperty("holdInitialLimit", holdInitialLimit);
+		holdResetDirection = p.getProperty("holdResetDirection", holdResetDirection);
+		holdLimit = p.getProperty("holdLimit", holdLimit);
 
-		harddropEnable = p.getProperty(id + ".ruleopt.harddropEnable", harddropEnable);
-		harddropLock = p.getProperty(id + ".ruleopt.harddropLock", harddropLock);
-		harddropLimit = p.getProperty(id + ".ruleopt.harddropLimit", harddropLimit);
+		harddropEnable = p.getProperty("harddropEnable", harddropEnable);
+		harddropLock = p.getProperty("harddropLock", harddropLock);
+		harddropLimit = p.getProperty("harddropLimit", harddropLimit);
 
-		softdropEnable = p.getProperty(id + ".ruleopt.softdropEnable", softdropEnable);
-		softdropLock = p.getProperty(id + ".ruleopt.softdropLock", softdropLock);
-		softdropLimit = p.getProperty(id + ".ruleopt.softdropLimit", softdropLimit);
-		softdropSurfaceLock = p.getProperty(id + ".ruleopt.softdropSurfaceLock", softdropSurfaceLock);
-		softdropSpeed = p.getProperty(id + ".ruleopt.softdropSpeed", softdropSpeed);
-		softdropMultiplyNativeSpeed = p.getProperty(id + ".ruleopt.softdropMultiplyNativeSpeed", softdropMultiplyNativeSpeed);
-		softdropGravitySpeedLimit = p.getProperty(id + ".ruleopt.softdropGravitySpeedLimit", softdropGravitySpeedLimit);
+		softdropEnable = p.getProperty("softdropEnable", softdropEnable);
+		softdropLock = p.getProperty("softdropLock", softdropLock);
+		softdropLimit = p.getProperty("softdropLimit", softdropLimit);
+		softdropSurfaceLock = p.getProperty("softdropSurfaceLock", softdropSurfaceLock);
+		softdropSpeed = p.getProperty("softdropSpeed", softdropSpeed);
+		softdropMultiplyNativeSpeed = p.getProperty("softdropMultiplyNativeSpeed", softdropMultiplyNativeSpeed);
+		softdropGravitySpeedLimit = p.getProperty("softdropGravitySpeedLimit", softdropGravitySpeedLimit);
 
-		rotateInitial = p.getProperty(id + ".ruleopt.rotateInitial", rotateInitial);
-		rotateInitialLimit = p.getProperty(id + ".ruleopt.rotateInitialLimit", rotateInitialLimit);
-		rotateWallkick = p.getProperty(id + ".ruleopt.rotateWallkick", rotateWallkick);
-		rotateInitialWallkick = p.getProperty(id + ".ruleopt.rotateInitialWallkick", rotateInitialWallkick);
-		rotateMaxUpwardWallkick = p.getProperty(id + ".ruleopt.rotateMaxUpwardWallkick", rotateMaxUpwardWallkick);
-		rotateButtonDefaultRight = p.getProperty(id + ".ruleopt.rotateButtonDefaultRight", rotateButtonDefaultRight);
-		rotateButtonAllowReverse = p.getProperty(id + ".ruleopt.rotateButtonAllowReverse", rotateButtonAllowReverse);
-		rotateButtonAllowDouble = p.getProperty(id + ".ruleopt.rotateButtonAllowDouble", rotateButtonAllowDouble);
+		rotateInitial = p.getProperty("rotateInitial", rotateInitial);
+		rotateInitialLimit = p.getProperty("rotateInitialLimit", rotateInitialLimit);
+		rotateWallkick = p.getProperty("rotateWallkick", rotateWallkick);
+		rotateInitialWallkick = p.getProperty("rotateInitialWallkick", rotateInitialWallkick);
+		rotateMaxUpwardWallkick = p.getProperty("rotateMaxUpwardWallkick", rotateMaxUpwardWallkick);
+		rotateButtonDefaultRight = p.getProperty("rotateButtonDefaultRight", rotateButtonDefaultRight);
+		rotateButtonAllowReverse = p.getProperty("rotateButtonAllowReverse", rotateButtonAllowReverse);
+		rotateButtonAllowDouble = p.getProperty("rotateButtonAllowDouble", rotateButtonAllowDouble);
 
-		lockresetFall = p.getProperty(id + ".ruleopt.lockresetFall", lockresetFall);
-		lockresetMove = p.getProperty(id + ".ruleopt.lockresetMove", lockresetMove);
-		lockresetRotate = p.getProperty(id + ".ruleopt.lockresetRotate", lockresetRotate);
-		lockresetWallkick = p.getProperty(id + ".ruleopt.lockresetWallkick", lockresetWallkick);
-		lockresetLimitMove = p.getProperty(id + ".ruleopt.lockresetLimitMove", lockresetLimitMove);
-		lockresetLimitRotate = p.getProperty(id + ".ruleopt.lockresetLimitRotate", lockresetLimitRotate);
-		lockresetLimitShareCount = p.getProperty(id + ".ruleopt.lockresetLimitShareCount", lockresetLimitShareCount);
-		lockresetLimitOver = p.getProperty(id + ".ruleopt.lockresetLimitOver", lockresetLimitOver);
+		lockresetFall = p.getProperty("lockresetFall", lockresetFall);
+		lockresetMove = p.getProperty("lockresetMove", lockresetMove);
+		lockresetRotate = p.getProperty("lockresetRotate", lockresetRotate);
+		lockresetWallkick = p.getProperty("lockresetWallkick", lockresetWallkick);
+		lockresetLimitMove = p.getProperty("lockresetLimitMove", lockresetLimitMove);
+		lockresetLimitRotate = p.getProperty("lockresetLimitRotate", lockresetLimitRotate);
+		lockresetLimitShareCount = p.getProperty("lockresetLimitShareCount", lockresetLimitShareCount);
+		lockresetLimitOver = p.getProperty("lockresetLimitOver", lockresetLimitOver);
 
-		lockflash = p.getProperty(id + ".ruleopt.lockflash", lockflash);
-		lockflashOnlyFrame = p.getProperty(id + ".ruleopt.lockflashOnlyFrame", lockflashOnlyFrame);
-		lockflashBeforeLineClear = p.getProperty(id + ".ruleopt.lockflashBeforeLineClear", lockflashBeforeLineClear);
-		areCancelMove = p.getProperty(id + ".ruleopt.areCancelMove", areCancelMove);
-		areCancelRotate = p.getProperty(id + ".ruleopt.areCancelRotate", areCancelRotate);
-		areCancelHold = p.getProperty(id + ".ruleopt.areCancelHold", areCancelHold);
+		lockflash = p.getProperty("lockflash", lockflash);
+		lockflashOnlyFrame = p.getProperty("lockflashOnlyFrame", lockflashOnlyFrame);
+		lockflashBeforeLineClear = p.getProperty("lockflashBeforeLineClear", lockflashBeforeLineClear);
+		areCancelMove = p.getProperty("areCancelMove", areCancelMove);
+		areCancelRotate = p.getProperty("areCancelRotate", areCancelRotate);
+		areCancelHold = p.getProperty("areCancelHold", areCancelHold);
 
-		minARE = p.getProperty(id + ".ruleopt.minARE", minARE);
-		maxARE = p.getProperty(id + ".ruleopt.maxARE", maxARE);
-		minARELine = p.getProperty(id + ".ruleopt.minARELine", minARELine);
-		maxARELine = p.getProperty(id + ".ruleopt.maxARELine", maxARELine);
-		minLineDelay = p.getProperty(id + ".ruleopt.minLineDelay", minLineDelay);
-		maxLineDelay = p.getProperty(id + ".ruleopt.maxLineDelay", maxLineDelay);
-		minLockDelay = p.getProperty(id + ".ruleopt.minLockDelay", minLockDelay);
-		maxLockDelay = p.getProperty(id + ".ruleopt.maxLockDelay", maxLockDelay);
-		minDAS = p.getProperty(id + ".ruleopt.minDAS", minDAS);
-		maxDAS = p.getProperty(id + ".ruleopt.maxDAS", maxDAS);
+		minARE = p.getProperty("minARE", minARE);
+		maxARE = p.getProperty("maxARE", maxARE);
+		minARELine = p.getProperty("minARELine", minARELine);
+		maxARELine = p.getProperty("maxARELine", maxARELine);
+		minLineDelay = p.getProperty("minLineDelay", minLineDelay);
+		maxLineDelay = p.getProperty("maxLineDelay", maxLineDelay);
+		minLockDelay = p.getProperty("minLockDelay", minLockDelay);
+		maxLockDelay = p.getProperty("maxLockDelay", maxLockDelay);
+		minDAS = p.getProperty("minDAS", minDAS);
+		maxDAS = p.getProperty("maxDAS", maxDAS);
 
-		dasDelay = p.getProperty(id + ".ruleopt.dasDelay", dasDelay);
-		shiftLockEnable = p.getProperty(id + ".ruleopt.shiftLockEnable", shiftLockEnable);
+		dasDelay = p.getProperty("dasDelay", dasDelay);
+		shiftLockEnable = p.getProperty("shiftLockEnable", shiftLockEnable);
 
-		dasInReady = p.getProperty(id + ".ruleopt.dasInReady", dasInReady);
-		dasInMoveFirstFrame = p.getProperty(id + ".ruleopt.dasInMoveFirstFrame", dasInMoveFirstFrame);
-		dasInLockFlash = p.getProperty(id + ".ruleopt.dasInLockFlash", dasInLockFlash);
-		dasInLineClear = p.getProperty(id + ".ruleopt.dasInLineClear", dasInLineClear);
-		dasInARE = p.getProperty(id + ".ruleopt.dasInARE", dasInARE);
-		dasInARELastFrame = p.getProperty(id + ".ruleopt.dasInARELastFrame", dasInARELastFrame);
-		dasInEndingStart = p.getProperty(id + ".ruleopt.dasInEndingStart", dasInEndingStart);
-		dasChargeOnBlockedMove = p.getProperty(id + ".ruleopt.dasOnBlockedMove", dasChargeOnBlockedMove);
-		dasStoreChargeOnNeutral = p.getProperty(id + ".ruleopt.dasStoreChargeOnNeutral", dasStoreChargeOnNeutral);
-		dasRedirectInDelay = p.getProperty(id + ".ruleopt.dasRedirectInARE", dasRedirectInDelay);
+		dasInReady = p.getProperty("dasInReady", dasInReady);
+		dasInMoveFirstFrame = p.getProperty("dasInMoveFirstFrame", dasInMoveFirstFrame);
+		dasInLockFlash = p.getProperty("dasInLockFlash", dasInLockFlash);
+		dasInLineClear = p.getProperty("dasInLineClear", dasInLineClear);
+		dasInARE = p.getProperty("dasInARE", dasInARE);
+		dasInARELastFrame = p.getProperty("dasInARELastFrame", dasInARELastFrame);
+		dasInEndingStart = p.getProperty("dasInEndingStart", dasInEndingStart);
+		dasChargeOnBlockedMove = p.getProperty("dasOnBlockedMove", dasChargeOnBlockedMove);
+		dasStoreChargeOnNeutral = p.getProperty("dasStoreChargeOnNeutral", dasStoreChargeOnNeutral);
+		dasRedirectInDelay = p.getProperty("dasRedirectInARE", dasRedirectInDelay);
 
-		moveFirstFrame = p.getProperty(id + ".ruleopt.moveFirstFrame", moveFirstFrame);
-		moveDiagonal = p.getProperty(id + ".ruleopt.moveDiagonal", moveDiagonal);
-		moveUpAndDown = p.getProperty(id + ".ruleopt.moveUpAndDown", moveUpAndDown);
-		moveLeftAndRightAllow = p.getProperty(id + ".ruleopt.moveLeftAndRightAllow", moveLeftAndRightAllow);
-		moveLeftAndRightUsePreviousInput = p.getProperty(id + ".ruleopt.moveLeftAndRightUsePreviousInput", moveLeftAndRightUsePreviousInput);
+		moveFirstFrame = p.getProperty("moveFirstFrame", moveFirstFrame);
+		moveDiagonal = p.getProperty("moveDiagonal", moveDiagonal);
+		moveUpAndDown = p.getProperty("moveUpAndDown", moveUpAndDown);
+		moveLeftAndRightAllow = p.getProperty("moveLeftAndRightAllow", moveLeftAndRightAllow);
+		moveLeftAndRightUsePreviousInput = p.getProperty("moveLeftAndRightUsePreviousInput", moveLeftAndRightUsePreviousInput);
 
-		lineFallAnim = p.getProperty(id + ".ruleopt.lineFallAnim", lineFallAnim);
-		lineCancelMove = p.getProperty(id + ".ruleopt.lineCancelMove", lineCancelMove);
-		lineCancelRotate = p.getProperty(id + ".ruleopt.lineCancelRotate", lineCancelRotate);
-		lineCancelHold = p.getProperty(id + ".ruleopt.lineCancelHold", lineCancelHold);
+		lineFallAnim = p.getProperty("lineFallAnim", lineFallAnim);
+		lineCancelMove = p.getProperty("lineCancelMove", lineCancelMove);
+		lineCancelRotate = p.getProperty("lineCancelRotate", lineCancelRotate);
+		lineCancelHold = p.getProperty("lineCancelHold", lineCancelHold);
 
-		skin = p.getProperty(id + ".ruleopt.skin", skin);
-		ghost = p.getProperty(id + ".ruleopt.ghost", ghost);
+		skin = p.getProperty("skin", skin);
+		ghost = p.getProperty("ghost", ghost);
 	}
 }

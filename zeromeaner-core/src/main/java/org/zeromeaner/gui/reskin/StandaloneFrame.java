@@ -47,12 +47,18 @@ import org.zeromeaner.gui.knet.KNetPanelEvent;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.Localization;
+import org.zeromeaner.util.Options;
 import org.zeromeaner.util.ResourceFileSystemView;
 import org.zeromeaner.util.ResourceInputStream;
+import org.zeromeaner.util.Options.AIOptions;
+import org.zeromeaner.util.Options.PlayerOptions;
+import org.zeromeaner.util.Options.TuningOptions;
 
 import static org.zeromeaner.util.Options.GLOBAL_PROPERTIES;
 import static org.zeromeaner.util.Options.GUI_PROPERTIES;
 import static org.zeromeaner.util.Options.RUNTIME_PROPERTIES;
+
+import static org.zeromeaner.util.Options.player;
 
 public class StandaloneFrame extends JFrame {
 	private static final Logger log = Logger.getLogger(StandaloneFrame.class);
@@ -473,21 +479,23 @@ public class StandaloneFrame extends JFrame {
 			gameManager.init();
 			
 			// Tuning
-			gameManager.engine[0].owRotateButtonDefaultRight = StandaloneMain.propConfig.getProperty(0 + ".tuning.owRotateButtonDefaultRight", -1);
-			gameManager.engine[0].owSkin = StandaloneMain.propConfig.getProperty(0 + ".tuning.owSkin", -1);
-			gameManager.engine[0].owMinDAS = StandaloneMain.propConfig.getProperty(0 + ".tuning.owMinDAS", -1);
-			gameManager.engine[0].owMaxDAS = StandaloneMain.propConfig.getProperty(0 + ".tuning.owMaxDAS", -1);
-			gameManager.engine[0].owDasDelay = StandaloneMain.propConfig.getProperty(0 + ".tuning.owDasDelay", -1);
-			gameManager.engine[0].owReverseUpDown = StandaloneMain.propConfig.getProperty(0 + ".tuning.owReverseUpDown", false);
-			gameManager.engine[0].owMoveDiagonal = StandaloneMain.propConfig.getProperty(0 + ".tuning.owMoveDiagonal", -1);
-			gameManager.engine[0].owBlockOutlineType = StandaloneMain.propConfig.getProperty(0 + ".tuning.owBlockOutlineType", -1);
-			gameManager.engine[0].owBlockShowOutlineOnly = StandaloneMain.propConfig.getProperty(0 + ".tuning.owBlockShowOutlineOnly", -1);
+			TuningOptions tune = player(0).tuning;
+			
+			gameManager.engine[0].owRotateButtonDefaultRight = tune.ROTATE_BUTTON_DEFAULT_RIGHT.value();
+			gameManager.engine[0].owSkin = tune.SKIN.value();
+			gameManager.engine[0].owMinDAS = tune.MIN_DAS.value();
+			gameManager.engine[0].owMaxDAS = tune.MAX_DAS.value();
+			gameManager.engine[0].owDasDelay = tune.DAS_DELAY.value();
+			gameManager.engine[0].owReverseUpDown = tune.REVERSE_UP_DOWN.value();
+			gameManager.engine[0].owMoveDiagonal = tune.MOVE_DIAGONAL.value();
+			gameManager.engine[0].owBlockOutlineType = tune.BLOCK_OUTLINE_TYPE.value();
+			gameManager.engine[0].owBlockShowOutlineOnly = tune.BLOCK_SHOW_OUTLINE_ONLY.value();
 
 			// Rule
 			RuleOptions ruleopt = null;
-			String rulename = StandaloneMain.propConfig.getProperty(0 + ".rule", "");
+			String rulename = player(0).RULE_NAME.value();
 			if(gameManager.mode.getGameStyle() > 0) {
-				rulename = StandaloneMain.propConfig.getProperty(0 + ".rule." + gameManager.mode.getGameStyle(), "");
+				rulename = player(0).RULE_NAME_FOR_STYLE(gameManager.mode.getGameStyle()).value();
 			}
 			if((rulename != null) && (rulename.length() > 0)) {
 				log.info("Load rule options from " + rulename);
@@ -495,7 +503,7 @@ public class StandaloneFrame extends JFrame {
 			} else {
 				log.info("Load rule options from setting file");
 				ruleopt = new RuleOptions();
-				ruleopt.readProperty(StandaloneMain.propConfig, 0);
+				ruleopt.readProperty(Options.GLOBAL_PROPERTIES, 0);
 			}
 			gameManager.engine[0].ruleopt = ruleopt;
 
@@ -512,18 +520,19 @@ public class StandaloneFrame extends JFrame {
 			}
 
 			// AI
-			String aiName = StandaloneMain.propConfig.getProperty(0 + ".ai", "");
+			String aiName = player(0).ai.NAME.value();
 			if(aiName.length() > 0) {
 				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
+				AIOptions ai = player(0).ai;
 				gameManager.engine[0].ai = aiObj;
-				gameManager.engine[0].aiMoveDelay = StandaloneMain.propConfig.getProperty(0 + ".aiMoveDelay", 0);
-				gameManager.engine[0].aiThinkDelay = StandaloneMain.propConfig.getProperty(0 + ".aiThinkDelay", 0);
-				gameManager.engine[0].aiUseThread = StandaloneMain.propConfig.getProperty(0 + ".aiUseThread", true);
-				gameManager.engine[0].aiShowHint = StandaloneMain.propConfig.getProperty(0+".aiShowHint", false);
-				gameManager.engine[0].aiPrethink = StandaloneMain.propConfig.getProperty(0+".aiPrethink", false);
-				gameManager.engine[0].aiShowState = StandaloneMain.propConfig.getProperty(0+".aiShowState", false);
+				gameManager.engine[0].aiMoveDelay = ai.MOVE_DELAY.value();
+				gameManager.engine[0].aiThinkDelay = ai.THINK_DELAY.value();
+				gameManager.engine[0].aiUseThread = ai.USE_THREAD.value();
+				gameManager.engine[0].aiShowHint = ai.SHOW_HINT.value();
+				gameManager.engine[0].aiPrethink = ai.PRETHINK.value();
+				gameManager.engine[0].aiShowState = ai.SHOW_STATE.value();
 			}
-			gameManager.showInput = StandaloneMain.propConfig.getProperty("option.showInput", false);
+			gameManager.showInput = Options.standalone().SHOW_INPUT.value();
 
 			// Initialization for each player
 			for(int i = 0; i < gameManager.getPlayers(); i++) {
@@ -560,7 +569,7 @@ public class StandaloneFrame extends JFrame {
 		setReplayUrl(null);
 		
 		// Mode
-		String modeName = StandaloneMain.propConfig.getProperty("name.mode", "");
+		String modeName = Options.general().MODE_NAME.value();
 		GameMode modeObj = StandaloneMain.modeManager.get(modeName);
 		if(modeObj == null) {
 			log.error("Couldn't find mode:" + modeName);
@@ -574,23 +583,26 @@ public class StandaloneFrame extends JFrame {
 		// Initialization for each player
 		for(int i = 0; i < gameManager.getPlayers(); i++) {
 			// Tuning settings
-			gameManager.engine[i].owRotateButtonDefaultRight = StandaloneMain.propConfig.getProperty(i + ".tuning.owRotateButtonDefaultRight", -1);
-			gameManager.engine[i].owSkin = StandaloneMain.propConfig.getProperty(i + ".tuning.owSkin", -1);
-			gameManager.engine[i].owMinDAS = StandaloneMain.propConfig.getProperty(i + ".tuning.owMinDAS", -1);
-			gameManager.engine[i].owMaxDAS = StandaloneMain.propConfig.getProperty(i + ".tuning.owMaxDAS", -1);
-			gameManager.engine[i].owDasDelay = StandaloneMain.propConfig.getProperty(i + ".tuning.owDasDelay", -1);
-			gameManager.engine[i].owReverseUpDown = StandaloneMain.propConfig.getProperty(i + ".tuning.owReverseUpDown", false);
-			gameManager.engine[i].owMoveDiagonal = StandaloneMain.propConfig.getProperty(i + ".tuning.owMoveDiagonal", -1);
-			gameManager.engine[i].owBlockOutlineType = StandaloneMain.propConfig.getProperty(i + ".tuning.owBlockOutlineType", -1);
-			gameManager.engine[i].owBlockShowOutlineOnly = StandaloneMain.propConfig.getProperty(i + ".tuning.owBlockShowOutlineOnly", -1);
+			TuningOptions tune = player(i).tuning;
+			gameManager.engine[i].owRotateButtonDefaultRight = tune.ROTATE_BUTTON_DEFAULT_RIGHT.value();
+			gameManager.engine[i].owSkin = tune.SKIN.value();
+			gameManager.engine[i].owMinDAS = tune.MIN_DAS.value();
+			gameManager.engine[i].owMaxDAS = tune.MAX_DAS.value();
+			gameManager.engine[i].owDasDelay = tune.DAS_DELAY.value();
+			gameManager.engine[i].owReverseUpDown = tune.REVERSE_UP_DOWN.value();
+			gameManager.engine[i].owMoveDiagonal = tune.MOVE_DIAGONAL.value();
+			gameManager.engine[i].owBlockOutlineType = tune.BLOCK_OUTLINE_TYPE.value();
+			gameManager.engine[i].owBlockShowOutlineOnly = tune.BLOCK_SHOW_OUTLINE_ONLY.value();
 
 			// Rule
 			RuleOptions ruleopt = null;
 			String rulename = strRulePath;
 			if(rulename == null) {
-				rulename = StandaloneMain.propConfig.getProperty(i + ".rule", "");
+//				rulename = StandaloneMain.propConfig.getProperty(i + ".rule", "");
+				rulename = player(i).RULE_NAME.value();
 				if(gameManager.mode.getGameStyle() > 0) {
-					rulename = StandaloneMain.propConfig.getProperty(i + ".rule." + gameManager.mode.getGameStyle(), "");
+//					rulename = StandaloneMain.propConfig.getProperty(i + ".rule." + gameManager.mode.getGameStyle(), "");
+					rulename = player(i).RULE_NAME_FOR_STYLE(gameManager.mode.getGameStyle()).value();
 				}
 			}
 			if((rulename != null) && (rulename.length() > 0)) {
@@ -599,7 +611,7 @@ public class StandaloneFrame extends JFrame {
 			} else {
 				log.debug("Load rule options from setting file");
 				ruleopt = new RuleOptions();
-				ruleopt.readProperty(StandaloneMain.propConfig, i);
+				ruleopt.readProperty(Options.GLOBAL_PROPERTIES, i);
 			}
 			gameManager.engine[i].ruleopt = ruleopt;
 
@@ -616,18 +628,19 @@ public class StandaloneFrame extends JFrame {
 			}
 
 			// AI
-			String aiName = StandaloneMain.propConfig.getProperty(i + ".ai", "");
+			AIOptions ai = Options.player(i).ai;
+			String aiName = ai.NAME.value();
 			if(aiName.length() > 0) {
 				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
 				gameManager.engine[i].ai = aiObj;
-				gameManager.engine[i].aiMoveDelay = StandaloneMain.propConfig.getProperty(i + ".aiMoveDelay", 0);
-				gameManager.engine[i].aiThinkDelay = StandaloneMain.propConfig.getProperty(i + ".aiThinkDelay", 0);
-				gameManager.engine[i].aiUseThread = StandaloneMain.propConfig.getProperty(i + ".aiUseThread", true);
-				gameManager.engine[i].aiShowHint = StandaloneMain.propConfig.getProperty(i+".aiShowHint", false);
-				gameManager.engine[i].aiPrethink = StandaloneMain.propConfig.getProperty(i+".aiPrethink", false);
-				gameManager.engine[i].aiShowState = StandaloneMain.propConfig.getProperty(i+".aiShowState", false);
+				gameManager.engine[i].aiMoveDelay = ai.MOVE_DELAY.value();
+				gameManager.engine[i].aiThinkDelay = ai.THINK_DELAY.value();
+				gameManager.engine[i].aiUseThread = ai.USE_THREAD.value();
+				gameManager.engine[i].aiShowHint = ai.SHOW_HINT.value();
+				gameManager.engine[i].aiPrethink = ai.PRETHINK.value();
+				gameManager.engine[i].aiShowState = ai.SHOW_STATE.value();
 			}
-			gameManager.showInput = StandaloneMain.propConfig.getProperty("option.showInput", false);
+			gameManager.showInput = Options.standalone().SHOW_INPUT.value();
 
 			// Called at initialization
 			gameManager.engine[i].init();
@@ -693,18 +706,19 @@ public class StandaloneFrame extends JFrame {
 			}
 
 			// AI (For added replay)
-			String aiName = StandaloneMain.propConfig.getProperty(i + ".ai", "");
+			AIOptions ai = Options.player(i).ai;
+			String aiName = ai.NAME.value();
 			if(aiName.length() > 0) {
 				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
 				gameManager.engine[i].ai = aiObj;
-				gameManager.engine[i].aiMoveDelay = StandaloneMain.propConfig.getProperty(i + ".aiMoveDelay", 0);
-				gameManager.engine[i].aiThinkDelay = StandaloneMain.propConfig.getProperty(i + ".aiThinkDelay", 0);
-				gameManager.engine[i].aiUseThread = StandaloneMain.propConfig.getProperty(i + ".aiUseThread", true);
-				gameManager.engine[i].aiShowHint = StandaloneMain.propConfig.getProperty(i+".aiShowHint", false);
-				gameManager.engine[i].aiPrethink = StandaloneMain.propConfig.getProperty(i+".aiPrethink", false);
-				gameManager.engine[i].aiShowState = StandaloneMain.propConfig.getProperty(i+".aiShowState", false);
+				gameManager.engine[i].aiMoveDelay = ai.MOVE_DELAY.value();
+				gameManager.engine[i].aiThinkDelay = ai.THINK_DELAY.value();
+				gameManager.engine[i].aiUseThread = ai.USE_THREAD.value();
+				gameManager.engine[i].aiShowHint = ai.SHOW_HINT.value();
+				gameManager.engine[i].aiPrethink = ai.PRETHINK.value();
+				gameManager.engine[i].aiShowState = ai.SHOW_STATE.value();
 			}
-			gameManager.showInput = StandaloneMain.propConfig.getProperty("option.showInput", false);
+			gameManager.showInput = Options.standalone().SHOW_INPUT.value();
 
 			// Called at initialization
 			gameManager.engine[i].init();
