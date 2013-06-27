@@ -89,7 +89,8 @@ public class Localization extends ResourceBundle {
 	}
 	
 	public String s(String key) {
-		return s(key, "\u00ab" + key + "\u00bb");
+		String resource = base.getName().replaceAll("\\.", "/") + ".properties";
+		return s(key, "\u00ab" + resource + "::" + key + "\u00bb");
 	}
 
 	@Override
