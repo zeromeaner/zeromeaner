@@ -14,7 +14,6 @@ public class LocalizationTest {
 		Assert.assertEquals(LocalizationTest.class, lz().getBase());
 	}
 	
-	@Test
 	public void testLocalized() {
 		Assert.assertEquals("«unlocalized»", lz.s("unlocalized"));
 		Assert.assertEquals("«unlocalized»", lz("unlocalized"));
