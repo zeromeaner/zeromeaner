@@ -22,19 +22,19 @@ public class ResourceFileSystemView extends FileSystemView {
 		} catch(IOException ioe) {
 		}
 	}
-	
+
 	protected String url() {
 		return "http://" + StandaloneApplet.url.getHost() + "/webdav/" + StandaloneMain.userId + "/";
 	}
-	
+
 	protected String toSardine(File file) {
 		return url() + file.getPath().replace(File.separator, "/").replaceAll("/+", "/").replaceAll("/+$", "");
 	}
-	
+
 	protected File fromSardine(String url) {
 		return new File(url.replace(url(), ""));
 	}
-	
+
 	@Override
 	public File createNewFolder(File containingDir) throws IOException {
 		String containingUrl = toSardine(containingDir);
@@ -46,8 +46,6 @@ public class ResourceFileSystemView extends FileSystemView {
 
 	@Override
 	public Boolean isTraversable(File f) {
-		if(StandaloneMain.offline)
-			return false;
 		String u = toSardine(f);
 		try {
 			s.getResources(toSardine(f) + "/");
@@ -155,15 +153,13 @@ public class ResourceFileSystemView extends FileSystemView {
 	@Override
 	public File[] getFiles(File dir, boolean useFileHiding) {
 		List<File> ret = new ArrayList<File>();
-		if(!StandaloneMain.offline) {
-			try {
-				for(DavResource d : s.getResources(toSardine(dir))) {
-					if(d.getNameDecoded().isEmpty())
-						continue;
-					ret.add(fromSardine(d.getBaseUrl() + d.getNameDecoded()));
-				}
-			} catch(Exception ex) {
+		try {
+			for(DavResource d : s.getResources(toSardine(dir))) {
+				if(d.getNameDecoded().isEmpty())
+					continue;
+				ret.add(fromSardine(d.getBaseUrl() + d.getNameDecoded()));
 			}
+		} catch(Exception ex) {
 		}
 		return ret.toArray(new File[0]);
 	}

@@ -66,8 +66,6 @@ public class StandaloneApplet extends Applet {
 			}
 		}
 		
-		StandaloneMain.offline = Boolean.parseBoolean(System.getProperty("offline"));
-	
 		try {
 			try {
 				PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));
@@ -86,10 +84,8 @@ public class StandaloneApplet extends Applet {
 			StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 			StandaloneGameKey.gamekey[1].loadDefaultKeymap();
 			
-			if(!StandaloneMain.offline) {
-				StandaloneGameKey.gamekey[0].loadConfig(StandaloneMain.propConfig);
-				StandaloneGameKey.gamekey[1].loadConfig(StandaloneMain.propConfig);
-			}
+			StandaloneGameKey.gamekey[0].loadConfig(StandaloneMain.propConfig);
+			StandaloneGameKey.gamekey[1].loadConfig(StandaloneMain.propConfig);
 			
 			StandaloneResourceHolder.load();
 			

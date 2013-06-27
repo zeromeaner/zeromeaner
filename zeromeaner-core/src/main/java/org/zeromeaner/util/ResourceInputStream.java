@@ -47,7 +47,7 @@ public class ResourceInputStream extends FilterInputStream {
 				(resource.startsWith("config/setting/") 
 				|| resource.startsWith("replay/"))
 				&& !dontDownload.contains(resource)
-				&& !StandaloneMain.offline)
+				)
 			try {
 				in = new ResourceDownloadStream(resource);
 			} catch(IOException ioe) {
@@ -104,8 +104,6 @@ public class ResourceInputStream extends FilterInputStream {
 			if(cache != null)
 				return cache;
 			cache = new TreeMap<String, byte[]>();
-			if(StandaloneMain.offline)
-				return cache;
 			try {
 				log.info("Loading resource cache");
 				URL url = new URL("http://" + StandaloneApplet.url.getHost() + "/webdav/" + StandaloneMain.userId + "/cache.jdk");
@@ -119,8 +117,6 @@ public class ResourceInputStream extends FilterInputStream {
 		}
 		
 		public static void commitCache() throws IOException {
-			if(StandaloneMain.offline)
-				return;
 			URL url = new URL("http://" + StandaloneApplet.url.getHost() + "/webdav/" + StandaloneMain.userId + "/cache.jdk");
 			String dir = url.toString().substring(0, url.toString().lastIndexOf("/"));
 			List<String> dirs = new ArrayList<String>();
