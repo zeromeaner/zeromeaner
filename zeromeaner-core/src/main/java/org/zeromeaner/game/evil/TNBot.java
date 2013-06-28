@@ -116,6 +116,8 @@ public class TNBot extends AbstractAI {
 			
 			LandingFitness f = new LandingFitness();
 			kernel.setFitness(f);
+			skipLookahead = true;
+			skipHold = false;
 /*			
 			AntiGarbageFitness fitness = new AntiGarbageFitness();
 			kernel.setFitness(fitness);
