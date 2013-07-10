@@ -650,12 +650,13 @@ public class StandaloneFrame extends JFrame {
 	public void startReplayGame(String filename) {
 		contentCards.show(content, CARD_PLAY);
 		playCard.add(gamePanel, BorderLayout.CENTER);
+
 		gamePanel.shutdown();
 		try {
 			gamePanel.shutdownWait();
 		} catch(InterruptedException ie) {
 		}
-		startNewGame();
+//		startNewGame();
 		gamePanel.displayWindow();
 
 		log.info("Loading Replay:" + filename);

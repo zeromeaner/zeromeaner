@@ -89,9 +89,6 @@ public class TNBot extends AbstractAI {
 		public void init(GameEngine engine, int playerID) {
 			super.init(engine, playerID);
 			LandingFitness f = new LandingFitness();
-			f.setParams(new double[] {
-					2.160522464746765, 2.509213204322845, 2.1764856424947236, 4.1290968995371085, 2.9511165482343973, 4.653885164992926, 3.4123834343268573, 2.91278035162247, 4.082325057981251, 3.9993992350672034, 3.123974814581451
-			});
 			kernel.setFitness(f);
 			skipHold = false;
 			skipLookahead = true;
