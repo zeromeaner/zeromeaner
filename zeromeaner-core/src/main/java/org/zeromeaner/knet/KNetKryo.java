@@ -49,11 +49,10 @@ public class KNetKryo {
 		kryo.register(KNetEventSource.class);
 		kryo.register(KNetChannelInfo.class);
 		kryo.register(KNetChannelInfo[].class);
-		fieldSerializer(kryo, KNetGameInfo.class);
+		diffFieldSerializer(kryo, KNetGameInfo.class);
 		kryo.register(KNetGameInfo.TSpinEnableType.class);
 		kryo.register(KNetPlayerInfo.class);
-//		kryo.register(Field.class, new org.zeromeaner.game.knet.ser.FieldSerializer());
-		fieldSerializer(kryo, Field.class);
+		diffFieldSerializer(kryo, Field.class);
 		kryo.register(Block[][].class);
 		kryo.register(Block[].class);
 		kryo.register(Block.class, new BlockSerializer());
@@ -69,51 +68,61 @@ public class KNetKryo {
 		kryo.register(Properties.class, new PropertiesSerializer());
 		kryo.register(CustomProperties.class, new PropertiesSerializer());
 		kryo.register(Statistics.class, new StatisticsSerializer());
-//		fieldSerializer(kryo, RuleOptions.class);
-		kryo.register(
-				RuleOptions.class, 
-				new DiffFieldSerializer<RuleOptions>(
-						kryo, 
-						RuleOptions.class, 
-						GeneralUtil.loadRule("config/rule/Standard.rul"),
-						new Callable<Kryo>() {
-							@Override
-							public Kryo call() throws Exception {
-								Kryo ret = new Kryo();
-								KNetKryo.configure(ret);
-								return ret;
-							}
-						}));
+		diffFieldSerializer(kryo, RuleOptions.class, GeneralUtil.loadRule("config/rule/Standard.rul"));
 		kryo.register(KNStartInfo.class);
 		
-		fieldSerializer(kryo, AbstractNetMode.DefaultStats.class);
-		fieldSerializer(kryo, AbstractNetMode.DefaultOptions.class);
+		diffFieldSerializer(kryo, AbstractNetMode.DefaultStats.class);
+		diffFieldSerializer(kryo, AbstractNetMode.DefaultOptions.class);
 		
 		kryo.register(NetVSBattleMode.AttackInfo.class);
 		kryo.register(NetVSBattleMode.StatsInfo.class);
-		fieldSerializer(kryo, NetVSBattleMode.EndGameStats.class);
+		diffFieldSerializer(kryo, NetVSBattleMode.EndGameStats.class);
 		
 		kryo.register(TGMNetVSBattleMode.TGMAttackInfo.class);
 		
-		fieldSerializer(kryo, ComboRaceMode.Stats.class);
-		fieldSerializer(kryo, ComboRaceMode.Options.class);
+		diffFieldSerializer(kryo, ComboRaceMode.Stats.class);
+		diffFieldSerializer(kryo, ComboRaceMode.Options.class);
 		
-		fieldSerializer(kryo, DigChallengeMode.Stats.class);
-		fieldSerializer(kryo, DigChallengeMode.Options.class);
+		diffFieldSerializer(kryo, DigChallengeMode.Stats.class);
+		diffFieldSerializer(kryo, DigChallengeMode.Options.class);
 		
-		fieldSerializer(kryo, DigRaceMode.Stats.class);
-		fieldSerializer(kryo, DigRaceMode.EndGameStats.class);
-		fieldSerializer(kryo, DigRaceMode.Options.class);
+		diffFieldSerializer(kryo, DigRaceMode.Stats.class);
+		diffFieldSerializer(kryo, DigRaceMode.EndGameStats.class);
+		diffFieldSerializer(kryo, DigRaceMode.Options.class);
 		
-		fieldSerializer(kryo, ExtremeMode.Stats.class);
-		fieldSerializer(kryo, ExtremeMode.Options.class);
+		diffFieldSerializer(kryo, ExtremeMode.Stats.class);
+		diffFieldSerializer(kryo, ExtremeMode.Options.class);
 
-		fieldSerializer(kryo, MarathonMode.Options.class);
-		fieldSerializer(kryo, MarathonPlusMode.Stats.class);
-		fieldSerializer(kryo, MarathonPlusMode.Options.class);
+		diffFieldSerializer(kryo, MarathonMode.Options.class);
+		diffFieldSerializer(kryo, MarathonPlusMode.Stats.class);
+		diffFieldSerializer(kryo, MarathonPlusMode.Options.class);
 	}
 	
-	private static <T> void fieldSerializer(Kryo kryo, Class<T> clazz) {
-		kryo.register(clazz, new FieldSerializer<T>(kryo, clazz));
+	private static <T> void diffFieldSerializer(Kryo kryo, Class<T> clazz, T typical) {
+		kryo.register(clazz, new DiffFieldSerializer<>(kryo, clazz, typical, NEW_KRYO));
 	}
+	
+	private static <T> void diffFieldSerializer(Kryo kryo, Class<T> clazz) {
+		diffFieldSerializer(kryo, clazz, typical(clazz));
+	}
+	
+	private static <T> T typical(final Class<T> clazz) {
+		try {
+			return clazz.newInstance();
+		} catch(Exception ex) {
+			if(ex instanceof RuntimeException)
+				throw (RuntimeException) ex;
+			throw new RuntimeException(ex);
+		}
+	}
+	
+	private static Callable<Kryo> NEW_KRYO = new Callable<Kryo>() {
+		
+		@Override
+		public Kryo call() throws Exception {
+			Kryo ret = new Kryo();
+			KNetKryo.configure(ret);
+			return ret;
+		}
+	};
 }
