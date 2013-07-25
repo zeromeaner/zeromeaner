@@ -87,6 +87,9 @@
 							<includes>
 								<include>*.jar</include>
 							</includes>
+							<excludes>
+								<exclude>zeromeaner-media-*.jar</exclude>
+							</excludes>
 							<keystore>keystore</keystore>
 							<alias>signFiles</alias>
 							<storepass>CasioF-2</storepass>
