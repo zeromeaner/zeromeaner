@@ -24,10 +24,31 @@ public class MqClient extends Listener {
 	
 	protected TopicRegistry<MessageListener> registry = new TopicRegistry<>();
 	
-	protected CountDownLatch personalTopicLatch = new CountDownLatch(1);
-	protected String personalTopic;
+	protected class CommandLatches {
+		private CountDownLatch[] latches;
+		public CommandLatches() {
+			latches = new CountDownLatch[Control.Command.values().length];
+			for(int i = 0; i < latches.length; i++)
+				latches[i] = new CountDownLatch(1);
+		}
+		
+		public void countDown(Control.Command command) {
+			latches[command.ordinal()].countDown();
+		}
+		
+		public void await(Control.Command command) {
+			try {
+				latches[command.ordinal()].await();
+			} catch(InterruptedException ie) {
+				Thread.currentThread().interrupt();
+			}
+		}
+	}
 	
-	protected CountDownLatch personalIdLatch = new CountDownLatch(1);
+	protected CommandLatches latches = new CommandLatches();
+	
+	protected String personalTopic;
+	protected String controlledTopic;
 	protected int personalId;
 	
 	public MqClient(String host, int port) {
@@ -51,21 +72,18 @@ public class MqClient extends Listener {
 	}
 	
 	public String getPersonalTopic() {
-		try {
-			personalTopicLatch.await();
-		} catch(InterruptedException ie) {
-			Thread.currentThread().interrupt();
-		}
+		latches.await(Command.PERSONAL_TOPIC);
 		return personalTopic;
 	}
 	
 	public int getPersonalId() {
-		try {
-			personalIdLatch.await();
-		} catch(InterruptedException ie) {
-			Thread.currentThread().interrupt();
-		}
+		latches.await(Command.PERSONAL_ID);
 		return personalId;
+	}
+	
+	public String getControlledTopic() {
+		latches.await(Command.CONTROLLED_TOPIC);
+		return controlledTopic;
 	}
 	
 	@Override
@@ -83,13 +101,19 @@ public class MqClient extends Listener {
 			switch(c.command) {
 			case PERSONAL_TOPIC:
 				personalTopic = c.topic;
-				personalTopicLatch.countDown();
+				latches.countDown(Command.PERSONAL_TOPIC);
 				log.debug("{} received personal topic:{}", this, personalTopic);
 				break;
 			case PERSONAL_ID:
 				personalId = Integer.parseInt(c.topic);
-				personalIdLatch.countDown();
+				latches.countDown(Command.PERSONAL_ID);
 				log.debug("{} received personal id:{}", this, personalId);
+				break;
+			case CONTROLLED_TOPIC:
+				controlledTopic = c.topic;
+				latches.countDown(Command.CONTROLLED_TOPIC);
+				log.debug("{} received controlled topic:{}", this, controlledTopic);
+				break;
 			}
 		}
 	}

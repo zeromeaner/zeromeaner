@@ -55,9 +55,11 @@ public class MqServer extends Listener {
 	@Override
 	public void connected(Connection connection) {
 		String personalTopic = Topics.PRIVILEGED + Topics.CLIENT + connection.getID();
+		String controlledTopic = Topics.CONTROLLED + Topics.CLIENT + connection.getID();
 		privileged.subscribe(personalTopic, connection);
 		origins.put(connection, personalTopic);
 		server.sendToTCP(connection.getID(), new Control(Command.PERSONAL_TOPIC, personalTopic));
+		server.sendToTCP(connection.getID(), new Control(Command.CONTROLLED_TOPIC, controlledTopic));
 		server.sendToTCP(connection.getID(), new Control(Command.PERSONAL_ID, "" + connection.getID()));
 		server.sendToAllTCP(new Control(Command.CONNECTED, personalTopic));
 	}
