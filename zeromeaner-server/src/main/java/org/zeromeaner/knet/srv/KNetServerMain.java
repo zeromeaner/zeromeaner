@@ -13,6 +13,7 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.gui.common.DocumentOutputStream;
+import org.zeromeaner.gui.common.JTextComponentOutputStream;
 
 public class KNetServerMain {
 
@@ -54,6 +55,7 @@ public class KNetServerMain {
 			ta.setEditable(false);
 			frame.add(new JScrollPane(ta), BorderLayout.CENTER);
 //			System.setOut(new PrintStream(new DocumentOutputStream(ta.getDocument())));
+			System.setOut(new PrintStream(new JTextComponentOutputStream(ta)));
 			frame.pack();
 			frame.setSize(400, 400);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

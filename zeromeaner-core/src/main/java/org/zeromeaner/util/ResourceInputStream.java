@@ -113,7 +113,6 @@ public class ResourceInputStream extends FilterInputStream {
 				cache.putAll((Map<String, byte[]>) new ObjectInputStream(in).readObject());
 				in.close();
 			} catch(Exception ex) {
-				ex.printStackTrace();
 			}
 			return cache;
 		}
