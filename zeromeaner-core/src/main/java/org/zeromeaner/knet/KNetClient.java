@@ -73,6 +73,7 @@ public class KNetClient implements MessageListener {
 		
 		client.subscribe(client.getPersonalTopic(), this);
 		client.subscribe(Topics.GLOBAL, this);
+		client.subscribe(Topics.CONNECTION, this);
 		
 		return this;
 	}
