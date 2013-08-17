@@ -31,6 +31,10 @@ public class ObjectMqClient implements MessageListener {
 		client.stop();
 	}
 	
+	public String getPersonalTopic() {
+		return client.getPersonalTopic();
+	}
+	
 	public void subscribe(String topic, ObjectListener subscriber) {
 		registry.subscribe(topic, subscriber);
 		client.subscribe(topic, this);

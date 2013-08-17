@@ -3,6 +3,8 @@ package org.zeromeaner.mq;
 import java.io.IOException;
 import java.util.Set;
 
+import org.zeromeaner.mq.Control.Command;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryonet.Connection;
@@ -41,6 +43,11 @@ public class MqServer extends Listener {
 	public void stop() throws IOException {
 		server.close();
 		server.stop();
+	}
+	
+	@Override
+	public void connected(Connection connection) {
+		server.sendToTCP(connection.getID(), new Control(Command.PERSONAL_TOPIC, "client." + connection.getID()));
 	}
 	
 	@Override

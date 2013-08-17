@@ -4,6 +4,7 @@ public class Control {
 	public static enum Command {
 		SUBSCRIBE,
 		UNSUBSCRIBE,
+		PERSONAL_TOPIC,
 	}
 	
 	public Command command;

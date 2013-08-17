@@ -2,6 +2,7 @@ package org.zeromeaner.mq;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 import org.zeromeaner.mq.Control.Command;
 
@@ -17,6 +18,9 @@ public class MqClient extends Listener {
 	protected Client client;
 	
 	protected TopicRegistry<MessageListener> registry = new TopicRegistry<>();
+	
+	protected CountDownLatch personalTopicLatch = new CountDownLatch(1);
+	protected String personalTopic;
 	
 	public MqClient(String host, int port) {
 		this.host = host;
@@ -40,6 +44,15 @@ public class MqClient extends Listener {
 		client.stop();
 	}
 	
+	public String getPersonalTopic() {
+		try {
+			personalTopicLatch.await();
+		} catch(InterruptedException ie) {
+			Thread.currentThread().interrupt();
+		}
+		return personalTopic;
+	}
+	
 	@Override
 	public void received(Connection connection, Object object) {
 		if(object instanceof Message) {
@@ -47,6 +60,15 @@ public class MqClient extends Listener {
 			Set<MessageListener> subscribers = registry.get(m.topic);
 			for(MessageListener l : subscribers) {
 				l.messageReceived(m);
+			}
+		}
+		if(object instanceof Control) {
+			Control c = (Control) object;
+			switch(c.command) {
+			case PERSONAL_TOPIC:
+				personalTopic = c.topic;
+				personalTopicLatch.countDown();
+				break;
 			}
 		}
 	}
