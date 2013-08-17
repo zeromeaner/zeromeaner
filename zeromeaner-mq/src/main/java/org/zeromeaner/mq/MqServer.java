@@ -69,6 +69,9 @@ public class MqServer extends Listener {
 	public void disconnected(Connection connection) {
 		String personalTopic = Topics.PRIVILEGED + Topics.CLIENT + connection.getID();
 		server.sendToAllTCP(new Control(Command.DISCONNECTED, personalTopic));
+		registry.deregister(connection);
+		privileged.deregister(connection);
+		origins.remove(connection);
 	}
 	
 	@Override

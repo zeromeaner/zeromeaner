@@ -35,4 +35,12 @@ public class TopicRegistry<T> {
 			return Collections.emptySet();
 		return Collections.unmodifiableSet(subs);
 	}
+	
+	public void deregister(T subscriber) {
+		synchronized(registry) {
+			for(Set<T> subs : registry.values()) {
+				subs.remove(subscriber);
+			}
+		}
+	}
 }
