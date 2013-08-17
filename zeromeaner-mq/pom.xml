@@ -1,0 +1,31 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>zeromeaner-mq</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<parent>
+		<groupId>org.zeromeaner</groupId>
+		<artifactId>zeromeaner-parent</artifactId>
+		<version>1.0.19-SNAPSHOT</version>
+		<relativePath>../zeromeaner-parent</relativePath>
+	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>com.esotericsoftware.kryonet</groupId>
+			<artifactId>kryonet</artifactId>
+			<version>2.18</version>
+		</dependency>
+		<dependency>
+			<groupId>com.esotericsoftware.kryo</groupId>
+			<artifactId>kryo</artifactId>
+			<version>2.20</version>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>local-artifacts</id>
+			<url>file://${project.basedir}/local-artifacts</url>
+		</repository>
+	</repositories>
+</project>
