@@ -171,8 +171,10 @@ public class StandaloneModeselectPanel extends JPanel {
 					String ruleResource = Options.mode(mode.getName()).RULE_RSOURCE.value();
 					if(ruleResource != null) {
 						for(RuleButton rb : ruleButtons) {
-							if(ruleResource.equals(rb.rule.resourceName))
+							if(ruleResource.equals(rb.rule.resourceName)) {
 								rb.doClick();
+								cards.show(StandaloneModeselectPanel.this, SELECT_CARD);
+							}
 						}
 					}
 				}
