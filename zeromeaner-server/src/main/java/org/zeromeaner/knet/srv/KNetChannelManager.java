@@ -65,6 +65,8 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 		super.start();
 		
 		client.subscribe(Topics.CHANNEL, this);
+		client.subscribe(lobby.getTopic(), this);
+		client.setOrigin(Topics.CHANNEL);
 		
 		return this;
 	}
@@ -117,6 +119,8 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				}
 				request.setId(nextChannelId.incrementAndGet());
 
+				this.client.subscribe(request.getTopic(), this);
+				
 				channels.put(request.getId(), request);
 				states.put(request, new ChannelState(request));
 				client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));

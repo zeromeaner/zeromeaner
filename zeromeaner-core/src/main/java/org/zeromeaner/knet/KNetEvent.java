@@ -37,6 +37,8 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 			return Topics.PRIVILEGED + Topics.AUTH;
 		if(is(KNetEventArgs.ADDRESS))
 			return get(KNetEventArgs.ADDRESS, KNetEventSource.class).getTopic();
+		if(is(KNetEventArgs.CHANNEL_JOIN))
+			return Topics.CHANNEL;
 		if(is(KNetEventArgs.CHANNEL_ID))
 			return Topics.CHANNEL + get(KNetEventArgs.CHANNEL_ID);
 		return Topics.GLOBAL;

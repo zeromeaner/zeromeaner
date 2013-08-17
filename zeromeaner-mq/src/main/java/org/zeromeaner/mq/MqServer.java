@@ -72,8 +72,8 @@ public class MqServer extends Listener {
 	public void received(Connection connection, Object object) {
 		if(object instanceof Message) {
 			Message m = (Message) object;
-			log.trace("{} dispatching message {}", this, m);
 			m.origin = origins.get(connection);
+			log.trace("{} dispatching message from {} to topic {}", this, m.origin, m.topic);
 			Set<Connection> subscribers = registry.get(m.topic);
 			for(Connection c : subscribers) {
 				if(m.reliable)

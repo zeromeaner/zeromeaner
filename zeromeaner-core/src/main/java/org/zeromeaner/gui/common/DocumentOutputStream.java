@@ -16,7 +16,7 @@ public class DocumentOutputStream extends OutputStream {
 	}
 	
 	@Override
-	public void write(int b) throws IOException {
+	public synchronized void write(int b) throws IOException {
 		if(EQInvoker.reinvoke(false, this, b))
 			return;
 		try {
@@ -26,7 +26,7 @@ public class DocumentOutputStream extends OutputStream {
 	}
 
 	@Override
-	public void write(byte[] b, int off, int len) throws IOException {
+	public synchronized void write(byte[] b, int off, int len) throws IOException {
 		if(EQInvoker.reinvoke(false, this, b, off, len))
 			return;
 		StringBuilder sb = new StringBuilder();
