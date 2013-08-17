@@ -9,6 +9,7 @@ import javax.swing.event.EventListenerList;
 import org.kryomq.Control;
 import org.kryomq.Message;
 import org.kryomq.MessageListener;
+import org.kryomq.Meta;
 import org.kryomq.MqClient;
 import org.kryomq.kryo.Kryo;
 import org.kryomq.kryonet.Client;
@@ -35,6 +36,8 @@ public class KNetClient implements MessageListener {
 			super.received(connection, object);
 			if(object instanceof Control)
 				controlled((Control) object);
+			if(object instanceof Meta)
+				metad((Meta) object);
 		}
 	}
 
@@ -88,6 +91,10 @@ public class KNetClient implements MessageListener {
 	}
 	
 	protected void controlled(Control control) {
+		
+	}
+	
+	protected void metad(Meta meta) {
 		
 	}
 

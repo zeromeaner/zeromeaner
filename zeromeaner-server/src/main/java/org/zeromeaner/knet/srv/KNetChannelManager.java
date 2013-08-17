@@ -20,10 +20,10 @@ import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.knet.KNetEventArgs;
 import org.zeromeaner.knet.KNetEventSource;
 import org.zeromeaner.knet.KNetListener;
+import org.zeromeaner.knet.KNetTopics;
 import org.zeromeaner.knet.obj.KNStartInfo;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.knet.obj.KNetPlayerInfo;
-import org.zeromeaner.mq.Topics;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
@@ -64,9 +64,9 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 	public KNetChannelManager start() throws IOException, InterruptedException {
 		super.start();
 		
-		client.subscribe(Topics.CHANNEL, this);
+		client.subscribe(KNetTopics.CHANNEL, this);
 		client.subscribe(lobby.getTopic(), this);
-		client.setOrigin(Topics.CHANNEL);
+		client.setOrigin(KNetTopics.CHANNEL);
 		
 		return this;
 	}
