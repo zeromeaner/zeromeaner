@@ -259,6 +259,30 @@ public class StandaloneFrame extends JFrame {
 		gc.load();
 		content.add(gc, CARD_GENERAL);
 
+		JFileChooser fc;
+		
+		if(!StandaloneApplet.isApplet()) {
+			fc = new JFileChooser(System.getProperty("user.dir") + File.separator + "local-resources" + File.separator + "replay");
+			fc.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if(!e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION))
+						return;
+					JFileChooser fc = (JFileChooser) e.getSource();
+					String path = fc.getSelectedFile().getPath();
+					startReplayGame(path);
+				}
+			});
+			content.add(fc, CARD_OPEN);
+		}
+	}
+	
+	private boolean openOnlineCardCreated = false;
+	
+	private void createOpenOnlineCard() {
+		if(openOnlineCardCreated)
+			return;
+		openOnlineCardCreated = true;
 		JFileChooser fc = new JFileChooser(new ResourceFileSystemView() {
 			@Override
 			protected String url() {
@@ -282,21 +306,6 @@ public class StandaloneFrame extends JFrame {
 			}
 		});
 		content.add(fc, CARD_OPEN_ONLINE);
-		
-		if(!StandaloneApplet.isApplet()) {
-			fc = new JFileChooser(System.getProperty("user.dir") + File.separator + "local-resources" + File.separator + "replay");
-			fc.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if(!e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION))
-						return;
-					JFileChooser fc = (JFileChooser) e.getSource();
-					String path = fc.getSelectedFile().getPath();
-					startReplayGame(path);
-				}
-			});
-			content.add(fc, CARD_OPEN);
-		}
 	}
 	
 	private void playCardSelected() {
@@ -394,7 +403,13 @@ public class StandaloneFrame extends JFrame {
 			add(t, g, b);
 		}
 		
-		b = new JToggleButton(new ToolbarAction("toolbar.open_online"));
+		b = new JToggleButton(new ToolbarAction("toolbar.open_online") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				createOpenOnlineCard();
+				super.actionPerformed(e);
+			}
+		});
 		add(t, g, b);
 		
 		b = new JButton(new ToolbarAction("toolbar.close") {
