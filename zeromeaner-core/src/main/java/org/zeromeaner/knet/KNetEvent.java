@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.funcish.core.fn.Predicate;
+import org.zeromeaner.mq.Topics;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoException;
@@ -29,6 +30,18 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 			else
 				this.args.put((KNetEventArgs) args[i--], true);
 		}
+	}
+	
+	public String getTopic() {
+		if(is(KNetEventArgs.USER_AUTHENTICATE) || is(KNetEventArgs.USER_CREATE) || is(KNetEventArgs.USER_UPDATE_PASSWORD))
+			return Topics.PRIVILEGED + Topics.AUTH;
+		if(is(KNetEventArgs.ADDRESS))
+			return get(KNetEventArgs.ADDRESS, KNetEventSource.class).getTopic();
+		if(is(KNetEventArgs.CHANNEL_JOIN))
+			return Topics.CHANNEL;
+		if(is(KNetEventArgs.CHANNEL_ID))
+			return Topics.CHANNEL + get(KNetEventArgs.CHANNEL_ID);
+		return Topics.GLOBAL;
 	}
 	
 	@Override

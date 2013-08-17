@@ -1,12 +1,18 @@
 package org.zeromeaner.knet.srv;
 
+import java.io.IOException;
+
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.log4j.Logger;
 import org.zeromeaner.dbo.Users;
 import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.knet.KNetEventArgs;
+import org.zeromeaner.knet.KNetEventSource;
 import org.zeromeaner.knet.KNetListener;
+import org.zeromeaner.mq.Control;
+import org.zeromeaner.mq.Message;
+import org.zeromeaner.mq.Topics;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
@@ -17,6 +23,38 @@ public class KNetUserManager extends KNetClient implements KNetListener {
 		super("UserManager", "localhost", port);
 		
 		addKNetListener(this);
+	}
+	
+	@Override
+	public KNetClient start() throws IOException, InterruptedException {
+		super.start();
+
+		client.subscribe(Topics.PRIVILEGED + Topics.AUTH, this);
+		client.setOrigin(Topics.PRIVILEGED + Topics.AUTH);
+		
+		return this;
+	}
+	
+	@Override
+	protected void controlled(Control control) {
+		super.controlled(control);
+		KNetEventSource s;
+		KNetEvent e;
+		Message m;
+		switch(control.command) {
+		case CONNECTED:
+			s = new KNetEventSource(control.topic, -1);
+			e = s.event(CONNECTED, true);
+			m = new Message(Topics.CONNECTION, true).set(kryo, e);
+			client.send(m);
+			break;
+		case DISCONNECTED:
+			s = new KNetEventSource(control.topic, -1);
+			e = s.event(DISCONNECTED, true);
+			m = new Message(Topics.CONNECTION, true).set(kryo, e);
+			client.send(m);
+			break;
+		}
 	}
 	
 	@Override

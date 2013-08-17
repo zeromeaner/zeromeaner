@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -221,7 +222,10 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			try {
 				client.start();
 			} catch(Exception ex) {
-				client.stop();
+				try {
+					client.stop();
+				} catch(IOException ioe) {
+				}
 				client = null;
 				JOptionPane.showMessageDialog(KNetPanel.this, ex.toString());
 				return;
@@ -352,7 +356,10 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 		}
 		
 		public void disconnect() {
-			client.stop();
+			try {
+				client.stop();
+			} catch(IOException ioe) {
+			}
 			client = null;
 			cards.show(KNetPanel.this, CONNECTION_LIST_PANEL_CARD);
 			fireKnetPanelDisconnected();

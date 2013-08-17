@@ -23,7 +23,7 @@ import org.zeromeaner.knet.KNetListener;
 import org.zeromeaner.knet.obj.KNStartInfo;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.knet.obj.KNetPlayerInfo;
-
+import org.zeromeaner.mq.Topics;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
@@ -62,7 +62,13 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 
 	@Override
 	public KNetChannelManager start() throws IOException, InterruptedException {
-		return (KNetChannelManager) super.start();
+		super.start();
+		
+		client.subscribe(Topics.CHANNEL, this);
+		client.subscribe(lobby.getTopic(), this);
+		client.setOrigin(Topics.CHANNEL);
+		
+		return this;
 	}
 	
 	public List<KNetEventSource> getMembers(int channelId) {
@@ -113,6 +119,8 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				}
 				request.setId(nextChannelId.incrementAndGet());
 
+				this.client.subscribe(request.getTopic(), this);
+				
 				channels.put(request.getId(), request);
 				states.put(request, new ChannelState(request));
 				client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
@@ -201,7 +209,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 			newPlayer = new KNetPlayerInfo();
 			newPlayer.setChannelId(channel.getId());
 			newPlayer.setPlayer(e.getSource());
-			newPlayer.setTeam(e.getSource().getName() + e.getSource().getId());
+			newPlayer.setTeam(e.getSource().getName() + e.getSource().getTopic());
 			channel.getPlayerInfo().add(newPlayer);
 		} else if(e.is(CHANNEL_SPECTATE)) {
 			channel.getPlayers().remove(e.getSource());
