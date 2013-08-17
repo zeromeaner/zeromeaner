@@ -4,16 +4,19 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.google.common.base.Objects;
 
 public class KNetEventSource implements KryoSerializable {
 	protected int id;
+	protected String topic;
 	protected String type;
 	protected String name;
 	
 	@Deprecated
 	public KNetEventSource() {}
 	
-	public KNetEventSource(int id) {
+	public KNetEventSource(String topic, int id) {
+		this.topic = topic;
 		this.id = id;
 	}
 	
@@ -22,12 +25,12 @@ public class KNetEventSource implements KryoSerializable {
 		this.name = source.getName();
 	}
 	
-	public int getId() {
-		return id;
+	public String getTopic() {
+		return topic;
 	}
 	
-	public void setId(int id) {
-		this.id = id;
+	public int getId() {
+		return id;
 	}
 	
 	public String getType() {
@@ -40,20 +43,20 @@ public class KNetEventSource implements KryoSerializable {
 	
 	@Override
 	public String toString() {
-		return "(" + id + "," + type + "," + name + ")";
+		return "(" + topic + "," + type + "," + name + ")";
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof KNetEventSource) {
-			return id == ((KNetEventSource) obj).id;
+			return Objects.equal(topic, ((KNetEventSource) obj).topic);
 		}
 		return false;
 	}
 	
 	@Override
 	public int hashCode() {
-		return id;
+		return topic.hashCode();
 	}
 	
 	public KNetEvent event(Object... args) {
@@ -63,6 +66,7 @@ public class KNetEventSource implements KryoSerializable {
 	@Override
 	public void write(Kryo kryo, Output output) {
 		output.writeInt(id, true);
+		output.writeString(topic);
 		output.writeString(type);
 		output.writeString(name);
 	}
@@ -70,6 +74,7 @@ public class KNetEventSource implements KryoSerializable {
 	@Override
 	public void read(Kryo kryo, Input input) {
 		id = input.readInt(true);
+		topic = input.readString();
 		type = input.readString();
 		name = input.readString();
 	}

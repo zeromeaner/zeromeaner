@@ -5,8 +5,11 @@ public class Control {
 		SUBSCRIBE,
 		UNSUBSCRIBE,
 		PERSONAL_TOPIC,
+		PERSONAL_ID,
 		PRIVILEGED_SUBSCRIBE,
 		PRIVILEGED_SET_ORIGIN,
+		CONNECTED,
+		DISCONNECTED,
 	}
 	
 	public Command command;

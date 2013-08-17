@@ -64,7 +64,6 @@ public class KNetServerMain {
 		log.debug("Starting zeromeaner server on port " + port + "...");
 		
 		new KNetServer(port);
-		new KNetCanary(port);
 	}
 
 }

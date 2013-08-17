@@ -27,6 +27,9 @@ public class MqClient extends Listener {
 	protected CountDownLatch personalTopicLatch = new CountDownLatch(1);
 	protected String personalTopic;
 	
+	protected CountDownLatch personalIdLatch = new CountDownLatch(1);
+	protected int personalId;
+	
 	public MqClient(String host, int port) {
 		this.host = host;
 		this.port = port;
@@ -56,6 +59,15 @@ public class MqClient extends Listener {
 		return personalTopic;
 	}
 	
+	public int getPersonalId() {
+		try {
+			personalIdLatch.await();
+		} catch(InterruptedException ie) {
+			Thread.currentThread().interrupt();
+		}
+		return personalId;
+	}
+	
 	@Override
 	public void received(Connection connection, Object object) {
 		if(object instanceof Message) {
@@ -74,6 +86,10 @@ public class MqClient extends Listener {
 				personalTopicLatch.countDown();
 				log.debug("{} received personal topic:{}", this, personalTopic);
 				break;
+			case PERSONAL_ID:
+				personalId = Integer.parseInt(c.topic);
+				personalIdLatch.countDown();
+				log.debug("{} received personal id:{}", this, personalId);
 			}
 		}
 	}
@@ -82,6 +98,10 @@ public class MqClient extends Listener {
 		log.debug("{} subscribing {} to topic {}", this, subscriber, topic);
 		registry.subscribe(topic, subscriber);
 		client.sendTCP(new Control(Command.SUBSCRIBE, topic));
+		if(topic.startsWith(Topics.PRIVILEGED)) {
+			log.trace("{} making privileged subscription request to topic {}", this, topic);
+			client.sendTCP(new Control(Command.PRIVILEGED_SUBSCRIBE, topic));
+		}
 	}
 	
 	public synchronized void unsubscribe(String topic, MessageListener subscriber) {
@@ -90,6 +110,11 @@ public class MqClient extends Listener {
 			client.sendTCP(new Control(Command.UNSUBSCRIBE, topic));
 	}
 	
+	public void setOrigin(String topic) {
+		log.trace("{} making privileged set origin request to topic {}", this, topic);
+		client.sendTCP(new Control(Command.PRIVILEGED_SET_ORIGIN, topic));
+	}
+
 	public void send(Message message) {
 		if(message.reliable)
 			client.sendTCP(message);
