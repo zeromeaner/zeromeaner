@@ -10,9 +10,9 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
+import org.kryomq.kryo.Kryo;
+import org.kryomq.kryo.io.Input;
+import org.kryomq.kryo.io.Output;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 

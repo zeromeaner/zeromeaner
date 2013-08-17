@@ -42,10 +42,10 @@ import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.util.GeneralUtil;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.KryoSerializable;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
+import org.kryomq.kryo.Kryo;
+import org.kryomq.kryo.KryoSerializable;
+import org.kryomq.kryo.io.Input;
+import org.kryomq.kryo.io.Output;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 

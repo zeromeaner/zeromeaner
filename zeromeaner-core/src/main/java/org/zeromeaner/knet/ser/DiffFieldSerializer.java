@@ -5,14 +5,14 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.Serializer;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.InputChunked;
-import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.io.OutputChunked;
-import com.esotericsoftware.kryo.serializers.FieldSerializer;
-import com.esotericsoftware.kryo.util.ObjectMap;
+import org.kryomq.kryo.Kryo;
+import org.kryomq.kryo.Serializer;
+import org.kryomq.kryo.io.Input;
+import org.kryomq.kryo.io.InputChunked;
+import org.kryomq.kryo.io.Output;
+import org.kryomq.kryo.io.OutputChunked;
+import org.kryomq.kryo.serializers.FieldSerializer;
+import org.kryomq.kryo.util.ObjectMap;
 
 public class DiffFieldSerializer<T> extends FieldSerializer<T> {
 	protected Callable<Kryo> kryoFactory;

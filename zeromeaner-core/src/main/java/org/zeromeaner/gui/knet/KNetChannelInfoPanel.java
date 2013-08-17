@@ -46,9 +46,9 @@ import org.zeromeaner.util.LstResourceMap;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.RuleList;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
+import org.kryomq.kryo.Kryo;
+import org.kryomq.kryo.io.Input;
+import org.kryomq.kryo.io.Output;
 
 
 

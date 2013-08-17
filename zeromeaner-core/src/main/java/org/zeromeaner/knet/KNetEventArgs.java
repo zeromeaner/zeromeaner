@@ -14,10 +14,10 @@ import org.zeromeaner.knet.obj.PieceHold;
 import org.zeromeaner.knet.obj.PieceMovement;
 import org.zeromeaner.knet.obj.Replay;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.KryoException;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
+import org.kryomq.kryo.Kryo;
+import org.kryomq.kryo.KryoException;
+import org.kryomq.kryo.io.Input;
+import org.kryomq.kryo.io.Output;
 
 public enum KNetEventArgs {
 	

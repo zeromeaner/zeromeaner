@@ -12,10 +12,9 @@ import org.funcish.core.fn.Predicate;
 import org.funcish.core.impl.AbstractPredicate;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
-import org.zeromeaner.mq.Topics;
 import org.zeromeaner.util.KryoCopy;
 
-import com.esotericsoftware.kryonet.Connection;
+import org.kryomq.kryonet.Connection;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
@@ -75,7 +74,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	public KNetClient start() throws IOException, InterruptedException {
 		super.start();
 		
-		client.subscribe(Topics.CHANNEL, this);
+		client.subscribe(KNetTopics.CHANNEL, this);
 		
 		return this;
 	}

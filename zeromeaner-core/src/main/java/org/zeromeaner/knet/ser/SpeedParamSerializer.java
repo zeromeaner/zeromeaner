@@ -2,10 +2,10 @@ package org.zeromeaner.knet.ser;
 
 import org.zeromeaner.game.component.SpeedParam;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.Serializer;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
+import org.kryomq.kryo.Kryo;
+import org.kryomq.kryo.Serializer;
+import org.kryomq.kryo.io.Input;
+import org.kryomq.kryo.io.Output;
 
 public class SpeedParamSerializer extends Serializer<SpeedParam> {
 

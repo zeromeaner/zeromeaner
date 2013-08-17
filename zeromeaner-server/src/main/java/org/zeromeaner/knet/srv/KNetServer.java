@@ -17,11 +17,11 @@ import org.zeromeaner.knet.KNetEventSource;
 import org.zeromeaner.knet.KNetKryo;
 import org.zeromeaner.mq.MqServer;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.KryoSerialization;
-import com.esotericsoftware.kryonet.Listener;
-import com.esotericsoftware.kryonet.Server;
+import org.kryomq.kryo.Kryo;
+import org.kryomq.kryonet.Connection;
+import org.kryomq.kryonet.KryoSerialization;
+import org.kryomq.kryonet.Listener;
+import org.kryomq.kryonet.Server;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 

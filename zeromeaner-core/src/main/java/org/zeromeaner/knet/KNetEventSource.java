@@ -1,9 +1,9 @@
 package org.zeromeaner.knet;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.KryoSerializable;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
+import org.kryomq.kryo.Kryo;
+import org.kryomq.kryo.KryoSerializable;
+import org.kryomq.kryo.io.Input;
+import org.kryomq.kryo.io.Output;
 import com.google.common.base.Objects;
 
 public class KNetEventSource implements KryoSerializable {

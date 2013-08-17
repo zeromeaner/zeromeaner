@@ -92,9 +92,9 @@ import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.Zeroflections;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
+import org.kryomq.kryo.Kryo;
+import org.kryomq.kryo.io.Input;
+import org.kryomq.kryo.io.Output;
 
 import java.io.InputStreamReader;
 

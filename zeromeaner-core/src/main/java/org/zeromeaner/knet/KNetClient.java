@@ -6,18 +6,15 @@ import java.util.concurrent.Semaphore;
 
 import javax.swing.event.EventListenerList;
 
-import org.zeromeaner.mq.Control;
-import org.zeromeaner.mq.Message;
-import org.zeromeaner.mq.MessageListener;
-import org.zeromeaner.mq.MqClient;
-import org.zeromeaner.mq.ObjectMqClient;
-import org.zeromeaner.mq.Topics;
-
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.KryoSerialization;
-import com.esotericsoftware.kryonet.Listener;
+import org.kryomq.Control;
+import org.kryomq.Message;
+import org.kryomq.MessageListener;
+import org.kryomq.MqClient;
+import org.kryomq.kryo.Kryo;
+import org.kryomq.kryonet.Client;
+import org.kryomq.kryonet.Connection;
+import org.kryomq.kryonet.KryoSerialization;
+import org.kryomq.kryonet.Listener;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
@@ -72,8 +69,8 @@ public class KNetClient implements MessageListener {
 		issue(source.event(CONNECTED, true));
 		
 		client.subscribe(client.getPersonalTopic(), this);
-		client.subscribe(Topics.GLOBAL, this);
-		client.subscribe(Topics.CONNECTION, this);
+		client.subscribe(KNetTopics.GLOBAL, this);
+		client.subscribe(KNetTopics.CONNECTION, this);
 		
 		return this;
 	}

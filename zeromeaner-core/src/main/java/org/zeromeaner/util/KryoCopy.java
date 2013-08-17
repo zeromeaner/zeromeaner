@@ -4,9 +4,9 @@ import java.io.ByteArrayOutputStream;
 
 import org.zeromeaner.knet.KNetKryo;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
+import org.kryomq.kryo.Kryo;
+import org.kryomq.kryo.io.Input;
+import org.kryomq.kryo.io.Output;
 
 public class KryoCopy {
 	public static <E> void overwrite(E src, final E dest) {
