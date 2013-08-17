@@ -6,6 +6,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
@@ -20,6 +21,22 @@ import org.zeromeaner.util.Options;
 import org.zeromeaner.util.RuleList;
 
 public class StandaloneModeselectPanel extends JPanel {
+	private static String formatButtonText(String modeOrRuleName) {
+		List<String> lines = new ArrayList<>(Arrays.asList(modeOrRuleName.split("-+")));
+		for(int i = lines.size() - 1; i > 0; i--) {
+			if(lines.get(i).length() + lines.get(i-1).length() < 20)
+				lines.set(i-1, lines.get(i-1) + " " + lines.remove(i));
+		}
+		StringBuilder sb = new StringBuilder();
+		String sep = "<html><center>";
+		for(String line : lines) {
+			sb.append(sep);
+			sb.append(line);
+			sep = "<br>";
+		}
+		return sb.toString();
+	}
+	
 	private LstResourceMap recommended = new LstResourceMap("config/list/recommended_rules.lst");
 	
 	private List<ModeButton> modeButtons = new ArrayList<ModeButton>();
@@ -74,10 +91,11 @@ public class StandaloneModeselectPanel extends JPanel {
 		private RuleButton rule;
 		
 		public ModeButton(GameMode m) {
-			super("<html>" + m.getName().replaceAll("-+", "<br>"));
+//			super("<html>" + m.getName().replaceAll("-+", "<br>"));
+			super(formatButtonText(m.getName()));
 			this.mode = m;
-			setFont(getFont().deriveFont(8f));
-			setMargin(new Insets(10, 10, 10, 10));
+//			setFont(getFont().deriveFont(8f));
+			setMargin(new Insets(3, 3, 3, 3));
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -100,10 +118,11 @@ public class StandaloneModeselectPanel extends JPanel {
 	private class RuleButton extends JToggleButton implements ActionListener {
 		private RuleOptions rule;
 		public RuleButton(RuleOptions r) {
-			super("<html>" + r.strRuleName.replaceAll("-+", "<br>"));
+//			super("<html>" + r.strRuleName.replaceAll("-+", "<br>"));
+			super(formatButtonText(r.strRuleName));
 			this.rule = r;
-			setFont(getFont().deriveFont(8f));
-			setMargin(new Insets(10, 10, 10, 10));
+//			setFont(getFont().deriveFont(8f));
+			setMargin(new Insets(3, 3, 3, 3));
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
