@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.log4j.Logger;
-import org.kryomq.Control;
-import org.kryomq.Message;
-import org.kryomq.Meta;
-import org.kryomq.Topics;
+import org.kryomq.mq.Control;
+import org.kryomq.mq.Message;
+import org.kryomq.mq.Meta;
+import org.kryomq.mq.Topics;
 import org.zeromeaner.dbo.Users;
 import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;

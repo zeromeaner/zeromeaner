@@ -6,16 +6,16 @@ import java.util.concurrent.Semaphore;
 
 import javax.swing.event.EventListenerList;
 
-import org.kryomq.Control;
-import org.kryomq.Message;
-import org.kryomq.MessageListener;
-import org.kryomq.Meta;
-import org.kryomq.MqClient;
 import org.kryomq.kryo.Kryo;
 import org.kryomq.kryonet.Client;
 import org.kryomq.kryonet.Connection;
 import org.kryomq.kryonet.KryoSerialization;
 import org.kryomq.kryonet.Listener;
+import org.kryomq.mq.Control;
+import org.kryomq.mq.Message;
+import org.kryomq.mq.MessageListener;
+import org.kryomq.mq.Meta;
+import org.kryomq.mq.MqClient;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 

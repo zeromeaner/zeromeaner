@@ -15,12 +15,12 @@ import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.knet.KNetEventArgs;
 import org.zeromeaner.knet.KNetEventSource;
 import org.zeromeaner.knet.KNetKryo;
-import org.kryomq.MqServer;
 import org.kryomq.kryo.Kryo;
 import org.kryomq.kryonet.Connection;
 import org.kryomq.kryonet.KryoSerialization;
 import org.kryomq.kryonet.Listener;
 import org.kryomq.kryonet.Server;
+import org.kryomq.mq.MqServer;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
