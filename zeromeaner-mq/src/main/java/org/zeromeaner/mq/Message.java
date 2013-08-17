@@ -22,6 +22,10 @@ public class Message {
 		this(null, buf, reliable);
 	}
 	
+	public Message(String topic, boolean reliable) {
+		this(topic, null, reliable);
+	}
+	
 	public Message(String topic, byte[] buf, boolean reliable) {
 		this.topic = topic;
 		this.buf = buf;
@@ -37,7 +41,7 @@ public class Message {
 		}
 	}
 	
-	public void set(Kryo kryo, Object value) {
+	public Message set(Kryo kryo, Object value) {
 		ByteArrayOutputStream buf = new ByteArrayOutputStream();
 		Output output = new Output(buf);
 		try {
@@ -46,5 +50,6 @@ public class Message {
 			output.close();
 		}
 		this.buf = buf.toByteArray();
+		return this;
 	}
 }
