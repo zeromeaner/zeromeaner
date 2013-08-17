@@ -22,6 +22,11 @@ public class ObjectMqClient implements MessageListener {
 		this.port = port;
 	}
 	
+	public ObjectMqClient(Kryo kryo, MqClient client) {
+		this.kryo = kryo;
+		this.client = client;
+	}
+	
 	public void start() throws IOException {
 		client = new MqClient(host, port);
 		client.start();

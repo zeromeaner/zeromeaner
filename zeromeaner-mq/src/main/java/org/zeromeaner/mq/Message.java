@@ -10,6 +10,7 @@ import com.esotericsoftware.kryo.io.Output;
 public class Message {
 	public boolean reliable;
 	public String topic;
+	public String origin;
 	public byte[] buf;
 
 	public Message() {}

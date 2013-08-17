@@ -1,7 +1,9 @@
 package org.zeromeaner.mq;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.zeromeaner.mq.Control.Command;
 
@@ -17,6 +19,9 @@ public class MqServer extends Listener {
 	protected Server server;
 	
 	protected TopicRegistry<Connection> registry = new TopicRegistry<>();
+	protected TopicRegistry<Connection> privileged = new TopicRegistry<>();
+	
+	protected Map<Connection, String> origins = new ConcurrentHashMap<>();
 	
 	public MqServer(int port) {
 		this.port = port;
@@ -45,15 +50,23 @@ public class MqServer extends Listener {
 		server.stop();
 	}
 	
+	protected String personalTopic(Connection connection) {
+		return Topics.PRIVILEGED + Topics.CLIENT + connection.getID();
+	}
+	
 	@Override
 	public void connected(Connection connection) {
-		server.sendToTCP(connection.getID(), new Control(Command.PERSONAL_TOPIC, "client." + connection.getID()));
+		String personalTopic = personalTopic(connection);
+		privileged.subscribe(personalTopic, connection);
+		server.sendToTCP(connection.getID(), new Control(Command.PERSONAL_TOPIC, personalTopic));
+		origins.put(connection, personalTopic);
 	}
 	
 	@Override
 	public void received(Connection connection, Object object) {
 		if(object instanceof Message) {
 			Message m = (Message) object;
+			m.origin = personalTopic(connection);
 			Set<Connection> subscribers = registry.get(m.topic);
 			for(Connection c : subscribers) {
 				if(m.reliable)
@@ -66,10 +79,19 @@ public class MqServer extends Listener {
 			Control c = (Control) object;
 			switch(c.command) {
 			case SUBSCRIBE:
-				registry.subscribe(c.topic, connection);
+				if(!c.topic.startsWith(Topics.PRIVILEGED) || privileged.get(c.topic).contains(connection))
+					registry.subscribe(c.topic, connection);
 				break;
 			case UNSUBSCRIBE:
 				registry.unsubscribe(c.topic, connection);
+				break;
+			case PRIVILEGED_SUBSCRIBE:
+				if(connection.getRemoteAddressTCP().getAddress().isLoopbackAddress())
+					registry.subscribe(c.topic, connection);
+				break;
+			case PRIVILEGED_SET_ORIGIN:
+				if(connection.getRemoteAddressTCP().getAddress().isLoopbackAddress())
+					origins.put(connection, c.topic);
 				break;
 			}
 		}
