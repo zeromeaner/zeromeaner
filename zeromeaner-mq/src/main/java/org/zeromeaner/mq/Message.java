@@ -1,6 +1,10 @@
 package org.zeromeaner.mq;
 
+import java.io.ByteArrayOutputStream;
+
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
 public class Message {
@@ -17,5 +21,25 @@ public class Message {
 	public Message(byte[] buf, boolean reliable) {
 		this.buf = buf;
 		this.reliable = reliable;
+	}
+	
+	public Object get(Kryo kryo) {
+		Input input = new Input(buf);
+		try {
+			return kryo.readClassAndObject(input);
+		} finally {
+			input.close();
+		}
+	}
+	
+	public void set(Kryo kryo, Object value) {
+		ByteArrayOutputStream buf = new ByteArrayOutputStream();
+		Output output = new Output(buf);
+		try {
+			kryo.writeClassAndObject(output, value);
+		} finally {
+			output.close();
+		}
+		this.buf = buf.toByteArray();
 	}
 }
