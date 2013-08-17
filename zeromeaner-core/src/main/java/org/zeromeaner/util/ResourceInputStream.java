@@ -43,6 +43,8 @@ public class ResourceInputStream extends FilterInputStream {
 	
 	public static InputStream getStream(String resource) throws IOException {
 		InputStream in = null;
+		if(ResourceDownloadStream.getCache().containsKey(resource))
+			return new ByteArrayInputStream(ResourceDownloadStream.getCache().get(resource));
 		if(
 				StandaloneApplet.isApplet()
 				&& (resource.startsWith("config/setting/") || resource.startsWith("replay/"))

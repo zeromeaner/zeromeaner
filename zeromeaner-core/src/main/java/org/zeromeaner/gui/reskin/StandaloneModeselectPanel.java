@@ -1,25 +1,33 @@
 package org.zeromeaner.gui.reskin;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.subsystem.mode.GameMode;
+import org.zeromeaner.gui.tool.RuleEditorPanel;
+import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.LstResourceMap;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.RuleList;
+import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 
 public class StandaloneModeselectPanel extends JPanel {
 	private static String formatButtonText(String modeOrRuleName) {
@@ -38,6 +46,9 @@ public class StandaloneModeselectPanel extends JPanel {
 		return sb.toString();
 	}
 	
+	private static final String SELECT_CARD = "select";
+	private static final String EDIT_CARD = "edit";
+	
 	private LstResourceMap recommended = new LstResourceMap("config/list/recommended_rules.lst");
 	
 	private List<ModeButton> modeButtons = new ArrayList<ModeButton>();
@@ -46,8 +57,46 @@ public class StandaloneModeselectPanel extends JPanel {
 	private ModeButton currentMode;
 	private RuleButton currentRule;
 	
+	private CardLayout cards = new CardLayout();
+	
+	private RuleOptions custom;
+	
+	private RuleEditorPanel ruleEditor = new RuleEditorPanel();
+	
+	private void saveCustom() {
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		try {
+			CustomProperties p = new CustomProperties();
+			custom.writeProperty(p, 0);
+			p.store(bout, "Custom Rule");
+		} catch(IOException ioe) {
+			throw new RuntimeException(ioe);
+		}
+		ResourceDownloadStream.getCache().put(custom.resourceName, bout.toByteArray());
+	}
+	
 	public StandaloneModeselectPanel() {
-		super(new BorderLayout());
+		setLayout(cards);
+		
+		JPanel edit = new JPanel(new BorderLayout());
+		add(edit, EDIT_CARD);
+		edit.add(ruleEditor, BorderLayout.CENTER);
+		edit.add(new JButton(new AbstractAction("Done Editing Custom Rule") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ruleEditor.writeRuleFromUI(custom);
+				saveCustom();
+				cards.show(StandaloneModeselectPanel.this, SELECT_CARD);
+			}
+		}), BorderLayout.SOUTH);
+		custom = new RuleOptions(RuleList.getRules().getNamed("STANDARD"));
+		custom.strRuleName = "CUSTOM RULE";
+		custom.resourceName = "config/rule/Custom.rul";
+		saveCustom();
+		
+		JPanel select = new JPanel(new BorderLayout());
+		add(select, SELECT_CARD);
+		cards.show(this, SELECT_CARD);
 
 		ButtonGroup g = new ButtonGroup();
 		JPanel modeButtons = new JPanel(new GridLayout(0, 8, 10, 10));
@@ -60,14 +109,27 @@ public class StandaloneModeselectPanel extends JPanel {
 			this.modeButtons.add(b);
 		}
 		p.add(modeButtons, BorderLayout.CENTER);
-		add(p, BorderLayout.NORTH);
+		select.add(p, BorderLayout.NORTH);
 		
 		g = new ButtonGroup();
 		JPanel ruleButtons = new JPanel(new GridLayout(0, 8, 10, 10));
 		ruleButtons.setBorder(BorderFactory.createTitledBorder("Available Rules"));
 		p = new JPanel(new BorderLayout());
-		for(RuleOptions rule : RuleList.getRules()) {
+		RuleList rules = RuleList.getRules();
+		rules.add(0, custom);
+		for(RuleOptions rule : rules) {
 			RuleButton b = new RuleButton(rule);
+			
+			if(rule == custom) {
+				b.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						ruleEditor.readRuleToUI(custom);
+						cards.show(StandaloneModeselectPanel.this, EDIT_CARD);
+					}
+				});
+			}
+			
 			ruleButtons.add(b);
 			this.ruleButtons.add(b);
 			g.add(b);
@@ -79,7 +141,7 @@ public class StandaloneModeselectPanel extends JPanel {
 				b.setSelected(true);
 		}
 		p.add(ruleButtons, BorderLayout.CENTER);
-		add(p, BorderLayout.SOUTH);
+		select.add(p, BorderLayout.SOUTH);
 		
 		for(ModeButton mb : this.modeButtons) {
 //			if(mb.mode.getName().equals(StandaloneMain.propConfig.getProperty("name.mode")))
