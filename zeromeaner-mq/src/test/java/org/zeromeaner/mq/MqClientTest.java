@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class MqClientTest {
+public class MqClientTest extends MqTest {
 	@Test
 	public void testConnect() throws Exception {
 		MqServer server = new MqServer(11223);

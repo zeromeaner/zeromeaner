@@ -5,15 +5,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zeromeaner.mq.Control.Command;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.KryoSerialization;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
 public class MqServer extends Listener {
+	private static final Logger log = LoggerFactory.getLogger(MqServer.class);
+	
 	protected int port;
 	
 	protected Server server;
@@ -33,19 +38,16 @@ public class MqServer extends Listener {
 	}
 	
 	public void start() throws IOException {
-		server = new Server(1024*256, 1024*256);
+		log.debug("{} starting server on port {}", this, port);
+		server = new Server(1024*256, 1024*256, new KryoSerialization(new MqKryo()));
 		server.start();
 		server.bind(port, port);
 		server.addListener(this);
-		Kryo k = server.getKryo();
-		k.register(byte[].class);
-		k.register(Message.class, new FieldSerializer<>(k, Message.class));
-		k.register(Control.class, new FieldSerializer<>(k, Control.class));
-		k.register(Control.Command.class);
-		
+		log.debug("{} started server on port {}", this, port);
 	}
 	
 	public void stop() throws IOException {
+		log.debug("{} stopping server on port {}", this, port);
 		server.close();
 		server.stop();
 	}
@@ -66,7 +68,8 @@ public class MqServer extends Listener {
 	public void received(Connection connection, Object object) {
 		if(object instanceof Message) {
 			Message m = (Message) object;
-			m.origin = personalTopic(connection);
+			log.trace("{} dispatching message {}", this, m);
+			m.origin = origins.get(connection);
 			Set<Connection> subscribers = registry.get(m.topic);
 			for(Connection c : subscribers) {
 				if(m.reliable)
@@ -79,19 +82,32 @@ public class MqServer extends Listener {
 			Control c = (Control) object;
 			switch(c.command) {
 			case SUBSCRIBE:
-				if(!c.topic.startsWith(Topics.PRIVILEGED) || privileged.get(c.topic).contains(connection))
+				if(!c.topic.startsWith(Topics.PRIVILEGED) || privileged.get(c.topic).contains(connection)) {
+					log.trace("{} subscribing {} to topic {}", this, connection, c.topic);
 					registry.subscribe(c.topic, connection);
+				} else {
+					log.trace("{} not subscribing {} to privileged topic {}", this, connection, c.topic);
+				}
 				break;
 			case UNSUBSCRIBE:
+				log.trace("{} unsubscribing {} from topic {}", this, connection, c.topic);
 				registry.unsubscribe(c.topic, connection);
 				break;
 			case PRIVILEGED_SUBSCRIBE:
-				if(connection.getRemoteAddressTCP().getAddress().isLoopbackAddress())
+				if(connection.getRemoteAddressTCP().getAddress().isLoopbackAddress()) {
+					log.trace("{} subscribing privileged {} to topic {}", this, connection, c.topic);
 					registry.subscribe(c.topic, connection);
+				} else {
+					log.trace("{} not subscribing privileged {} to topic {}", this, connection, c.topic);
+				}
 				break;
 			case PRIVILEGED_SET_ORIGIN:
-				if(connection.getRemoteAddressTCP().getAddress().isLoopbackAddress())
+				if(connection.getRemoteAddressTCP().getAddress().isLoopbackAddress()) {
+					log.trace("{} setting privileged origin of {} to topic {}", this, connection, c.topic);
 					origins.put(connection, c.topic);
+				} else {
+					log.trace("{} not setting privileged origin of {} to topic {}", this, connection, c.topic);
+				}
 				break;
 			}
 		}
