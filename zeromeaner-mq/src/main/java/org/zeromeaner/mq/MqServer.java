@@ -57,6 +57,7 @@ public class MqServer extends Listener {
 		String personalTopic = Topics.PRIVILEGED + Topics.CLIENT + connection.getID();
 		String controlledTopic = Topics.CONTROLLED + Topics.CLIENT + connection.getID();
 		privileged.subscribe(personalTopic, connection);
+		privileged.subscribe(controlledTopic, connection);
 		origins.put(connection, personalTopic);
 		server.sendToTCP(connection.getID(), new Control(Command.PERSONAL_TOPIC, personalTopic));
 		server.sendToTCP(connection.getID(), new Control(Command.CONTROLLED_TOPIC, controlledTopic));
@@ -75,7 +76,19 @@ public class MqServer extends Listener {
 		if(object instanceof Message) {
 			Message m = (Message) object;
 			m.origin = origins.get(connection);
-			log.trace("{} dispatching message from {} to topic {}", this, m.origin, m.topic);
+			boolean authorized = true;
+			if(m.topic.startsWith(Topics.CONTROLLED)) {
+				authorized = false;
+				if(connection.getRemoteAddressTCP().getAddress().isLoopbackAddress())
+					authorized = true;
+				else if(privileged.get(m.topic).contains(connection))
+					authorized = true;
+			}
+			if(!authorized) {
+				log.trace("{} dropping unauthorized message from {} to {}", this, m.origin, m.topic);
+				return;
+			}
+			log.trace("{} dispatching message from {} to {}", this, m.origin, m.topic);
 			Set<Connection> subscribers = registry.get(m.topic);
 			for(Connection c : subscribers) {
 				if(m.reliable)
