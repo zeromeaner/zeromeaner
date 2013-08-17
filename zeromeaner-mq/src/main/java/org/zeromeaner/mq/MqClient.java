@@ -5,6 +5,8 @@ import java.util.Set;
 
 import org.zeromeaner.mq.Control.Command;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -24,8 +26,18 @@ public class MqClient extends Listener {
 	public void start() throws IOException {
 		client = new Client(256*1024, 256*1024);
 		client.start();
-		client.connect(0, host, port, port);
+		client.connect(10000, host, port, port);
 		client.addListener(this);
+		Kryo k = client.getKryo();
+		k.register(byte[].class);
+		k.register(Message.class, new FieldSerializer<>(k, Message.class));
+		k.register(Control.class, new FieldSerializer<>(k, Control.class));
+		k.register(Control.Command.class);
+	}
+	
+	public void stop() throws IOException {
+		client.close();
+		client.stop();
 	}
 	
 	@Override

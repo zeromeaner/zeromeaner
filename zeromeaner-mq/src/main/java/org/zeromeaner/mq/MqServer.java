@@ -38,6 +38,11 @@ public class MqServer extends Listener {
 		
 	}
 	
+	public void stop() throws IOException {
+		server.close();
+		server.stop();
+	}
+	
 	@Override
 	public void received(Connection connection, Object object) {
 		if(object instanceof Message) {
