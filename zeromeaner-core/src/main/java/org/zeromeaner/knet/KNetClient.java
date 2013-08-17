@@ -22,6 +22,25 @@ import com.esotericsoftware.kryonet.Listener;
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetClient implements MessageListener {
+	private class KNetMqClient extends MqClient {
+		private KNetMqClient(String host, int port) {
+			super(host, port);
+		}
+
+		@Override
+		public void disconnected(Connection connection) {
+			if(source != null)
+				issue(source.event(DISCONNECTED, true));
+		}
+
+		@Override
+		public void received(Connection connection, Object object) {
+			super.received(connection, object);
+			if(object instanceof Control)
+				controlled((Control) object);
+		}
+	}
+
 	protected String type;
 	protected String host;
 	protected int port;
@@ -42,20 +61,7 @@ public class KNetClient implements MessageListener {
 		this.host = host;
 		this.port = port;
 		KNetKryo.configure(kryo = new Kryo());
-		client = new MqClient(host, port) {
-			@Override
-			public void disconnected(Connection connection) {
-				if(source != null)
-					issue(source.event(DISCONNECTED, true));
-			}
-			
-			@Override
-			public void received(Connection connection, Object object) {
-				super.received(connection, object);
-				if(object instanceof Control)
-					controlled((Control) object);
-			}
-		};
+		client = new KNetMqClient(host, port);
 	}
 
 	public KNetClient start() throws IOException, InterruptedException {
