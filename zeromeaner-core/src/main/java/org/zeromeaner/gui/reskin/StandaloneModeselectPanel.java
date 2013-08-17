@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
@@ -50,6 +51,7 @@ public class StandaloneModeselectPanel extends JPanel {
 
 		ButtonGroup g = new ButtonGroup();
 		JPanel modeButtons = new JPanel(new GridLayout(0, 8, 10, 10));
+		modeButtons.setBorder(BorderFactory.createTitledBorder("Available Modes"));
 		JPanel p = new JPanel(new BorderLayout());
 		for(GameMode mode : ModeList.getModes()) {
 			ModeButton b = new ModeButton(mode);
@@ -62,6 +64,7 @@ public class StandaloneModeselectPanel extends JPanel {
 		
 		g = new ButtonGroup();
 		JPanel ruleButtons = new JPanel(new GridLayout(0, 8, 10, 10));
+		ruleButtons.setBorder(BorderFactory.createTitledBorder("Available Rules"));
 		p = new JPanel(new BorderLayout());
 		for(RuleOptions rule : RuleList.getRules()) {
 			RuleButton b = new RuleButton(rule);
@@ -95,7 +98,7 @@ public class StandaloneModeselectPanel extends JPanel {
 			super(formatButtonText(m.getName()));
 			this.mode = m;
 //			setFont(getFont().deriveFont(8f));
-			setMargin(new Insets(3, 3, 3, 3));
+			setMargin(new Insets(0, 3, 0, 3));
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -122,7 +125,7 @@ public class StandaloneModeselectPanel extends JPanel {
 			super(formatButtonText(r.strRuleName));
 			this.rule = r;
 //			setFont(getFont().deriveFont(8f));
-			setMargin(new Insets(3, 3, 3, 3));
+			setMargin(new Insets(0, 3, 0, 3));
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
