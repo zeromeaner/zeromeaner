@@ -26,7 +26,7 @@ public class KSChannelManagerTest {
 		server.stop();
 	}
 	
-	@Test
+//	@Test
 	public void testChannelList() throws Exception {
 		KNetClient c = new KNetClient("localhost", server.getPort());
 		final Semaphore sync = new Semaphore(0);
