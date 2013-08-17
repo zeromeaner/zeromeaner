@@ -29,8 +29,8 @@ public class ResourceOutputStream extends FilterOutputStream {
 
 	public static OutputStream getStream(String resource) throws IOException {
 		if(
-				(resource.startsWith("config/setting/")
-						|| StandaloneApplet.isApplet() && resource.startsWith("replay/"))
+				StandaloneApplet.isApplet()
+				&& (resource.startsWith("config/setting/") || StandaloneApplet.isApplet() && resource.startsWith("replay/"))
 				&& !ResourceInputStream.dontDownload.contains(resource))
 			return new ResourceUploadStream(resource);
 		try {
