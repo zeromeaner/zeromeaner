@@ -66,12 +66,12 @@ public class KNetClient implements MessageListener {
 
 	public KNetClient start() throws IOException, InterruptedException {
 		client.start();
-		source = new KNetEventSource(client.getPersonalTopic(), client.getPersonalId());
+		source = new KNetEventSource(client.getPrivilegedTopic(), client.getId());
 		source.setType(type);
 		source.setName(type + source.getTopic());
 		issue(source.event(CONNECTED, true));
 		
-		client.subscribe(client.getPersonalTopic(), this);
+		client.subscribe(client.getPrivilegedTopic(), this);
 		client.subscribe(KNetTopics.GLOBAL, this);
 		client.subscribe(KNetTopics.CONNECTION, this);
 		
