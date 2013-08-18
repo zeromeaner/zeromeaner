@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.log4j.Logger;
-import org.kryomq.mq.Control;
-import org.kryomq.mq.Message;
-import org.kryomq.mq.Meta;
-import org.kryomq.mq.Topics;
+import org.liquidmq.Control;
+import org.liquidmq.Message;
+import org.liquidmq.Meta;
+import org.liquidmq.Topics;
 import org.zeromeaner.dbo.Users;
 import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
@@ -43,15 +43,15 @@ public class KNetUserManager extends KNetClient implements KNetListener {
 		KNetEventSource s;
 		KNetEvent e;
 		Message m;
-		switch(meta.type) {
+		switch(meta.type()) {
 		case CONNECTED:
-			s = new KNetEventSource(meta.topic, -1);
+			s = new KNetEventSource(meta.topic(), -1);
 			e = s.event(CONNECTED, true);
 			m = new Message(KNetTopics.CONNECTION, true).set(kryo, e);
 			client.send(m);
 			break;
 		case DISCONNECTED:
-			s = new KNetEventSource(meta.topic, -1);
+			s = new KNetEventSource(meta.topic(), -1);
 			e = s.event(DISCONNECTED, true);
 			m = new Message(KNetTopics.CONNECTION, true).set(kryo, e);
 			client.send(m);

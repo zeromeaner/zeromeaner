@@ -3,10 +3,10 @@ package org.zeromeaner.knet.obj;
 import org.zeromeaner.game.component.Statistics;
 import org.zeromeaner.util.CustomProperties;
 
-import org.kryomq.kryo.Kryo;
-import org.kryomq.kryo.KryoSerializable;
-import org.kryomq.kryo.io.Input;
-import org.kryomq.kryo.io.Output;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 
 public class Replay implements KryoSerializable {
 	private CustomProperties replay;

@@ -6,12 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.funcish.core.fn.Predicate;
-import org.kryomq.kryo.Kryo;
-import org.kryomq.kryo.KryoException;
-import org.kryomq.kryo.KryoSerializable;
-import org.kryomq.kryo.io.Input;
-import org.kryomq.kryo.io.Output;
-import org.kryomq.mq.Topics;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoException;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import org.liquidmq.Topics;
 
 public class KNetEvent extends EventObject implements KryoSerializable {
 	private Map<KNetEventArgs, Object> args = new HashMap<KNetEventArgs, Object>();

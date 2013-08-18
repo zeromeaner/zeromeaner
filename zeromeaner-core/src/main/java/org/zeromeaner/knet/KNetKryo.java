@@ -34,9 +34,9 @@ import org.zeromeaner.knet.ser.StatisticsSerializer;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
-import org.kryomq.kryo.Kryo;
-import org.kryomq.kryo.serializers.CompatibleFieldSerializer;
-import org.kryomq.kryo.serializers.FieldSerializer;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
+import com.esotericsoftware.kryo.serializers.FieldSerializer;
 
 public class KNetKryo {
 	public static void configure(Kryo kryo) {

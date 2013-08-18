@@ -1,9 +1,9 @@
 package org.zeromeaner.knet.obj;
 
-import org.kryomq.kryo.Kryo;
-import org.kryomq.kryo.KryoSerializable;
-import org.kryomq.kryo.io.Input;
-import org.kryomq.kryo.io.Output;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 
 public class PieceMovement implements KryoSerializable {
 	private int pieceId;

@@ -14,7 +14,7 @@ import org.zeromeaner.game.component.Field;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.util.KryoCopy;
 
-import org.kryomq.kryonet.Connection;
+import com.esotericsoftware.kryonet.Connection;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 

@@ -6,16 +6,16 @@ import java.util.concurrent.Semaphore;
 
 import javax.swing.event.EventListenerList;
 
-import org.kryomq.kryo.Kryo;
-import org.kryomq.kryonet.Client;
-import org.kryomq.kryonet.Connection;
-import org.kryomq.kryonet.KryoSerialization;
-import org.kryomq.kryonet.Listener;
-import org.kryomq.mq.Control;
-import org.kryomq.mq.Message;
-import org.kryomq.mq.MessageListener;
-import org.kryomq.mq.Meta;
-import org.kryomq.mq.MqClient;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.KryoSerialization;
+import com.esotericsoftware.kryonet.Listener;
+import org.liquidmq.Control;
+import org.liquidmq.Message;
+import org.liquidmq.MessageListener;
+import org.liquidmq.Meta;
+import org.liquidmq.MqClient;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
