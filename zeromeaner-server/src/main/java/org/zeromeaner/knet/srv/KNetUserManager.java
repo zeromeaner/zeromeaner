@@ -27,6 +27,8 @@ import static org.zeromeaner.knet.KNetEventArgs.*;
 public class KNetUserManager extends KNetClient implements KNetListener {
 	private static final Logger log = Logger.getLogger(KNetUserManager.class);
 
+	private Topic auth;
+	
 	public KNetUserManager(int port) {
 		super("UserManager", "localhost", port);
 		
@@ -37,8 +39,12 @@ public class KNetUserManager extends KNetClient implements KNetListener {
 	public KNetClient start() throws IOException, InterruptedException {
 		super.start();
 
-		client.subscribe(new Topic(KNetTopics.AUTH).addTag(Topic.PRIVILEGED_TAG), this);
+		auth = new Topic(KNetTopics.AUTH).addTag(Topic.PRIVILEGED_TAG);
+		
+		client.claimOwnership(auth);
+		client.subscribe(auth, this);
 //		client.setOrigin(Topics.PRIVILEGED + KNetTopics.AUTH);
+		origin = auth;
 		
 		client.subscribe(MmmqTopics.CLIENT_CONNECTED, new MessageListener() {
 			@Override
@@ -51,7 +57,7 @@ public class KNetUserManager extends KNetClient implements KNetListener {
 				Kryo kryo = new Kryo();
 				KNetKryo.configure(kryo);
 				kryo.writeClassAndObject(output, e);
-				client.sendMessage((Message) new MessagePacket(new Topic(KNetTopics.CONNECTION)).withMessage(bout.toByteArray()).tcp());
+				client.sendMessage((Message) new MessagePacket(auth, new Topic(KNetTopics.CONNECTION)).withMessage(bout.toByteArray()).tcp());
 			}
 		});
 		client.subscribe(MmmqTopics.CLIENT_DISCONNECTED, new MessageListener() {
@@ -65,7 +71,7 @@ public class KNetUserManager extends KNetClient implements KNetListener {
 				Kryo kryo = new Kryo();
 				KNetKryo.configure(kryo);
 				kryo.writeClassAndObject(output, e);
-				client.sendMessage((Message) new MessagePacket(new Topic(KNetTopics.CONNECTION)).withMessage(bout.toByteArray()).tcp());
+				client.sendMessage((Message) new MessagePacket(auth, new Topic(KNetTopics.CONNECTION)).withMessage(bout.toByteArray()).tcp());
 			}
 		});
 		

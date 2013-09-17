@@ -53,6 +53,8 @@ public class KNetClient implements MessageListener {
 
 	protected KNetEventSource source;
 
+	protected Topic origin;
+	
 	protected EventListenerList listenerList = new EventListenerList();
 
 	public KNetClient(String host, int port) {
@@ -70,7 +72,7 @@ public class KNetClient implements MessageListener {
 	public KNetClient start() throws IOException, InterruptedException {
 		client.start();
 		client.connect(5000, host, port, port);
-		source = new KNetEventSource(client.getDirectTopic().toString(), client.getID());
+		source = new KNetEventSource((origin = client.getDirectTopic()).toString(), client.getID());
 		source.setType(type);
 		source.setName(type + source.getTopic());
 		issue(source.event(CONNECTED, true));
@@ -184,7 +186,7 @@ public class KNetClient implements MessageListener {
 		Output out = new Output(bout);
 		kryo.writeClassAndObject(out, e);
 		out.flush();
-		Message m = (Message) new MessagePacket(new Topic(e.getTopic())).withMessage(bout.toByteArray()).tcp();
+		Message m = (Message) new MessagePacket(origin, new Topic(e.getTopic())).withMessage(bout.toByteArray()).tcp();
 		client.sendMessage(m);
 	}
 
@@ -200,7 +202,7 @@ public class KNetClient implements MessageListener {
 		Output out = new Output(bout);
 		kryo.writeClassAndObject(out, e);
 		out.flush();
-		Message m = (Message) new MessagePacket(new Topic(e.getTopic())).withMessage(bout.toByteArray()).udp();
+		Message m = (Message) new MessagePacket(origin, new Topic(e.getTopic())).withMessage(bout.toByteArray()).udp();
 		client.sendMessage(m);
 	}
 

@@ -68,6 +68,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 		client.subscribe(new Topic(KNetTopics.CHANNEL), this);
 		client.subscribe(new Topic(lobby.getTopic()), this);
 //		client.setOrigin(KNetTopics.CHANNEL);
+		origin = new Topic(KNetTopics.CHANNEL);
 		
 		return this;
 	}
