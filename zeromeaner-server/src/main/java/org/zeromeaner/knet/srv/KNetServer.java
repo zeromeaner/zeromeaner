@@ -15,12 +15,14 @@ import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.knet.KNetEventArgs;
 import org.zeromeaner.knet.KNetEventSource;
 import org.zeromeaner.knet.KNetKryo;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.KryoSerialization;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
-import org.liquidmq.MqServer;
+
+import org.mmmq.io.MasterServer;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
@@ -31,7 +33,7 @@ public class KNetServer {
 	
 	protected int port;
 	protected AtomicInteger nextClientId = new AtomicInteger(-1);
-	protected MqServer server;
+	protected MasterServer server;
 	
 	
 	protected Map<Integer, KNetEventSource> sourcesByConnectionId = new HashMap<Integer, KNetEventSource>();
@@ -45,8 +47,9 @@ public class KNetServer {
 		this.port = port;
 		Kryo kryo = new Kryo();
 		KNetKryo.configure(kryo);
-		server = new MqServer(port);
+		server = new MasterServer();
 		server.start();
+		server.bind(port, port);
 		chanman = new KNetChannelManager(port);
 		chanman.start();
 		uman = new KNetUserManager(port);

@@ -1,28 +1,31 @@
 package org.zeromeaner.knet;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 import javax.swing.event.EventListenerList;
 
+import org.mmmq.Message;
+import org.mmmq.MessageListener;
+import org.mmmq.Topic;
+import org.mmmq.io.MasterClient;
+import org.mmmq.io.MessagePacket;
+
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.KryoSerialization;
 import com.esotericsoftware.kryonet.Listener;
-import org.liquidmq.Control;
-import org.liquidmq.Message;
-import org.liquidmq.MessageListener;
-import org.liquidmq.Meta;
-import org.liquidmq.MqClient;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetClient implements MessageListener {
-	private class KNetMqClient extends MqClient {
-		private KNetMqClient(String host, int port) {
-			super(host, port);
+	private class KNetMasterClient extends MasterClient {
+		private KNetMasterClient() {
 		}
 
 		@Override
@@ -34,10 +37,10 @@ public class KNetClient implements MessageListener {
 		@Override
 		public void received(Connection connection, Object object) {
 			super.received(connection, object);
-			if(object instanceof Control)
-				controlled((Control) object);
-			if(object instanceof Meta)
-				metad((Meta) object);
+//			if(object instanceof Control)
+//				controlled((Control) object);
+//			if(object instanceof Meta)
+//				metad((Meta) object);
 		}
 	}
 
@@ -46,7 +49,7 @@ public class KNetClient implements MessageListener {
 	protected int port;
 
 	protected Kryo kryo;
-	protected MqClient client;
+	protected MasterClient client;
 
 	protected KNetEventSource source;
 
@@ -61,19 +64,20 @@ public class KNetClient implements MessageListener {
 		this.host = host;
 		this.port = port;
 		KNetKryo.configure(kryo = new Kryo());
-		client = new KNetMqClient(host, port);
+		client = new KNetMasterClient();
 	}
 
 	public KNetClient start() throws IOException, InterruptedException {
 		client.start();
-		source = new KNetEventSource(client.getPrivilegedTopic(), client.getId());
+		client.connect(5000, host, port, port);
+		source = new KNetEventSource(client.getDirectTopic().toString(), client.getID());
 		source.setType(type);
 		source.setName(type + source.getTopic());
 		issue(source.event(CONNECTED, true));
 		
-		client.subscribe(client.getPrivilegedTopic(), this);
-		client.subscribe(KNetTopics.GLOBAL, this);
-		client.subscribe(KNetTopics.CONNECTION, this);
+		client.subscribe(client.getDirectTopic(), this);
+		client.subscribe(new Topic(KNetTopics.GLOBAL), this);
+		client.subscribe(new Topic(KNetTopics.CONNECTION), this);
 		
 		return this;
 	}
@@ -84,20 +88,16 @@ public class KNetClient implements MessageListener {
 
 	@Override
 	public void messageReceived(Message message) {
-		Object obj = message.get(kryo);
+//		Object obj = message.get(kryo);
+		Kryo kryo = new Kryo();
+		KNetKryo.configure(kryo);
+		
+		Object obj = kryo.readClassAndObject(new Input(message.message()));
 		if(!(obj instanceof KNetEvent))
 			return;
 		received((KNetEvent) obj);
 	}
 	
-	protected void controlled(Control control) {
-		
-	}
-	
-	protected void metad(Meta meta) {
-		
-	}
-
 	protected void received(KNetEvent e) {
 		issue(e);
 	}
@@ -180,8 +180,12 @@ public class KNetClient implements MessageListener {
 		e.getArgs().remove(UDP);
 		issue(e);
 		e.getSource();
-		Message m = new Message(e.getTopic(), true).set(kryo, e);
-		client.send(m);
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		Output out = new Output(bout);
+		kryo.writeClassAndObject(out, e);
+		out.flush();
+		Message m = (Message) new MessagePacket(new Topic(e.getTopic())).withMessage(bout.toByteArray()).tcp();
+		client.sendMessage(m);
 	}
 
 	public void fireUDP(Object... args) {
@@ -192,8 +196,12 @@ public class KNetClient implements MessageListener {
 		e = process(e);
 		e.getArgs().put(UDP, true);
 		issue(e);
-		Message m = new Message(e.getTopic(), false).set(kryo, e);
-		client.send(m);
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		Output out = new Output(bout);
+		kryo.writeClassAndObject(out, e);
+		out.flush();
+		Message m = (Message) new MessagePacket(new Topic(e.getTopic())).withMessage(bout.toByteArray()).udp();
+		client.sendMessage(m);
 	}
 
 	public String getHost() {

@@ -156,8 +156,8 @@
 			<version>1.7.5</version>
 		</dependency>
 		<dependency>
-			<groupId>org.liquidmq</groupId>
-			<artifactId>liquidmq</artifactId>
+			<groupId>org.mmmq</groupId>
+			<artifactId>mmmq</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

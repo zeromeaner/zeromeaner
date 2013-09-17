@@ -10,6 +10,7 @@ import java.util.Map;
 import org.funcish.core.Predicates;
 import org.funcish.core.fn.Predicate;
 import org.funcish.core.impl.AbstractPredicate;
+import org.mmmq.Topic;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.util.KryoCopy;
@@ -74,7 +75,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	public KNetClient start() throws IOException, InterruptedException {
 		super.start();
 		
-		client.subscribe(KNetTopics.CHANNEL, this);
+		client.subscribe(new Topic(KNetTopics.CHANNEL), this);
 		
 		return this;
 	}
@@ -142,7 +143,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 			c = updateChannel(e, c);
 			if(e.is(I_JOINED_CHANNEL)) {
 				currentChannel = c;
-				this.client.subscribe(c.getTopic(), this);
+				this.client.subscribe(new Topic(c.getTopic()), this);
 				fireChannelJoined(e, c);
 			}
 		} else if(e.is(LEAVE_CHANNEL)) {
@@ -150,7 +151,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 			c = updateChannel(e, c);
 			if(e.is(I_LEFT_CHANNEL)) {
 				currentChannel = null;
-				this.client.unsubscribe(c.getTopic(), this);
+				this.client.unsubscribe(new Topic(c.getTopic()), this);
 				fireChannelLeft(e, c);
 			}
 		} else if(e.is(CHANNEL_CHAT)) {

@@ -17,6 +17,9 @@
         <dependent-module archiveName="zeromeaner-laf-1.0.19-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zeromeaner-laf/zeromeaner-laf">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="mmmq-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/mmmq/mmmq">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="zeromeaner-netstats-1.0.19-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zeromeaner-netstats/zeromeaner-netstats">
             <dependency-type>uses</dependency-type>
         </dependent-module>

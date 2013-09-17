@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.text.html.HTMLDocument.HTMLReader.SpecialAction;
 
 import org.apache.log4j.Logger;
+import org.mmmq.Topic;
 import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.knet.KNetEventArgs;
@@ -64,9 +65,9 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 	public KNetChannelManager start() throws IOException, InterruptedException {
 		super.start();
 		
-		client.subscribe(KNetTopics.CHANNEL, this);
-		client.subscribe(lobby.getTopic(), this);
-		client.setOrigin(KNetTopics.CHANNEL);
+		client.subscribe(new Topic(KNetTopics.CHANNEL), this);
+		client.subscribe(new Topic(lobby.getTopic()), this);
+//		client.setOrigin(KNetTopics.CHANNEL);
 		
 		return this;
 	}
@@ -119,7 +120,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				}
 				request.setId(nextChannelId.incrementAndGet());
 
-				this.client.subscribe(request.getTopic(), this);
+				this.client.subscribe(new Topic(request.getTopic()), this);
 				
 				channels.put(request.getId(), request);
 				states.put(request, new ChannelState(request));
