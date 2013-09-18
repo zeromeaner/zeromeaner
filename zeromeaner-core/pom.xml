@@ -163,21 +163,6 @@
 
 	<repositories>
 		<repository>
-			<id>b2s-repo</id>
-			<url>http://b2s-repo.googlecode.com/svn/trunk/mvn-repo</url>
-		</repository>
-
-		<repository>
-			<id>freehep</id>
-			<url>http://java.freehep.org/maven2</url>
-		</repository>
-
-		<repository>
-			<id>sonatype</id>
-			<url>https://oss.sonatype.org/content/groups/public/</url>
-		</repository>
-			
-		<repository>
 			<id>mmmq</id>
 			<url>http://mmmq.org/repo/</url>
 		</repository>
