@@ -8,6 +8,7 @@ import java.util.concurrent.Callable;
 import org.badiff.ByteArrayDiffs;
 import org.badiff.Diff;
 import org.badiff.alg.EditGraph;
+import org.badiff.alg.Graph;
 import org.badiff.alg.InertialGraph;
 import org.badiff.imp.MemoryDiff;
 import org.badiff.io.DefaultSerialization;
@@ -33,7 +34,7 @@ public class DiffFieldSerializer<T> extends Serializer<T> {
 	protected byte[] typicalBytes;
 	protected FieldSerializer<T> flds;
 	
-	protected EditGraph graph = new EditGraph((Diff.DEFAULT_CHUNK + 1) * (Diff.DEFAULT_CHUNK + 1));
+	protected Graph graph = new InertialGraph((Diff.DEFAULT_CHUNK + 1) * (Diff.DEFAULT_CHUNK + 1));
 	
 	public DiffFieldSerializer(Kryo kryo, Class<T> type, T typical) {
 		this.typical = typical;
