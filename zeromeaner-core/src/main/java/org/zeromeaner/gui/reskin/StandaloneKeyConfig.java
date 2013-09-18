@@ -46,6 +46,8 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
+import org.zeromeaner.util.Options;
+
 import static org.zeromeaner.gui.reskin.Localizations.lz;
 
 /**
@@ -128,7 +130,7 @@ public class StandaloneKeyConfig extends JPanel implements ActionListener {
 			StandaloneGameKey.gamekey[playerID].keymap[i] = keyCodes[i];
 			StandaloneGameKey.gamekey[playerID].keymapNav[i] = keyCodesNav[i];
 		}
-		StandaloneGameKey.gamekey[playerID].saveConfig(StandaloneMain.propConfig);
+		StandaloneGameKey.gamekey[playerID].saveConfig(Options.GUI_PROPERTIES);
 		StandaloneMain.saveConfig();
 	}
 
@@ -241,7 +243,7 @@ public class StandaloneKeyConfig extends JPanel implements ActionListener {
 			int id = Integer.parseInt(strTemp);
 
 			StandaloneGameKey.gamekey[playerID].loadDefaultKeymap(id);
-			StandaloneGameKey.gamekey[playerID].saveConfig(StandaloneMain.propConfig);
+			StandaloneGameKey.gamekey[playerID].saveConfig(Options.GUI_PROPERTIES);
 			StandaloneMain.saveConfig();
 			load(playerID);
 		}

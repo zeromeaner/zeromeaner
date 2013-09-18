@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.MusicList;
+import org.zeromeaner.util.Options;
 
 public class StandaloneMusicVolumePanel extends JPanel {
 	private static Localization lz = new Localization();
@@ -34,12 +35,14 @@ public class StandaloneMusicVolumePanel extends JPanel {
 					MusicList.getInstance().setVolume(1f);
 				else
 					MusicList.getInstance().setVolume(0f);
-				CookieAccess.put("bgm.enable", "" + cb.isSelected());
+//				CookieAccess.put("bgm.enable", "" + cb.isSelected());
+				Options.standalone().BGM_ENABLE.set(cb.isSelected());
 			}
 		});
-		boolean sel = true;
-		if(CookieAccess.get("bgm.enable") != null)
-			sel = Boolean.parseBoolean(CookieAccess.get("bgm.enable"));
+//		boolean sel = true;
+//		if(CookieAccess.get("bgm.enable") != null)
+//			sel = Boolean.parseBoolean(CookieAccess.get("bgm.enable"));
+		boolean sel = Options.standalone().BGM_ENABLE.value();
 		cb.setSelected(sel);
 		MusicList.getInstance().setVolume(sel ? 1f : 0f);
 		p.add(cb, c);
@@ -47,7 +50,8 @@ public class StandaloneMusicVolumePanel extends JPanel {
 		DefaultComboBoxModel smdl = new DefaultComboBoxModel(MusicList.getInstance().filesOnly().toArray());
 		smdl.insertElementAt(lz.s("random"), 0);
 		smdl.setSelectedItem("boisterous little oscillator");
-		String bgmSelection = CookieAccess.get("bgm.selection");
+//		String bgmSelection = CookieAccess.get("bgm.selection");
+		String bgmSelection = Options.standalone().BGM_SELECTION.value();
 		if(bgmSelection != null && smdl.getIndexOf(bgmSelection) != -1)
 			smdl.setSelectedItem(bgmSelection);
 		JComboBox selection = new JComboBox(smdl);
@@ -56,7 +60,8 @@ public class StandaloneMusicVolumePanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				JComboBox selection = (JComboBox) e.getSource();
 				MusicList.getInstance().setSelection(selection.getSelectedIndex() - 1);
-				CookieAccess.put("bgm.selection", (String) selection.getSelectedItem());
+//				CookieAccess.put("bgm.selection", (String) selection.getSelectedItem());
+				Options.standalone().BGM_SELECTION.set((String) selection.getSelectedItem());
 			}
 		});
 		MusicList.getInstance().setSelection(selection.getSelectedIndex() - 1);

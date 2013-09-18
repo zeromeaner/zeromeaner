@@ -46,6 +46,8 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.gui.EffectObject;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.Options;
+import org.zeromeaner.util.Options.StandaloneOptions;
 
 
 //import org.apache.log4j.Logger;
@@ -166,18 +168,20 @@ public class StandaloneRenderer extends EventRenderer {
 		graphics = null;
 		effectlist = new ArrayList<EffectObject>(10*4);
 
-		showbg = StandaloneMain.propConfig.getProperty("option.showbg", true);
-		showlineeffect = StandaloneMain.propConfig.getProperty("option.showlineeffect", false);
-		showmeter = StandaloneMain.propConfig.getProperty("option.showmeter", true);
-		showfieldblockgraphics = StandaloneMain.propConfig.getProperty("option.showfieldblockgraphics", true);
-		simpleblock = StandaloneMain.propConfig.getProperty("option.simpleblock", false);
-		showfieldbggrid = StandaloneMain.propConfig.getProperty("option.showfieldbggrid", true);
-		darknextarea = StandaloneMain.propConfig.getProperty("option.darknextarea", true);
-		nextshadow = StandaloneMain.propConfig.getProperty("option.nextshadow", false);
-		lineeffectspeed = StandaloneMain.propConfig.getProperty("option.lineeffectspeed", 0);
-		outlineghost = StandaloneMain.propConfig.getProperty("option.outlineghost", false);
-		sidenext = StandaloneMain.propConfig.getProperty("option.sidenext", false);
-		bigsidenext = StandaloneMain.propConfig.getProperty("option.bigsidenext", false);
+		StandaloneOptions opt = Options.standalone();
+		
+		showbg = opt.SHOW_BG.value();
+		showlineeffect = opt.SHOW_LINE_EFFECT.value();
+		showmeter = opt.SHOW_METER.value();
+		showfieldblockgraphics = opt.SHOW_FIELD_BLOCK_GRAPHICS.value();
+		simpleblock = opt.SIMPLE_BLOCK.value();
+		showfieldbggrid = opt.SHOW_FIELD_BG_GRID.value();
+		darknextarea = opt.DARK_NEXT_AREA.value();
+		nextshadow = opt.NEXT_SHADOW.value();
+		lineeffectspeed = opt.LINE_EFFECT_SPEED.value();
+		outlineghost = opt.OUTLINE_GHOST.value();
+		sidenext = opt.SIDE_NEXT.value();
+		bigsidenext = opt.BIG_SIDE_NEXT.value();
 	}
 
 	/*
@@ -352,9 +356,8 @@ public class StandaloneRenderer extends EventRenderer {
 	public void saveReplay(GameManager owner, CustomProperties prop) {
 		if(owner.mode.isNetplayMode()) return;
 
-		String filename = saveReplay(owner, prop, StandaloneMain.propConfig.getProperty("custom.replay.directory", "replay"));
+		String filename = saveReplay(owner, prop, "replay");
 
-		
 		
 		String replayUrl = StandaloneApplet.url + "?replay=replay/../../" + StandaloneMain.userId + "/" + filename;
 		try {

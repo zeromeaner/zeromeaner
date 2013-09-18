@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>zeromeaner-parent</artifactId>
 		<groupId>org.zeromeaner</groupId>
-		<version>1.0.18</version>
+		<version>1.1.0</version>
 		<relativePath>../zeromeaner-parent</relativePath>
 	</parent>
 	<artifactId>zeromeaner-webstart-war</artifactId>
@@ -87,6 +87,11 @@
 							<includes>
 								<include>*.jar</include>
 							</includes>
+<!--
+							<excludes>
+								<exclude>zeromeaner-media-*.jar</exclude>
+							</excludes>
+-->
 							<keystore>keystore</keystore>
 							<alias>signFiles</alias>
 							<storepass>CasioF-2</storepass>
@@ -156,7 +161,7 @@
 		<dependency>
 			<groupId>org.zeromeaner</groupId>
 			<artifactId>zeromeaner-server</artifactId>
-			<version>1.0.18</version>
+			<version>1.1.0</version>
 		</dependency>
 	</dependencies>
 </project>

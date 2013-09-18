@@ -2,7 +2,9 @@ package org.zeromeaner.game.evil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -11,14 +13,19 @@ import java.util.concurrent.FutureTask;
 
 import org.eviline.Field;
 import org.eviline.PlayerAction;
+import org.eviline.PlayerActionNode;
 import org.eviline.PlayerActionType;
 import org.eviline.ai.Decision;
 import org.eviline.ai.DefaultAIKernel;
 import org.eviline.ai.QueueContext;
+import org.eviline.fitness.AbstractFitness;
+import org.eviline.fitness.DefaultFitness;
 import org.eviline.fitness.EvilineFitness;
 import org.eviline.fitness.EvilineFitness2;
+import org.eviline.fitness.LandingFitness;
 import org.eviline.Shape;
 import org.eviline.ShapeType;
+import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
@@ -60,10 +67,31 @@ public class TNBot extends AbstractAI {
 		@Override
 		public void init(GameEngine engine, int playerID) {
 			super.init(engine, playerID);
+			LandingFitness f = new LandingFitness();
+			f.setParams(new double[] {
+					2.160522464746765, 2.509213204322845, 2.1764856424947236, 4.1290968995371085, 2.9511165482343973, 4.653885164992926, 3.4123834343268573, 2.91278035162247, 4.082325057981251, 3.9993992350672034, 3.123974814581451
+			});
+			kernel.setFitness(f);
 			kernel.setHardDropOnly(false);
 			highGravity = false;
 			skipHold = true;
-			skipLookahead = false;
+			skipLookahead = true;
+		}
+	}
+	
+	public static class Lander extends TNBot {
+		@Override
+		public String getName() {
+			return super.getName() + " [Lander]";
+		}
+		
+		@Override
+		public void init(GameEngine engine, int playerID) {
+			super.init(engine, playerID);
+			LandingFitness f = new LandingFitness();
+			kernel.setFitness(f);
+			skipHold = false;
+			skipLookahead = true;
 		}
 	}
 	
@@ -77,26 +105,54 @@ public class TNBot extends AbstractAI {
 		public void init(GameEngine engine, int playerID) {
 			super.init(engine, playerID);
 			skipLookahead = false;
-			lookahead = 3;
+			skipHold = true;
+			lookahead = 2;
 		}
 	}
 	
 	public static class Dig extends TNBot {
 		@Override
 		public String getName() {
-			return super.getName() + " [Dig]";
+			return super.getName() + " [Dig Challenge]";
 		}
 		
 		@Override
 		public void init(GameEngine engine, int playerID) {
 			super.init(engine, playerID);
-			lookahead = 2;
-			/*
-			double[] fp = kernel.getFitness().getParams();
-			fp[EvilineFitness.Weights.TRANSITION_EXP] += 2;
-			fp[EvilineFitness.Weights.IMPOSSIBLE_POWER] += 2;
-			fp[EvilineFitness.Weights.SMOOTHNESS_MULT] *= 3;
-			*/
+			
+			LandingFitness f = new LandingFitness();
+			kernel.setFitness(f);
+			skipLookahead = true;
+			skipHold = false;
+/*			
+			AntiGarbageFitness fitness = new AntiGarbageFitness();
+			kernel.setFitness(fitness);
+			fitness.getParams()[EvilineFitness.Weights.BLOCK_HEIGHT] *= 15;
+			fitness.getParams()[EvilineFitness.Weights.TRANSITION_EXP] *= 2;
+			fitness.getParams()[EvilineFitness.Weights.SMOOTHNESS_MULT] += 2;
+			fitness.getParams()[EvilineFitness.Weights.IMPOSSIBLE_POWER] += 4;
+			fitness.getParams()[EvilineFitness.Weights.CLEARED_LINES] += 2;
+*/
+			lookahead = 1;
+//			fuzzyLookahead = 0.3;
+//			kernel.setHardDropOnly(true);
+//			skipHold = true;
+		}
+
+		@Override
+		public void setControl(GameEngine engine, int playerID, Controller ctrl) {
+			org.zeromeaner.game.component.Field field = engine.field;
+			boolean garbage = false;
+			for(int x = 0; x < field.getWidth(); x++) {
+				Block b = field.getBlock(x, field.getHeight() - 1);
+				if(b.getAttribute(Block.BLOCK_ATTRIBUTE_GARBAGE)) {
+					garbage = true;
+					break;
+				}
+			}
+			if(!garbage)
+				return;
+			super.setControl(engine, playerID, ctrl);
 		}
 	}
 	
@@ -146,6 +202,8 @@ public class TNBot extends AbstractAI {
 	protected int das = 0;
 	protected Integer buttonId;
 	protected double worst = 0;
+	
+	protected double fuzzyLookahead = 0;
 	
 	@Override
 	public String getName() {
@@ -267,7 +325,8 @@ public class TNBot extends AbstractAI {
 							f.setShapeY(heldShape.type().starterY());
 							types = Arrays.copyOf(types, types.length);
 							types[0] = heldShape.type();
-							qc = new QueueContext(kernel, f, types);
+//							qc = new QueueContext(kernel, f, types);
+							qc = new QueueContext(kernel, f, new ShapeType[] {heldShape.type()});
 							Decision heldBest = kernel.bestFor(qc);
 							if(heldBest.score < best.score) {
 								List<PlayerAction> hp = new ArrayList<PlayerAction>(Arrays.asList(new PlayerAction(field, PlayerActionType.HOLD)));
@@ -292,7 +351,9 @@ public class TNBot extends AbstractAI {
 //					}
 //				}
 				
-				return best.bestPath;
+				List<PlayerAction> bestPath = new ArrayList<PlayerAction>(best.bestPath);
+				bestPath.add(new PlayerAction(bestPath.get(bestPath.size() - 1).getEndField(), PlayerActionType.DOWN_ONE));
+				return bestPath;
 			}
 		};
 

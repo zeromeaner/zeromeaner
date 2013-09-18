@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -215,13 +216,17 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 						client.fireTCP(UPDATE_SOURCE, client.getSource());
 						client.fireTCP(USER_CREATE, null);
 						client.fireTCP(USER_AUTHENTICATE, null);
+						client.fireTCP(CHANNEL_LIST, true);
 					}
 				}
 			});
 			try {
 				client.start();
 			} catch(Exception ex) {
-				client.stop();
+				try {
+					client.stop();
+				} catch(IOException ioe) {
+				}
 				client = null;
 				JOptionPane.showMessageDialog(KNetPanel.this, ex.toString());
 				return;
@@ -352,7 +357,10 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 		}
 		
 		public void disconnect() {
-			client.stop();
+			try {
+				client.stop();
+			} catch(IOException ioe) {
+			}
 			client = null;
 			cards.show(KNetPanel.this, CONNECTION_LIST_PANEL_CARD);
 			fireKnetPanelDisconnected();
@@ -412,6 +420,12 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 							CHANNEL_CHAT, line.getText(),
 							CHANNEL_ID, channel.getId(),
 							TIMESTAMP, System.currentTimeMillis());
+					history.setText(
+							history.getText() 
+							+ (history.getText().isEmpty() ? "" : "\n")
+							+ client.getSource().getName()
+							+ ": "
+							+ line.getText());
 					line.setText("");
 				}
 			});
@@ -567,6 +581,8 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 
 		@Override
 		public void channelChat(KNetChannelEvent e) {
+			if(client.isLocal(e.getEvent()))
+				return;
 			if(e.getChannel().getId() != getChannel().getId())
 				return;
 			if(EQInvoker.reinvoke(false, this, e))
@@ -932,6 +948,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			} else {
 				System.out.println("User auth success");
 				cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
+				client.fireTCP(CHANNEL_LIST);
 			}
 		}
 		if(e.is(USER_UPDATED_PASSWORD)) {
@@ -941,6 +958,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			} else {
 				System.out.println("User auth success");
 				cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
+				client.fireTCP(CHANNEL_LIST);
 			}
 		}
 	}

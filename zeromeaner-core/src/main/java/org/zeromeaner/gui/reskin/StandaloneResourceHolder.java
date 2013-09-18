@@ -35,11 +35,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
 import java.util.LinkedList;
+
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.gui.WaveEngine;
 import org.zeromeaner.util.MusicList;
+import org.zeromeaner.util.Options;
 
 /**
  * Class to the management of image and sound
@@ -91,7 +93,7 @@ public class StandaloneResourceHolder {
 	 * Loading images and sound files
 	 */
 	public static void load() {
-		String skindir = StandaloneMain.propConfig.getProperty("custom.skin.directory", "res");
+		String skindir = "res";
 
 		// Blocks
 		int numBlocks = 0;
@@ -137,10 +139,10 @@ public class StandaloneResourceHolder {
 		imgFieldbg2Small = loadImage(getURL(skindir + "/graphics/fieldbg2_small.png"));
 		imgFieldbg2Big = loadImage(getURL(skindir + "/graphics/fieldbg2_big.png"));
 
-		if(StandaloneMain.propConfig.getProperty("option.showlineeffect", false) == true) {
+		if(Options.standalone().SHOW_LINE_EFFECT.value()) {
 			loadLineClearEffectImages();
 		}
-		if(StandaloneMain.propConfig.getProperty("option.showbg", true) == true) {
+		if(Options.standalone().SHOW_BG.value()) {
 			loadBackgroundImages();
 		}
 
@@ -149,7 +151,7 @@ public class StandaloneResourceHolder {
 		
 		// Sound effects
 		soundManager = new WaveEngine();
-		if(StandaloneMain.propConfig.getProperty("option.se", true) == true) {
+		if(Options.standalone().SE_ENABLED.value()) {
 			soundManager.load("cursor", skindir + "/se/cursor.wav");
 			soundManager.load("decide", skindir + "/se/decide.wav");
 			soundManager.load("erase1", skindir + "/se/erase1.wav");
@@ -217,7 +219,7 @@ public class StandaloneResourceHolder {
 				soundManager.load("combo" + (i + 1), skindir + "/se/combo" + (i + 1) + ".wav");
 			}
 
-			soundManager.setVolume(StandaloneMain.propConfig.getProperty("option.sevolume", 0.5));
+			soundManager.setVolume(Options.standalone().SE_VOLUME.value());
 		}
 	}
 
@@ -228,7 +230,7 @@ public class StandaloneResourceHolder {
 		if(imgPlayBG == null) {
 			imgPlayBG = new Image[BACKGROUND_MAX];
 
-			String skindir = StandaloneMain.propConfig.getProperty("custom.skin.directory", "res");
+			String skindir = "res";
 			for(int i = 0; i < BACKGROUND_MAX; i++) {
 				imgPlayBG[i] = loadImage(getURL(skindir + "/graphics/back" + i + ".png"));
 				Graphics g = (Graphics2D) imgPlayBG[i].getGraphics();
@@ -248,7 +250,7 @@ public class StandaloneResourceHolder {
 	 * Load line clear effect images.
 	 */
 	public static void loadLineClearEffectImages() {
-		String skindir = StandaloneMain.propConfig.getProperty("custom.skin.directory", "res");
+		String skindir = "res";
 
 		if(imgBreak == null) {
 			imgBreak = new Image[BLOCK_BREAK_MAX][BLOCK_BREAK_SEGMENTS];

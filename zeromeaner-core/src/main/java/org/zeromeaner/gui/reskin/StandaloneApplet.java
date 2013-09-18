@@ -15,6 +15,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.plaf.ZeroMetalTheme;
 import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.ModeList;
+import org.zeromeaner.util.Options;
 import org.zeromeaner.util.ResourceInputStream;
 
 import static org.zeromeaner.gui.reskin.StandaloneMain.userId;
@@ -36,7 +37,7 @@ public class StandaloneApplet extends Applet {
 		
 		CookieAccess.setInstance(new CookieAccess() {
 			@Override
-			protected Map<String, String> get() {
+			public Map<String, String> get() {
 				return get(StandaloneApplet.this);
 			}
 		});
@@ -66,8 +67,6 @@ public class StandaloneApplet extends Applet {
 			}
 		}
 		
-		StandaloneMain.offline = Boolean.parseBoolean(System.getProperty("offline"));
-	
 		try {
 			try {
 				PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));
@@ -86,10 +85,8 @@ public class StandaloneApplet extends Applet {
 			StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 			StandaloneGameKey.gamekey[1].loadDefaultKeymap();
 			
-			if(!StandaloneMain.offline) {
-				StandaloneGameKey.gamekey[0].loadConfig(StandaloneMain.propConfig);
-				StandaloneGameKey.gamekey[1].loadConfig(StandaloneMain.propConfig);
-			}
+			StandaloneGameKey.gamekey[0].loadConfig(Options.GUI_PROPERTIES);
+			StandaloneGameKey.gamekey[1].loadConfig(Options.GUI_PROPERTIES);
 			
 			StandaloneResourceHolder.load();
 			

@@ -31,7 +31,10 @@ public class ZeroJnlp extends HttpServlet {
 		String codebase = url.replaceAll("/[^/]*$", "");
 		jnlp = jnlp.replaceAll("\\$\\{codebase\\}", codebase);
 		
-		response.setDateHeader("lastModified", System.currentTimeMillis());
+		response.setDateHeader("Last-Modified", System.currentTimeMillis());
+		// IE won't download JNLP file if Cache-Control header presents
+		//response.setHeader("Cache-Control", "no-cache, must-revalidate");
+		response.setHeader("Expires", "Mon, 26 Jul 1990 05:00:00 GMT");
 		
 		IOUtils.write(jnlp, response.getWriter());
 	}

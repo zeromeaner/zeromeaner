@@ -1,5 +1,6 @@
 package org.zeromeaner.knet;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.Map;
 import org.funcish.core.Predicates;
 import org.funcish.core.fn.Predicate;
 import org.funcish.core.impl.AbstractPredicate;
+import org.mmmq.Topic;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.util.KryoCopy;
@@ -70,6 +72,15 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	}
 	
 	@Override
+	public KNetClient start() throws IOException, InterruptedException {
+		super.start();
+		
+		client.subscribe(new Topic(KNetTopics.CHANNEL), this);
+		
+		return this;
+	}
+	
+	@Override
 	protected KNetEvent process(KNetEvent e) {
 		for(Map.Entry<KNetEventArgs, Object> en : e.getArgs().entrySet()) {
 			if(en.getKey().name().startsWith("GAME_")) {
@@ -99,10 +110,22 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 		}
 	}
 	
-	protected KNetChannelInfo updateChannel(KNetEvent ke, KNetChannelInfo c) {
-		KryoCopy.overwrite(c, channels.get(c.getId()));
-		fireChannelUpdated(ke, channels.get(c.getId()));
-		return channels.get(c.getId());
+	protected KNetChannelInfo updateChannel(KNetEvent ke, KNetChannelInfo src) {
+		KNetChannelInfo dst = channels.get(src.getId());
+//		KryoCopy.overwrite(src, channels.get(src.getId()));
+		dst.setName(src.getName());
+		dst.setMembers(src.getMembers());
+		dst.setPlayers(src.getPlayers());
+		dst.setPlayerInfo(src.getPlayerInfo());
+		dst.setMaxPlayers(src.getMaxPlayers());
+		dst.setMode(src.getMode());
+		dst.setRuleLock(src.isRuleLock());
+		dst.setRule(src.getRule());
+		dst.setPlaying(src.isPlaying());
+		dst.setAutoStart(src.isAutoStart());
+		dst.setGame(src.getGame());
+		fireChannelUpdated(ke, channels.get(src.getId()));
+		return channels.get(src.getId());
 	}
 
 	@Override
@@ -169,6 +192,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	public void joinChannel(int channelId) {
 		if(currentChannel != null && currentChannel.getId() != channelId)
 			leaveChannel();
+		client.subscribe(new Topic(KNetTopics.CHANNEL + "/" + channelId), this);
 		fireTCP(CHANNEL_JOIN, CHANNEL_ID, channelId);
 	}
 	
@@ -181,7 +205,10 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	public void leaveChannel() {
 		if(currentChannel == null)
 			return;
+		if(currentChannel.getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
+			return; // don't even try to leave the lobby
 		fireTCP(CHANNEL_LEAVE, CHANNEL_ID, currentChannel.getId());
+		client.unsubscribe(new Topic(KNetTopics.CHANNEL + "/" + currentChannel.getId()), this);
 	}
 	
 	public void addKNetChannelListener(KNetChannelListener l) {
