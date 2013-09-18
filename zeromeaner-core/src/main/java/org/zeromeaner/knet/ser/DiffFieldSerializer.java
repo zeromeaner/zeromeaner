@@ -28,22 +28,22 @@ import com.esotericsoftware.kryo.util.ObjectMap;
 
 public class DiffFieldSerializer<T> extends FieldSerializer<T> {
 	protected T typical;
-	protected byte[] typicalBytes;
 	
 	public DiffFieldSerializer(Kryo kryo, Class<T> type, T typical) {
 		super(kryo, type);
 		this.typical = typical;
-		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		Output output = new Output(bout);
-		super.write(kryo, output, typical);
-		output.flush();
-		typicalBytes = bout.toByteArray();
 	}
 
 	@Override
 	public void write(Kryo kryo, Output output, T object) {
+		byte[] typicalBytes;
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		Output boutput = new Output(bout);
+		super.write(kryo, boutput, typical);
+		boutput.flush();
+		typicalBytes = bout.toByteArray();
+
+		bout.reset();
 		super.write(kryo, boutput, object);
 		boutput.flush();
 		byte[] objectBytes = bout.toByteArray();
@@ -58,6 +58,14 @@ public class DiffFieldSerializer<T> extends FieldSerializer<T> {
 
 	@Override
 	public T read(Kryo kryo, Input input, Class<T> type) {
+		byte[] typicalBytes;
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		Output boutput = new Output(bout);
+		super.write(kryo, boutput, typical);
+		boutput.flush();
+		typicalBytes = bout.toByteArray();
+
+		bout.reset();
 		byte[] diffBytes = kryo.readObject(input, byte[].class);
 		MemoryDiff md = Serials.deserialize(DefaultSerialization.newInstance(), MemoryDiff.class, diffBytes);
 		byte[] objectBytes = Diffs.apply(md, typicalBytes);

@@ -947,6 +947,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			} else {
 				System.out.println("User auth success");
 				cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
+				client.fireTCP(CHANNEL_LIST);
 			}
 		}
 		if(e.is(USER_UPDATED_PASSWORD)) {
@@ -956,6 +957,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			} else {
 				System.out.println("User auth success");
 				cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
+				client.fireTCP(CHANNEL_LIST);
 			}
 		}
 	}

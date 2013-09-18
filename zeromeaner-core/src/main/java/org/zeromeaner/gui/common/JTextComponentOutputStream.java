@@ -25,5 +25,22 @@ public class JTextComponentOutputStream extends OutputStream {
 				}
 			});
 	}
+	
+	@Override
+	public void write(final byte[] b, final int off, final int len) {
+		if(EventQueue.isDispatchThread()) {
+			StringBuilder sb = new StringBuilder();
+			for(int i = 0; i < len; i++)
+				sb.append((char) (0xff & b[off + i]));
+			text.setText(text.getText() + sb);
+		} else
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					write(b, off, len);
+				}
+			});
+	}
+	
 
 }
