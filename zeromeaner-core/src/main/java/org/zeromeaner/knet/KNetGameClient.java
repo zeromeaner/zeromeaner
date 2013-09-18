@@ -110,10 +110,22 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 		}
 	}
 	
-	protected KNetChannelInfo updateChannel(KNetEvent ke, KNetChannelInfo c) {
-		KryoCopy.overwrite(c, channels.get(c.getId()));
-		fireChannelUpdated(ke, channels.get(c.getId()));
-		return channels.get(c.getId());
+	protected KNetChannelInfo updateChannel(KNetEvent ke, KNetChannelInfo src) {
+		KNetChannelInfo dst = channels.get(src.getId());
+//		KryoCopy.overwrite(src, channels.get(src.getId()));
+		dst.setName(src.getName());
+		dst.setMembers(src.getMembers());
+		dst.setPlayers(src.getPlayers());
+		dst.setPlayerInfo(src.getPlayerInfo());
+		dst.setMaxPlayers(src.getMaxPlayers());
+		dst.setMode(src.getMode());
+		dst.setRuleLock(src.isRuleLock());
+		dst.setRule(src.getRule());
+		dst.setPlaying(src.isPlaying());
+		dst.setAutoStart(src.isAutoStart());
+		dst.setGame(src.getGame());
+		fireChannelUpdated(ke, channels.get(src.getId()));
+		return channels.get(src.getId());
 	}
 
 	@Override
