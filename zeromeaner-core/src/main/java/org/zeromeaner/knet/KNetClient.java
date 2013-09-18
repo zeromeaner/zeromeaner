@@ -90,11 +90,11 @@ public class KNetClient implements MessageListener {
 
 	@Override
 	public void messageReceived(Message message) {
-//		Object obj = message.get(kryo);
-		Kryo kryo = new Kryo();
-		KNetKryo.configure(kryo);
 		
-		Object obj = kryo.readClassAndObject(new Input(message.message()));
+		Object obj;
+		synchronized(kryo) {
+			obj = kryo.readClassAndObject(new Input(message.message()));
+		}
 		if(!(obj instanceof KNetEvent))
 			return;
 		received((KNetEvent) obj);
@@ -184,7 +184,9 @@ public class KNetClient implements MessageListener {
 		e.getSource();
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		Output out = new Output(bout);
-		kryo.writeClassAndObject(out, e);
+		synchronized(kryo) {
+			kryo.writeClassAndObject(out, e);
+		}
 		out.flush();
 		Message m = (Message) new MessagePacket(origin, new Topic(e.getTopic())).withMessage(bout.toByteArray()).tcp();
 		client.sendMessage(m);
@@ -200,7 +202,9 @@ public class KNetClient implements MessageListener {
 		issue(e);
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		Output out = new Output(bout);
-		kryo.writeClassAndObject(out, e);
+		synchronized(kryo) {
+			kryo.writeClassAndObject(out, e);
+		}
 		out.flush();
 		Message m = (Message) new MessagePacket(origin, new Topic(e.getTopic())).withMessage(bout.toByteArray()).udp();
 		client.sendMessage(m);

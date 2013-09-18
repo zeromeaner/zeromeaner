@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 
 import org.badiff.ByteArrayDiffs;
 import org.badiff.Diff;
+import org.badiff.alg.EditGraph;
 import org.badiff.alg.InertialGraph;
 import org.badiff.imp.MemoryDiff;
 import org.badiff.io.DefaultSerialization;
@@ -16,6 +17,7 @@ import org.badiff.q.GraphOpQueue;
 import org.badiff.q.OpQueue;
 import org.badiff.util.Diffs;
 import org.badiff.util.Serials;
+import org.zeromeaner.knet.KNetKryo;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
@@ -26,51 +28,55 @@ import com.esotericsoftware.kryo.io.OutputChunked;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.util.ObjectMap;
 
-public class DiffFieldSerializer<T> extends FieldSerializer<T> {
+public class DiffFieldSerializer<T> extends Serializer<T> {
 	protected T typical;
+	protected byte[] typicalBytes;
+	protected FieldSerializer<T> flds;
 	
 	public DiffFieldSerializer(Kryo kryo, Class<T> type, T typical) {
-		super(kryo, type);
 		this.typical = typical;
+		
+		flds = new FieldSerializer<T>(kryo, type);
+		
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		Output boutput = new Output(bout);
+		flds.write(kryo, boutput, typical);
+		boutput.flush();
+		typicalBytes = bout.toByteArray();
 	}
 
 	@Override
 	public void write(Kryo kryo, Output output, T object) {
-		byte[] typicalBytes;
+		
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		Output boutput = new Output(bout);
-		super.write(kryo, boutput, typical);
-		boutput.flush();
-		typicalBytes = bout.toByteArray();
-
-		bout.reset();
-		super.write(kryo, boutput, object);
+		flds.write(kryo, boutput, object);
 		boutput.flush();
 		byte[] objectBytes = bout.toByteArray();
 		OpQueue q = Diffs.queue(typicalBytes, objectBytes);
 		q = new ChunkingOpQueue(q);
-		q = new GraphOpQueue(q, new InertialGraph((Diff.DEFAULT_CHUNK + 1) * (Diff.DEFAULT_CHUNK + 1)));
+		q = new GraphOpQueue(q, new EditGraph((Diff.DEFAULT_CHUNK + 1) * (Diff.DEFAULT_CHUNK + 1)));
 		q = new CoalescingOpQueue(q);
 		MemoryDiff md = new MemoryDiff(q);
 		byte[] diffBytes = Serials.serialize(DefaultSerialization.newInstance(), MemoryDiff.class, md);
-		kryo.writeObject(output, diffBytes);
+		
+		output.writeInt(diffBytes.length, true);
+		output.write(diffBytes);
+		
 	}
 
 	@Override
 	public T read(Kryo kryo, Input input, Class<T> type) {
-		byte[] typicalBytes;
-		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		Output boutput = new Output(bout);
-		super.write(kryo, boutput, typical);
-		boutput.flush();
-		typicalBytes = bout.toByteArray();
-
-		bout.reset();
-		byte[] diffBytes = kryo.readObject(input, byte[].class);
+//		byte[] diffBytes = kryo.readObject(input, byte[].class);
+		
+		byte[] diffBytes = new byte[input.readInt(true)];
+		input.read(diffBytes);
+		
 		MemoryDiff md = Serials.deserialize(DefaultSerialization.newInstance(), MemoryDiff.class, diffBytes);
 		byte[] objectBytes = Diffs.apply(md, typicalBytes);
 		Input binput = new Input(objectBytes);
-		return super.read(kryo, binput, type);
+//		return super.read(kryo, binput, type);
+		return flds.read(kryo, binput, type);
 	}
 
 }
