@@ -143,7 +143,6 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 			c = updateChannel(e, c);
 			if(e.is(I_JOINED_CHANNEL)) {
 				currentChannel = c;
-				this.client.subscribe(new Topic(c.getTopic()), this);
 				fireChannelJoined(e, c);
 			}
 		} else if(e.is(LEAVE_CHANNEL)) {
@@ -151,7 +150,6 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 			c = updateChannel(e, c);
 			if(e.is(I_LEFT_CHANNEL)) {
 				currentChannel = null;
-				this.client.unsubscribe(new Topic(c.getTopic()), this);
 				fireChannelLeft(e, c);
 			}
 		} else if(e.is(CHANNEL_CHAT)) {
@@ -182,6 +180,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	public void joinChannel(int channelId) {
 		if(currentChannel != null && currentChannel.getId() != channelId)
 			leaveChannel();
+		client.subscribe(new Topic(KNetTopics.CHANNEL + "/" + channelId), this);
 		fireTCP(CHANNEL_JOIN, CHANNEL_ID, channelId);
 	}
 	
@@ -194,7 +193,10 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	public void leaveChannel() {
 		if(currentChannel == null)
 			return;
+		if(currentChannel.getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
+			return; // don't even try to leave the lobby
 		fireTCP(CHANNEL_LEAVE, CHANNEL_ID, currentChannel.getId());
+		client.unsubscribe(new Topic(KNetTopics.CHANNEL + "/" + currentChannel.getId()), this);
 	}
 	
 	public void addKNetChannelListener(KNetChannelListener l) {
