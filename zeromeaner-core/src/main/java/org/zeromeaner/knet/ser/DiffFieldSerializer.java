@@ -33,6 +33,8 @@ public class DiffFieldSerializer<T> extends Serializer<T> {
 	protected byte[] typicalBytes;
 	protected FieldSerializer<T> flds;
 	
+	protected EditGraph graph = new EditGraph((Diff.DEFAULT_CHUNK + 1) * (Diff.DEFAULT_CHUNK + 1));
+	
 	public DiffFieldSerializer(Kryo kryo, Class<T> type, T typical) {
 		this.typical = typical;
 		
@@ -55,7 +57,7 @@ public class DiffFieldSerializer<T> extends Serializer<T> {
 		byte[] objectBytes = bout.toByteArray();
 		OpQueue q = Diffs.queue(typicalBytes, objectBytes);
 		q = new ChunkingOpQueue(q);
-		q = new GraphOpQueue(q, new EditGraph((Diff.DEFAULT_CHUNK + 1) * (Diff.DEFAULT_CHUNK + 1)));
+		q = new GraphOpQueue(q, graph);
 		q = new CoalescingOpQueue(q);
 		MemoryDiff md = new MemoryDiff(q);
 		byte[] diffBytes = Serials.serialize(DefaultSerialization.newInstance(), MemoryDiff.class, md);
