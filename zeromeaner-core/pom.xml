@@ -173,16 +173,14 @@
 		</repository>
 
 		<repository>
-			<id>local-artifacts</id>
-			<url>file://${project.basedir}/local-artifacts</url>
-		</repository>
-
-		<repository>
 			<id>sonatype</id>
 			<url>https://oss.sonatype.org/content/groups/public/</url>
 		</repository>
-		<!-- <repository> <id>slick</id> <url>http://slick.cokeandcode.com/mavenrepo</url> 
-			</repository> -->
+			
+		<repository>
+			<id>mmmq</id>
+			<url>http://mmmq.org/repo/</url>
+		</repository>
 	</repositories>
 
 	<profiles>
