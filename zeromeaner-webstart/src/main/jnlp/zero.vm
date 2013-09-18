@@ -26,7 +26,7 @@
   </security>
 #end
   <resources>
-    <j2se version="1.7+"/>
+    <j2se version="1.7+" java-vm-args="-Xmx2048m"/>
      $dependencies
   </resources>
   <applet-desc 
