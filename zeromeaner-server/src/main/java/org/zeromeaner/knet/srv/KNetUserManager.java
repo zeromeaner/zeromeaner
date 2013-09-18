@@ -57,6 +57,7 @@ public class KNetUserManager extends KNetClient implements KNetListener {
 				Kryo kryo = new Kryo();
 				KNetKryo.configure(kryo);
 				kryo.writeClassAndObject(output, e);
+				output.flush();
 				client.sendMessage((Message) new MessagePacket(auth, new Topic(KNetTopics.CONNECTION)).withMessage(bout.toByteArray()).tcp());
 			}
 		});
@@ -71,6 +72,7 @@ public class KNetUserManager extends KNetClient implements KNetListener {
 				Kryo kryo = new Kryo();
 				KNetKryo.configure(kryo);
 				kryo.writeClassAndObject(output, e);
+				output.flush();
 				client.sendMessage((Message) new MessagePacket(auth, new Topic(KNetTopics.CONNECTION)).withMessage(bout.toByteArray()).tcp());
 			}
 		});
