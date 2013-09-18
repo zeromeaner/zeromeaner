@@ -39,7 +39,7 @@ import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 
 public class KNetKryo {
-	public static void configure(Kryo kryo) {
+	public static Kryo configure(Kryo kryo) {
 		kryo.setReferences(false);
 		kryo.setAutoReset(true);
 		
@@ -47,19 +47,19 @@ public class KNetKryo {
 		
 		kryo.register(KNetEvent.class);
 		kryo.register(KNetEventSource.class);
-		kryo.register(KNetChannelInfo.class);
+		diffFieldSerializer(kryo, KNetChannelInfo.class);
 		kryo.register(KNetChannelInfo[].class);
 		diffFieldSerializer(kryo, KNetGameInfo.class);
 		kryo.register(KNetGameInfo.TSpinEnableType.class);
-		kryo.register(KNetPlayerInfo.class);
+		diffFieldSerializer(kryo, KNetPlayerInfo.class);
 		diffFieldSerializer(kryo, Field.class);
 		kryo.register(Block[][].class);
 		kryo.register(Block[].class);
-		kryo.register(Block.class, new BlockSerializer());
-		kryo.register(SpeedParam.class, new SpeedParamSerializer());
+		diffFieldSerializer(kryo, Block.class);
+		diffFieldSerializer(kryo, SpeedParam.class);
 		kryo.register(boolean[].class);
 		kryo.register(ArrayList.class);
-		kryo.register(Piece.class, new PieceSerializer());
+		diffFieldSerializer(kryo, Piece.class);
 		kryo.register(int[][].class);
 		kryo.register(int[].class);
 		kryo.register(Piece[].class);
@@ -67,7 +67,7 @@ public class KNetKryo {
 		kryo.register(PieceMovement.class);
 		kryo.register(Properties.class, new PropertiesSerializer());
 		kryo.register(CustomProperties.class, new PropertiesSerializer());
-		kryo.register(Statistics.class, new StatisticsSerializer());
+		diffFieldSerializer(kryo, Statistics.class);
 		diffFieldSerializer(kryo, RuleOptions.class, GeneralUtil.loadRule("config/rule/Standard.rul"));
 		kryo.register(KNStartInfo.class);
 		
@@ -96,10 +96,12 @@ public class KNetKryo {
 		diffFieldSerializer(kryo, MarathonMode.Options.class);
 		diffFieldSerializer(kryo, MarathonPlusMode.Stats.class);
 		diffFieldSerializer(kryo, MarathonPlusMode.Options.class);
+		
+		return kryo;
 	}
 	
 	private static <T> void diffFieldSerializer(Kryo kryo, Class<T> clazz, T typical) {
-		kryo.register(clazz, new DiffFieldSerializer<>(kryo, clazz, typical, NEW_KRYO));
+		kryo.register(clazz, new DiffFieldSerializer<>(kryo, clazz, typical));
 	}
 	
 	private static <T> void diffFieldSerializer(Kryo kryo, Class<T> clazz) {
@@ -116,13 +118,4 @@ public class KNetKryo {
 		}
 	}
 	
-	private static Callable<Kryo> NEW_KRYO = new Callable<Kryo>() {
-		
-		@Override
-		public Kryo call() throws Exception {
-			Kryo ret = new Kryo();
-			KNetKryo.configure(ret);
-			return ret;
-		}
-	};
 }
