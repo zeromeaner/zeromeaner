@@ -53,13 +53,14 @@ public class DiffFieldSerializer<T> extends FieldSerializer<T> {
 		q = new CoalescingOpQueue(q);
 		MemoryDiff md = new MemoryDiff(q);
 		byte[] diffBytes = Serials.serialize(DefaultSerialization.newInstance(), MemoryDiff.class, md);
-		kryo.writeObject(boutput, diffBytes);
+		kryo.writeObject(output, diffBytes);
 	}
 
 	@Override
 	public T read(Kryo kryo, Input input, Class<T> type) {
 		byte[] diffBytes = kryo.readObject(input, byte[].class);
-		byte[] objectBytes = ByteArrayDiffs.apply(typicalBytes, diffBytes);
+		MemoryDiff md = Serials.deserialize(DefaultSerialization.newInstance(), MemoryDiff.class, diffBytes);
+		byte[] objectBytes = Diffs.apply(md, typicalBytes);
 		Input binput = new Input(objectBytes);
 		return super.read(kryo, binput, type);
 	}
