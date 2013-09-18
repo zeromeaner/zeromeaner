@@ -75,12 +75,12 @@ public class KNetClient implements MessageListener {
 		source = new KNetEventSource((origin = client.getDirectTopic()).toString(), client.getID());
 		source.setType(type);
 		source.setName(type + source.getTopic());
-		issue(source.event(CONNECTED, true));
 		
 		client.subscribe(client.getDirectTopic(), this);
 		client.subscribe(new Topic(KNetTopics.GLOBAL), this);
 		client.subscribe(new Topic(KNetTopics.CONNECTION), this);
 		
+		issue(source.event(CONNECTED, true));
 		return this;
 	}
 
