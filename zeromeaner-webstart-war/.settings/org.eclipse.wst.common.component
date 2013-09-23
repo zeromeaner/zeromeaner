@@ -5,22 +5,25 @@
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/target/classes"/>
-        <dependent-module archiveName="zeromeaner-server-1.1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zeromeaner-server/zeromeaner-server">
+        <dependent-module archiveName="zeromeaner-server-1.1.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zeromeaner-server/zeromeaner-server">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="zeromeaner-core-1.1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zeromeaner-core/zeromeaner-core">
+        <dependent-module archiveName="zeromeaner-core-1.1.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zeromeaner-core/zeromeaner-core">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="zeromeaner-media-1.1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zeromeaner-media/zeromeaner-media">
+        <dependent-module archiveName="zeromeaner-media-1.1.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zeromeaner-media/zeromeaner-media">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="zeromeaner-laf-1.1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zeromeaner-laf/zeromeaner-laf">
+        <dependent-module archiveName="zeromeaner-laf-1.1.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zeromeaner-laf/zeromeaner-laf">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="mmmq-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/mmmq/mmmq">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="zeromeaner-netstats-1.1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zeromeaner-netstats/zeromeaner-netstats">
+        <dependent-module archiveName="zeromeaner-netstats-1.1.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zeromeaner-netstats/zeromeaner-netstats">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jdaemon-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/jdaemon/jdaemon">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="jdaemon-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/jdaemon/jdaemon">

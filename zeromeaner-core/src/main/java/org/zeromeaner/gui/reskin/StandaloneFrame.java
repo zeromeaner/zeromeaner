@@ -69,6 +69,7 @@ public class StandaloneFrame extends JFrame {
 		return url == null ? null : new ImageIcon(url);
 	}
 	
+	public static final String CARD_INTRO = "toolbar.intro";
 	public static final String CARD_PLAY = "toolbar.play";
 	public static final String CARD_PLAY_END = "toolbar.play.end";
 	public static final String CARD_MODESELECT = "toolbar.modeselect";
@@ -92,6 +93,8 @@ public class StandaloneFrame extends JFrame {
 	private String currentCard;
 	private String nextCard;
 	private JPanel content;
+	
+	private StandaloneLicensePanel introPanel;
 	
 	private JPanel playCard;
 	private JPanel netplayCard;
@@ -165,6 +168,9 @@ public class StandaloneFrame extends JFrame {
 	}
 	
 	private void createCards() {
+		introPanel = new StandaloneLicensePanel();
+		content.add(introPanel, CARD_INTRO);
+		
 		playCard = new JPanel(new BorderLayout());
 		content.add(playCard, CARD_PLAY);
 		

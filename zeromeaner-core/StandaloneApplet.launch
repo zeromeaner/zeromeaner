@@ -6,10 +6,10 @@
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
-<intAttribute key="org.eclipse.jdt.launching.APPLET_HEIGHT" value="768"/>
+<intAttribute key="org.eclipse.jdt.launching.APPLET_HEIGHT" value="700"/>
 <stringAttribute key="org.eclipse.jdt.launching.APPLET_NAME" value=""/>
 <mapAttribute key="org.eclipse.jdt.launching.APPLET_PARAMETERS"/>
-<intAttribute key="org.eclipse.jdt.launching.APPLET_WIDTH" value="1366"/>
+<intAttribute key="org.eclipse.jdt.launching.APPLET_WIDTH" value="1280"/>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.zeromeaner.gui.reskin.StandaloneApplet"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="zeromeaner-core"/>

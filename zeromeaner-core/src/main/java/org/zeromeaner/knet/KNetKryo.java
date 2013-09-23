@@ -101,7 +101,7 @@ public class KNetKryo {
 	}
 	
 	private static <T> void diffFieldSerializer(Kryo kryo, Class<T> clazz, T typical) {
-		kryo.register(clazz, new DiffFieldSerializer<>(kryo, clazz, typical));
+		kryo.register(clazz, new DiffFieldSerializer<T>(kryo, clazz, typical));
 	}
 	
 	private static <T> void diffFieldSerializer(Kryo kryo, Class<T> clazz) {

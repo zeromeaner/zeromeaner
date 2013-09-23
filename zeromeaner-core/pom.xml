@@ -13,12 +13,14 @@
 				<directory>src/main/resources</directory>
 				<excludes>
 					<exclude>org/zeromeaner/version.properties</exclude>
+					<exclude>org/zeromeaner/About.html</exclude>
 				</excludes>
 			</resource>
 			<resource>
 				<directory>src/main/resources</directory>
 				<includes>
 					<include>org/zeromeaner/version.properties</include>
+					<include>org/zeromeaner/About.html</include>
 				</includes>
 				<filtering>true</filtering>
 			</resource>
@@ -141,13 +143,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.zeromeaner</groupId>
-			<artifactId>zeromeaner-media</artifactId>
-			<version>1.1.0.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.zeromeaner</groupId>
 			<artifactId>zeromeaner-laf</artifactId>
-			<version>1.1.0.2</version>
+			<version>1.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -224,6 +221,13 @@
 		</profile>
 		<profile>
 			<id>shade</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.zeromeaner</groupId>
+					<artifactId>zeromeaner-media</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
@@ -264,6 +268,13 @@
 		</profile>
 		<profile>
 			<id>shade-stable</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.zeromeaner</groupId>
+					<artifactId>zeromeaner-media</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
@@ -306,7 +317,7 @@
 	<parent>
 		<groupId>org.zeromeaner</groupId>
 		<artifactId>zeromeaner-parent</artifactId>
-		<version>1.1.0.2</version>
+		<version>1.1.1</version>
 		<relativePath>../zeromeaner-parent</relativePath>
 	</parent>
 	<name>Zeromeaner Core</name>

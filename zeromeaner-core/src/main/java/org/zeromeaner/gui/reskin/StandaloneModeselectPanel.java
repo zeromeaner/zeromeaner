@@ -31,7 +31,7 @@ import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 
 public class StandaloneModeselectPanel extends JPanel {
 	private static String formatButtonText(String modeOrRuleName) {
-		List<String> lines = new ArrayList<>(Arrays.asList(modeOrRuleName.split("-+")));
+		List<String> lines = new ArrayList<String>(Arrays.asList(modeOrRuleName.split("-+")));
 		for(int i = lines.size() - 1; i > 0; i--) {
 			if(lines.get(i).length() + lines.get(i-1).length() < 20)
 				lines.set(i-1, lines.get(i-1) + " " + lines.remove(i));
