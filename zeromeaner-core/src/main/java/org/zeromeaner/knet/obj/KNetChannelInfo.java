@@ -43,7 +43,7 @@ public class KNetChannelInfo implements KryoSerializable {
 	}
 	
 	public String getTopic() {
-		return KNetTopics.CHANNEL + "/" + id;
+		return KNetTopics.CHANNEL + id;
 	}
 	
 	public synchronized int getSeatId(KNetEvent e) {

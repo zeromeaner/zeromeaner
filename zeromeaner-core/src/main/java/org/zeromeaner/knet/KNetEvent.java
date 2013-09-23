@@ -40,7 +40,7 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 		if(is(KNetEventArgs.CHANNEL_JOIN))
 			return KNetTopics.CHANNEL;
 		if(is(KNetEventArgs.CHANNEL_ID))
-			return KNetTopics.CHANNEL + "/" + get(KNetEventArgs.CHANNEL_ID);
+			return KNetTopics.CHANNEL + get(KNetEventArgs.CHANNEL_ID);
 		return KNetTopics.GLOBAL;
 	}
 	

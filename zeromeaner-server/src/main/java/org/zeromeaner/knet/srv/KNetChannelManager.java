@@ -65,6 +65,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 	public KNetChannelManager start() throws IOException, InterruptedException {
 		super.start();
 		
+		client.claimOwnership(new Topic(KNetTopics.CHANNEL));
 		client.subscribe(new Topic(KNetTopics.CHANNEL), this);
 		client.subscribe(new Topic(lobby.getTopic()), this);
 //		client.setOrigin(KNetTopics.CHANNEL);
