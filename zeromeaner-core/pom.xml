@@ -13,12 +13,14 @@
 				<directory>src/main/resources</directory>
 				<excludes>
 					<exclude>org/zeromeaner/version.properties</exclude>
+					<exclude>org/zeromeaner/About.html</exclude>
 				</excludes>
 			</resource>
 			<resource>
 				<directory>src/main/resources</directory>
 				<includes>
 					<include>org/zeromeaner/version.properties</include>
+					<include>org/zeromeaner/About.html</include>
 				</includes>
 				<filtering>true</filtering>
 			</resource>
