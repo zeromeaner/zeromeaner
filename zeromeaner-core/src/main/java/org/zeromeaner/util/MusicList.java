@@ -1,5 +1,6 @@
 package org.zeromeaner.util;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -20,9 +21,21 @@ import org.funcish.core.coll.ArrayFunctionalList;
 import org.funcish.core.coll.FunctionalList;
 import org.funcish.core.fn.Mapper;
 import org.funcish.core.impl.AbstractMapper;
+import org.zeromeaner.gui.reskin.StandaloneApplet;
+
+import com.googlecode.sardine.Factory;
+import com.googlecode.sardine.Sardine;
 
 public class MusicList extends ArrayFunctionalList<String> {
 	private static final Logger log = Logger.getLogger(MusicList.class);
+	
+	private static Sardine s;
+	static {
+		try {
+			s = new Factory().begin("zero", "zero");
+		} catch(IOException ioe) {
+		}
+	}
 	
 	private static MusicList instance;
 	public static MusicList getInstance() {
@@ -74,6 +87,12 @@ public class MusicList extends ArrayFunctionalList<String> {
 		log.debug("Playing:" + get(m));
 		try {
 			InputStream in = MusicList.class.getClassLoader().getResourceAsStream(get(m));
+			if(in == null) {
+				try {
+					in = s.getInputStream("http://" + StandaloneApplet.url.getHost() + "/webdav/bgm/" + get(m));
+				} catch(IOException ioe) {
+				}
+			}
 			player = new AdvancedPlayer(in, audio = new JavaSoundAudioDevice() {
 				@Override
 				protected void createSource() throws JavaLayerException {

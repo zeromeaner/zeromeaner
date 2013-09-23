@@ -62,7 +62,7 @@ public class CustomProperties extends NavigableProperties {
 
 	
 	public <T> Constant<T> create(ConstantParser<T> parser, String key, T defaultValue) {
-		return new Constant<>(this, parser, key, defaultValue);
+		return new Constant<T>(this, parser, key, defaultValue);
 	}
 	
 	public <T> T get(Constant<T> property) {
