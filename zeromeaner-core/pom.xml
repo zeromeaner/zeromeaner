@@ -145,7 +145,6 @@
 			<groupId>org.zeromeaner</groupId>
 			<artifactId>zeromeaner-laf</artifactId>
 			<version>1.1.1-SNAPSHOT</version>
-			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
