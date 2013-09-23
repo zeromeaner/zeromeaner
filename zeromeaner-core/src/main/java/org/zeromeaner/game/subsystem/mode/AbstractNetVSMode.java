@@ -292,7 +292,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 			netvsPlayerPlayCount[i] = 0;
 			netvsPlayerName[i] = "";
 			netvsPlayerTeam[i] = "";
-			if(owner != null && owner.engine[i] != null)
+			if(owner != null && owner.engine != null &&  owner.engine[i] != null)
 				owner.engine[i].framecolor = GameEngine.FRAME_COLOR_GRAY;
 		}
 
