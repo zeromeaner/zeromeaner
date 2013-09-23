@@ -112,6 +112,8 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	
 	protected KNetChannelInfo updateChannel(KNetEvent ke, KNetChannelInfo src) {
 		KNetChannelInfo dst = channels.get(src.getId());
+		if(dst == null)
+			return null;
 //		KryoCopy.overwrite(src, channels.get(src.getId()));
 		dst.setName(src.getName());
 		dst.setMembers(src.getMembers());
