@@ -34,7 +34,7 @@ public class DiffFieldSerializer<T> extends Serializer<T> {
 	protected byte[] typicalBytes;
 	protected FieldSerializer<T> flds;
 	
-	protected Graph graph = new InertialGraph((513) * (513));
+	protected static Graph graph = new InertialGraph((257) * (257));
 	
 	public DiffFieldSerializer(Kryo kryo, Class<T> type, T typical) {
 		this.typical = typical;
@@ -56,12 +56,15 @@ public class DiffFieldSerializer<T> extends Serializer<T> {
 		flds.write(kryo, boutput, object);
 		boutput.flush();
 		byte[] objectBytes = bout.toByteArray();
-		OpQueue q = Diffs.queue(typicalBytes, objectBytes);
-		q = new ChunkingOpQueue(q, 512);
-		q = new GraphOpQueue(q, graph);
-		q = new CoalescingOpQueue(q);
-		MemoryDiff md = new MemoryDiff(q);
-		byte[] diffBytes = Serials.serialize(DefaultSerialization.newInstance(), MemoryDiff.class, md);
+		byte[] diffBytes;
+		synchronized(graph) {
+			OpQueue q = Diffs.queue(typicalBytes, objectBytes);
+			q = new ChunkingOpQueue(q, 256);
+			q = new GraphOpQueue(q, graph);
+			q = new CoalescingOpQueue(q);
+			MemoryDiff md = new MemoryDiff(q);
+			diffBytes = Serials.serialize(DefaultSerialization.newInstance(), MemoryDiff.class, md);
+		}
 		
 		output.writeInt(diffBytes.length, true);
 		output.write(diffBytes);
