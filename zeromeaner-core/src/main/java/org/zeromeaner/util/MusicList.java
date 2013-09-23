@@ -1,8 +1,10 @@
 package org.zeromeaner.util;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -23,6 +25,7 @@ import org.funcish.core.fn.Mapper;
 import org.funcish.core.impl.AbstractMapper;
 import org.zeromeaner.gui.reskin.StandaloneApplet;
 
+import com.googlecode.sardine.DavResource;
 import com.googlecode.sardine.Factory;
 import com.googlecode.sardine.Sardine;
 
@@ -66,6 +69,15 @@ public class MusicList extends ArrayFunctionalList<String> {
 		for(int i = 0; i < rsrc.size(); i++) {
 			add(rsrc.get(i));
 		}
+		if(s == null)
+			return;
+		try {
+			for(DavResource dr : s.getResources("http://www.0mino.org/webdav/bgm/")) {
+				if(dr.getName().endsWith(".mp3"))
+					add(dr.getAbsoluteUrl().replaceAll("webdav/", "").replaceAll(" ", "%20"));
+			}
+		} catch(IOException ioe) {
+		}
 	}
 	
 	public FunctionalList<String> filesOnly() {
@@ -87,10 +99,13 @@ public class MusicList extends ArrayFunctionalList<String> {
 		log.debug("Playing:" + get(m));
 		try {
 			InputStream in = MusicList.class.getClassLoader().getResourceAsStream(get(m));
-			if(in == null) {
+			if(in == null && s != null) {
 				try {
-					in = s.getInputStream("http://" + StandaloneApplet.url.getHost() + "/webdav/bgm/" + get(m));
+					URL url = new URL(get(m));
+					in = url.openStream();
+					in = new BufferedInputStream(in, 1024 * 64);
 				} catch(IOException ioe) {
+					ioe.printStackTrace();
 				}
 			}
 			player = new AdvancedPlayer(in, audio = new JavaSoundAudioDevice() {
