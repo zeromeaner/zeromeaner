@@ -222,6 +222,13 @@
 		</profile>
 		<profile>
 			<id>shade</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.zeromeaner</groupId>
+					<artifactId>zeromeaner-media</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
@@ -262,6 +269,13 @@
 		</profile>
 		<profile>
 			<id>shade-stable</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.zeromeaner</groupId>
+					<artifactId>zeromeaner-media</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
