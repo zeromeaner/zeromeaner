@@ -192,7 +192,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	public void joinChannel(int channelId) {
 		if(currentChannel != null && currentChannel.getId() != channelId)
 			leaveChannel();
-		client.subscribe(new Topic(KNetTopics.CHANNEL + "/" + channelId), this);
+		client.subscribe(new Topic(KNetTopics.CHANNEL + channelId), this);
 		fireTCP(CHANNEL_JOIN, CHANNEL_ID, channelId);
 	}
 	
@@ -208,7 +208,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 		if(currentChannel.getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
 			return; // don't even try to leave the lobby
 		fireTCP(CHANNEL_LEAVE, CHANNEL_ID, currentChannel.getId());
-		client.unsubscribe(new Topic(KNetTopics.CHANNEL + "/" + currentChannel.getId()), this);
+		client.unsubscribe(new Topic(KNetTopics.CHANNEL + currentChannel.getId()), this);
 	}
 	
 	public void addKNetChannelListener(KNetChannelListener l) {
