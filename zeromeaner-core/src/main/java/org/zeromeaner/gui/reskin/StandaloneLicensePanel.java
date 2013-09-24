@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 public class StandaloneLicensePanel extends JPanel {
 	private JEditorPane editor;
@@ -16,7 +17,7 @@ public class StandaloneLicensePanel extends JPanel {
 			editor = new JEditorPane(StandaloneLicensePanel.class.getClassLoader().getResource("org/zeromeaner/About.html"));
 			editor.setBackground(new Color(0,0,128));
 			editor.setForeground(Color.WHITE);
-			add(editor, BorderLayout.CENTER);
+			add(new JScrollPane(editor), BorderLayout.CENTER);
 		} catch(IOException ioe) {
 			
 		}
