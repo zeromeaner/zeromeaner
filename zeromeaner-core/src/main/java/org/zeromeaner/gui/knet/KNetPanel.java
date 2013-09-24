@@ -644,9 +644,11 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 		public void create() {
 			channelPanel.updateChannel();
 			client.fireTCP(CHANNEL_CREATE, channel);
+			client.fireTCP(CHANNEL_JOIN, channel);
 			KNetPanel.this.remove(CreateChannelPanel.this);
 			KNetPanel.this.add(createChannelPanel = new CreateChannelPanel(), CREATE_CHANNEL_PANEL_CARD);
 			cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
+			
 		}
 		
 		public void cancel() {

@@ -58,11 +58,20 @@ public class Localization {
 		List<Locale> locales = new ArrayList<Locale>();
 		locales.add(Locale.getDefault());
 		locales.addAll(Arrays.asList(defaults));
+		InputStream in = base.getResourceAsStream(basename = (base.getSimpleName() + ".properties"));
+		try {
+			if(in != null) {
+				props.load(in);
+				in.close();
+			}
+		} catch(IOException ioe) {
+		}
 		for(Locale l : locales) {
-			InputStream in = base.getResourceAsStream(basename = (base.getSimpleName() + "_" + l.getLanguage() + ".properties"));
+			in = base.getResourceAsStream(basename = (base.getSimpleName() + "_" + l.getLanguage() + ".properties"));
 			if(in == null)
 				continue;
 			try {
+				props.clear();
 				props.load(in);
 				in.close();
 			} catch(IOException ioe) {
