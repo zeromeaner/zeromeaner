@@ -62,7 +62,7 @@ public class DiffFieldSerializer<T> extends Serializer<T> {
 		byte[] diffBytes;
 		synchronized(graph) {
 			OpQueue q = Diffs.queue(typicalBytes, objectBytes);
-			q = new ChunkingOpQueue(q, 256);
+			q = new ChunkingOpQueue(q, CHUNK);
 			q = new GraphOpQueue(q, graph);
 			q = new CoalescingOpQueue(q);
 			q = new OneWayOpQueue(q);
