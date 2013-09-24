@@ -168,6 +168,7 @@ public class StandaloneFrame extends JFrame {
 	}
 	
 	private void createCards() {
+		/*
 		introPanel = new StandaloneLicensePanel();
 		content.add(introPanel, CARD_INTRO);
 		
@@ -281,6 +282,7 @@ public class StandaloneFrame extends JFrame {
 			});
 			content.add(fc, CARD_OPEN);
 		}
+		*/
 	}
 	
 	private boolean openOnlineCardCreated = false;
