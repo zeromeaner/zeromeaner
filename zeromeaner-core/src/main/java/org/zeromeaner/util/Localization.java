@@ -53,7 +53,8 @@ public class Localization extends ResourceBundle {
 	private Localization(int depth, Locale... defaults) {
 		this.base = getCallerClass(depth);
 		bundle = this;
-		defaults = Arrays.copyOf(defaults, defaults.length + 1);
+		defaults = Arrays.copyOf(defaults, defaults.length + 2);
+		defaults[defaults.length - 2] = Locale.ENGLISH;
 		for(final Locale dl : defaults) {
 			ResourceBundle.Control ctrl = new ResourceBundle.Control() {
 				@Override
