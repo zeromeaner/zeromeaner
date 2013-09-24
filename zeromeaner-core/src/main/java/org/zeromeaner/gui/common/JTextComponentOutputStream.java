@@ -15,8 +15,10 @@ public class JTextComponentOutputStream extends OutputStream {
 	
 	@Override
 	public void write(final int b) {
-		if(EventQueue.isDispatchThread())
+		if(EventQueue.isDispatchThread()) {
 			text.setText(text.getText() + (char) (0xff & b));
+			text.repaint();
+		}
 		else
 			EventQueue.invokeLater(new Runnable() {
 				@Override
@@ -33,6 +35,7 @@ public class JTextComponentOutputStream extends OutputStream {
 			for(int i = 0; i < len; i++)
 				sb.append((char) (0xff & b[off + i]));
 			text.setText(text.getText() + sb);
+			text.repaint();
 		} else
 			EventQueue.invokeLater(new Runnable() {
 				@Override
