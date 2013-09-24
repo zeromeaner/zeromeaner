@@ -15,6 +15,7 @@ import org.badiff.io.DefaultSerialization;
 import org.badiff.q.ChunkingOpQueue;
 import org.badiff.q.CoalescingOpQueue;
 import org.badiff.q.GraphOpQueue;
+import org.badiff.q.OneWayOpQueue;
 import org.badiff.q.OpQueue;
 import org.badiff.util.Diffs;
 import org.badiff.util.Serials;
@@ -30,11 +31,13 @@ import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.util.ObjectMap;
 
 public class DiffFieldSerializer<T> extends Serializer<T> {
+	private static final int CHUNK = 128;
+	
 	protected T typical;
 	protected byte[] typicalBytes;
 	protected FieldSerializer<T> flds;
 	
-	protected static Graph graph = new InertialGraph((257) * (257));
+	protected static Graph graph = new InertialGraph((CHUNK+1)*(CHUNK+1));
 	
 	public DiffFieldSerializer(Kryo kryo, Class<T> type, T typical) {
 		this.typical = typical;
@@ -62,6 +65,7 @@ public class DiffFieldSerializer<T> extends Serializer<T> {
 			q = new ChunkingOpQueue(q, 256);
 			q = new GraphOpQueue(q, graph);
 			q = new CoalescingOpQueue(q);
+			q = new OneWayOpQueue(q);
 			MemoryDiff md = new MemoryDiff(q);
 			diffBytes = Serials.serialize(DefaultSerialization.newInstance(), MemoryDiff.class, md);
 		}
