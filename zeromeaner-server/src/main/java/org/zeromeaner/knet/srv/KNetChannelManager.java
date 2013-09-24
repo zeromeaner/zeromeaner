@@ -226,14 +226,15 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				maybeAutostart(channel);
 			}
 		}
-		reply(e, 
+//		reply(e, 
+		fireTCP(
 				CHANNEL_JOIN,
 				CHANNEL_ID, channel.getId(),
 				PAYLOAD, e.getSource(),
 				CHANNEL_INFO, new KNetChannelInfo[] { channel });
 //		reply(e,
 		fireTCP(
-				CHANNEL_ID, channel.getId(),
+//				CHANNEL_ID, channel.getId(),
 				CHANNEL_LIST,
 				CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
 		if(newPlayer != null) {
