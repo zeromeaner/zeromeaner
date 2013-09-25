@@ -1,17 +1,20 @@
 package org.zeromeaner.gui.reskin;
 
-import java.applet.Applet;
+import static org.zeromeaner.gui.reskin.StandaloneMain.userId;
+
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.Map;
 
+import javax.swing.JApplet;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -22,9 +25,7 @@ import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.ResourceInputStream;
 
-import static org.zeromeaner.gui.reskin.StandaloneMain.userId;
-
-public class StandaloneApplet extends Applet {
+public class StandaloneApplet extends JApplet {
 	public static StandaloneApplet instance;
 	public static URL url;
 
@@ -32,24 +33,42 @@ public class StandaloneApplet extends Applet {
 		return instance != null;
 	}
 
-	private JTextArea loading = new JTextArea();
+	private JTextArea loading;
 
 	@Override
 	public void init() {
+
+		Runnable laf = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					MetalLookAndFeel.setCurrentTheme(new ZeroMetalTheme());
+					UIManager.setLookAndFeel(new MetalLookAndFeel());
+				} catch(UnsupportedLookAndFeelException e) {
+				}
+			}
+		};
+		
+		laf.run();
+		
 		if(EQInvoker.reinvoke(false, this)) {
+			loading = new JTextArea();
+			loading.setForeground(Color.WHITE);
+			loading.setBackground(new Color(0,0,64));
+			loading.setWrapStyleWord(true);
+			loading.setLineWrap(true);
+			loading.setOpaque(true);
+			
 			JTextComponentOutputStream out = new JTextComponentOutputStream(loading);
 			System.setOut(new PrintStream(out));
+			setLayout(new BorderLayout());
+			add(loading, BorderLayout.CENTER);
+			loading.revalidate();
+			validate();
+			repaint();
 			return;
 		}
 
-		loading.setLineWrap(true);
-		loading.setWrapStyleWord(true);
-		
-		setLayout(new BorderLayout());
-		add(new JScrollPane(loading), BorderLayout.CENTER);
-		loading.revalidate();
-		validate();
-		repaint();
 
 
 		instance = this;
@@ -103,9 +122,6 @@ public class StandaloneApplet extends Applet {
 			} catch(IOException ioe) {
 			}
 
-			MetalLookAndFeel.setCurrentTheme(new ZeroMetalTheme());
-			UIManager.setLookAndFeel(new MetalLookAndFeel());
-
 			StandaloneMain.loadGlobalConfig();
 
 			StandaloneMain.modeManager = ModeList.getModes();
@@ -122,7 +138,7 @@ public class StandaloneApplet extends Applet {
 			final StandaloneFrame frame = new StandaloneFrame();
 			frame.setUndecorated(false);
 
-			removeAll();
+			remove(loading);
 			add(frame.getRootPane(), BorderLayout.CENTER);
 			validate();
 

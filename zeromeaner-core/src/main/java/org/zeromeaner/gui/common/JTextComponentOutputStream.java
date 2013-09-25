@@ -16,7 +16,10 @@ public class JTextComponentOutputStream extends OutputStream {
 	@Override
 	public void write(final int b) {
 		if(EventQueue.isDispatchThread()) {
-			text.setText(text.getText() + (char) (0xff & b));
+			String t = text.getText() + (char) (0xff & b);
+			if(t.indexOf('\n') != t.lastIndexOf('\n'))
+				t = t.substring(t.indexOf('\n') + 1);
+			text.setText(t);
 			text.repaint();
 		}
 		else
@@ -34,7 +37,10 @@ public class JTextComponentOutputStream extends OutputStream {
 			StringBuilder sb = new StringBuilder();
 			for(int i = 0; i < len; i++)
 				sb.append((char) (0xff & b[off + i]));
-			text.setText(text.getText() + sb);
+			String t = text.getText() + sb;
+			if(t.indexOf('\n') != t.lastIndexOf('\n'))
+				t = t.substring(t.indexOf('\n') + 1);
+			text.setText(t);
 			text.repaint();
 		} else
 			EventQueue.invokeLater(new Runnable() {
