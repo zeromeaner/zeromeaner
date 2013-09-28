@@ -280,7 +280,6 @@ public class StandaloneResourceHolder {
 		try {
 			img = ImageIO.read(url);
 		} catch (Throwable e) {
-			log.warn("Failed to load image " + url, e);
 			try {
 				img = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
 			} catch (Throwable e2) {}

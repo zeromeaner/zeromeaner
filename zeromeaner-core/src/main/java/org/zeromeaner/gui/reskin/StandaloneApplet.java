@@ -1,39 +1,98 @@
 package org.zeromeaner.gui.reskin;
 
-import java.applet.Applet;
+import static org.zeromeaner.gui.reskin.StandaloneMain.userId;
+
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.Map;
 
+import javax.swing.JApplet;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.apache.log4j.PropertyConfigurator;
+import org.zeromeaner.gui.common.JTextComponentOutputStream;
 import org.zeromeaner.plaf.ZeroMetalTheme;
 import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.ResourceInputStream;
 
-import static org.zeromeaner.gui.reskin.StandaloneMain.userId;
-
-public class StandaloneApplet extends Applet {
+public class StandaloneApplet extends JApplet {
 	public static StandaloneApplet instance;
 	public static URL url;
-	
+
 	public static boolean isApplet() {
 		return instance != null;
+	}
+
+	private JPanel panel = new JPanel(new GridBagLayout());
+	private JTextArea loading;
+
+	public StandaloneApplet() {
+		panel.setBackground(new Color(0,0,64));
+		panel.setOpaque(true);
+		setLayout(new BorderLayout());
+		add(panel, BorderLayout.CENTER);
 	}
 	
 	@Override
 	public void init() {
-		if(EQInvoker.reinvoke(false, this))
-			return;
+
+		Runnable laf = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					MetalLookAndFeel.setCurrentTheme(new ZeroMetalTheme());
+					UIManager.setLookAndFeel(new MetalLookAndFeel());
+				} catch(UnsupportedLookAndFeelException e) {
+				}
+			}
+		};
 		
+		laf.run();
+		
+		if(EQInvoker.reinvoke(false, this)) {
+			loading = new JTextArea();
+			loading.setForeground(Color.WHITE);
+			loading.setBackground(new Color(0,0,64));
+			loading.setWrapStyleWord(true);
+			loading.setLineWrap(true);
+			loading.setOpaque(true);
+			
+			JTextComponentOutputStream out = new JTextComponentOutputStream(loading, true);
+			System.setOut(new PrintStream(out));
+			panel.add(loading, new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+			loading.revalidate();
+			validate();
+			repaint();
+			return;
+		}
+
+
+
 		instance = this;
+
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				startup();
+			}
+		}).start();;
+	}
+	
+	private void startup() {
 		
 		CookieAccess.setInstance(new CookieAccess() {
 			@Override
@@ -41,7 +100,7 @@ public class StandaloneApplet extends Applet {
 				return get(StandaloneApplet.this);
 			}
 		});
-		
+
 		url = getDocumentBase();
 		if(System.getProperty("zero_url") != null) {
 			try {
@@ -54,7 +113,7 @@ public class StandaloneApplet extends Applet {
 			userId = CookieAccess.get("userId");
 		if(userId == null)
 			userId = getParameter("userId");
-	
+
 		while(userId == null || "default".equals(userId)) {
 			userId = "none";
 			int create = JOptionPane.showConfirmDialog(this, "To save user configuration, such as custom keys, you must create a user id.\nThere is no need to remember a password.\nIf you choose not to create a user ID the default settings will be used.\n\nCreate a user ID now?", "Create User ID?", JOptionPane.YES_NO_OPTION);
@@ -66,36 +125,34 @@ public class StandaloneApplet extends Applet {
 					userId = "default";
 			}
 		}
-		
+
 		try {
+
 			try {
 				PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));
 			} catch(IOException ioe) {
-				ioe.printStackTrace();
 			}
-			
-			MetalLookAndFeel.setCurrentTheme(new ZeroMetalTheme());
-			UIManager.setLookAndFeel(new MetalLookAndFeel());
-			
+
 			StandaloneMain.loadGlobalConfig();
-			
+
 			StandaloneMain.modeManager = ModeList.getModes();
-			
+
 			StandaloneGameKey.initGlobalGameKeySwing();
 			StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 			StandaloneGameKey.gamekey[1].loadDefaultKeymap();
-			
+
 			StandaloneGameKey.gamekey[0].loadConfig(Options.GUI_PROPERTIES);
 			StandaloneGameKey.gamekey[1].loadConfig(Options.GUI_PROPERTIES);
-			
+
 			StandaloneResourceHolder.load();
-			
+
 			final StandaloneFrame frame = new StandaloneFrame();
 			frame.setUndecorated(false);
-			
-			setLayout(new BorderLayout());
-			add(frame.getRootPane(), BorderLayout.CENTER);
-			
+
+			panel.remove(loading);
+			panel.add(frame.getRootPane(), new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0,0,0,0), 0, 0));
+			validate();
+
 			if(url.getQuery() != null) {
 				String[] qf = url.getQuery().split("&");
 				for(String qpp : qf) {
@@ -109,21 +166,19 @@ public class StandaloneApplet extends Applet {
 						});
 						break;
 					}
-						
+
 				}
 			}
-			
+
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void stop() {
-		StandaloneMain.saveConfig();
-		System.exit(0);
 	}
-	
+
 	@Override
 	public void destroy() {
 		StandaloneMain.saveConfig();

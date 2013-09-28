@@ -1,17 +1,21 @@
 package org.zeromeaner.util;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
-public class Localization extends ResourceBundle {
+public class Localization {
 	private static Class<?> getCallerClass(int depth) {
 		StackTraceElement[] e = Thread.currentThread().getStackTrace();
 		try {
@@ -22,7 +26,6 @@ public class Localization extends ResourceBundle {
 	}
 	
 	private static Map<String, Localization> lzCache = Collections.synchronizedMap(new IdentityHashMap<String, Localization>());
-	private static Map<String, String> stringCache = Collections.synchronizedMap(new IdentityHashMap<String, String>());
 	
 	public static Localization lz() {
 		return new Localization(4);
@@ -43,8 +46,8 @@ public class Localization extends ResourceBundle {
 	}
 	
 	private Class<?> base;
-	private ResourceBundle bundle;
-	private Map<String, Object> vals = Collections.synchronizedMap(new TreeMap<String, Object>());
+	private Properties props = new Properties();
+	private String basename;
 	
 	public Localization(Locale... defaults) {
 		this(4, defaults);
@@ -52,20 +55,28 @@ public class Localization extends ResourceBundle {
 	
 	private Localization(int depth, Locale... defaults) {
 		this.base = getCallerClass(depth);
-		bundle = this;
-		defaults = Arrays.copyOf(defaults, defaults.length + 1);
-		for(final Locale dl : defaults) {
-			ResourceBundle.Control ctrl = new ResourceBundle.Control() {
-				@Override
-				public Locale getFallbackLocale(String baseName, Locale locale) {
-					return dl;
-				}
-			};
-			try {
-				bundle = ResourceBundle.getBundle(base.getName(), ctrl);
-				break;
-			} catch(MissingResourceException mre) {
+		List<Locale> locales = new ArrayList<Locale>();
+		locales.add(Locale.getDefault());
+		locales.addAll(Arrays.asList(defaults));
+		InputStream in = base.getResourceAsStream(basename = (base.getSimpleName() + ".properties"));
+		try {
+			if(in != null) {
+				props.load(in);
+				in.close();
 			}
+		} catch(IOException ioe) {
+		}
+		for(Locale l : locales) {
+			in = base.getResourceAsStream(basename = (base.getSimpleName() + "_" + l.getLanguage() + ".properties"));
+			if(in == null)
+				continue;
+			try {
+				props.clear();
+				props.load(in);
+				in.close();
+			} catch(IOException ioe) {
+			}
+			break;
 		}
 	}
 	
@@ -74,36 +85,19 @@ public class Localization extends ResourceBundle {
 	}
 	
 	public String s(String key, String dv) {
-		if(stringCache.containsKey(key))
-			return stringCache.get(key);
-		if(!vals.containsKey(key))
-			vals.put(key, dv);
+		if(!props.containsKey(key))
+			props.setProperty(key, dv);
 		String v;
 		try {
-			v = bundle.getString(key);
+			v = props.getProperty(key);
 		} catch(MissingResourceException mre) {
 			v = dv;
 		}
-		stringCache.put(key, v);
 		return v;
 	}
 	
 	public String s(String key) {
-		String resource = base.getName().replaceAll("\\.", "/") + ".properties";
-		if(!bundle.getLocale().getLanguage().isEmpty())
-			resource += "_" + bundle.getLocale().getLanguage();
-		return s(key, "\u00ab" + resource + "::" + key + "\u00bb");
+		return s(key, "\u00ab" + basename + "::" + key + "\u00bb");
 	}
 
-	@Override
-	protected Object handleGetObject(String key) {
-		return vals.get(key);
-	}
-
-	@Override
-	public Enumeration<String> getKeys() {
-		synchronized(vals) {
-			return Collections.enumeration(new ArrayList<String>(vals.keySet()));
-		}
-	}
 }

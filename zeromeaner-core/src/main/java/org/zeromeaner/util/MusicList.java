@@ -149,6 +149,10 @@ public class MusicList extends ArrayFunctionalList<String> {
 	}
 	
 	public void setVolume(float volume) {
+		if(this.volume == 0 && volume > 0)
+			play();
+		if(this.volume > 0 && volume == 0)
+			stop();
 		this.volume = volume;
 		updateVolume();
 	}

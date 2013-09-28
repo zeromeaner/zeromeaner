@@ -112,6 +112,8 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	
 	protected KNetChannelInfo updateChannel(KNetEvent ke, KNetChannelInfo src) {
 		KNetChannelInfo dst = channels.get(src.getId());
+		if(dst == null)
+			return null;
 //		KryoCopy.overwrite(src, channels.get(src.getId()));
 		dst.setName(src.getName());
 		dst.setMembers(src.getMembers());
@@ -151,11 +153,17 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 				fireChannelDeleted(e, channels.remove(c.getId()));
 			}
 		} else if(e.is(JOIN_CHANNEL)) {
-			KNetChannelInfo c = e.get(CHANNEL_INFO, KNetChannelInfo[].class)[0];
-			c = updateChannel(e, c);
-			if(e.is(I_JOINED_CHANNEL)) {
-				currentChannel = c;
-				fireChannelJoined(e, c);
+			if(!e.is(CHANNEL_INFO)) {
+				int channelId = e.get(CHANNEL_ID, Integer.class);
+				KNetGameClient.this.client.subscribe(new Topic(KNetTopics.CHANNEL + channelId), KNetGameClient.this);
+				fireTCP(CHANNEL_JOIN, CHANNEL_ID, channelId);
+			} else {
+				KNetChannelInfo c = e.get(CHANNEL_INFO, KNetChannelInfo[].class)[0];
+				c = updateChannel(e, c);
+				if(e.is(I_JOINED_CHANNEL)) {
+					currentChannel = c;
+					fireChannelJoined(e, c);
+				}
 			}
 		} else if(e.is(LEAVE_CHANNEL)) {
 			KNetChannelInfo c = e.get(CHANNEL_INFO, KNetChannelInfo[].class)[0];
