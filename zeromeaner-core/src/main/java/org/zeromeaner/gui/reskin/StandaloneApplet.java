@@ -177,8 +177,6 @@ public class StandaloneApplet extends JApplet {
 
 	@Override
 	public void stop() {
-		StandaloneMain.saveConfig();
-		System.exit(0);
 	}
 
 	@Override
