@@ -424,7 +424,8 @@ public class StandaloneFrame extends JFrame {
 				dispose();
 			}
 		});
-		add(t, g, b);
+		if(!StandaloneApplet.isApplet())
+			add(t, g, b);
 		
 		return t;
 	}
