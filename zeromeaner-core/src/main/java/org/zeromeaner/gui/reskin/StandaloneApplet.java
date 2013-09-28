@@ -30,11 +30,15 @@ import org.zeromeaner.util.Options;
 import org.zeromeaner.util.ResourceInputStream;
 
 public class StandaloneApplet extends JApplet {
-	public static StandaloneApplet instance;
+	private static StandaloneApplet instance;
 	public static URL url;
 
 	public static boolean isApplet() {
 		return instance != null;
+	}
+	
+	public static StandaloneApplet getInstance() {
+		return instance;
 	}
 
 	private JPanel panel = new JPanel(new GridBagLayout());

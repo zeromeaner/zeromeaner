@@ -407,16 +407,16 @@ public class StandaloneFrame extends JFrame {
 		if(!StandaloneApplet.isApplet()) {
 			b = new JToggleButton(new ToolbarAction("toolbar.open"));
 			add(t, g, b);
+		} else {
+			b = new JToggleButton(new ToolbarAction("toolbar.open_online") {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					createOpenOnlineCard();
+					super.actionPerformed(e);
+				}
+			});
+			add(t, g, b);
 		}
-		
-		b = new JToggleButton(new ToolbarAction("toolbar.open_online") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				createOpenOnlineCard();
-				super.actionPerformed(e);
-			}
-		});
-		add(t, g, b);
 		
 		b = new JButton(new ToolbarAction("toolbar.close") {
 			@Override
