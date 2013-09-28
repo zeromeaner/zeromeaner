@@ -5,6 +5,9 @@ import static org.zeromeaner.gui.reskin.StandaloneMain.userId;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
@@ -12,6 +15,7 @@ import java.util.Map;
 
 import javax.swing.JApplet;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -33,8 +37,16 @@ public class StandaloneApplet extends JApplet {
 		return instance != null;
 	}
 
+	private JPanel panel = new JPanel(new GridBagLayout());
 	private JTextArea loading;
 
+	public StandaloneApplet() {
+		panel.setBackground(new Color(0,0,64));
+		panel.setOpaque(true);
+		setLayout(new BorderLayout());
+		add(panel, BorderLayout.CENTER);
+	}
+	
 	@Override
 	public void init() {
 
@@ -59,10 +71,9 @@ public class StandaloneApplet extends JApplet {
 			loading.setLineWrap(true);
 			loading.setOpaque(true);
 			
-			JTextComponentOutputStream out = new JTextComponentOutputStream(loading);
+			JTextComponentOutputStream out = new JTextComponentOutputStream(loading, true);
 			System.setOut(new PrintStream(out));
-			setLayout(new BorderLayout());
-			add(loading, BorderLayout.CENTER);
+			panel.add(loading, new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 			loading.revalidate();
 			validate();
 			repaint();
@@ -138,8 +149,8 @@ public class StandaloneApplet extends JApplet {
 			final StandaloneFrame frame = new StandaloneFrame();
 			frame.setUndecorated(false);
 
-			remove(loading);
-			add(frame.getRootPane(), BorderLayout.CENTER);
+			panel.remove(loading);
+			panel.add(frame.getRootPane(), new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0,0,0,0), 0, 0));
 			validate();
 
 			if(url.getQuery() != null) {
