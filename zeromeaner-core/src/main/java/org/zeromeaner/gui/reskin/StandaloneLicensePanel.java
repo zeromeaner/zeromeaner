@@ -17,6 +17,7 @@ public class StandaloneLicensePanel extends JPanel {
 			editor = new JEditorPane(StandaloneLicensePanel.class.getClassLoader().getResource("org/zeromeaner/About.html"));
 			editor.setBackground(new Color(0,0,128));
 			editor.setForeground(Color.WHITE);
+			editor.setEditable(false);
 			add(new JScrollPane(editor), BorderLayout.CENTER);
 		} catch(IOException ioe) {
 			
