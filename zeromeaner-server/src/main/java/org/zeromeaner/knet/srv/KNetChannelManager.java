@@ -127,7 +127,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				channels.put(request.getId(), request);
 				states.put(request, new ChannelState(request));
 				client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
-				reply(e, CHANNEL_JOIN, CHANNEL_ID, request.getId(), PAYLOAD, request.getId());
+//				reply(e, CHANNEL_JOIN, CHANNEL_ID, request.getId(), PAYLOAD, request.getId());
 			}
 			if(e.is(CHANNEL_DELETE)) {
 				int id = (Integer) e.get(CHANNEL_DELETE);
