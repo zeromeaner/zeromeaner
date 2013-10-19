@@ -42,7 +42,6 @@ public class StandaloneApplet extends JApplet {
 	}
 
 	private JPanel panel = new JPanel(new GridBagLayout());
-	private JTextArea loading;
 
 	public StandaloneApplet() {
 		panel.setBackground(new Color(0,0,64));
@@ -68,17 +67,6 @@ public class StandaloneApplet extends JApplet {
 		laf.run();
 		
 		if(EQInvoker.reinvoke(false, this)) {
-			loading = new JTextArea();
-			loading.setForeground(Color.WHITE);
-			loading.setBackground(new Color(0,0,64));
-			loading.setWrapStyleWord(true);
-			loading.setLineWrap(true);
-			loading.setOpaque(true);
-			
-			JTextComponentOutputStream out = new JTextComponentOutputStream(loading, true);
-			System.setOut(new PrintStream(out));
-			panel.add(loading, new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-			loading.revalidate();
 			validate();
 			repaint();
 			return;
@@ -153,7 +141,6 @@ public class StandaloneApplet extends JApplet {
 			final StandaloneFrame frame = new StandaloneFrame();
 			frame.setUndecorated(false);
 
-			panel.remove(loading);
 			panel.add(frame.getRootPane(), new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0,0,0,0), 0, 0));
 			validate();
 
