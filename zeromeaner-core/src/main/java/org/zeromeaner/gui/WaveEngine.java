@@ -42,10 +42,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -160,13 +162,15 @@ public class WaveEngine {
 					SourceDataLine line = AudioSystem.getSourceDataLine(format);
 					line.open(format);
 					line.start();
+					setVolume(line);
 					match = new AudioThread(format, line);
 					threads.add(match);
 					match.start();
 				}
 			}
 
-			match.data.clear();
+			while(match.data.size() > 8)
+				match.data.pollLast();
 			byte[] buf = new byte[1024 * format.getFrameSize()];
 			for(int r = audioIn.read(buf); r != -1; r = audioIn.read(buf))
 				match.data.offer(Arrays.copyOf(buf, r));
@@ -176,7 +180,7 @@ public class WaveEngine {
 	}
 	
 	private class AudioThread extends Thread {
-		public BlockingQueue<byte[]> data = new LinkedBlockingQueue<byte[]>();
+		public BlockingDeque<byte[]> data = new LinkedBlockingDeque<byte[]>();
 		public AudioFormat format;
 		public SourceDataLine line;
 		
@@ -191,12 +195,14 @@ public class WaveEngine {
 				long expos = 0;
 				while(true) {
 					byte[] buf = data.poll();
-					if(buf == null)
+					if(buf == null) {
 						buf = new byte[1024 * format.getFrameSize()];
+						Arrays.fill(buf, (byte) 127);
+					}
 					expos += buf.length;
 					line.write(buf, 0, buf.length);
 					while(line.getLongFramePosition() < expos - 512)
-						Thread.sleep(10);
+						Thread.sleep(5);
 				}
 			} catch(Exception ex) {
 				ex.printStackTrace();
