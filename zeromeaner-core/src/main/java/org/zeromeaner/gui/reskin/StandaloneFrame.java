@@ -316,7 +316,7 @@ public class StandaloneFrame extends JFrame {
 	
 	private void playCardSelected() {
 		playCard.add(gamePanel, BorderLayout.CENTER);
-		playCard.add(musicPanel, BorderLayout.WEST);
+//		playCard.add(musicPanel, BorderLayout.WEST);
 		if(StandaloneApplet.isApplet())
 			playCard.add(replayButton, BorderLayout.SOUTH);
 		gamePanel.shutdown();
@@ -330,7 +330,7 @@ public class StandaloneFrame extends JFrame {
 	
 	private void netplayCardSelected() {
 		netplayCard.add(gamePanel, BorderLayout.CENTER);
-		netplayCard.add(musicPanel, BorderLayout.WEST);
+//		netplayCard.add(musicPanel, BorderLayout.WEST);
 		gamePanel.shutdown();
 		try {
 			gamePanel.shutdownWait();

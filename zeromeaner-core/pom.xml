@@ -137,11 +137,6 @@
 			<version>0.9.9-RC1</version>
 		</dependency>
 		<dependency>
-			<groupId>javazoom</groupId>
-			<artifactId>jlayer</artifactId>
-			<version>1.0.1</version>
-		</dependency>
-		<dependency>
 			<groupId>org.zeromeaner</groupId>
 			<artifactId>zeromeaner-laf</artifactId>
 			<version>1.1.3-SNAPSHOT</version>
@@ -221,13 +216,6 @@
 		</profile>
 		<profile>
 			<id>shade</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.zeromeaner</groupId>
-					<artifactId>zeromeaner-media</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
@@ -309,13 +297,6 @@
 		</profile>
 		<profile>
 			<id>shade-stable</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.zeromeaner</groupId>
-					<artifactId>zeromeaner-media</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
