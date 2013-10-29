@@ -33,8 +33,8 @@ public class Options {
 	}
 	
 	public static class GeneralOptions {
-		public final Constant<String> MODE_NAME = GLOBAL_PROPERTIES.create(STRING, "mode.name", "");
-		public final Constant<String> RULE_NAME = GLOBAL_PROPERTIES.create(STRING, "0.rule", "");
+		public final Constant<String> MODE_NAME = GLOBAL_PROPERTIES.create(STRING, ".mode.name", "");
+		public final Constant<String> RULE_NAME = GLOBAL_PROPERTIES.create(STRING, ".0.rule", "");
 		
 		private GeneralOptions() {}
 	}
@@ -48,7 +48,7 @@ public class Options {
 		public final Constant<String> RULE_NAME;
 
 		public Constant<String> RULE_NAME_FOR_STYLE(int styleId) {
-			return GLOBAL_PROPERTIES.create(STRING, playerId + ".rule." + styleId, "");
+			return GLOBAL_PROPERTIES.create(STRING, "." + playerId + ".rule." + styleId, "");
 		}
 		
 		private PlayerOptions(int playerId) {
@@ -56,7 +56,7 @@ public class Options {
 			tuning = new TuningOptions(playerId);
 			ai = new AIOptions(playerId);
 			
-			RULE_NAME = GLOBAL_PROPERTIES.create(STRING, playerId + ".rule", "");
+			RULE_NAME = GLOBAL_PROPERTIES.create(STRING, "." + playerId + ".rule", "");
 		}
 	}
 	
@@ -72,7 +72,7 @@ public class Options {
 		public final Constant<Integer> BLOCK_SHOW_OUTLINE_ONLY;
 		
 		private TuningOptions(int playerId) {
-			CustomProperties backing = GLOBAL_PROPERTIES.subProperties(playerId + ".tuning.ow");
+			CustomProperties backing = GLOBAL_PROPERTIES.subProperties("." + playerId + ".tuning.ow");
 			ROTATE_BUTTON_DEFAULT_RIGHT = backing.create(INTEGER, "RotateButtonDefaultRight", -1);
 			SKIN = backing.create(INTEGER, "Skin", -1);
 			MIN_DAS = backing.create(INTEGER, "MinDAS", -1);
@@ -95,7 +95,7 @@ public class Options {
 		public final Constant<Boolean> SHOW_STATE;
 		
 		private AIOptions(int playerId) {
-			CustomProperties backing = GLOBAL_PROPERTIES.subProperties(playerId + ".ai");
+			CustomProperties backing = GLOBAL_PROPERTIES.subProperties("." + playerId + ".ai");
 			NAME = backing.create(STRING, "", "");
 			MOVE_DELAY = backing.create(INTEGER, "MoveDelay", 0);
 			THINK_DELAY = backing.create(INTEGER, "ThinkDelay", 0);
@@ -110,7 +110,7 @@ public class Options {
 		public final Constant<String> RULE_RSOURCE;
 		
 		private ModeOptions(String modeName) {
-			CustomProperties p = GLOBAL_PROPERTIES.subProperties("mode." + modeName + ".");
+			CustomProperties p = GLOBAL_PROPERTIES.subProperties(".mode." + modeName + ".");
 			RULE_RSOURCE = p.create(STRING, "rule", null);
 		}
 	}
@@ -142,7 +142,7 @@ public class Options {
 		public final Constant<Boolean> SHOW_INPUT;
 		
 		private StandaloneOptions() {
-			CustomProperties p = GUI_PROPERTIES.subProperties("options.");
+			CustomProperties p = GUI_PROPERTIES.subProperties(".options.");
 			SHOW_BG = p.create(BOOLEAN, "showbg", true);
 			SHOW_LINE_EFFECT = p.create(BOOLEAN, "showlineeffect", false);
 			SHOW_METER = p.create(BOOLEAN, "showmeter", true);

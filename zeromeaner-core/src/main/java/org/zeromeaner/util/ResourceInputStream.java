@@ -43,19 +43,19 @@ public class ResourceInputStream extends FilterInputStream {
 	
 	public static InputStream getStream(String resource) throws IOException {
 		InputStream in = null;
-		if(ResourceDownloadStream.getCache().containsKey(resource))
-			return new ByteArrayInputStream(ResourceDownloadStream.getCache().get(resource));
-		if(
-				StandaloneApplet.isApplet()
-				&& (resource.startsWith("config/setting/") || resource.startsWith("replay/"))
-				&& !dontDownload.contains(resource)
-				)
-			try {
-				in = new ResourceDownloadStream(resource);
-			} catch(IOException ioe) {
-			}
-		if(in != null)
-			return in;
+//		if(ResourceDownloadStream.getCache().containsKey(resource))
+//			return new ByteArrayInputStream(ResourceDownloadStream.getCache().get(resource));
+//		if(
+//				StandaloneApplet.isApplet()
+//				&& (resource.startsWith("config/setting/") || resource.startsWith("replay/"))
+//				&& !dontDownload.contains(resource)
+//				)
+//			try {
+//				in = new ResourceDownloadStream(resource);
+//			} catch(IOException ioe) {
+//			}
+//		if(in != null)
+//			return in;
 		try {
 			File localResource = new File(System.getProperty("user.dir"), "local-resources/" + resource);
 			if(localResource.exists() && !localResource.isDirectory())
