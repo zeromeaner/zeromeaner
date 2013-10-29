@@ -45,6 +45,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
+
 import org.apache.log4j.Logger;
 import org.zeromeaner.gui.reskin.StandaloneResourceHolder;
 
@@ -56,6 +57,16 @@ public class WaveEngine {
 	/** Log */
 	private static Logger log = Logger.getLogger(WaveEngine.class);
 
+	private ExecutorService dispatch = Executors.newSingleThreadExecutor(new ThreadFactory() {
+		private ThreadFactory dtf = Executors.defaultThreadFactory();
+		@Override
+		public Thread newThread(Runnable r) {
+			Thread t = dtf.newThread(r);
+			t.setName("audio dispatcher");
+			return t;
+		}
+	});
+	
 	private ExecutorService exec = Executors.newCachedThreadPool(new ThreadFactory() {
 		private ThreadFactory dtf = Executors.defaultThreadFactory();
 		@Override
@@ -150,39 +161,61 @@ public class WaveEngine {
 	 * @param name Registered name
 	 */
 	public void play(final String name) {
-		stop(name);
-		AudioInputStream audioIn;
+		final AudioInputStream audioIn;
 		try {
 			audioIn = AudioSystem.getAudioInputStream(new ByteArrayInputStream(clipBuffers.get(name)));
 		} catch(Exception ex) {
 			log.warn(ex);
 			return;
 		}
-		exec.submit(new AudioTask(name, audioIn));
+		dispatch.execute(new Runnable() {
+			@Override
+			public void run() {
+				stop(name);
+				SourceDataLine line;
+				try {
+					synchronized(sourceDataLines) {
+						line = AudioSystem.getSourceDataLine(audioIn.getFormat());
+						line.open(audioIn.getFormat());
+						line.start();
+						sourceDataLines.put(name, line);
+					}
+					exec.submit(new AudioTask(name, line, audioIn));
+				} catch(Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
 	}
 	
 	private class AudioTask implements Callable<Object> {
 		private String name;
 		private AudioInputStream audioIn;
+		private SourceDataLine line;
 		
-		public AudioTask(String name, AudioInputStream audioIn) {
+		public AudioTask(String name, SourceDataLine line, AudioInputStream audioIn) {
 			this.name = name;
 			this.audioIn = audioIn;
+			this.line = line;
 		}
 		
 		@Override
 		public Object call() throws Exception {
-			SourceDataLine line;
-			synchronized(sourceDataLines) {
-				line = AudioSystem.getSourceDataLine(audioIn.getFormat());
-				line.open(audioIn.getFormat());
-				line.start();
-				sourceDataLines.put(name, line);
-			}
 			setVolume(line);
 			byte[] buf = new byte[1024 * audioIn.getFormat().getFrameSize()];
 			for(int r = audioIn.read(buf); r != -1; r = audioIn.read(buf)) {
 				line.write(buf, 0, r);
+				if(!sourceDataLines.containsKey(name)) {
+					dispatch.execute(new Runnable() {
+						@Override
+						public void run() {
+							line.stop();
+							line.flush();
+							line.close();
+						}
+					});
+					return null;
+				}
 			}
 			line.drain();
 			line.close();
@@ -195,10 +228,6 @@ public class WaveEngine {
 	 * @param name Registered name
 	 */
 	public void stop(final String name) {
-		SourceDataLine line = sourceDataLines.remove(name);
-		if(line != null) {
-			line.flush();
-			line.close();
-		}
+		sourceDataLines.remove(name);
 	}
 }

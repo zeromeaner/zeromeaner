@@ -74,7 +74,11 @@ public class TGMNetVSBattleMode extends NetVSBattleMode {
 		attack.setLastPiece(lastpiece[playerID]);
 		attack.setTargetSeatId(targetSeatID);
 		
-		attack.setCleared(engine.field.getLastLinesCleared());
+		ArrayList<Block[]> cleared = engine.field.getLastLinesAsTGMAttack();
+		
+		attack.setCleared(cleared);
+		// Need to clear out lastPiece from the lines cleared
+		
 		knetClient().fireTCP(GAME, TGMNETVSBATTLE_GAME_ATTACK, attack, CHANNEL_ID, channelInfo().getId());
 		sentPiece = lastPiece;
 	}
@@ -108,7 +112,7 @@ public class TGMNetVSBattleMode extends NetVSBattleMode {
 		if(playerID == 0) {
 			synchronized(pendingGarbage) {
 				for(TGMAttackInfo attack : pendingGarbage) {
-					int y = engine.field.getHeightWithoutHurryupFloor() - 1;
+					int y = engine.field.getHeight() - 1;
 					ArrayList<Block[]> cleared = attack.getCleared();
 					cleared.remove(0);
 					for(Block[] blocks : cleared) {
