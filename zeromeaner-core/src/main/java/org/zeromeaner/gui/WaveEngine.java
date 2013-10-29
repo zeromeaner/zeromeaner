@@ -169,7 +169,7 @@ public class WaveEngine {
 				}
 			}
 
-			while(match.data.size() > 8)
+			while(match.data.size() > 4)
 				match.data.pollLast();
 			byte[] buf = new byte[1024 * format.getFrameSize()];
 			for(int r = audioIn.read(buf); r != -1; r = audioIn.read(buf))
