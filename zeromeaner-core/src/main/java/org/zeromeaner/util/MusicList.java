@@ -72,7 +72,7 @@ public class MusicList extends ArrayFunctionalList<String> {
 		if(s == null)
 			return;
 		try {
-			for(DavResource dr : s.getResources("http://www.0mino.org/webdav/bgm/")) {
+			for(DavResource dr : s.getResources("http://www.nettromino.org/webdav/bgm/")) {
 				if(dr.getName().endsWith(".mp3"))
 					add(dr.getAbsoluteUrl().replaceAll("webdav/", "").replaceAll(" ", "%20"));
 			}
