@@ -153,12 +153,10 @@ public class WaveEngine {
 				for(AudioThread t : threads) {
 					if(format.matches(t.format)) {
 						match = t;
-						System.out.println("Found matching line");
 						break;
 					}
 				}
 				if(match == null) {
-					System.out.println("Creating new line");
 					SourceDataLine line = AudioSystem.getSourceDataLine(format);
 					line.open(format);
 					line.start();
