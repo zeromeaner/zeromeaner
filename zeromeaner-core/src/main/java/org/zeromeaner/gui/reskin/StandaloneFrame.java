@@ -131,12 +131,14 @@ public class StandaloneFrame extends JFrame {
 			}
 			@Override
 			public void knetPanelJoined(KNetPanelEvent e) {
-				enterNewMode(e.getChannel().getMode());
+//				enterNewMode(e.getChannel().getMode());
+				gamePanel.modeToEnter.offer(e.getChannel().getMode());
 			}
 			
 			@Override
 			public void knetPanelParted(KNetPanelEvent e) {
-				enterNewMode(null);
+//				enterNewMode(null);
+				gamePanel.modeToEnter.offer("");
 			}
 		});
 		
@@ -336,6 +338,8 @@ public class StandaloneFrame extends JFrame {
 			gamePanel.shutdownWait();
 		} catch(InterruptedException ie) {
 		}
+//		enterNewMode(null);
+		gamePanel.modeToEnter.offer("");
 		enterNewMode(null);
 		gamePanel.displayWindow();
 	}
@@ -598,6 +602,7 @@ public class StandaloneFrame extends JFrame {
 			gameManager.mode = new MarathonMode();
 		} else {
 			gameManager.mode = modeObj;
+			gamePanel.modeToEnter.offer(modeName);
 		}
 
 		gameManager.init();

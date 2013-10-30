@@ -46,10 +46,12 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.SynchronousQueue;
@@ -64,6 +66,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
+
+
 
 
 
@@ -205,8 +209,9 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	/** If net playtrue */
 	public boolean isNetPlay = false;
 
-	/** Mode name to enter (null=Exit) */
-	public volatile String strModeToEnter = "";
+//	/** Mode name to enter (null=Exit) */
+//	public volatile String strModeToEnter = "";
+	public BlockingQueue<String> modeToEnter = new LinkedBlockingQueue<String>();
 
 	/** Previous ingame flag (Used by title-bar text change) */
 	protected boolean prevInGameFlag = false;
@@ -670,6 +675,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			}
 
 			// Enter to new mode
+/*
 			if(strModeToEnter == null) {
 				owner.enterNewMode(null);
 				strModeToEnter = "";
@@ -677,6 +683,16 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			} else if (strModeToEnter.length() > 0) {
 				owner.enterNewMode(strModeToEnter);
 				strModeToEnter = "";
+			}
+*/
+			String newMode = modeToEnter.poll();
+			if(newMode != null) {
+				if("".equals(newMode)) {
+					owner.enterNewMode(null);
+					MusicList.getInstance().stop();
+				}
+				else
+					owner.enterNewMode(newMode);
 			}
 		} catch (NullPointerException e) {
 			try {
