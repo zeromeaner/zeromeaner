@@ -197,8 +197,7 @@ public class WaveEngine {
 						buf = new byte[1024 * format.getFrameSize()];
 						Arrays.fill(buf, (byte) 127);
 					}
-					expos += buf.length;
-					line.write(buf, 0, buf.length);
+					expos += line.write(buf, 0, buf.length);
 					while(line.getLongFramePosition() < expos - 512)
 						Thread.sleep(5);
 				}
