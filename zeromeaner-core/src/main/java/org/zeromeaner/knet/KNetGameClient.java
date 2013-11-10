@@ -56,7 +56,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	
 	private List<Field> maps = new ArrayList<Field>();
 	private Map<Integer, KNetChannelInfo> channels = new HashMap<Integer, KNetChannelInfo>();
-	private KNetChannelInfo currentChannel;
+	private volatile KNetChannelInfo currentChannel;
 	
 	public KNetGameClient(String host, int port) {
 		this(KNetGameClient.class.getSimpleName(), host, port);
@@ -293,5 +293,9 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 				((KNetChannelListener) ll[i+1]).channelChat(e);
 			}
 		}
+	}
+
+	public void setCurrentChannel(KNetChannelInfo currentChannel) {
+		this.currentChannel = currentChannel;
 	}
 }

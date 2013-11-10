@@ -53,11 +53,15 @@ import javax.swing.JTextField;
 
 
 
+
+
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.subsystem.ai.AIPlayer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.Options;
+import org.zeromeaner.util.Options.AIOptions;
+import org.zeromeaner.util.Options.PlayerOptions;
 import org.zeromeaner.util.Zeroflections;
 
 import static org.zeromeaner.gui.reskin.Localizations.lz;
@@ -146,15 +150,16 @@ public class StandaloneAISelectPanel extends JPanel implements ActionListener {
 	public void load(int pl) {
 		this.playerID = pl;
 
-		CustomProperties p = Options.GLOBAL_PROPERTIES;
+//		CustomProperties p = Options.GLOBAL_PROPERTIES;
+		AIOptions opt = Options.player(playerID).ai;
 		
-		currentAI = p.getProperty(playerID + ".ai", "");
-		aiMoveDelay = p.getProperty(playerID + ".aiMoveDelay", 0);
-		aiThinkDelay = p.getProperty(playerID + ".aiThinkDelay", 0);
-		aiUseThread = p.getProperty(playerID + ".aiUseThread", true);
-		aiShowHint = p.getProperty(playerID + ".aiShowHint", false);
-		aiPrethink = p.getProperty(playerID + ".aiPrethink", false);
-		aiShowState = p.getProperty(playerID + ".aiShowState", false);
+		currentAI = opt.NAME.value();
+		aiMoveDelay = opt.MOVE_DELAY.value();
+		aiThinkDelay = opt.THINK_DELAY.value();
+		aiUseThread = opt.USE_THREAD.value();
+		aiShowHint = opt.SHOW_HINT.value();
+		aiPrethink = opt.PRETHINK.value();
+		aiShowState = opt.SHOW_STATE.value();
 
 		aiID = -1;
 		listboxAI.clearSelection();
@@ -330,18 +335,19 @@ public class StandaloneAISelectPanel extends JPanel implements ActionListener {
 			aiPrethink = chkBoxAIPrethink.isSelected();
 			aiShowState = chkBoxAIShowState.isSelected();
 
-			CustomProperties p = Options.GLOBAL_PROPERTIES;
+//			CustomProperties p = Options.GLOBAL_PROPERTIES;
+			AIOptions opt = Options.player(playerID).ai;
 			
 			if(aiID >= 0) 
-				p.setProperty(playerID + ".ai", aiPathList[aiID]);
+				opt.NAME.set(aiPathList[aiID]);
 			else 
-				p.setProperty(playerID + ".ai", "");
-			p.setProperty(playerID + ".aiMoveDelay", aiMoveDelay);
-			p.setProperty(playerID + ".aiThinkDelay", aiThinkDelay);
-			p.setProperty(playerID + ".aiUseThread", aiUseThread);
-			p.setProperty(playerID + ".aiShowHint", aiShowHint);
-			p.setProperty(playerID + ".aiPrethink", aiPrethink);
-			p.setProperty(playerID + ".aiShowState", aiShowState);
+				opt.NAME.set("");
+			opt.MOVE_DELAY.set(aiMoveDelay);
+			opt.THINK_DELAY.set(aiThinkDelay);
+			opt.USE_THREAD.set(aiUseThread);
+			opt.SHOW_HINT.set(aiShowHint);
+			opt.PRETHINK.set(aiPrethink);
+			opt.SHOW_STATE.set(aiShowState);
 			StandaloneMain.saveConfig();
 		}
 		// Cancel

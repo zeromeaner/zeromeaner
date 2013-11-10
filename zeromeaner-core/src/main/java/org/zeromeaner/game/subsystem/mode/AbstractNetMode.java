@@ -1100,6 +1100,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 
 	@Override
 	public void knetPanelJoined(KNetPanelEvent e) {
+		knetPanel = e.getSource();
 		netOnJoin(e.getClient(), e.getChannel());
 	}
 

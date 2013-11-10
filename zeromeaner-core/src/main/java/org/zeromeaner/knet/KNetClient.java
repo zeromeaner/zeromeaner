@@ -17,7 +17,7 @@ import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryonet.Connection;
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
-public class KNetClient implements MessageListener {
+public class KNetClient implements MessageListener, KNetListener {
 	private class KNetMasterClient extends MasterClient {
 		private KNetMasterClient() {
 		}
@@ -63,6 +63,7 @@ public class KNetClient implements MessageListener {
 		KNetKryo.configure(sendKryo = new Kryo());
 		KNetKryo.configure(recvKryo = new Kryo());
 		client = new KNetMasterClient();
+		addKNetListener(this);
 	}
 
 	public KNetClient start() throws IOException, InterruptedException {
@@ -212,5 +213,11 @@ public class KNetClient implements MessageListener {
 
 	public int getPort() {
 		return port;
+	}
+
+	@Override
+	public void knetEvented(KNetClient client, KNetEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

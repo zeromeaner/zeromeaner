@@ -38,6 +38,7 @@ public class ResourceOutputStream extends FilterOutputStream {
 			localResource.getParentFile().mkdirs();
 			return new FileOutputStream(localResource);
 		} catch(Throwable t) {
+			t.printStackTrace();
 			return new OutputStream() {
 				@Override
 				public void write(int b) throws IOException {
