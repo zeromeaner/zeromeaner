@@ -2,8 +2,6 @@ package org.zeromeaner.knet;
 
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.concurrent.Callable;
-
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
@@ -25,18 +23,12 @@ import org.zeromeaner.knet.obj.KNetGameInfo;
 import org.zeromeaner.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.knet.obj.PieceHold;
 import org.zeromeaner.knet.obj.PieceMovement;
-import org.zeromeaner.knet.ser.BlockSerializer;
 import org.zeromeaner.knet.ser.DiffFieldSerializer;
-import org.zeromeaner.knet.ser.PieceSerializer;
 import org.zeromeaner.knet.ser.PropertiesSerializer;
-import org.zeromeaner.knet.ser.SpeedParamSerializer;
-import org.zeromeaner.knet.ser.StatisticsSerializer;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
-import com.esotericsoftware.kryo.serializers.FieldSerializer;
 
 public class KNetKryo {
 	public static Kryo configure(Kryo kryo) {

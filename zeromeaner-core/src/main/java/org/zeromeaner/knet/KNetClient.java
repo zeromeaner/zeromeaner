@@ -3,8 +3,6 @@ package org.zeromeaner.knet;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.concurrent.Semaphore;
-
 import javax.swing.event.EventListenerList;
 
 import org.mmmq.Message;
@@ -16,11 +14,7 @@ import org.mmmq.io.MessagePacket;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.KryoSerialization;
-import com.esotericsoftware.kryonet.Listener;
-
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetClient implements MessageListener {

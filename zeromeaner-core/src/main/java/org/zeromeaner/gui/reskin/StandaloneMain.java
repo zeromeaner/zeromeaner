@@ -14,7 +14,6 @@ import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.plaf.ZeroMetalTheme;
-import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.PropertyConstant;

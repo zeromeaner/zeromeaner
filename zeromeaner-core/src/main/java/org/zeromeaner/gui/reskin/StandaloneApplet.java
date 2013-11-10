@@ -9,20 +9,17 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.URL;
 import java.util.Map;
 
 import javax.swing.JApplet;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.apache.log4j.PropertyConfigurator;
-import org.zeromeaner.gui.common.JTextComponentOutputStream;
 import org.zeromeaner.plaf.ZeroMetalTheme;
 import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.ModeList;

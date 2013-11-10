@@ -8,7 +8,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -51,12 +50,7 @@ import org.zeromeaner.util.Options;
 import org.zeromeaner.util.ResourceFileSystemView;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.Options.AIOptions;
-import org.zeromeaner.util.Options.PlayerOptions;
 import org.zeromeaner.util.Options.TuningOptions;
-
-import static org.zeromeaner.util.Options.GLOBAL_PROPERTIES;
-import static org.zeromeaner.util.Options.GUI_PROPERTIES;
-import static org.zeromeaner.util.Options.RUNTIME_PROPERTIES;
 
 import static org.zeromeaner.util.Options.player;
 

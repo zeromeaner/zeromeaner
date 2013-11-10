@@ -1,27 +1,14 @@
 package org.zeromeaner.util;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import javax.sound.sampled.FloatControl;
-import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
 import org.funcish.core.coll.ArrayFunctionalList;
 import org.funcish.core.coll.FunctionalList;
 import org.funcish.core.fn.Mapper;
 import org.funcish.core.impl.AbstractMapper;
-import org.zeromeaner.gui.reskin.StandaloneApplet;
-
-import com.googlecode.sardine.DavResource;
-import com.googlecode.sardine.Factory;
-import com.googlecode.sardine.Sardine;
 
 public class MusicList extends ArrayFunctionalList<String> {
 	private static final Logger log = Logger.getLogger(MusicList.class);

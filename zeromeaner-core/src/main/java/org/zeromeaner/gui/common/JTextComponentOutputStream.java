@@ -1,7 +1,6 @@
 package org.zeromeaner.gui.common;
 
 import java.awt.EventQueue;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 

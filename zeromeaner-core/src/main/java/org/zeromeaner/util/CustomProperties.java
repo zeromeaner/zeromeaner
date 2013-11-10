@@ -34,7 +34,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.NavigableMap;
-import java.util.Properties;
 import java.util.TreeMap;
 
 import org.zeromeaner.util.PropertyConstant.Constant;

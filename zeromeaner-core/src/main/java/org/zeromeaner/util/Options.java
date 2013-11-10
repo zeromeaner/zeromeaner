@@ -1,10 +1,5 @@
 package org.zeromeaner.util;
 
-import java.util.Properties;
-import java.util.regex.Pattern;
-
-import org.zeromeaner.game.component.RuleOptions;
-import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.util.PropertyConstant.Constant;
 
 import static org.zeromeaner.util.PropertyConstant.*;

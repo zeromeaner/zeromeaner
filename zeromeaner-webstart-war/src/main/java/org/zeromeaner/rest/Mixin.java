@@ -3,7 +3,6 @@ package org.zeromeaner.rest;
 import java.util.List;
 
 import org.zeromeaner.knet.KNetEventSource;
-import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.rest.View.Detail;
 

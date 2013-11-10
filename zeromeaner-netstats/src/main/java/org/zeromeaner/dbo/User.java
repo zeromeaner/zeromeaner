@@ -1,10 +1,5 @@
 package org.zeromeaner.dbo;
 
-import java.security.MessageDigest;
-
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-
 public class User {
 	private Integer userId;
 	private String email;
