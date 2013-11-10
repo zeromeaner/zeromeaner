@@ -34,12 +34,10 @@ import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -150,10 +148,12 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	protected void initUI() {
 		setLayout(new BorderLayout(10, 10));
 
-		JPanel login = new JPanel(new BorderLayout());
-		login.add(new JLabel("www.0mino.org user ID:"), BorderLayout.WEST);
-		login.add(userId, BorderLayout.CENTER);
-		this.add(login, BorderLayout.NORTH);
+		if(StandaloneApplet.isApplet()) {
+			JPanel login = new JPanel(new BorderLayout());
+			login.add(new JLabel("www.nettromino.org user ID:"), BorderLayout.WEST);
+			login.add(userId, BorderLayout.CENTER);
+			this.add(login, BorderLayout.NORTH);
+		}
 		
 		// * Tab pane
 		JTabbedPane tabPane = new JTabbedPane();

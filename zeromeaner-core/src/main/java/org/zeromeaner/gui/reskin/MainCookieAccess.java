@@ -11,7 +11,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 public class MainCookieAccess extends CookieAccess {
-	private File prefs = new File(System.getProperty("user.dir"), "0mino.properties");
+	private File prefs = new File(System.getProperty("user.dir"), "nettromino.properties");
 
 	@Override
 	protected Map<String, String> get(Applet applet) {
@@ -38,7 +38,7 @@ public class MainCookieAccess extends CookieAccess {
 			}
 			OutputStream out = new FileOutputStream(prefs);
 			try {
-				p.store(out, "0mino config");
+				p.store(out, "nettromino config");
 			} finally {
 				out.close();
 			}

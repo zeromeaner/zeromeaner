@@ -13,10 +13,6 @@ import org.funcish.core.impl.AbstractPredicate;
 import org.mmmq.Topic;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
-import org.zeromeaner.util.KryoCopy;
-
-import com.esotericsoftware.kryonet.Connection;
-
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetGameClient extends KNetClient implements KNetListener {

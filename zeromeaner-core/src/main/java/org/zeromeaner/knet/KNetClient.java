@@ -3,8 +3,6 @@ package org.zeromeaner.knet;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.concurrent.Semaphore;
-
 import javax.swing.event.EventListenerList;
 
 import org.mmmq.Message;
@@ -16,11 +14,7 @@ import org.mmmq.io.MessagePacket;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.KryoSerialization;
-import com.esotericsoftware.kryonet.Listener;
-
 import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetClient implements MessageListener {
@@ -48,7 +42,8 @@ public class KNetClient implements MessageListener {
 	protected String host;
 	protected int port;
 
-	protected Kryo kryo;
+	protected Kryo sendKryo;
+	protected Kryo recvKryo;
 	protected MasterClient client;
 
 	protected KNetEventSource source;
@@ -65,7 +60,8 @@ public class KNetClient implements MessageListener {
 		this.type = type;
 		this.host = host;
 		this.port = port;
-		KNetKryo.configure(kryo = new Kryo());
+		KNetKryo.configure(sendKryo = new Kryo());
+		KNetKryo.configure(recvKryo = new Kryo());
 		client = new KNetMasterClient();
 	}
 
@@ -92,8 +88,8 @@ public class KNetClient implements MessageListener {
 	public void messageReceived(Message message) {
 		
 		Object obj;
-		synchronized(kryo) {
-			obj = kryo.readClassAndObject(new Input(message.message()));
+		synchronized(recvKryo) {
+			obj = recvKryo.readClassAndObject(new Input(message.message()));
 		}
 		if(!(obj instanceof KNetEvent))
 			return;
@@ -184,8 +180,8 @@ public class KNetClient implements MessageListener {
 		e.getSource();
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		Output out = new Output(bout);
-		synchronized(kryo) {
-			kryo.writeClassAndObject(out, e);
+		synchronized(sendKryo) {
+			sendKryo.writeClassAndObject(out, e);
 		}
 		out.flush();
 		Message m = (Message) new MessagePacket(origin, new Topic(e.getTopic())).withMessage(bout.toByteArray()).tcp();
@@ -202,8 +198,8 @@ public class KNetClient implements MessageListener {
 		issue(e);
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		Output out = new Output(bout);
-		synchronized(kryo) {
-			kryo.writeClassAndObject(out, e);
+		synchronized(sendKryo) {
+			sendKryo.writeClassAndObject(out, e);
 		}
 		out.flush();
 		Message m = (Message) new MessagePacket(origin, new Topic(e.getTopic())).withMessage(bout.toByteArray()).udp();

@@ -12,7 +12,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.zeromeaner.gui.common.DocumentOutputStream;
 import org.zeromeaner.gui.common.JTextComponentOutputStream;
 
 public class KNetServerMain {

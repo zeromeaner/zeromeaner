@@ -1,13 +1,6 @@
 package org.zeromeaner.knet.ser;
 
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.concurrent.Callable;
-
-import org.badiff.ByteArrayDiffs;
-import org.badiff.Diff;
-import org.badiff.alg.EditGraph;
 import org.badiff.alg.Graph;
 import org.badiff.alg.InertialGraph;
 import org.badiff.imp.MemoryDiff;
@@ -19,16 +12,11 @@ import org.badiff.q.OneWayOpQueue;
 import org.badiff.q.OpQueue;
 import org.badiff.util.Diffs;
 import org.badiff.util.Serials;
-import org.zeromeaner.knet.KNetKryo;
-
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.InputChunked;
 import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.io.OutputChunked;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
-import com.esotericsoftware.kryo.util.ObjectMap;
 
 public class DiffFieldSerializer<T> extends Serializer<T> {
 	private static final int CHUNK = 128;

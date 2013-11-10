@@ -2,9 +2,7 @@ package org.zeromeaner.game.evil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,15 +11,10 @@ import java.util.concurrent.FutureTask;
 
 import org.eviline.Field;
 import org.eviline.PlayerAction;
-import org.eviline.PlayerActionNode;
 import org.eviline.PlayerActionType;
 import org.eviline.ai.Decision;
 import org.eviline.ai.DefaultAIKernel;
 import org.eviline.ai.QueueContext;
-import org.eviline.fitness.AbstractFitness;
-import org.eviline.fitness.DefaultFitness;
-import org.eviline.fitness.EvilineFitness;
-import org.eviline.fitness.EvilineFitness2;
 import org.eviline.fitness.LandingFitness;
 import org.eviline.Shape;
 import org.eviline.ShapeType;

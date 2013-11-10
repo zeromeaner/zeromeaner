@@ -1,6 +1,5 @@
 package org.zeromeaner.rest;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,16 +14,9 @@ import javax.ws.rs.core.MediaType;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
-import org.zeromeaner.knet.KNetEventSource;
 import org.zeromeaner.knet.KNetListener;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.knet.srv.KNetServer;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 import static org.zeromeaner.knet.KNetEventArgs.*;
 

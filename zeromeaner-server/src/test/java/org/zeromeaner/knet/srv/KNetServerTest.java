@@ -4,7 +4,6 @@ import java.util.concurrent.Semaphore;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.knet.KNetEventArgs;

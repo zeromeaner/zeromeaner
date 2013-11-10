@@ -1,6 +1,5 @@
 package org.zeromeaner.knet;
 
-import java.util.EnumMap;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.Map;

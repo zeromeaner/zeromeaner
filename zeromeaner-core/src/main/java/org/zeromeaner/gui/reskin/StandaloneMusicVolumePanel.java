@@ -75,7 +75,7 @@ public class StandaloneMusicVolumePanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					URL tenfold = new URL("https://soundcloud.com/10x");
-					StandaloneApplet.instance.getAppletContext().showDocument(tenfold, "_blank");
+					StandaloneApplet.getInstance().getAppletContext().showDocument(tenfold, "_blank");
 				} catch(Exception ex) {
 					ex.printStackTrace();
 				}

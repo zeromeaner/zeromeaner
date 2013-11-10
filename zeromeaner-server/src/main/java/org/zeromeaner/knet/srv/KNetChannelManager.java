@@ -9,10 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.swing.text.html.HTMLDocument.HTMLReader.SpecialAction;
 
 import org.apache.log4j.Logger;
 import org.mmmq.Topic;
@@ -127,7 +124,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 				channels.put(request.getId(), request);
 				states.put(request, new ChannelState(request));
 				client.fireTCP(CHANNEL_LIST, CHANNEL_INFO, channels.values().toArray(new KNetChannelInfo[0]));
-				reply(e, CHANNEL_JOIN, CHANNEL_ID, request.getId(), PAYLOAD, request.getId());
+//				reply(e, CHANNEL_JOIN, CHANNEL_ID, request.getId(), PAYLOAD, request.getId());
 			}
 			if(e.is(CHANNEL_DELETE)) {
 				int id = (Integer) e.get(CHANNEL_DELETE);

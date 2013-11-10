@@ -8,7 +8,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -51,12 +50,7 @@ import org.zeromeaner.util.Options;
 import org.zeromeaner.util.ResourceFileSystemView;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.Options.AIOptions;
-import org.zeromeaner.util.Options.PlayerOptions;
 import org.zeromeaner.util.Options.TuningOptions;
-
-import static org.zeromeaner.util.Options.GLOBAL_PROPERTIES;
-import static org.zeromeaner.util.Options.GUI_PROPERTIES;
-import static org.zeromeaner.util.Options.RUNTIME_PROPERTIES;
 
 import static org.zeromeaner.util.Options.player;
 
@@ -111,7 +105,7 @@ public class StandaloneFrame extends JFrame {
 	private URL replayUrl;
 	
 	public StandaloneFrame() {
-		setTitle("0mino");
+		setTitle("netTromino");
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
@@ -131,12 +125,14 @@ public class StandaloneFrame extends JFrame {
 			}
 			@Override
 			public void knetPanelJoined(KNetPanelEvent e) {
-				enterNewMode(e.getChannel().getMode());
+//				enterNewMode(e.getChannel().getMode());
+				gamePanel.modeToEnter.offer(e.getChannel().getMode());
 			}
 			
 			@Override
 			public void knetPanelParted(KNetPanelEvent e) {
-				enterNewMode(null);
+//				enterNewMode(null);
+				gamePanel.modeToEnter.offer("");
 			}
 		});
 		
@@ -316,7 +312,7 @@ public class StandaloneFrame extends JFrame {
 	
 	private void playCardSelected() {
 		playCard.add(gamePanel, BorderLayout.CENTER);
-		playCard.add(musicPanel, BorderLayout.WEST);
+//		playCard.add(musicPanel, BorderLayout.WEST);
 		if(StandaloneApplet.isApplet())
 			playCard.add(replayButton, BorderLayout.SOUTH);
 		gamePanel.shutdown();
@@ -330,12 +326,14 @@ public class StandaloneFrame extends JFrame {
 	
 	private void netplayCardSelected() {
 		netplayCard.add(gamePanel, BorderLayout.CENTER);
-		netplayCard.add(musicPanel, BorderLayout.WEST);
+//		netplayCard.add(musicPanel, BorderLayout.WEST);
 		gamePanel.shutdown();
 		try {
 			gamePanel.shutdownWait();
 		} catch(InterruptedException ie) {
 		}
+//		enterNewMode(null);
+		gamePanel.modeToEnter.offer("");
 		enterNewMode(null);
 		gamePanel.displayWindow();
 	}
@@ -407,16 +405,16 @@ public class StandaloneFrame extends JFrame {
 		if(!StandaloneApplet.isApplet()) {
 			b = new JToggleButton(new ToolbarAction("toolbar.open"));
 			add(t, g, b);
+		} else {
+			b = new JToggleButton(new ToolbarAction("toolbar.open_online") {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					createOpenOnlineCard();
+					super.actionPerformed(e);
+				}
+			});
+			add(t, g, b);
 		}
-		
-		b = new JToggleButton(new ToolbarAction("toolbar.open_online") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				createOpenOnlineCard();
-				super.actionPerformed(e);
-			}
-		});
-		add(t, g, b);
 		
 		b = new JButton(new ToolbarAction("toolbar.close") {
 			@Override
@@ -598,6 +596,7 @@ public class StandaloneFrame extends JFrame {
 			gameManager.mode = new MarathonMode();
 		} else {
 			gameManager.mode = modeObj;
+			gamePanel.modeToEnter.offer(modeName);
 		}
 
 		gameManager.init();

@@ -3,14 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.zeromeaner</groupId>
 	<artifactId>zeromeaner-parent</artifactId>
-	<version>1.1.2</version>
+	<version>1.1.3</version>
 	<packaging>pom</packaging>
 
 	<modules>
 		<module>../zeromeaner-core</module>
 		<module>../zeromeaner-tuning</module>
-		<module>../zeromeaner-webstart</module>
-		<module>../zeromeaner-webstart-war</module>
 		<module>../zeromeaner-media</module>
 		<module>../zeromeaner-server</module>
 		<module>../zeromeaner-netstats</module>
@@ -46,7 +44,7 @@
 			<dependency>
 				<groupId>org.zeromeaner</groupId>
 				<artifactId>zeromeaner-core</artifactId>
-				<version>1.1.2</version>
+				<version>1.1.3</version>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>

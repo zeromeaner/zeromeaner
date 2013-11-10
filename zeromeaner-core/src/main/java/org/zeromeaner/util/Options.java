@@ -1,17 +1,12 @@
 package org.zeromeaner.util;
 
-import java.util.Properties;
-import java.util.regex.Pattern;
-
-import org.zeromeaner.game.component.RuleOptions;
-import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.util.PropertyConstant.Constant;
 
 import static org.zeromeaner.util.PropertyConstant.*;
 
 public class Options {
 	public static final CustomProperties ROOT_PROPERTIES = new CustomProperties();
-	public static final CustomProperties GLOBAL_PROPERTIES = new CustomProperties(ROOT_PROPERTIES, "0mino");
+	public static final CustomProperties GLOBAL_PROPERTIES = new CustomProperties(ROOT_PROPERTIES, "nettromino");
 	public static final CustomProperties GUI_PROPERTIES = new CustomProperties(GLOBAL_PROPERTIES, "gui");
 	public static final CustomProperties RUNTIME_PROPERTIES = new CustomProperties(GUI_PROPERTIES, "runtime");
 	
@@ -33,8 +28,8 @@ public class Options {
 	}
 	
 	public static class GeneralOptions {
-		public final Constant<String> MODE_NAME = GLOBAL_PROPERTIES.create(STRING, "mode.name", "");
-		public final Constant<String> RULE_NAME = GLOBAL_PROPERTIES.create(STRING, "0.rule", "");
+		public final Constant<String> MODE_NAME = GLOBAL_PROPERTIES.create(STRING, ".mode.name", "");
+		public final Constant<String> RULE_NAME = GLOBAL_PROPERTIES.create(STRING, ".0.rule", "");
 		
 		private GeneralOptions() {}
 	}
@@ -110,7 +105,7 @@ public class Options {
 		public final Constant<String> RULE_RSOURCE;
 		
 		private ModeOptions(String modeName) {
-			CustomProperties p = GLOBAL_PROPERTIES.subProperties("mode." + modeName + ".");
+			CustomProperties p = GLOBAL_PROPERTIES.subProperties(".mode." + modeName + ".");
 			RULE_RSOURCE = p.create(STRING, "rule", null);
 		}
 	}
@@ -142,7 +137,7 @@ public class Options {
 		public final Constant<Boolean> SHOW_INPUT;
 		
 		private StandaloneOptions() {
-			CustomProperties p = GUI_PROPERTIES.subProperties("options.");
+			CustomProperties p = GUI_PROPERTIES.subProperties(".options.");
 			SHOW_BG = p.create(BOOLEAN, "showbg", true);
 			SHOW_LINE_EFFECT = p.create(BOOLEAN, "showlineeffect", false);
 			SHOW_METER = p.create(BOOLEAN, "showmeter", true);

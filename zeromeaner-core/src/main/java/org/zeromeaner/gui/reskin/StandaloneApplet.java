@@ -9,20 +9,17 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.URL;
 import java.util.Map;
 
 import javax.swing.JApplet;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.apache.log4j.PropertyConfigurator;
-import org.zeromeaner.gui.common.JTextComponentOutputStream;
 import org.zeromeaner.plaf.ZeroMetalTheme;
 import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.ModeList;
@@ -30,15 +27,18 @@ import org.zeromeaner.util.Options;
 import org.zeromeaner.util.ResourceInputStream;
 
 public class StandaloneApplet extends JApplet {
-	public static StandaloneApplet instance;
+	private static StandaloneApplet instance;
 	public static URL url;
 
 	public static boolean isApplet() {
 		return instance != null;
 	}
+	
+	public static StandaloneApplet getInstance() {
+		return instance;
+	}
 
 	private JPanel panel = new JPanel(new GridBagLayout());
-	private JTextArea loading;
 
 	public StandaloneApplet() {
 		panel.setBackground(new Color(0,0,64));
@@ -64,17 +64,6 @@ public class StandaloneApplet extends JApplet {
 		laf.run();
 		
 		if(EQInvoker.reinvoke(false, this)) {
-			loading = new JTextArea();
-			loading.setForeground(Color.WHITE);
-			loading.setBackground(new Color(0,0,64));
-			loading.setWrapStyleWord(true);
-			loading.setLineWrap(true);
-			loading.setOpaque(true);
-			
-			JTextComponentOutputStream out = new JTextComponentOutputStream(loading, true);
-			System.setOut(new PrintStream(out));
-			panel.add(loading, new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-			loading.revalidate();
 			validate();
 			repaint();
 			return;
@@ -149,7 +138,6 @@ public class StandaloneApplet extends JApplet {
 			final StandaloneFrame frame = new StandaloneFrame();
 			frame.setUndecorated(false);
 
-			panel.remove(loading);
 			panel.add(frame.getRootPane(), new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0,0,0,0), 0, 0));
 			validate();
 

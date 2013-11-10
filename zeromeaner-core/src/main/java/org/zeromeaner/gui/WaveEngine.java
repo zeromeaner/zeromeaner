@@ -32,19 +32,20 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import java.util.Set;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
+
 import org.apache.log4j.Logger;
 import org.zeromeaner.gui.reskin.StandaloneResourceHolder;
 
@@ -56,25 +57,9 @@ public class WaveEngine {
 	/** Log */
 	private static Logger log = Logger.getLogger(WaveEngine.class);
 
-	private ExecutorService exec = Executors.newCachedThreadPool(new ThreadFactory() {
-		private ThreadFactory dtf = Executors.defaultThreadFactory();
-		@Override
-		public Thread newThread(Runnable r) {
-			Thread t = dtf.newThread(r);
-			t.setName("audio thread: " + t.getName());
-			return t;
-		}
-	});
-
-	/** You can registerWAVE file OfMaximumcount */
-	private int maxClips;
-
-	private Map<String, SourceDataLine> sourceDataLines;
-
+	private Set<AudioThread> threads = Collections.synchronizedSet(new HashSet<WaveEngine.AudioThread>());
+	
 	private Map<String, byte[]> clipBuffers = new HashMap<String, byte[]>();
-
-	/** Was registeredWAVE file count */
-	private AtomicInteger counter = new AtomicInteger();
 
 	/** Volume */
 	private double volume = 1.0;
@@ -83,17 +68,7 @@ public class WaveEngine {
 	 * Constructor
 	 */
 	public WaveEngine() {
-		this(30);
-	}
-
-	/**
-	 * Constructor
-	 * @param maxClips You can registerWAVE file OfMaximumcount
-	 */
-	public WaveEngine(int maxClips) {
-		this.maxClips = maxClips;
-		sourceDataLines = new HashMap<String, SourceDataLine>();
-		sourceDataLines = Collections.synchronizedMap(sourceDataLines);
+		
 	}
 
 	/**
@@ -111,10 +86,9 @@ public class WaveEngine {
 	public void setVolume(double vol) {
 		volume = vol;
 
-		synchronized(sourceDataLines) {
-			for(SourceDataLine line: sourceDataLines.values()) {
-				setVolume(line);
-			}
+		synchronized(threads) {
+			for(AudioThread t : threads)
+				setVolume(t.line);
 		}
 	}
 	
@@ -150,55 +124,74 @@ public class WaveEngine {
 	 * @param name Registered name
 	 */
 	public void play(final String name) {
-		stop(name);
-		AudioInputStream audioIn;
+		final AudioInputStream audioIn;
 		try {
 			audioIn = AudioSystem.getAudioInputStream(new ByteArrayInputStream(clipBuffers.get(name)));
 		} catch(Exception ex) {
 			log.warn(ex);
 			return;
 		}
-		exec.submit(new AudioTask(name, audioIn));
+		
+		AudioFormat format = audioIn.getFormat();
+		
+		try {
+			AudioThread match = null;
+			synchronized(threads) {
+				for(AudioThread t : threads) {
+					if(format.matches(t.format)) {
+						match = t;
+						break;
+					}
+				}
+				if(match == null) {
+					SourceDataLine line = AudioSystem.getSourceDataLine(format);
+					line.open(format);
+					line.start();
+					setVolume(line);
+					match = new AudioThread(format, line);
+					threads.add(match);
+					match.start();
+				}
+			}
+
+			while(match.data.size() > 2)
+				match.data.pollLast();
+			byte[] buf = new byte[1024 * format.getFrameSize()];
+			for(int r = audioIn.read(buf); r != -1; r = audioIn.read(buf))
+				match.data.offer(Arrays.copyOf(buf, r));
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 	
-	private class AudioTask implements Callable<Object> {
-		private String name;
-		private AudioInputStream audioIn;
+	private class AudioThread extends Thread {
+		public BlockingDeque<byte[]> data = new LinkedBlockingDeque<byte[]>();
+		public AudioFormat format;
+		public SourceDataLine line;
 		
-		public AudioTask(String name, AudioInputStream audioIn) {
-			this.name = name;
-			this.audioIn = audioIn;
+		public AudioThread(AudioFormat format, SourceDataLine line) {
+			this.format = format;
+			this.line = line;
 		}
 		
 		@Override
-		public Object call() throws Exception {
-			SourceDataLine line;
-			synchronized(sourceDataLines) {
-				line = AudioSystem.getSourceDataLine(audioIn.getFormat());
-				line.open(audioIn.getFormat());
-				line.start();
-				sourceDataLines.put(name, line);
+		public void run() {
+			try {
+				long expos = 0;
+				while(true) {
+					byte[] buf = data.poll();
+					if(buf == null) {
+						buf = new byte[1024 * format.getFrameSize()];
+						Arrays.fill(buf, (byte) 127);
+					}
+					expos += line.write(buf, 0, buf.length);
+					while(line.getLongFramePosition() < expos - 512)
+						Thread.sleep(5);
+				}
+			} catch(Exception ex) {
+				ex.printStackTrace();
 			}
-			setVolume(line);
-			byte[] buf = new byte[1024 * audioIn.getFormat().getFrameSize()];
-			for(int r = audioIn.read(buf); r != -1; r = audioIn.read(buf)) {
-				line.write(buf, 0, r);
-			}
-			line.drain();
-			line.close();
-			return null;
 		}
 	}
-
-	/**
-	 * Stop
-	 * @param name Registered name
-	 */
-	public void stop(final String name) {
-		SourceDataLine line = sourceDataLines.remove(name);
-		if(line != null) {
-			line.flush();
-			line.close();
-		}
-	}
+	
 }
