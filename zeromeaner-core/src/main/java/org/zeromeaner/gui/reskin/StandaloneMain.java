@@ -59,6 +59,7 @@ public class StandaloneMain {
 			Options.GLOBAL_PROPERTIES.store(out, "zeromeaner global Config");
 			out.close();
 		} catch(IOException e) {
+			e.printStackTrace();
 		}
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("config/setting/swing.cfg");

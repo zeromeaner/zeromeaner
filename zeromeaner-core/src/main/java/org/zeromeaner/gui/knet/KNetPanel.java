@@ -464,6 +464,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 					connectedPanel.channels.indexOfComponent(this),
 					icon);
 			revalidate();
+			client.setCurrentChannel(channel);
 			fireKnetPanelJoined(getChannel());
 		}
 		

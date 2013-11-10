@@ -390,7 +390,7 @@ public class StandaloneGameTuningPanel extends JPanel implements ActionListener 
 		if(radioBlockShowOutlineOnlyEnable.isSelected()) owBlockShowOutlineOnly = 1;
 		tune.BLOCK_SHOW_OUTLINE_ONLY.set(owBlockShowOutlineOnly);
 
-		int owSkin = comboboxSkin.getSelectedIndex() - 1;
+		int owSkin = comboboxSkin.getSelectedIndex()-1;
 		tune.SKIN.set(owSkin);
 
 		int owBlockOutlineType = comboboxBlockOutlineType.getSelectedIndex() - 1;
