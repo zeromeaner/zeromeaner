@@ -127,6 +127,10 @@ public class StandaloneFrame extends JFrame {
 			public void knetPanelJoined(KNetPanelEvent e) {
 //				enterNewMode(e.getChannel().getMode());
 				gamePanel.modeToEnter.offer(e.getChannel().getMode());
+				try {
+					gamePanel.modesEntered.take();
+				} catch(InterruptedException ie) {
+				}
 			}
 			
 			@Override

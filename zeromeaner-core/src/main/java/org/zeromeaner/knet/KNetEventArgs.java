@@ -209,6 +209,7 @@ public enum KNetEventArgs {
 	/**
 	 * argument: Integer: number of seconds
 	 */
+	@Global
 	AUTOSTART_BEGIN(Integer.class),
 	AUTOSTART_STOP,
 	
