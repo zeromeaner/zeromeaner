@@ -85,7 +85,7 @@ public class KNetClient implements MessageListener {
 	}
 
 	@Override
-	public void messageReceived(Message message) {
+	public synchronized void messageReceived(Message message) {
 		
 		Object obj;
 		synchronized(recvKryo) {

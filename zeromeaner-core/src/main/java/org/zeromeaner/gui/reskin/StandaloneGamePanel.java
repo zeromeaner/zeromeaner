@@ -212,6 +212,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 //	/** Mode name to enter (null=Exit) */
 //	public volatile String strModeToEnter = "";
 	public BlockingQueue<String> modeToEnter = new LinkedBlockingQueue<String>();
+	public BlockingQueue<String> modesEntered = new LinkedBlockingQueue<String>();
 
 	/** Previous ingame flag (Used by title-bar text change) */
 	protected boolean prevInGameFlag = false;
@@ -691,8 +692,10 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 					owner.enterNewMode(null);
 					MusicList.getInstance().stop();
 				}
-				else
+				else {
 					owner.enterNewMode(newMode);
+					modesEntered.offer(newMode);
+				}
 			}
 		} catch (NullPointerException e) {
 			try {
