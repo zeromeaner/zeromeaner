@@ -9,8 +9,6 @@
 	<modules>
 		<module>../zeromeaner-core</module>
 		<module>../zeromeaner-tuning</module>
-		<module>../zeromeaner-webstart</module>
-		<module>../zeromeaner-webstart-war</module>
 		<module>../zeromeaner-media</module>
 		<module>../zeromeaner-server</module>
 		<module>../zeromeaner-netstats</module>
