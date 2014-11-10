@@ -23,8 +23,6 @@ public class StandaloneLicensePanel extends JPanel {
 		URL about = StandaloneLicensePanel.class.getClassLoader().getResource("org/zeromeaner/About.html");
 		try {
 			editor = new JEditorPane();
-			editor.setBackground(new Color(0,0,128));
-			editor.setForeground(Color.WHITE);
 			editor.setEditable(false);
 			editor.setContentType("text/html");
 			editor.setPage(about);
