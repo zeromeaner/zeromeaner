@@ -150,7 +150,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 
 		if(StandaloneApplet.isApplet()) {
 			JPanel login = new JPanel(new BorderLayout());
-			login.add(new JLabel("www.nettromino.org user ID:"), BorderLayout.WEST);
+			login.add(new JLabel("www.zeromeaner.org user ID:"), BorderLayout.WEST);
 			login.add(userId, BorderLayout.CENTER);
 			this.add(login, BorderLayout.NORTH);
 		}

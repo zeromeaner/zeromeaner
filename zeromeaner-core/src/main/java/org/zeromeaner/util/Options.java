@@ -6,7 +6,7 @@ import static org.zeromeaner.util.PropertyConstant.*;
 
 public class Options {
 	public static final CustomProperties ROOT_PROPERTIES = new CustomProperties();
-	public static final CustomProperties GLOBAL_PROPERTIES = new CustomProperties(ROOT_PROPERTIES, "nettromino");
+	public static final CustomProperties GLOBAL_PROPERTIES = new CustomProperties(ROOT_PROPERTIES, "zeromeaner");
 	public static final CustomProperties GUI_PROPERTIES = new CustomProperties(GLOBAL_PROPERTIES, "gui");
 	public static final CustomProperties RUNTIME_PROPERTIES = new CustomProperties(GUI_PROPERTIES, "runtime");
 	

@@ -105,7 +105,7 @@ public class StandaloneFrame extends JFrame {
 	private URL replayUrl;
 	
 	public StandaloneFrame() {
-		setTitle("netTromino");
+		setTitle("zeromeaner");
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		

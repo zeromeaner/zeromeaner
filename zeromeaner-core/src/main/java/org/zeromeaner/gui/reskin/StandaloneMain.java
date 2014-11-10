@@ -75,11 +75,11 @@ public class StandaloneMain {
 	}
 
 	private static void _main(String[] args) throws Exception {
-		System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".nettromino");
+		System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".zeromeaner");
 		new File(System.getProperty("user.dir")).mkdirs();
 		CookieAccess.setInstance(new MainCookieAccess());
 
-		StandaloneApplet.url = new URL("http://www.nettromino.org/" + (GameManager.VERSION.isSnapshot() ? "snapshot" : "play") + "/");
+		StandaloneApplet.url = new URL("http://www.zeromeaner.org/" + (GameManager.VERSION.isSnapshot() ? "snapshot" : "play") + "/");
 
 		userId = System.getProperty("user.name");
 		if(CookieAccess.get("userId") != null)
