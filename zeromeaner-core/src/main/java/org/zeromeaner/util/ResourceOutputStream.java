@@ -12,7 +12,6 @@ import java.util.List;
 
 import org.zeromeaner.gui.reskin.StandaloneApplet;
 import org.zeromeaner.gui.reskin.StandaloneMain;
-import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 
 import com.googlecode.sardine.Factory;
 import com.googlecode.sardine.Sardine;
@@ -47,6 +46,7 @@ public class ResourceOutputStream extends FilterOutputStream {
 		}
 	}
 	
+	/*
 	public static class ResourceUploadStream extends FilterOutputStream {
 		public static OutputStream getUploadStream(final String resource) throws IOException {
 			final URL url = new URL("http://" + StandaloneApplet.url.getHost() + "/webdav/" + StandaloneMain.userId + "/" + resource);
@@ -82,6 +82,7 @@ public class ResourceOutputStream extends FilterOutputStream {
 			super(getUploadStream(resource));
 		}
 	}
+	*/
 	
 	public ResourceOutputStream(String resource) throws IOException {
 		super(getStream(resource));

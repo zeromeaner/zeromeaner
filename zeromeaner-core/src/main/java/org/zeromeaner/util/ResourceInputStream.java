@@ -98,6 +98,7 @@ public class ResourceInputStream extends FilterInputStream {
 		return null;
 	}
 	
+	/*
 	public static class ResourceDownloadStream extends FilterInputStream {
 		private static final Logger log = Logger.getLogger(ResourceDownloadStream.class);
 		
@@ -154,6 +155,7 @@ public class ResourceInputStream extends FilterInputStream {
 			super(getDownloadStream(resource));
 		}
 	}
+	*/
 	
 	public static Reader newReader(String resource) throws IOException {
 		return new InputStreamReader(new ResourceInputStream(resource));
