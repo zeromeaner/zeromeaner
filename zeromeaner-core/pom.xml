@@ -106,15 +106,9 @@
 			<version>146</version>
 		</dependency>
 		<dependency>
-			<groupId>sun.plugin</groupId>
-			<artifactId>plugin</artifactId>
-			<version>1.6</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.eviline</groupId>
 			<artifactId>eviline-core</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>2.1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
