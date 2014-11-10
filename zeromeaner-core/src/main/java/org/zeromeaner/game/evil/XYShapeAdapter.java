@@ -66,7 +66,7 @@ public abstract class XYShapeAdapter {
 		if(shape == null)
 			return -1;
 		
-		return XYShapes.toXYShape(engine.nowPieceX, engine.nowPieceY, shape);
+		return XYShapes.canonical(XYShapes.toXYShape(engine.nowPieceX, engine.nowPieceY, shape));
 	}
 	
 	private XYShapeAdapter() {}
