@@ -6,12 +6,18 @@ import org.eviline.core.Field;
 public class FieldAdapter extends Field {
 	protected static Block FILLED = new Block(0);
 	
-	public void update(org.zeromeaner.game.component.Field nullpo) {
-		reset();
+	public boolean update(org.zeromeaner.game.component.Field nullpo) {
+		boolean changed = false;
 		for(int y = -BUFFER; y < HEIGHT; y++) {
 			for(int x = 0; x < WIDTH; x++) {
-				setBlock(x, y, nullpo.getBlockEmpty(x, y) ? null : FILLED);
+				boolean empty = nullpo.getBlockEmpty(x, y);
+				boolean wasEmpty = block(x, y) == null;
+				if(empty ^ wasEmpty) {
+					setBlock(x, y, empty ? null : FILLED);
+					changed = true;
+				}
 			}
 		}
+		return changed;
 	}
 }

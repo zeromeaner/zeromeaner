@@ -24,17 +24,9 @@ public class EvilineAI extends AbstractAI {
 	
 	protected FutureTask<Map<Integer, Command>> pathified;
 	
-	protected Map<Integer, Command> commandPath() {
-		if(pathified == null || !pathified.isDone())
-			return Collections.emptyMap();
-		try {
-			return pathified.get();
-		} catch(Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
 	protected Command shifting = null;
+	
+	protected FieldAdapter expectedField;
 	
 	protected ExecutorService pool;
 	
@@ -42,7 +34,7 @@ public class EvilineAI extends AbstractAI {
 		Callable<Map<Integer, Command>> task = new Callable<Map<Integer, Command>>() {
 			@Override
 			public Map<Integer, Command> call() {
-				Map<Integer, Command> commandPath = new HashMap<Integer, Command>();
+				Map<Integer, Command> commandPath = new HashMap<>();
 				
 				EngineAdapter engineAdapter = new EngineAdapter();
 				org.eviline.core.ai.AIPlayer player = new org.eviline.core.ai.AIPlayer(ai, engineAdapter, 2);
@@ -74,10 +66,20 @@ public class EvilineAI extends AbstractAI {
 				return commandPath;
 			}
 		};
-		pathified = new FutureTask<Map<Integer, Command>>(task);
+		pathified = new FutureTask<>(task);
 		pool.execute(pathified);
 	}
 	
+	protected Map<Integer, Command> commandPath() {
+		if(pathified == null || !pathified.isDone())
+			return Collections.emptyMap();
+		try {
+			return pathified.get();
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	@Override
 	public String getName() {
 		return "eviline2";
@@ -87,6 +89,7 @@ public class EvilineAI extends AbstractAI {
 	public void init(GameEngine engine, int playerID) {
 		ai = new DefaultAIKernel(new NextFitness());
 		pool = Executors.newFixedThreadPool(1);
+		expectedField = new FieldAdapter();
 	}
 
 	@Override
@@ -100,6 +103,11 @@ public class EvilineAI extends AbstractAI {
 		int xyshape = XYShapeAdapter.toXYShape(engine);
 		int input = 0;
 
+		if(expectedField.update(engine.field)) {
+			shifting = null;
+			computeCommandPath(engine);
+		}
+		
 		if(shifting != null) {
 			EngineAdapter engineAdapter = new EngineAdapter();
 			engineAdapter.update(engine);
@@ -223,6 +231,7 @@ public class EvilineAI extends AbstractAI {
 	@Override
 	public void newPiece(GameEngine engine, int playerID) {
 		computeCommandPath(engine);
+		expectedField.update(engine.field);
 	}
 
 	@Override
