@@ -191,7 +191,7 @@ public class EvilineAI extends AbstractAI {
 	
 	protected Command shifting = null;
 	
-	protected int lookahead = 2;
+	protected int lookahead = 3;
 	
 	protected PathPipeline pipeline;
 	
@@ -243,6 +243,7 @@ public class EvilineAI extends AbstractAI {
 	public void init(GameEngine engine, int playerID) {
 		ai = new DefaultAIKernel(new NextFitness());
 		ai.setDropsOnly(true);
+		ai.setPruneTop(5);
 		pipeline = new PathPipeline();
 	}
 
