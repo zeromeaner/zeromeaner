@@ -124,6 +124,7 @@ public class EvilineAI extends AbstractAI {
 		
 		public void shutdown() {
 			exec.shutdownNow();
+			pipe.peekLast().task.cancel(true);
 		}
 	}
 	
@@ -183,7 +184,7 @@ public class EvilineAI extends AbstractAI {
 	
 	protected Command shifting = null;
 	
-	protected int lookahead = 3;
+	protected int lookahead = 2;
 	
 	protected PathPipeline pipeline;
 	
