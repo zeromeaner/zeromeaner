@@ -41,7 +41,7 @@ public abstract class XYShapeAdapter {
 	
 	public static int toXYShape(GameEngine engine) {
 		Piece p = engine.nowPieceObject;
-		ShapeType type = toShapeType(engine.nowPieceObject);
+		ShapeType type = toShapeType(p);
 		
 		if(type == null)
 			return -1;

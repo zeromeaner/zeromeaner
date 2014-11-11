@@ -1,7 +1,9 @@
 package org.zeromeaner.game.evil;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -9,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import org.eviline.core.Command;
 import org.eviline.core.Configuration;
@@ -19,6 +22,7 @@ import org.eviline.core.ai.AIKernel;
 import org.eviline.core.ai.AIPlayer;
 import org.eviline.core.ai.CommandGraph;
 import org.eviline.core.ai.DefaultAIKernel;
+import org.eviline.core.ai.DefaultAIKernel.Best;
 import org.eviline.core.ai.NextFitness;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
@@ -32,109 +36,196 @@ public class EvilineAI extends AbstractAI {
 		}
 	};
 
-	protected static final int LOOKAHEAD = 3;
+	protected class PathPipeline {
+		public ExecutorService exec;
+		public LinkedBlockingDeque<PathTask> pipe = new LinkedBlockingDeque<PathTask>();
+		
+		public PathPipeline() {
+			exec = Executors.newSingleThreadExecutor();
+		}
+		
+		public boolean extend(final GameEngine gameEngine) {
+			if(pipe.size() == 0) {
+				int xyshape = XYShapeAdapter.toXYShape(gameEngine);
+				if(xyshape == -1)
+					return false;
+				FieldAdapter f = new FieldAdapter();
+				f.update(gameEngine.field);
+				final PathTask pt = new PathTask(
+						this,
+						gameEngine.nextPieceCount,
+						f,
+						XYShapeAdapter.toXYShape(gameEngine),
+						createGameNext(gameEngine, gameEngine.nextPieceCount));
+				pipe.offerLast(pt);
+				exec.execute(new Runnable() {
+					@Override
+					public void run() {
+						pt.task.run();
+						exec.execute(new Runnable() {
+							@Override
+							public void run() {
+								extend(gameEngine);
+							}
+						});
+					}
+				});
+				return true;
+			}
+			
+			PathTask tail = pipe.peekLast();
+			if(tail.seq == gameEngine.nextPieceCount || !tail.task.isDone())
+				return false;
+			final PathTask pt = tail.extend(gameEngine);
+			if(pt == null)
+				return false;
+			pipe.offerLast(pt);
+			exec.execute(new Runnable() {
+				@Override
+				public void run() {
+					pt.task.run();
+					exec.execute(new Runnable() {
+						@Override
+						public void run() {
+							extend(gameEngine);
+						}
+					});
+				}
+			});
+			return true;
+		}
+		
+		public PathTask discardUntil(GameEngine engine) {
+			PathTask pt;
+			for(pt = pipe.peekFirst(); pt != null && pt.seq < engine.nextPieceCount; pt = pipe.peekFirst())
+				pipe.remove(pt);
+			return pt;
+		}
+		
+		public byte[] currentPath(GameEngine engine) {
+			extend(engine);
+			PathTask pt = discardUntil(engine);
+			if(pt == null || !pt.task.isDone())
+				return null;
+			return pt.path;
+		}
+		
+		public org.eviline.core.Field expectedField(GameEngine engine) {
+			extend(engine);
+			PathTask pt = discardUntil(engine);
+			return pt.field;
+		}
+		
+		public boolean isDirty(GameEngine engine) {
+			FieldAdapter f = new FieldAdapter();
+			f.copyFrom(expectedField(engine));
+			return f.update(engine.field);
+		}
+		
+		public void shutdown() {
+			exec.shutdownNow();
+		}
+	}
+	
+	protected class PathTask {
+		public PathPipeline pipeline;
+		public int seq;
+		public org.eviline.core.Field field;
+		public int xystart;
+		public ShapeType[] next;
+		public FutureTask<Best> task;
+		public byte[] path;
+		
+		public PathTask(PathPipeline pipeline, int seq, org.eviline.core.Field field, int xystart, ShapeType[] next) {
+			this.pipeline = pipeline;
+			this.seq = seq;
+			this.field = field;
+			this.xystart = xystart;
+			this.next = next;
+			task = new FutureTask<>(new Callable<Best>() {
+				@Override
+				public Best call() throws Exception {
+					Engine engine = new Engine(PathTask.this.field, new Configuration(null, 0));
+					engine.setNext(PathTask.this.next);
+					engine.setShape(PathTask.this.xystart);
+					AIPlayer player = new AIPlayer(ai, engine, lookahead);
+					player.tick();
+					Best best = player.getBest();
+					path = createCommandPath(best.graph);
+					return best;
+				}
+			});
+		}
+		
+		
+		public Best get() {
+			try {
+				return task.get();
+			} catch(Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		public PathTask extend(GameEngine gameEngine) {
+			ShapeType[] extnext = createGameNext(gameEngine, seq);
+			if(extnext == null || extnext.length < lookahead + 2)
+				return null;
+			return new PathTask(
+					pipeline,
+					seq+1,
+					get().after,
+					XYShapes.toXYShape(extnext[0].startX(), extnext[0].startY(), extnext[0].start()),
+					Arrays.copyOfRange(extnext, 1, extnext.length));
+		}
+	}
 	
 	protected DefaultAIKernel ai;
 	
-	protected FutureTask<byte[]> pathified;
-	
 	protected Command shifting = null;
 	
-	protected FieldAdapter expectedField;
-	protected int xyhold = -1;
-	protected boolean swapHold = false;
+	protected int lookahead = 2;
 	
-	protected ExecutorService computePool;
+	protected PathPipeline pipeline;
 	
-	protected ExecutorService comparePool;
 	
-	protected void computeCommandPath(final Engine engine, final int xyhold) {
-		Callable<byte[]> task = new Callable<byte[]>() {
-			@Override
-			public byte[] call() {
-				byte[] computingPaths = new byte[XYShapes.SHAPE_MAX];
-				Arrays.fill(computingPaths, (byte) -1);
+	protected byte[] createCommandPath(CommandGraph g) {
+		byte[] computingPaths = new byte[XYShapes.SHAPE_MAX];
+		int xyshape = g.getSelectedShape();
 				
-				AIPlayer player;
-				
-				if(xyhold != -1) {
-					Engine holdEngine = new Engine(engine.getField().clone(), new Configuration(null, 0));
-					holdEngine.setNext(engine.getNext().clone());
-					holdEngine.setShape(xyhold);
-
-					final AIPlayer holdPlayer = new AIPlayer(ai, holdEngine, LOOKAHEAD);
-					final AIPlayer currentPlayer = new AIPlayer(ai, engine, LOOKAHEAD);
-					
-					try {
-						Future<?> hpf = comparePool.submit(new Runnable() {
-							@Override
-							public void run() {
-								holdPlayer.tick();
-							}
-						});
-						Future<?> cpf = comparePool.submit(new Runnable() {
-							@Override
-							public void run() {
-								currentPlayer.tick();
-							}
-						});
-						hpf.get();
-						cpf.get();
-					} catch(Exception e) {
-						throw new RuntimeException(e);
-					}
-
-					if(holdPlayer.getBest().score < currentPlayer.getBest().score) {
-						player = holdPlayer;
-						swapHold = true;
-					} else
-						player = currentPlayer;
-				} else {
-					player = new AIPlayer(ai, engine, LOOKAHEAD);
-					player.tick();
+		computingPaths[xyshape] = (byte) Command.HARD_DROP.ordinal();
+		while(xyshape != CommandGraph.NULL_ORIGIN) {
+			int parent = CommandGraph.originOf(g.getVertices(), xyshape);
+			Command c = CommandGraph.commandOf(g.getVertices(), xyshape);
+			if(parent >= 0 && parent < XYShapes.SHAPE_MAX)
+				computingPaths[parent] = (byte) c.ordinal();
+			if(c == Command.SOFT_DROP) {
+				xyshape = XYShapes.shiftedUp(xyshape);
+				while(xyshape != parent) {
+					if(xyshape >= 0 && xyshape < XYShapes.SHAPE_MAX)
+						computingPaths[xyshape] = (byte) Command.SOFT_DROP.ordinal();
+					xyshape = XYShapes.shiftedUp(xyshape);
 				}
-				
-				int xyshape = player.getDest();
-				if(xyshape == -1)
-					return computingPaths;
-				
-				computingPaths[xyshape] = (byte) Command.HARD_DROP.ordinal();
-				CommandGraph g = player.getGraph();
-				while(xyshape != CommandGraph.NULL_ORIGIN) {
-					int parent = CommandGraph.originOf(g.getVertices(), xyshape);
-					Command c = CommandGraph.commandOf(g.getVertices(), xyshape);
-					if(parent >= 0 && parent < XYShapes.SHAPE_MAX)
-						computingPaths[parent] = (byte) c.ordinal();
-					if(c == Command.SOFT_DROP) {
-						xyshape = XYShapes.shiftedUp(xyshape);
-						while(xyshape != parent) {
-							if(xyshape >= 0 && xyshape < XYShapes.SHAPE_MAX)
-								computingPaths[xyshape] = (byte) Command.SOFT_DROP.ordinal();
-							xyshape = XYShapes.shiftedUp(xyshape);
-						}
-					}
-					xyshape = parent;
-				}
-
-				expectedField.copyFrom(engine.getField());
-				
-				return computingPaths;
 			}
-		};
-		pathified = new FutureTask<>(task);
-		computePool.execute(pathified);
+			xyshape = parent;
+		}
+		
+		return computingPaths;
 	}
 	
-	protected byte[] commandPath() {
-		if(pathified == null || !pathified.isDone())
+	protected ShapeType[] createGameNext(GameEngine engine, int seq) {
+		if(seq < engine.nextPieceCount || seq >= engine.nextPieceCount + engine.nextPieceArraySize)
 			return null;
-		try {
-			return pathified.get();
-		} catch(Exception e) {
-			throw new RuntimeException(e);
-		}
+		ShapeType[] nextShapes = new ShapeType[engine.nextPieceArraySize];
+		for(int i = 0; i < nextShapes.length; i++)
+			nextShapes[i] = XYShapeAdapter.toShapeType(engine.getNextObject(engine.nextPieceCount + i));
+		return nextShapes;
 	}
-
+	
+	protected void resetPipeline() {
+		pipeline.shutdown();
+		pipeline = new PathPipeline();
+	}
+	
 	@Override
 	public String getName() {
 		return "eviline2";
@@ -143,19 +234,13 @@ public class EvilineAI extends AbstractAI {
 	@Override
 	public void init(GameEngine engine, int playerID) {
 		ai = new DefaultAIKernel(new NextFitness());
-		computePool = Executors.newFixedThreadPool(1);
-		comparePool = Executors.newFixedThreadPool(2);
-		expectedField = new FieldAdapter();
-		swapHold = false;
-		xyhold = -1;
+		pipeline = new PathPipeline();
 	}
 
 	@Override
 	public void shutdown(GameEngine engine, int playerID) {
-		if(computePool != null)
-			computePool.shutdown();
-		if(comparePool != null)
-			comparePool.shutdown();
+		if(pipeline != null)
+			pipeline.shutdown();
 	}
 
 	@Override
@@ -169,18 +254,11 @@ public class EvilineAI extends AbstractAI {
 			return;
 		}
 
-		if(xyhold == -1 && engine.isHoldOK()) {
-			input |= Controller.BUTTON_BIT_D;
-			ctrl.setButtonBit(input);
-			ShapeType ht = XYShapes.shapeFromInt(xyshape).type();
-			xyhold = XYShapes.toXYShape(ht.startX(), ht.startY(), ht.start());
-			return;
-		}
-		
 		if(shifting != null) {
-			if(expectedField.update(engine.field)) {
+			if(pipeline.isDirty(engine)) {
 				shifting = null;
 				ctrl.setButtonBit(input);
+				resetPipeline();
 				return;
 			}
 			
@@ -213,34 +291,17 @@ public class EvilineAI extends AbstractAI {
 			}
 		}
 		
-		byte[] paths = commandPath();
+		byte[] paths = pipeline.currentPath(engine);
 		
 		if(paths == null) {
 			ctrl.setButtonBit(input);
 			return;
 		}
 		
-		if(swapHold) {
-			if(engine.isHoldOK()) {
-				input |= Controller.BUTTON_BIT_D;
-				ShapeType ht = XYShapes.shapeFromInt(xyshape).type();
-				xyhold = XYShapes.toXYShape(ht.startX(), ht.startY(), ht.start());
-			} else {
-				EngineAdapter e = new EngineAdapter();
-				e.update(engine);
-				computeCommandPath(e, -1);
-			}
-			ctrl.setButtonBit(input);
-			swapHold = false;
-			return;
-		}
-		
 		Command c = Command.fromOrdinal(paths[xyshape]);
-		if(c == null || expectedField.update(engine.field)) {
-			EngineAdapter e = new EngineAdapter();
-			e.update(engine);
-			computeCommandPath(e, engine.isHoldOK() ? xyhold : -1);
+		if(c == null || pipeline.isDirty(engine)) {
 			ctrl.setButtonBit(input);
+			resetPipeline();
 			return;
 		} else
 			paths[xyshape] = (byte) -1;
@@ -297,22 +358,6 @@ public class EvilineAI extends AbstractAI {
 		case HARD_DROP:
 			if(!ctrl.isPress(Controller.BUTTON_UP))
 				input |= Controller.BUTTON_BIT_UP;
-			org.eviline.core.Field next = expectedField.clone();
-			int xyd = XYShapes.shiftedDown(xyshape);
-			while(!next.intersects(xyd)) {
-				xyshape = xyd;
-				xyd = XYShapes.shiftedDown(xyshape);
-			}
-			Engine e = new Engine(next, new Configuration(null, 0));
-			ShapeType[] nextShapes = new ShapeType[engine.nextPieceArraySize];
-			for(int i = 0; i < nextShapes.length; i++)
-				nextShapes[i] = XYShapeAdapter.toShapeType(engine.getNextObject(engine.nextPieceCount + i));
-			e.setNext(nextShapes);
-			e.setShape(xyshape);
-			e.tick(Command.SHIFT_DOWN);
-			while(e.getShape() == -1)
-				e.tick(Command.NOP);
-			computeCommandPath(e, engine.isHoldOK() ? xyhold : -1);
 			break;
 		}
 		
@@ -342,10 +387,11 @@ public class EvilineAI extends AbstractAI {
 
 	@Override
 	public void newPiece(GameEngine engine, int playerID) {
-		if(pathified == null) {
-			EngineAdapter e = new EngineAdapter();
-			e.update(engine);
-			computeCommandPath(e, engine.isHoldOK() ? xyhold : -1);
+		try {
+		pipeline.extend(engine);
+		} catch(RuntimeException e) {
+			e.printStackTrace();
+			throw e;
 		}
 	}
 
