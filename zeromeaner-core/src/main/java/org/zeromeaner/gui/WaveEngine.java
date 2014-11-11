@@ -114,7 +114,6 @@ public class WaveEngine {
 			in.close();
 			clipBuffers.put(name, out.toByteArray());
 		} catch(IOException ioe) {
-			log.warn(ioe);
 		}
 	}
 
@@ -128,7 +127,6 @@ public class WaveEngine {
 		try {
 			audioIn = AudioSystem.getAudioInputStream(new ByteArrayInputStream(clipBuffers.get(name)));
 		} catch(Exception ex) {
-			log.warn(ex);
 			return;
 		}
 		
@@ -160,7 +158,6 @@ public class WaveEngine {
 			for(int r = audioIn.read(buf); r != -1; r = audioIn.read(buf))
 				match.data.offer(Arrays.copyOf(buf, r));
 		} catch(Exception ex) {
-			ex.printStackTrace();
 		}
 	}
 	
@@ -189,7 +186,6 @@ public class WaveEngine {
 						Thread.sleep(5);
 				}
 			} catch(Exception ex) {
-				ex.printStackTrace();
 			}
 		}
 	}
