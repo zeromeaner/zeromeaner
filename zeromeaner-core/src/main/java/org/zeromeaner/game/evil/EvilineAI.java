@@ -1,5 +1,6 @@
 package org.zeromeaner.game.evil;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,10 +20,15 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 
 public class EvilineAI extends AbstractAI {
-
+	protected static final Runnable NOP = new Runnable() {
+		@Override
+		public void run() {
+		}
+	};
+	
 	protected AIKernel ai;
 	
-	protected FutureTask<Map<Integer, Command>> pathified;
+	protected FutureTask<byte[]> pathified;
 	
 	protected Command shifting = null;
 	
@@ -31,10 +37,11 @@ public class EvilineAI extends AbstractAI {
 	protected ExecutorService pool;
 	
 	protected void computeCommandPath(final GameEngine engine) {
-		Callable<Map<Integer, Command>> task = new Callable<Map<Integer, Command>>() {
+		Callable<byte[]> task = new Callable<byte[]>() {
 			@Override
-			public Map<Integer, Command> call() {
-				Map<Integer, Command> commandPath = new HashMap<>();
+			public byte[] call() {
+				byte[] computingPaths = new byte[XYShapes.SHAPE_MAX];
+				Arrays.fill(computingPaths, (byte) -1);
 				
 				EngineAdapter engineAdapter = new EngineAdapter();
 				org.eviline.core.ai.AIPlayer player = new org.eviline.core.ai.AIPlayer(ai, engineAdapter, 2);
@@ -45,34 +52,36 @@ public class EvilineAI extends AbstractAI {
 				
 				int xyshape = player.getDest();
 				if(xyshape == -1)
-					return commandPath;
+					return computingPaths;
 				
-				commandPath.put(xyshape, Command.HARD_DROP);
+				computingPaths[xyshape] = (byte) Command.HARD_DROP.ordinal();
 				CommandGraph g = player.getGraph();
 				while(xyshape != CommandGraph.NULL_ORIGIN) {
 					int parent = CommandGraph.originOf(g.getVertices(), xyshape);
 					Command c = CommandGraph.commandOf(g.getVertices(), xyshape);
-					commandPath.put(parent, c);
+					if(parent >= 0 && parent < XYShapes.SHAPE_MAX)
+						computingPaths[parent] = (byte) c.ordinal();
 					if(c == Command.SOFT_DROP) {
 						xyshape = XYShapes.shiftedUp(xyshape);
 						while(xyshape != parent) {
-							commandPath.put(xyshape, Command.SOFT_DROP);
+							if(xyshape >= 0 && xyshape < XYShapes.SHAPE_MAX)
+								computingPaths[xyshape] = (byte) Command.SOFT_DROP.ordinal();
 							xyshape = XYShapes.shiftedUp(xyshape);
 						}
 					}
 					xyshape = parent;
 				}
 				
-				return commandPath;
+				return computingPaths;
 			}
 		};
 		pathified = new FutureTask<>(task);
 		pool.execute(pathified);
 	}
 	
-	protected Map<Integer, Command> commandPath() {
+	protected byte[] commandPath() {
 		if(pathified == null || !pathified.isDone())
-			return Collections.emptyMap();
+			return null;
 		try {
 			return pathified.get();
 		} catch(Exception e) {
@@ -102,6 +111,11 @@ public class EvilineAI extends AbstractAI {
 	public void setControl(GameEngine engine, int playerID, Controller ctrl) {
 		int xyshape = XYShapeAdapter.toXYShape(engine);
 		int input = 0;
+		
+		if(xyshape == -1) {
+			ctrl.setButtonBit(input);
+			return;
+		}
 
 		if(expectedField.update(engine.field)) {
 			shifting = null;
@@ -138,19 +152,20 @@ public class EvilineAI extends AbstractAI {
 			}
 		}
 		
-		Map<Integer, Command> paths = commandPath();
+		byte[] paths = commandPath();
 		
-		if(paths.size() == 0) {
+		if(paths == null) {
 			ctrl.setButtonBit(input);
 			return;
 		}
 		
-		Command c = paths.remove(xyshape);
+		Command c = Command.fromOrdinal(paths[xyshape]);
 		if(c == null) {
 			computeCommandPath(engine);
 			ctrl.setButtonBit(input);
 			return;
-		}
+		} else
+			paths[xyshape] = (byte) -1;
 		
 		switch(c) {
 		case AUTOSHIFT_LEFT:
