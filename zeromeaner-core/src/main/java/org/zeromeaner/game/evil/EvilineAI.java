@@ -124,7 +124,9 @@ public class EvilineAI extends AbstractAI {
 		
 		public void shutdown() {
 			exec.shutdownNow();
-			pipe.peekLast().task.cancel(true);
+			PathTask pt = pipe.peekLast();
+			if(pt != null)
+				pt.task.cancel(true);
 		}
 	}
 	
