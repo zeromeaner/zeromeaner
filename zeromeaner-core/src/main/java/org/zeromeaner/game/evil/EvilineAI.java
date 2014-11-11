@@ -44,7 +44,7 @@ public class EvilineAI extends AbstractAI {
 				Arrays.fill(computingPaths, (byte) -1);
 				
 				EngineAdapter engineAdapter = new EngineAdapter();
-				org.eviline.core.ai.AIPlayer player = new org.eviline.core.ai.AIPlayer(ai, engineAdapter, 2);
+				org.eviline.core.ai.AIPlayer player = new org.eviline.core.ai.AIPlayer(ai, engineAdapter, 3);
 				
 				player.getCommands().clear();
 				engineAdapter.update(engine);
