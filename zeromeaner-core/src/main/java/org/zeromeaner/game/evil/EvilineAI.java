@@ -113,12 +113,17 @@ public class EvilineAI extends AbstractAI {
 		public org.eviline.core.Field expectedField(GameEngine engine) {
 			extend(engine);
 			PathTask pt = discardUntil(engine);
+			if(pt == null)
+				return null;
 			return pt.field;
 		}
 		
 		public boolean isDirty(GameEngine engine) {
 			FieldAdapter f = new FieldAdapter();
-			f.copyFrom(expectedField(engine));
+			org.eviline.core.Field expected = expectedField(engine);
+			if(expected == null)
+				return false;
+			f.copyFrom(expected);
 			return f.update(engine.field);
 		}
 		
@@ -186,7 +191,7 @@ public class EvilineAI extends AbstractAI {
 	
 	protected Command shifting = null;
 	
-	protected int lookahead = 3;
+	protected int lookahead = 2;
 	
 	protected PathPipeline pipeline;
 	
