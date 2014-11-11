@@ -168,7 +168,7 @@ public class EvilineAI extends AbstractAI {
 		
 		public PathTask extend(GameEngine gameEngine) {
 			ShapeType[] extnext = createGameNext(gameEngine, seq);
-			if(extnext == null || extnext.length < lookahead + 2)
+			if(extnext == null || extnext.length < lookahead + 1)
 				return null;
 			return new PathTask(
 					pipeline,
@@ -183,7 +183,7 @@ public class EvilineAI extends AbstractAI {
 	
 	protected Command shifting = null;
 	
-	protected int lookahead = 2;
+	protected int lookahead = 3;
 	
 	protected PathPipeline pipeline;
 	
@@ -234,6 +234,7 @@ public class EvilineAI extends AbstractAI {
 	@Override
 	public void init(GameEngine engine, int playerID) {
 		ai = new DefaultAIKernel(new NextFitness());
+		ai.setDropsOnly(true);
 		pipeline = new PathPipeline();
 	}
 
