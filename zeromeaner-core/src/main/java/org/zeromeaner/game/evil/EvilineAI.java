@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 import org.eviline.core.Command;
@@ -30,6 +31,8 @@ public class EvilineAI extends AbstractAI {
 		public void run() {
 		}
 	};
+
+	protected static final int LOOKAHEAD = 3;
 	
 	protected DefaultAIKernel ai;
 	
@@ -41,7 +44,9 @@ public class EvilineAI extends AbstractAI {
 	protected int xyhold = -1;
 	protected boolean swapHold = false;
 	
-	protected ExecutorService pool;
+	protected ExecutorService computePool;
+	
+	protected ExecutorService comparePool;
 	
 	protected void computeCommandPath(final Engine engine, final int xyhold) {
 		Callable<byte[]> task = new Callable<byte[]>() {
@@ -56,18 +61,36 @@ public class EvilineAI extends AbstractAI {
 					Engine holdEngine = new Engine(engine.getField().clone(), new Configuration(null, 0));
 					holdEngine.setNext(engine.getNext().clone());
 					holdEngine.setShape(xyhold);
-					AIPlayer holdPlayer = new AIPlayer(ai, holdEngine, 3);
-					holdPlayer.tick();
 
-					player = new AIPlayer(ai, engine, 3);
-					player.tick();
+					final AIPlayer holdPlayer = new AIPlayer(ai, holdEngine, LOOKAHEAD);
+					final AIPlayer currentPlayer = new AIPlayer(ai, engine, LOOKAHEAD);
+					
+					try {
+						Future<?> hpf = comparePool.submit(new Runnable() {
+							@Override
+							public void run() {
+								holdPlayer.tick();
+							}
+						});
+						Future<?> cpf = comparePool.submit(new Runnable() {
+							@Override
+							public void run() {
+								currentPlayer.tick();
+							}
+						});
+						hpf.get();
+						cpf.get();
+					} catch(Exception e) {
+						throw new RuntimeException(e);
+					}
 
-					if(holdPlayer.getBest().score < player.getBest().score) {
+					if(holdPlayer.getBest().score < currentPlayer.getBest().score) {
 						player = holdPlayer;
 						swapHold = true;
-					}
+					} else
+						player = currentPlayer;
 				} else {
-					player = new AIPlayer(ai, engine, 3);
+					player = new AIPlayer(ai, engine, LOOKAHEAD);
 					player.tick();
 				}
 				
@@ -99,7 +122,7 @@ public class EvilineAI extends AbstractAI {
 			}
 		};
 		pathified = new FutureTask<>(task);
-		pool.execute(pathified);
+		computePool.execute(pathified);
 	}
 	
 	protected byte[] commandPath() {
@@ -120,7 +143,8 @@ public class EvilineAI extends AbstractAI {
 	@Override
 	public void init(GameEngine engine, int playerID) {
 		ai = new DefaultAIKernel(new NextFitness());
-		pool = Executors.newFixedThreadPool(1);
+		computePool = Executors.newFixedThreadPool(1);
+		comparePool = Executors.newFixedThreadPool(2);
 		expectedField = new FieldAdapter();
 		swapHold = false;
 		xyhold = -1;
@@ -128,8 +152,10 @@ public class EvilineAI extends AbstractAI {
 
 	@Override
 	public void shutdown(GameEngine engine, int playerID) {
-		if(pool != null)
-			pool.shutdown();
+		if(computePool != null)
+			computePool.shutdown();
+		if(comparePool != null)
+			comparePool.shutdown();
 	}
 
 	@Override
