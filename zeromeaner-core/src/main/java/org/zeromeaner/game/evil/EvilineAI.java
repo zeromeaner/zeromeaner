@@ -10,12 +10,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 import org.eviline.core.Command;
+import org.eviline.core.Configuration;
+import org.eviline.core.Engine;
+import org.eviline.core.ShapeType;
 import org.eviline.core.XYShapes;
 import org.eviline.core.ai.AIKernel;
 import org.eviline.core.ai.CommandGraph;
 import org.eviline.core.ai.DefaultAIKernel;
 import org.eviline.core.ai.NextFitness;
 import org.zeromeaner.game.component.Controller;
+import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 
@@ -36,18 +40,15 @@ public class EvilineAI extends AbstractAI {
 	
 	protected ExecutorService pool;
 	
-	protected void computeCommandPath(final GameEngine engine) {
+	protected void computeCommandPath(final Engine engine) {
 		Callable<byte[]> task = new Callable<byte[]>() {
 			@Override
 			public byte[] call() {
 				byte[] computingPaths = new byte[XYShapes.SHAPE_MAX];
 				Arrays.fill(computingPaths, (byte) -1);
 				
-				EngineAdapter engineAdapter = new EngineAdapter();
-				org.eviline.core.ai.AIPlayer player = new org.eviline.core.ai.AIPlayer(ai, engineAdapter, 3);
-				
+				org.eviline.core.ai.AIPlayer player = new org.eviline.core.ai.AIPlayer(ai, engine, 3);
 				player.getCommands().clear();
-				engineAdapter.update(engine);
 				player.tick();
 				
 				int xyshape = player.getDest();
@@ -71,6 +72,8 @@ public class EvilineAI extends AbstractAI {
 					}
 					xyshape = parent;
 				}
+				
+				expectedField.copyFrom(engine.getField());
 				
 				return computingPaths;
 			}
@@ -117,12 +120,13 @@ public class EvilineAI extends AbstractAI {
 			return;
 		}
 
-		if(expectedField.update(engine.field)) {
-			shifting = null;
-			computeCommandPath(engine);
-		}
-		
 		if(shifting != null) {
+			if(expectedField.update(engine.field)) {
+				shifting = null;
+				ctrl.setButtonBit(input);
+				return;
+			}
+			
 			EngineAdapter engineAdapter = new EngineAdapter();
 			engineAdapter.update(engine);
 			
@@ -160,8 +164,10 @@ public class EvilineAI extends AbstractAI {
 		}
 		
 		Command c = Command.fromOrdinal(paths[xyshape]);
-		if(c == null) {
-			computeCommandPath(engine);
+		if(c == null || expectedField.update(engine.field)) {
+			EngineAdapter e = new EngineAdapter();
+			e.update(engine);
+			computeCommandPath(e);
 			ctrl.setButtonBit(input);
 			return;
 		} else
@@ -219,6 +225,22 @@ public class EvilineAI extends AbstractAI {
 		case HARD_DROP:
 			if(!ctrl.isPress(Controller.BUTTON_UP))
 				input |= Controller.BUTTON_BIT_UP;
+			org.eviline.core.Field next = expectedField.clone();
+			int xyd = XYShapes.shiftedDown(xyshape);
+			while(!next.intersects(xyd)) {
+				xyshape = xyd;
+				xyd = XYShapes.shiftedDown(xyshape);
+			}
+			Engine e = new Engine(next, new Configuration(null, 0));
+			ShapeType[] nextShapes = new ShapeType[engine.nextPieceArraySize];
+			for(int i = 0; i < nextShapes.length; i++)
+				nextShapes[i] = XYShapeAdapter.toShapeType(engine.getNextObject(engine.nextPieceCount + i));
+			e.setNext(nextShapes);
+			e.setShape(xyshape);
+			e.tick(Command.SHIFT_DOWN);
+			while(e.getShape() == -1)
+				e.tick(Command.NOP);
+			computeCommandPath(e);
 			break;
 		}
 		
@@ -245,8 +267,11 @@ public class EvilineAI extends AbstractAI {
 
 	@Override
 	public void newPiece(GameEngine engine, int playerID) {
-		computeCommandPath(engine);
-		expectedField.update(engine.field);
+		if(pathified == null) {
+			EngineAdapter e = new EngineAdapter();
+			e.update(engine);
+			computeCommandPath(e);
+		}
 	}
 
 	@Override
