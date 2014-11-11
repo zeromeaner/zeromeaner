@@ -484,7 +484,7 @@ public class StandaloneRenderer extends EventRenderer {
 			graphics.drawRect(x, y, size-1, size-1);
 
 			if(showbg) {
-				graphics.setColor(Color.black);
+//				graphics.setColor(Color.black);
 				graphics.fillRect(x + 1, y + 1, size - 2, size - 2);
 			}
 		} else {
