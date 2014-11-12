@@ -1,13 +1,8 @@
 package org.zeromeaner.gui.reskin;
 
 import java.applet.Applet;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
 
 //import netscape.javascript.JSObject;
 

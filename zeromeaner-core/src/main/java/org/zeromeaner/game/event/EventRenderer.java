@@ -36,9 +36,9 @@ import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.CustomProperties;
-import org.zeromeaner.util.ResourceOutputStream;
-import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.GeneralUtil;
+import org.zeromeaner.util.ResourceInputStream;
+import org.zeromeaner.util.ResourceOutputStream;
 
 
 /**

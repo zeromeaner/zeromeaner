@@ -28,6 +28,8 @@
 */
 package org.zeromeaner.game.subsystem.mode;
 
+import static org.zeromeaner.knet.KNetEventArgs.START_1P;
+
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.event.EventRenderer;
@@ -35,8 +37,6 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
-
-import static org.zeromeaner.knet.KNetEventArgs.*;
 /**
  * TIME ATTACK mode (Original from NullpoUE build 010210 by Zircean. This mode is heavily modified from the original.)
  */

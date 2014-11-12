@@ -1,5 +1,30 @@
 package org.zeromeaner.game.subsystem.mode;
 
+import static org.zeromeaner.knet.KNetEventArgs.AUTOSTART;
+import static org.zeromeaner.knet.KNetEventArgs.AUTOSTART_BEGIN;
+import static org.zeromeaner.knet.KNetEventArgs.AUTOSTART_STOP;
+import static org.zeromeaner.knet.KNetEventArgs.CHANGE_STATUS;
+import static org.zeromeaner.knet.KNetEventArgs.DEAD;
+import static org.zeromeaner.knet.KNetEventArgs.DEAD_KO;
+import static org.zeromeaner.knet.KNetEventArgs.DEAD_PLACE;
+import static org.zeromeaner.knet.KNetEventArgs.FINISH;
+import static org.zeromeaner.knet.KNetEventArgs.FINISH_WINNER;
+import static org.zeromeaner.knet.KNetEventArgs.GAME;
+import static org.zeromeaner.knet.KNetEventArgs.GAME_END_STATS;
+import static org.zeromeaner.knet.KNetEventArgs.GAME_FIELD;
+import static org.zeromeaner.knet.KNetEventArgs.GAME_NEXT_PIECE;
+import static org.zeromeaner.knet.KNetEventArgs.GAME_PIECE_MOVEMENT;
+import static org.zeromeaner.knet.KNetEventArgs.GAME_RESULTS_SCREEN;
+import static org.zeromeaner.knet.KNetEventArgs.GAME_STATS;
+import static org.zeromeaner.knet.KNetEventArgs.GAME_SYNCHRONOUS;
+import static org.zeromeaner.knet.KNetEventArgs.GAME_SYNCHRONOUS_LOCKED;
+import static org.zeromeaner.knet.KNetEventArgs.PLAYER_ENTER;
+import static org.zeromeaner.knet.KNetEventArgs.PLAYER_LEAVE;
+import static org.zeromeaner.knet.KNetEventArgs.PLAYER_LOGOUT;
+import static org.zeromeaner.knet.KNetEventArgs.PLAYER_UPDATE;
+import static org.zeromeaner.knet.KNetEventArgs.READY;
+import static org.zeromeaner.knet.KNetEventArgs.START;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -21,8 +46,6 @@ import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.knet.obj.KNetGameInfo;
 import org.zeromeaner.knet.obj.KNetPlayerInfo;
 import org.zeromeaner.util.GeneralUtil;
-
-import static org.zeromeaner.knet.KNetEventArgs.*;
 
 /**
  * Special base class for netplay VS modes. Up to 6 players supported.

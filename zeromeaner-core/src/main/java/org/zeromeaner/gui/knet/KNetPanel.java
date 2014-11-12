@@ -1,5 +1,19 @@
 package org.zeromeaner.gui.knet;
 
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_CHAT;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_CREATE;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_ID;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_JOIN;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_LIST;
+import static org.zeromeaner.knet.KNetEventArgs.CONNECTED;
+import static org.zeromeaner.knet.KNetEventArgs.TIMESTAMP;
+import static org.zeromeaner.knet.KNetEventArgs.UPDATE_SOURCE;
+import static org.zeromeaner.knet.KNetEventArgs.USER_AUTHENTICATE;
+import static org.zeromeaner.knet.KNetEventArgs.USER_AUTHENTICATED;
+import static org.zeromeaner.knet.KNetEventArgs.USER_CREATE;
+import static org.zeromeaner.knet.KNetEventArgs.USER_UPDATED_PASSWORD;
+import static org.zeromeaner.knet.KNetEventArgs.USER_UPDATE_PASSWORD;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -51,8 +65,6 @@ import org.zeromeaner.knet.obj.KNetGameInfo;
 import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.LstResourceMap;
-
-import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetPanel extends JPanel implements KNetChannelListener, KNetListener {
 	private static final Localization lz = new Localization();

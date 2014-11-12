@@ -1,5 +1,7 @@
 package org.zeromeaner.gui.reskin;
 
+import static org.zeromeaner.util.Options.player;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -47,12 +49,10 @@ import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.Options;
-import org.zeromeaner.util.ResourceFileSystemView;
-import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.Options.AIOptions;
 import org.zeromeaner.util.Options.TuningOptions;
-
-import static org.zeromeaner.util.Options.player;
+import org.zeromeaner.util.ResourceFileSystemView;
+import org.zeromeaner.util.ResourceInputStream;
 
 public class StandaloneFrame extends JFrame {
 	private static final Logger log = Logger.getLogger(StandaloneFrame.class);

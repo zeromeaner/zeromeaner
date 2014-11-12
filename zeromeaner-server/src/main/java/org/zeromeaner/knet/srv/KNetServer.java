@@ -6,11 +6,11 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
+import org.mmmq.io.MasterServer;
 import org.zeromeaner.knet.KNetEventSource;
 import org.zeromeaner.knet.KNetKryo;
 
 import com.esotericsoftware.kryo.Kryo;
-import org.mmmq.io.MasterServer;
 
 public class KNetServer {
 	private static final Logger log = Logger.getLogger(KNetServer.class);

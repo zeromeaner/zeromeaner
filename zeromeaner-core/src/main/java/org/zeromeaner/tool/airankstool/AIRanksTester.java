@@ -3,7 +3,8 @@ package org.zeromeaner.tool.airankstool;
 import java.util.Random;
 
 import org.zeromeaner.game.component.Piece;
-import org.zeromeaner.game.randomizer.*;
+import org.zeromeaner.game.randomizer.History4RollsRandomizer;
+import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.ai.RanksAI;
 
 

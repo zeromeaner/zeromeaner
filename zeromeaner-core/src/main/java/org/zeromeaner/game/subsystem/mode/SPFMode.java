@@ -30,7 +30,6 @@ package org.zeromeaner.game.subsystem.mode;
 
 import java.util.Random;
 
-
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Block;

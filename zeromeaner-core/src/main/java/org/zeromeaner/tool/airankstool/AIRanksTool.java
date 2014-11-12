@@ -24,12 +24,13 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+
 import org.apache.log4j.Logger;
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.GroupLayout.ParallelGroup;
 import org.zeromeaner.util.CustomProperties;
-import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
+import org.zeromeaner.util.ResourceOutputStream;
 
 
 public class AIRanksTool extends JFrame implements ActionListener {

@@ -1,8 +1,11 @@
 package org.zeromeaner.util;
 
-import org.zeromeaner.util.PropertyConstant.Constant;
+import static org.zeromeaner.util.PropertyConstant.BOOLEAN;
+import static org.zeromeaner.util.PropertyConstant.DOUBLE;
+import static org.zeromeaner.util.PropertyConstant.INTEGER;
+import static org.zeromeaner.util.PropertyConstant.STRING;
 
-import static org.zeromeaner.util.PropertyConstant.*;
+import org.zeromeaner.util.PropertyConstant.Constant;
 
 public class Options {
 	public static final CustomProperties ROOT_PROPERTIES = new CustomProperties();

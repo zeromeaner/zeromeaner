@@ -22,8 +22,8 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import org.jdesktop.swingworker.SwingWorker;
-import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
+import org.zeromeaner.util.ResourceOutputStream;
 
 public class RanksIterator extends JDialog implements PropertyChangeListener,ActionListener {
 	/**

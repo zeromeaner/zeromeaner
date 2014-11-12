@@ -1,5 +1,19 @@
 package org.zeromeaner.knet;
 
+import static org.zeromeaner.knet.KNetEventArgs.ADDRESS;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_CHAT;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_ID;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_INFO;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_JOIN;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_LEAVE;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_LIST;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_SPECTATE;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_UPDATE;
+import static org.zeromeaner.knet.KNetEventArgs.CONNECTED;
+import static org.zeromeaner.knet.KNetEventArgs.GAME;
+import static org.zeromeaner.knet.KNetEventArgs.MAPS;
+import static org.zeromeaner.knet.KNetEventArgs.PAYLOAD;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +27,6 @@ import org.funcish.core.impl.AbstractPredicate;
 import org.mmmq.Topic;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
-import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetGameClient extends KNetClient implements KNetListener {
 	private final Predicate<KNetEvent> CHANNEL_LISTING = new AbstractPredicate<KNetEvent>(KNetEvent.class) {

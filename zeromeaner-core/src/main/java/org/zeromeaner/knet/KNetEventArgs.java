@@ -1,7 +1,7 @@
 package org.zeromeaner.knet;
 
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;

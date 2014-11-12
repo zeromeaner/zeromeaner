@@ -28,6 +28,14 @@
 */
 package org.zeromeaner.game.subsystem.mode;
 
+import static org.zeromeaner.knet.KNetEventArgs.DEAD;
+import static org.zeromeaner.knet.KNetEventArgs.DEAD_KO;
+import static org.zeromeaner.knet.KNetEventArgs.GAME;
+import static org.zeromeaner.knet.KNetEventArgs.GAME_END_STATS;
+import static org.zeromeaner.knet.KNetEventArgs.HURRY_UP;
+import static org.zeromeaner.knet.KNetEventArgs.NETVSBATTLE_GAME_ATTACK;
+import static org.zeromeaner.knet.KNetEventArgs.NETVSBATTLE_GAME_STATS;
+
 import java.util.LinkedList;
 import java.util.Locale;
 
@@ -46,8 +54,6 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-
-import static org.zeromeaner.knet.KNetEventArgs.*;
 
 /**
  * NET-VS-BATTLE Mode

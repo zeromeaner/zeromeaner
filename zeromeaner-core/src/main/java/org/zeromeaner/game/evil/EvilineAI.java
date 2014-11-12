@@ -1,15 +1,9 @@
 package org.zeromeaner.game.evil;
 
-import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -18,14 +12,12 @@ import org.eviline.core.Configuration;
 import org.eviline.core.Engine;
 import org.eviline.core.ShapeType;
 import org.eviline.core.XYShapes;
-import org.eviline.core.ai.AIKernel;
 import org.eviline.core.ai.AIPlayer;
 import org.eviline.core.ai.CommandGraph;
 import org.eviline.core.ai.DefaultAIKernel;
 import org.eviline.core.ai.DefaultAIKernel.Best;
 import org.eviline.core.ai.NextFitness;
 import org.zeromeaner.game.component.Controller;
-import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 

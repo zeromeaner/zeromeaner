@@ -1,9 +1,9 @@
 package org.zeromeaner.util;
 
+import static org.zeromeaner.util.Localization.lz;
+
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.zeromeaner.util.Localization.*;
 
 public class LocalizationTest {
 	private static Localization lz = new Localization();

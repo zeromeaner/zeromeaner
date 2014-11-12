@@ -1,6 +1,7 @@
 package org.zeromeaner.util;
 
 import java.util.Collection;
+
 import org.funcish.core.Mappings;
 import org.funcish.core.Predicates;
 import org.funcish.core.coll.ArrayFunctionalList;

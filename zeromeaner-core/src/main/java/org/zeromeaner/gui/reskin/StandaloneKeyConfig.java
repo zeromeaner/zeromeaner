@@ -28,6 +28,8 @@
 */
 package org.zeromeaner.gui.reskin;
 
+import static org.zeromeaner.gui.reskin.Localizations.lz;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -47,8 +49,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
 import org.zeromeaner.util.Options;
-
-import static org.zeromeaner.gui.reskin.Localizations.lz;
 
 /**
  * Key config frame

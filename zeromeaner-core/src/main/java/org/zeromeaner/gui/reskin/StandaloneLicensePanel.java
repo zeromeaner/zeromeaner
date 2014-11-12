@@ -1,19 +1,15 @@
 package org.zeromeaner.gui.reskin;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Desktop;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collections;
 
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.text.Element;
 
 public class StandaloneLicensePanel extends JPanel {
 	private JEditorPane editor;

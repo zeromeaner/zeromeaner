@@ -67,17 +67,6 @@ import javax.swing.JPanel;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
-
-
-
-
-
-
-
-
-
-
-
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.MusicList;

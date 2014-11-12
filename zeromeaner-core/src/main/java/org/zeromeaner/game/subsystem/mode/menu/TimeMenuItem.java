@@ -1,6 +1,6 @@
 package org.zeromeaner.game.subsystem.mode.menu;
 
-import org.zeromeaner.util.GeneralUtil;;
+import org.zeromeaner.util.GeneralUtil;
 
 public class TimeMenuItem extends IntegerMenuItem {
 	public int increment;
