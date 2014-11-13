@@ -58,14 +58,10 @@
 	<repositories>
 		<repository>
 			<id>robin-kirkman-snapshots</id>
-			<url>http://vps.robinvps.com:7777/nexus/content/repositories/snapshots</url>
+			<url>http://vps.robinvps.com:7777/nexus/content/groups/everything/</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-		</repository>
-		<repository>
-			<id>robin-kirkman-releases</id>
-			<url>http://vps.robinvps.com:7777/nexus/content/repositories/releases</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
