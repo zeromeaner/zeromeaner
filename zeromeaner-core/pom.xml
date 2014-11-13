@@ -152,13 +152,6 @@
 		</dependency>
 	</dependencies>
 
-	<repositories>
-		<repository>
-			<id>mmmq</id>
-			<url>http://mmmq.org/repo/</url>
-		</repository>
-	</repositories>
-
 	<profiles>
 		<profile>
 			<id>applet</id>

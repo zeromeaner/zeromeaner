@@ -13,7 +13,7 @@
 		<module>../zeromeaner-server</module>
 		<module>../zeromeaner-netstats</module>
 		<module>../zeromeaner-laf</module>
-		
+
 	</modules>
 
 	<build>
@@ -54,4 +54,33 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<repositories>
+		<repository>
+			<id>robin-kirkman-snapshots</id>
+			<url>http://vps.robinvps.com:7777/nexus/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>robin-kirkman-releases</id>
+			<url>http://vps.robinvps.com:7777/nexus/content/repositories/releases</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>robin-kirkman-snapshots</id>
+			<url>http://vps.robinvps.com:7777/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>robin-kirkman-releases</id>
+			<url>http://vps.robinvps.com:7777/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 </project>
