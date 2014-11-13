@@ -123,7 +123,7 @@
 		<dependency>
 			<groupId>org.funcish</groupId>
 			<artifactId>funcish-core</artifactId>
-			<version>0.0.5</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.reflections</groupId>
@@ -148,7 +148,7 @@
 		<dependency>
 			<groupId>org.badiff</groupId>
 			<artifactId>badiff</artifactId>
-			<version>1.1.7</version>
+			<version>1.1.10</version>
 		</dependency>
 	</dependencies>
 

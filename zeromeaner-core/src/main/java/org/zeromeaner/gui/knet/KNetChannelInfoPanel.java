@@ -33,8 +33,8 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.codec.binary.Base64OutputStream;
-import org.funcish.core.Predicates;
 import org.funcish.core.fn.Predicate;
+import org.funcish.core.util.Predicates;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.gui.tool.RuleEditorPanel;
@@ -125,7 +125,7 @@ public class KNetChannelInfoPanel extends JPanel {
 				if(ruleResources == null || ruleResources.size() == 0) {
 					ruleResources = Arrays.asList("config/rule/StandardZero.rul", "config/rule/Standard.rul");
 				}
-				RuleList rules = RuleList.FROM_RESOURCE.map(ruleResources, new RuleList());
+				RuleList rules = RuleList.FROM_RESOURCE.map(ruleResources).into(new RuleList());
 				for(String ruleName : rules.getNames()) {
 					ruleModel.addElement(ruleName);
 				}

@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.funcish.core.Predicates;
 import org.funcish.core.fn.Predicate;
 import org.funcish.core.impl.AbstractPredicate;
+import org.funcish.core.util.Predicates;
 import org.mmmq.Topic;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.knet.obj.KNetChannelInfo;

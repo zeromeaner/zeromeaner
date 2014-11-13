@@ -10,12 +10,12 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import org.funcish.core.Comparisons;
-import org.funcish.core.Mappings;
-import org.funcish.core.Predicates;
-import org.funcish.core.Sequences;
 import org.funcish.core.fn.Predicator;
 import org.funcish.core.fn.Sequence;
+import org.funcish.core.util.Comparisons;
+import org.funcish.core.util.Mappings;
+import org.funcish.core.util.Predicates;
+import org.funcish.core.util.Sequences;
 import org.reflections.Reflections;
 import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
@@ -36,12 +36,15 @@ public class Zeroflections {
 	}
 	
 	public static Set<String> getResources(Pattern fullPattern) {
-		return Predicates.patternFind(fullPattern).filter(classes.getResources(ALL), new TreeSet<String>());
+		TreeSet<String> ret = new TreeSet<>();
+		for(CharSequence s : Predicates.patternFind(fullPattern).filter(classes.getResources(ALL)))
+			ret.add(s.toString());
+		return ret;
 	}
 	
 	public static List<Class<? extends AbstractAI>> getAIs() {
 		List<Class<? extends AbstractAI>> ret = new ArrayList<Class<? extends AbstractAI>>();
-		ret.addAll(Mappings.classForName(AbstractAI.class).map(list("ai.lst")));
+		Mappings.classForName(AbstractAI.class).map(list("ai.lst")).into(ret);
 		for(Class<? extends AbstractAI> c : classes.getSubTypesOf(AbstractAI.class)) {
 			if(Modifier.isAbstract(c.getModifiers()))
 				continue;
@@ -53,7 +56,7 @@ public class Zeroflections {
 	
 	public static List<Class<? extends GameMode>> getModes() {
 		List<Class<? extends GameMode>> order = new ArrayList<Class<? extends GameMode>>();
-		order.addAll(Mappings.classForName(GameMode.class).map(list("mode.lst")));
+		Mappings.classForName(GameMode.class).map(list("mode.lst")).into(order);
 		
 		List<Class<? extends GameMode>> ret = new ArrayList<Class<? extends GameMode>>();
 		

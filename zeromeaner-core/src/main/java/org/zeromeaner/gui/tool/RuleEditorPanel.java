@@ -70,7 +70,7 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.log4j.Logger;
-import org.funcish.core.Mappings;
+import org.funcish.core.util.Mappings;
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.RuleOptions;
@@ -581,8 +581,7 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 		JLabel lRandomizer = new JLabel(getUIText("Basic_Randomizer"));
 		pRandomizer.add(lRandomizer);
 
-//		vectorRandomizer = getTextFileVector("config/list/randomizer.lst");
-		vectorRandomizer = new Vector<String>(Mappings.classSimpleName().map(Zeroflections.getRandomizers()));
+		Mappings.classSimpleName().map(Zeroflections.getRandomizers()).into(vectorRandomizer);
 		Collections.sort(vectorRandomizer);
 		comboboxRandomizer = new JComboBox(createShortStringVector(vectorRandomizer));
 		comboboxRandomizer.setPreferredSize(new Dimension(200, 30));
