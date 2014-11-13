@@ -93,6 +93,6 @@ public class ModeList<E extends GameMode> extends ArrayFunctionalList<E> {
 	
 	@Override
 	public ModeList<E> filter(Predicate<? super E> p) {
-		return filter(p).into(new ModeList<E>(e()));
+		return super.filter(p).into(new ModeList<E>(e()));
 	}
 }

@@ -581,6 +581,7 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 		JLabel lRandomizer = new JLabel(getUIText("Basic_Randomizer"));
 		pRandomizer.add(lRandomizer);
 
+		vectorRandomizer = new Vector<String>();
 		Mappings.classSimpleName().map(Zeroflections.getRandomizers()).into(vectorRandomizer);
 		Collections.sort(vectorRandomizer);
 		comboboxRandomizer = new JComboBox(createShortStringVector(vectorRandomizer));
