@@ -80,11 +80,11 @@
 
 	<distributionManagement>
 		<repository>
-			<id>robin-kirkman-snapshots</id>
+			<id>robin-kirkman-releases</id>
 			<url>http://vps.robinvps.com:7777/nexus/content/repositories/releases/</url>
 		</repository>
 		<snapshotRepository>
-			<id>robin-kirkman-releases</id>
+			<id>robin-kirkman-snapshots</id>
 			<url>http://vps.robinvps.com:7777/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
