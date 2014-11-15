@@ -82,23 +82,14 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	/** Log */
 	static Logger log = Logger.getLogger(StandaloneGamePanel.class);
 
-	protected ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-		@Override
-		public Thread newThread(Runnable r) {
-			Thread t = Executors.defaultThreadFactory().newThread(r);
-			t.setName("game update scheduler thread");
-			return t;
-		}
-	});
-	
-	protected ThreadPoolExecutor gexec = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new ThreadFactory() {
+	protected ScheduledExecutorService gexec = Executors.newScheduledThreadPool(1, new ThreadFactory() {
 		@Override
 		public Thread newThread(Runnable r) {
 			Thread t = Executors.defaultThreadFactory().newThread(r);
 			t.setName("game update thread");
 			return t;
 		}
-	}, new ThreadPoolExecutor.DiscardPolicy());
+	});
 	
 	private static class FocusableJLabel extends JLabel {
 		private FocusableJLabel(Icon image) {
@@ -384,14 +375,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			}
 		};
 		
-		Runnable gtask = new FutureTask<Object>(task, null) {
-			@Override
-			public void run() {
-				gexec.execute(ftask);
-			}
-		};
-		
-		ScheduledFuture<?> f = exec.scheduleAtFixedRate(gtask, 0, TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / maxfps, TimeUnit.NANOSECONDS);
+		ScheduledFuture<?> f = gexec.scheduleAtFixedRate(ftask, 0, TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / maxfps, TimeUnit.NANOSECONDS);
 		
 		while(running.get()) {
 			synchronized(running) {
