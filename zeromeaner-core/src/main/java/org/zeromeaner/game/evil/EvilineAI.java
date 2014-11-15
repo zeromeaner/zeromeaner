@@ -289,7 +289,7 @@ public abstract class EvilineAI extends AbstractAI {
 	public void init(GameEngine engine, int playerID) {
 		ai = new DefaultAIKernel(new NextFitness());
 		ai.setDropsOnly(true);
-		ai.setPruneTop(5);
+		ai.setPruneTop(4);
 		pipeline = new PathPipeline();
 	}
 
