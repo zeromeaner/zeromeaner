@@ -5,6 +5,7 @@ import static org.zeromeaner.knet.KNetEventArgs.GAME_OPTIONS;
 import static org.zeromeaner.knet.KNetEventArgs.GAME_STATS;
 import static org.zeromeaner.knet.KNetEventArgs.START_1P;
 
+import java.awt.Color;
 import java.util.concurrent.TimeUnit;
 
 import org.zeromeaner.game.component.BGMStatus;
@@ -772,11 +773,6 @@ public class DigChallengeMode extends AbstractNetMode {
 		int limitTime = getGarbageMaxTime(engine.statistics.level);
 		int remainTime = limitTime - garbageTimer;
 		if(remainTime < 0) remainTime = 0;
-		if(limitTime > 0) {
-			engine.meterValue = (remainTime * receiver.getMeterMax(engine)) / limitTime;
-		} else {
-			engine.meterValue = 0;
-		}
 		if(fieldShift > 0) {
 			long last = lastFrameTime;
 			long now = System.nanoTime();
@@ -786,10 +782,11 @@ public class DigChallengeMode extends AbstractNetMode {
 		} else {
 			
 		}
+		engine.meterValue = (int)(receiver.getMeterMax(engine) * (1-fieldShift));
 		engine.meterColor = GameEngine.METER_COLOR_GREEN;
-		if(engine.meterValue <= receiver.getMeterMax(engine) / 2) engine.meterColor = GameEngine.METER_COLOR_YELLOW;
-		if(engine.meterValue <= receiver.getMeterMax(engine) / 3) engine.meterColor = GameEngine.METER_COLOR_ORANGE;
-		if(engine.meterValue <= receiver.getMeterMax(engine) / 4) engine.meterColor = GameEngine.METER_COLOR_RED;
+		if(engine.meterValue > receiver.getMeterMax(engine) / 2) engine.meterColor = GameEngine.METER_COLOR_YELLOW;
+		if(engine.meterValue > (receiver.getMeterMax(engine) * 2) / 3) engine.meterColor = GameEngine.METER_COLOR_ORANGE;
+		if(engine.meterValue > (receiver.getMeterMax(engine) * 3) / 4) engine.meterColor = GameEngine.METER_COLOR_RED;
 	}
 
 	/*
