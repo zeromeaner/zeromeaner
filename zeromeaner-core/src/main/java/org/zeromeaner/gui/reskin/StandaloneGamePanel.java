@@ -30,8 +30,11 @@ package org.zeromeaner.gui.reskin;
 
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.Insets;
 import java.awt.Toolkit;
@@ -60,6 +63,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -206,7 +210,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 * @throws HeadlessException Keyboard, Mouse, Exceptions such as the display if there is no
 	 */
 	public StandaloneGamePanel(StandaloneFrame owner) throws HeadlessException {
-		super(new BorderLayout());
+		super(new GridBagLayout());
 		this.owner = owner;
 
 		setDoubleBuffered(true);
@@ -215,10 +219,14 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		imageBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB);
 		gameBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB);
 
-		add(imageBufferLabel = new FocusableJLabel(new ImageIcon(imageBuffer)), BorderLayout.CENTER);
+		add(
+				imageBufferLabel = new FocusableJLabel(new ImageIcon(imageBuffer)), 
+				new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
 		
 		imageBufferLabel.setText("No Active Game.  Click \"Play\" to start.");
 		imageBufferLabel.setIcon(null);
+		
+		imageBufferLabel.setBorder(BorderFactory.createMatteBorder(4, 4, 4, 4, new Color(255, 255, 255, 127)));
 
 		maxfps = Options.standalone().MAX_FPS.value();
 
