@@ -30,8 +30,11 @@ package org.zeromeaner.gui.reskin;
 
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.Insets;
 import java.awt.Toolkit;
@@ -60,23 +63,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
-
-
-
-
-
-
-
-
-
-
-
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.play.GameManager;
@@ -93,23 +86,14 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	/** Log */
 	static Logger log = Logger.getLogger(StandaloneGamePanel.class);
 
-	protected ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-		@Override
-		public Thread newThread(Runnable r) {
-			Thread t = Executors.defaultThreadFactory().newThread(r);
-			t.setName("game update scheduler thread");
-			return t;
-		}
-	});
-	
-	protected ThreadPoolExecutor gexec = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new ThreadFactory() {
+	protected ScheduledExecutorService gexec = Executors.newScheduledThreadPool(1, new ThreadFactory() {
 		@Override
 		public Thread newThread(Runnable r) {
 			Thread t = Executors.defaultThreadFactory().newThread(r);
 			t.setName("game update thread");
 			return t;
 		}
-	}, new ThreadPoolExecutor.DiscardPolicy());
+	});
 	
 	private static class FocusableJLabel extends JLabel {
 		private FocusableJLabel(Icon image) {
@@ -226,7 +210,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 * @throws HeadlessException Keyboard, Mouse, Exceptions such as the display if there is no
 	 */
 	public StandaloneGamePanel(StandaloneFrame owner) throws HeadlessException {
-		super(new BorderLayout());
+		super(new GridBagLayout());
 		this.owner = owner;
 
 		setDoubleBuffered(true);
@@ -235,10 +219,14 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		imageBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB);
 		gameBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB);
 
-		add(imageBufferLabel = new FocusableJLabel(new ImageIcon(imageBuffer)), BorderLayout.CENTER);
+		add(
+				imageBufferLabel = new FocusableJLabel(new ImageIcon(imageBuffer)), 
+				new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
 		
 		imageBufferLabel.setText("No Active Game.  Click \"Play\" to start.");
 		imageBufferLabel.setIcon(null);
+		
+		imageBufferLabel.setBorder(BorderFactory.createMatteBorder(4, 4, 4, 4, new Color(255, 255, 255, 127)));
 
 		maxfps = Options.standalone().MAX_FPS.value();
 
@@ -388,21 +376,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			}
 		};
 		
-		final Runnable ftask = new FutureTask<Object>(task, null) {
-			@Override
-			public void run() {
-				runAndReset();
-			}
-		};
-		
-		Runnable gtask = new FutureTask<Object>(task, null) {
-			@Override
-			public void run() {
-				gexec.execute(ftask);
-			}
-		};
-		
-		ScheduledFuture<?> f = exec.scheduleAtFixedRate(gtask, 0, TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / maxfps, TimeUnit.NANOSECONDS);
+		ScheduledFuture<?> f = gexec.scheduleAtFixedRate(task, 0, TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / maxfps, TimeUnit.NANOSECONDS);
 		
 		while(running.get()) {
 			synchronized(running) {

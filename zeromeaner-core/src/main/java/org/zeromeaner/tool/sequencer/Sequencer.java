@@ -40,6 +40,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -68,7 +69,6 @@ import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.ResourceInputStream;
-import java.io.InputStreamReader;
 
 
 /**

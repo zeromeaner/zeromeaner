@@ -1,8 +1,7 @@
 package org.zeromeaner.util;
 
 import java.util.Collection;
-import org.funcish.core.Mappings;
-import org.funcish.core.Predicates;
+
 import org.funcish.core.coll.ArrayFunctionalList;
 import org.funcish.core.coll.FunctionalList;
 import org.funcish.core.fn.Mapper;
@@ -10,6 +9,8 @@ import org.funcish.core.fn.Predicate;
 import org.funcish.core.fn.Predicator;
 import org.funcish.core.impl.AbstractMapper;
 import org.funcish.core.impl.AbstractPredicator;
+import org.funcish.core.util.Mappings;
+import org.funcish.core.util.Predicates;
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 
@@ -17,7 +18,7 @@ import org.zeromeaner.game.subsystem.mode.GameMode;
 public class ModeList<E extends GameMode> extends ArrayFunctionalList<E> {
 	public static ModeList<GameMode> getModes() {
 		ModeList<GameMode> ret = new ModeList<GameMode>(GameMode.class);
-		ret.addAll(Mappings.classNewInstance(GameMode.class).map(Zeroflections.getModes()));
+		Mappings.classNewInstance(GameMode.class).map(Zeroflections.getModes()).into(ret);
 		return ret;
 	}
 	
@@ -61,19 +62,19 @@ public class ModeList<E extends GameMode> extends ArrayFunctionalList<E> {
 		Predicator<GameMode> p = IS_NETPLAY;
 		if(!isNetplay)
 			p = IS_SINGLEPLAY;
-		return p.filter(this, new ModeList<E>(e()));
+		return p.filter(this).into(new ModeList(e()));
 	}
 	
 	public ModeList<E> getIsVs(boolean isVs) {
 		Predicator<GameMode> p = IS_VSMODE;
 		if(!isVs)
 			p = Predicates.not(p);
-		return p.filter(this, new ModeList<E>(e()));
+		return p.filter(this).into(new ModeList(e()));
 	}
 	
 	public <U extends E> ModeList<U> get(Class<U> u) {
-		ModeList<E> us = Predicates.classIsInstance(u).filter(this, new ModeList<E>(e()));
-		return Mappings.classCast(e(), u).map(us, new ModeList<U>(u));
+		ModeList<E> us = Predicates.classIsInstance(u).filter(this).into(new ModeList(e()));
+		return Mappings.classCast(e(), u).map(us).into(new ModeList<U>(u));
 	}
 	
 	public int indexOfName(String name) {
@@ -92,6 +93,6 @@ public class ModeList<E extends GameMode> extends ArrayFunctionalList<E> {
 	
 	@Override
 	public ModeList<E> filter(Predicate<? super E> p) {
-		return filter(p, new ModeList<E>(e()));
+		return super.filter(p).into(new ModeList<E>(e()));
 	}
 }

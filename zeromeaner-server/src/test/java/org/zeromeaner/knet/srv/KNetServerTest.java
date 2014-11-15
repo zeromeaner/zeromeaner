@@ -8,7 +8,6 @@ import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.knet.KNetEventArgs;
 import org.zeromeaner.knet.KNetListener;
-import org.zeromeaner.knet.srv.KNetServer;
 
 public class KNetServerTest {
 	private KNetServer server;

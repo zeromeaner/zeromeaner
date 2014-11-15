@@ -28,6 +28,8 @@
 */
 package org.zeromeaner.gui.reskin;
 
+import static org.zeromeaner.gui.reskin.Localizations.lz;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -47,24 +49,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-
-
-
-
-
-
-
-
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.subsystem.ai.AIPlayer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
-import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.Options.AIOptions;
-import org.zeromeaner.util.Options.PlayerOptions;
 import org.zeromeaner.util.Zeroflections;
-
-import static org.zeromeaner.gui.reskin.Localizations.lz;
 
 /**
  * AISelection screen frame

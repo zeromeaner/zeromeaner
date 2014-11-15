@@ -1,31 +1,21 @@
 package org.zeromeaner.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Reader;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
-import org.apache.log4j.Logger;
 import org.zeromeaner.gui.reskin.StandaloneApplet;
 import org.zeromeaner.gui.reskin.StandaloneMain;
 
 import com.googlecode.sardine.Factory;
 import com.googlecode.sardine.Sardine;
-import com.googlecode.sardine.util.SardineException;
 
 public class ResourceInputStream extends FilterInputStream {
 	private static Sardine s;
@@ -98,6 +88,7 @@ public class ResourceInputStream extends FilterInputStream {
 		return null;
 	}
 	
+	/*
 	public static class ResourceDownloadStream extends FilterInputStream {
 		private static final Logger log = Logger.getLogger(ResourceDownloadStream.class);
 		
@@ -154,6 +145,7 @@ public class ResourceInputStream extends FilterInputStream {
 			super(getDownloadStream(resource));
 		}
 	}
+	*/
 	
 	public static Reader newReader(String resource) throws IOException {
 		return new InputStreamReader(new ResourceInputStream(resource));

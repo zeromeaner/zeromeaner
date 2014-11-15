@@ -2,6 +2,7 @@ package org.zeromeaner.knet;
 
 import java.util.ArrayList;
 import java.util.Properties;
+
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;

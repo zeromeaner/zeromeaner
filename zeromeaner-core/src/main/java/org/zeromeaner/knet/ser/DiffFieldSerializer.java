@@ -1,6 +1,7 @@
 package org.zeromeaner.knet.ser;
 
 import java.io.ByteArrayOutputStream;
+
 import org.badiff.alg.Graph;
 import org.badiff.alg.InertialGraph;
 import org.badiff.imp.MemoryDiff;
@@ -12,6 +13,7 @@ import org.badiff.q.OneWayOpQueue;
 import org.badiff.q.OpQueue;
 import org.badiff.util.Diffs;
 import org.badiff.util.Serials;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;

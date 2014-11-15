@@ -484,7 +484,7 @@ public class StandaloneRenderer extends EventRenderer {
 			graphics.drawRect(x, y, size-1, size-1);
 
 			if(showbg) {
-				graphics.setColor(Color.black);
+//				graphics.setColor(Color.black);
 				graphics.fillRect(x + 1, y + 1, size - 2, size - 2);
 			}
 		} else {
@@ -925,7 +925,7 @@ public class StandaloneRenderer extends EventRenderer {
 		int outlineType = engine.blockOutlineType;
 		if(engine.owBlockOutlineType != -1) outlineType = engine.owBlockOutlineType;
 
-		for(int i = 0; i < viewHeight; i++) {
+		for(int i = -(int)Math.ceil(engine.fieldShift); i < viewHeight; i++) {
 			for(int j = 0; j < width; j++) {
 				int x2 = x + (j * blksize);
 				int y2 = y + (i * blksize);

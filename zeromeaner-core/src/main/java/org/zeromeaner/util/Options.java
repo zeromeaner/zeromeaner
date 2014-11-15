@@ -1,12 +1,15 @@
 package org.zeromeaner.util;
 
-import org.zeromeaner.util.PropertyConstant.Constant;
+import static org.zeromeaner.util.PropertyConstant.BOOLEAN;
+import static org.zeromeaner.util.PropertyConstant.DOUBLE;
+import static org.zeromeaner.util.PropertyConstant.INTEGER;
+import static org.zeromeaner.util.PropertyConstant.STRING;
 
-import static org.zeromeaner.util.PropertyConstant.*;
+import org.zeromeaner.util.PropertyConstant.Constant;
 
 public class Options {
 	public static final CustomProperties ROOT_PROPERTIES = new CustomProperties();
-	public static final CustomProperties GLOBAL_PROPERTIES = new CustomProperties(ROOT_PROPERTIES, "nettromino");
+	public static final CustomProperties GLOBAL_PROPERTIES = new CustomProperties(ROOT_PROPERTIES, "zeromeaner");
 	public static final CustomProperties GUI_PROPERTIES = new CustomProperties(GLOBAL_PROPERTIES, "gui");
 	public static final CustomProperties RUNTIME_PROPERTIES = new CustomProperties(GUI_PROPERTIES, "runtime");
 	

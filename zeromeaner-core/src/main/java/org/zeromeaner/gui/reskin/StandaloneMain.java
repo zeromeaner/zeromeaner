@@ -19,7 +19,6 @@ import org.zeromeaner.util.Options;
 import org.zeromeaner.util.PropertyConstant;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ResourceOutputStream;
-import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 
 public class StandaloneMain {
 	public static ModeList<GameMode> modeManager;
@@ -68,18 +67,14 @@ public class StandaloneMain {
 		} catch(IOException e) {
 		}
 		CookieAccess.getInstance().set(Options.RUNTIME_PROPERTIES.getAll());
-		try {
-			ResourceDownloadStream.commitCache();
-		} catch(IOException ioe) {
-		}
 	}
 
 	private static void _main(String[] args) throws Exception {
-		System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".nettromino");
+		System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".zeromeaner");
 		new File(System.getProperty("user.dir")).mkdirs();
 		CookieAccess.setInstance(new MainCookieAccess());
 
-		StandaloneApplet.url = new URL("http://www.nettromino.org/" + (GameManager.VERSION.isSnapshot() ? "snapshot" : "play") + "/");
+		StandaloneApplet.url = new URL("http://www.zeromeaner.org/" + (GameManager.VERSION.isSnapshot() ? "snapshot" : "play") + "/");
 
 		userId = System.getProperty("user.name");
 		if(CookieAccess.get("userId") != null)

@@ -1,5 +1,10 @@
 package org.zeromeaner.game.subsystem.mode;
 
+import static org.zeromeaner.knet.KNetEventArgs.GAME_END_STATS;
+import static org.zeromeaner.knet.KNetEventArgs.GAME_OPTIONS;
+import static org.zeromeaner.knet.KNetEventArgs.GAME_STATS;
+import static org.zeromeaner.knet.KNetEventArgs.START_1P;
+
 import java.util.concurrent.TimeUnit;
 
 import org.zeromeaner.game.component.BGMStatus;
@@ -14,8 +19,6 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
-
-import static org.zeromeaner.knet.KNetEventArgs.*;
 
 /**
  * DIG CHALLENGE mode
@@ -717,7 +720,7 @@ public class DigChallengeMode extends AbstractNetMode {
 			}
 
 			// Add Garbage (Realtime)
-			if((garbageTimer >= getGarbageMaxTime(engine.statistics.level) || engine.fieldShift <= 0) && (goaltype == GOALTYPE_REALTIME) &&
+			if((garbageTimer >= getGarbageMaxTime(engine.statistics.level) || fieldShift <= 0) && (goaltype == GOALTYPE_REALTIME) &&
 			   (engine.stat != GameEngine.Status.LINECLEAR) && (!netIsWatch()))
 			{
 				addGarbage(engine);
@@ -752,7 +755,14 @@ public class DigChallengeMode extends AbstractNetMode {
 				}
 			}
 		}
+		if(engine.field != null) {
+			if(engine.field.getHighestGarbageBlockY() == engine.field.getHeight()) {
+				engine.fieldShift = 0;
+			}
+		}
 	}
+	
+	private double fieldShift;
 
 	/**
 	 * Update timer meter
@@ -767,10 +777,11 @@ public class DigChallengeMode extends AbstractNetMode {
 		} else {
 			engine.meterValue = 0;
 		}
-		if(engine.fieldShift > 0) {
+		if(fieldShift > 0) {
 			long last = lastFrameTime;
 			long now = System.nanoTime();
-			engine.fieldShift -= (growthRate * (now - last)) / TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS);
+			fieldShift -= (growthRate * (now - last)) / TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS);
+			engine.fieldShift = fieldShift;
 			lastFrameTime = now;
 		} else {
 			
@@ -928,7 +939,7 @@ public class DigChallengeMode extends AbstractNetMode {
 	 */
 	private void addGarbage(GameEngine engine) {
 		addGarbage(engine, 1);
-		engine.fieldShift = 1;
+		fieldShift = engine.fieldShift = 1;
 	}
 
 	/**

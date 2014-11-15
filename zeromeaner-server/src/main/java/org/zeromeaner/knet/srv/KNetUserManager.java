@@ -1,5 +1,14 @@
 package org.zeromeaner.knet.srv;
 
+import static org.zeromeaner.knet.KNetEventArgs.CONNECTED;
+import static org.zeromeaner.knet.KNetEventArgs.DISCONNECTED;
+import static org.zeromeaner.knet.KNetEventArgs.USER_AUTHENTICATE;
+import static org.zeromeaner.knet.KNetEventArgs.USER_AUTHENTICATED;
+import static org.zeromeaner.knet.KNetEventArgs.USER_CREATE;
+import static org.zeromeaner.knet.KNetEventArgs.USER_CREATED;
+import static org.zeromeaner.knet.KNetEventArgs.USER_UPDATED_PASSWORD;
+import static org.zeromeaner.knet.KNetEventArgs.USER_UPDATE_PASSWORD;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -20,8 +29,6 @@ import org.zeromeaner.knet.KNetTopics;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
-
-import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetUserManager extends KNetClient implements KNetListener {
 	private static final Logger log = Logger.getLogger(KNetUserManager.class);

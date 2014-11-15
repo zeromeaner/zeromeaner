@@ -28,6 +28,8 @@
 */
 package org.zeromeaner.gui.reskin;
 
+import static org.zeromeaner.gui.reskin.Localizations.lz;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -53,10 +55,8 @@ import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 
 import org.zeromeaner.util.Options;
-import org.zeromeaner.util.SwingUtils;
 import org.zeromeaner.util.Options.TuningOptions;
-
-import static org.zeromeaner.gui.reskin.Localizations.lz;
+import org.zeromeaner.util.SwingUtils;
 
 /**
  * Tuning Settings screen frame

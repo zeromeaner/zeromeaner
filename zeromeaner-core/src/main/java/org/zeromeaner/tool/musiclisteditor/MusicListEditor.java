@@ -53,13 +53,12 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.util.CustomProperties;
-import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.ResourceInputStream;
+import org.zeromeaner.util.ResourceOutputStream;
 
 /**
  * MusicListEditor (Music editing tools list)

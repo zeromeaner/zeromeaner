@@ -1,8 +1,15 @@
 package org.zeromeaner.knet;
 
+import static org.zeromeaner.knet.KNetEventArgs.ADDRESS;
+import static org.zeromeaner.knet.KNetEventArgs.CONNECTED;
+import static org.zeromeaner.knet.KNetEventArgs.DISCONNECTED;
+import static org.zeromeaner.knet.KNetEventArgs.IN_REPLY_TO;
+import static org.zeromeaner.knet.KNetEventArgs.UDP;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+
 import javax.swing.event.EventListenerList;
 
 import org.mmmq.Message;
@@ -15,7 +22,6 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryonet.Connection;
-import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KNetClient implements MessageListener, KNetListener {
 	private class KNetMasterClient extends MasterClient {

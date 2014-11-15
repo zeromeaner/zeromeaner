@@ -1,5 +1,8 @@
 package org.zeromeaner.knet.srv;
 
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_INFO;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_LIST;
+
 import java.util.concurrent.Semaphore;
 
 import org.junit.AfterClass;
@@ -8,9 +11,6 @@ import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.knet.KNetListener;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
-import org.zeromeaner.knet.srv.KNetServer;
-
-import static org.zeromeaner.knet.KNetEventArgs.*;
 
 public class KSChannelManagerTest {
 	private static KNetServer server;

@@ -1,22 +1,13 @@
 package org.zeromeaner.util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.zeromeaner.gui.reskin.StandaloneApplet;
-import org.zeromeaner.gui.reskin.StandaloneMain;
-import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 
 import com.googlecode.sardine.Factory;
 import com.googlecode.sardine.Sardine;
-import com.googlecode.sardine.util.SardineException;
 
 public class ResourceOutputStream extends FilterOutputStream {
 	private static Sardine s;
@@ -47,6 +38,7 @@ public class ResourceOutputStream extends FilterOutputStream {
 		}
 	}
 	
+	/*
 	public static class ResourceUploadStream extends FilterOutputStream {
 		public static OutputStream getUploadStream(final String resource) throws IOException {
 			final URL url = new URL("http://" + StandaloneApplet.url.getHost() + "/webdav/" + StandaloneMain.userId + "/" + resource);
@@ -82,6 +74,7 @@ public class ResourceOutputStream extends FilterOutputStream {
 			super(getUploadStream(resource));
 		}
 	}
+	*/
 	
 	public ResourceOutputStream(String resource) throws IOException {
 		super(getStream(resource));

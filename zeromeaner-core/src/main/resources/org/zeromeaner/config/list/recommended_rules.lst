@@ -1,8 +1,5 @@
 #Recommended Rules List
 
-:NET-EVILINE-VS-BATTLE
-config/rule/EvilineNetplayRude.rul
-
 :MARATHON
 config/rule/Standard.rul
 config/rule/StandardFastB.rul
@@ -14,17 +11,6 @@ config/rule/StandardFriends.rul
 config/rule/Standard.rul
 config/rule/StandardFastB.rul
 config/rule/StandardJ.rul
-
-:EVILINE
-config/rule/EvilineRandomizer.rul
-config/rule/EvilineConcurrentRandomizer.rul
-config/rule/EvilineAggressiveRandomizer.rul
-config/rule/EvilineConcurrentAggressiveRandomizer.rul
-config/rule/EvilineAngelRandomizer.rul
-config/rule/EvilineConcurrentAngelRandomizer.rul
-config/rule/EvilineBipolarRandomizer.rul
-config/rule/EvilineConcurrentBipolarRandomizer.rul
-config/rule/EvilineNetplayRude.rul
 
 :EXTREME
 config/rule/Standard.rul

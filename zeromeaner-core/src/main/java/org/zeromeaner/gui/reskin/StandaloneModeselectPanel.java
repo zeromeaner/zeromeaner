@@ -27,7 +27,6 @@ import org.zeromeaner.util.LstResourceMap;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.RuleList;
-import org.zeromeaner.util.ResourceInputStream.ResourceDownloadStream;
 
 public class StandaloneModeselectPanel extends JPanel {
 	private static String formatButtonText(String modeOrRuleName) {
@@ -72,7 +71,6 @@ public class StandaloneModeselectPanel extends JPanel {
 		} catch(IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
-		ResourceDownloadStream.getCache().put(custom.resourceName, bout.toByteArray());
 	}
 	
 	public StandaloneModeselectPanel() {
