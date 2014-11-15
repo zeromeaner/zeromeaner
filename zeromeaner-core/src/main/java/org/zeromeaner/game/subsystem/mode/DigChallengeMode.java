@@ -344,6 +344,8 @@ public class DigChallengeMode extends AbstractNetMode {
 		owner = engine.getOwner();
 		receiver = engine.getOwner().receiver;
 		
+		fieldShift = 0;
+		
 		lastscore = 0;
 		lastbonusscore = 0;
 		scgettime = 0;
