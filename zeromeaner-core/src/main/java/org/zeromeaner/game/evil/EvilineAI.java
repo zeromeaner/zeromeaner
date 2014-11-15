@@ -51,7 +51,7 @@ public class EvilineAI extends AbstractAI implements Configurable {
 		public EvilineAIConfigurator() {
 			dropsOnly = new JCheckBox();
 			lookahead = new JSpinner(new SpinnerNumberModel(3, 0, 6, 1));
-			pruneTop = new JSpinner(new SpinnerNumberModel(5, 1, Integer.MAX_VALUE, 1));
+			pruneTop = new JSpinner(new SpinnerNumberModel(5, 1, 20, 1));
 			panel = new JPanel(new GridLayout(0, 2));
 			panel.add(new JLabel("Maximum Lookahead: "));
 			panel.add(lookahead);
