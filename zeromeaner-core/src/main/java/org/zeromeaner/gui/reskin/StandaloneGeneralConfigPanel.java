@@ -46,6 +46,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import org.eviline.swing.IntegerDocument;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.Options.StandaloneOptions;
 import org.zeromeaner.util.SwingUtils;
@@ -129,6 +130,10 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	protected JCheckBox chkboxShowInput;
 
 	protected JTextField userId = new JTextField();
+	
+	protected JCheckBox recordVideo;
+	
+	protected JTextField videoFPS;
 	
 	/**
 	 * Constructor
@@ -228,6 +233,18 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxShowInput = new JCheckBox(lz.s("GeneralConfig_ShowInput"));
 		chkboxShowInput.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxShowInput);
+		
+		recordVideo = new JCheckBox(lz.s("GeneralConfig_RecordVideo"));
+		recordVideo.setHorizontalAlignment(SwingConstants.CENTER);
+		pBasicTab.add(recordVideo);
+		
+		videoFPS = new JTextField("");
+		videoFPS.setDocument(new IntegerDocument());
+		videoFPS.setHorizontalAlignment(SwingConstants.CENTER);
+		JPanel vp = new JPanel(new GridLayout(0, 2));
+		vp.add(new JLabel(lz.s("GeneralConfig_VideoFPS")));
+		vp.add(videoFPS);
+		pBasicTab.add(vp);
 
 		// ** Advanced Tab
 		JPanel pAdvancedTab = new JPanel();
@@ -345,6 +362,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxShowInput.setSelected(opt.SHOW_INPUT.value());
 		chkboxSyncDisplay.setSelected(opt.SYNC_DISPLAY.value());
 		chkboxShowLineClearEffect.setSelected(opt.SHOW_LINE_EFFECT.value());
+		recordVideo.setSelected(opt.RECORD_VIDEO.value());
+		videoFPS.setText("" + opt.VIDEO_FPS.value());
 	}
 
 	/*
@@ -392,6 +411,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			opt.SHOW_INPUT.set(chkboxShowInput.isSelected());
 			opt.SYNC_DISPLAY.set(chkboxSyncDisplay.isSelected());
 			opt.SHOW_LINE_EFFECT.set(chkboxShowLineClearEffect.isSelected());
+			opt.RECORD_VIDEO.set(recordVideo.isSelected());
+			opt.VIDEO_FPS.set(Integer.parseInt(videoFPS.getText()));
 
 			StandaloneMain.saveConfig();
 			StandaloneResourceHolder.soundManager.setVolume(sevolume);

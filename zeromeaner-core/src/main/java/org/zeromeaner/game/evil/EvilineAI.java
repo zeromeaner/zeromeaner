@@ -309,7 +309,7 @@ public class EvilineAI extends AbstractAI implements Configurable {
 		ai = new DefaultAIKernel(new NextFitness());
 		ai.setDropsOnly(DROPS_ONLY.value(opt));
 		ai.setPruneTop(PRUNE_TOP.value(opt));
-		ai.setExec(DefaultAIKernel.createDefaultExecutor(PRUNE_TOP.value(opt) * 3));
+		ai.setExec(DefaultAIKernel.createDefaultExecutor(PRUNE_TOP.value(opt) * 2));
 		pipeline = new PathPipeline();
 		lookahead = LOOKAHEAD.value(opt);
 	}
