@@ -1,11 +1,19 @@
 package org.zeromeaner.game.evil;
 
+import java.awt.GridLayout;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingDeque;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 
 import org.eviline.core.Command;
 import org.eviline.core.Configuration;
@@ -20,54 +28,61 @@ import org.eviline.core.ai.NextFitness;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
+import org.zeromeaner.gui.common.Configurable;
+import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.Options;
+import org.zeromeaner.util.PropertyConstant;
+import org.zeromeaner.util.PropertyConstant.Constant;
+import org.zeromeaner.util.PropertyConstant.ConstantParser;
 
-public abstract class EvilineAI extends AbstractAI {
-	protected abstract static class Lookahead extends EvilineAI {
-		public Lookahead(int lookahead) {
-			this.lookahead = lookahead;
+public class EvilineAI extends AbstractAI implements Configurable {
+	
+	protected static final Constant<Boolean> DROPS_ONLY = new Constant<>(PropertyConstant.BOOLEAN, ".eviline.drops_only", true);
+	protected static final Constant<Integer> LOOKAHEAD = new Constant<>(PropertyConstant.INTEGER, ".eviline.lookahead", 3);
+	protected static final Constant<Integer> PRUNE_TOP = new Constant<>(PropertyConstant.INTEGER, ".eviline.prune_top", 5);
+
+	protected static class EvilineAIConfigurator implements Configurable.Configurator {
+		
+		private JCheckBox dropsOnly;
+		private JSpinner lookahead;
+		private JSpinner pruneTop;
+		protected JPanel panel;
+		
+		public EvilineAIConfigurator() {
+			dropsOnly = new JCheckBox();
+			lookahead = new JSpinner(new SpinnerNumberModel(3, 0, 6, 1));
+			pruneTop = new JSpinner(new SpinnerNumberModel(5, 1, Integer.MAX_VALUE, 1));
+			panel = new JPanel(new GridLayout(0, 2));
+			panel.add(new JLabel("Maximum Lookahead: "));
+			panel.add(lookahead);
+			panel.add(new JLabel("Lookahead Choices: "));
+			panel.add(pruneTop);
+			panel.add(new JLabel("Only use drops (don't shift down)"));
+			panel.add(dropsOnly);
 		}
 		
 		@Override
-		public String getName() {
-			return super.getName() + " (lookahead " + lookahead + ")";
+		public JComponent getConfigurationComponent() {
+			return panel;
 		}
+
+		@Override
+		public void applyConfiguration(CustomProperties p) {
+			LOOKAHEAD.set(p, (Integer) lookahead.getValue());
+			PRUNE_TOP.set(p, (Integer) pruneTop.getValue());
+			DROPS_ONLY.set(p, dropsOnly.isSelected());
+		}
+
+		@Override
+		public void reloadConfiguration(CustomProperties p) {
+			lookahead.setValue(LOOKAHEAD.value(p));
+			pruneTop.setValue(PRUNE_TOP.value(p));
+			dropsOnly.setSelected(DROPS_ONLY.value(p));
+		}
+		
 	}
 	
-	public static class Lookahead_0 extends Lookahead {
-		public Lookahead_0() {
-			super(0);
-		}
-	}
-	
-	public static class Lookahead_1 extends Lookahead {
-		public Lookahead_1() {
-			super(1);
-		}
-	}
-	
-	public static class Lookahead_2 extends Lookahead {
-		public Lookahead_2() {
-			super(2);
-		}
-	}
-	
-	public static class Lookahead_3 extends Lookahead {
-		public Lookahead_3() {
-			super(3);
-		}
-	}
-	
-	public static class Lookahead_4 extends Lookahead {
-		public Lookahead_4() {
-			super(4);
-		}
-	}
-	
-	public static class Lookahead_5 extends Lookahead {
-		public Lookahead_5() {
-			super(5);
-		}
-	}
+	private static EvilineAIConfigurator configurator = new EvilineAIConfigurator();
 
 	protected static final Runnable NOP = new Runnable() {
 		@Override
@@ -273,7 +288,9 @@ public abstract class EvilineAI extends AbstractAI {
 		return nextShapes;
 	}
 	
-	protected EvilineAI() {}
+	public EvilineAI() {}
+	
+	
 	
 	protected void resetPipeline() {
 		pipeline.shutdown();
@@ -287,11 +304,14 @@ public abstract class EvilineAI extends AbstractAI {
 
 	@Override
 	public void init(GameEngine engine, int playerID) {
+		CustomProperties opt = Options.player(playerID).ai.BACKING;
+		
 		ai = new DefaultAIKernel(new NextFitness());
-		ai.setDropsOnly(true);
-		ai.setPruneTop(5);
+		ai.setDropsOnly(DROPS_ONLY.value(opt));
+		ai.setPruneTop(PRUNE_TOP.value(opt));
 		ai.setExec(DefaultAIKernel.createDefaultExecutor(8));
 		pipeline = new PathPipeline();
+		lookahead = LOOKAHEAD.value(opt);
 	}
 
 	@Override
@@ -456,6 +476,11 @@ public abstract class EvilineAI extends AbstractAI {
 	public void renderHint(GameEngine engine, int playerID) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public Configurator getConfigurator() {
+		return configurator;
 	}
 
 }

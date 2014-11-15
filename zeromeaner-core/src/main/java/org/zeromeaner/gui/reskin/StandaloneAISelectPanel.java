@@ -48,10 +48,14 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.subsystem.ai.AIPlayer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
+import org.zeromeaner.gui.common.Configurable;
+import org.zeromeaner.gui.common.Configurable.Configurator;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.Options.AIOptions;
 import org.zeromeaner.util.Zeroflections;
@@ -115,6 +119,10 @@ public class StandaloneAISelectPanel extends JPanel implements ActionListener {
 	protected JCheckBox chkBoxAIShowState;
 
 
+	protected JPanel configuratorPanel;
+	
+	protected Configurator configurator;
+	
 	/**
 	 * Constructor
 	 * @param owner Parent window
@@ -133,6 +141,17 @@ public class StandaloneAISelectPanel extends JPanel implements ActionListener {
 		initUI();
 	}
 
+	@Override
+	public void setVisible(boolean aFlag) {
+		if(aFlag)
+			load();
+		super.setVisible(aFlag);
+	}
+	
+	public void load() {
+		load(playerID);
+	}
+	
 	/**
 	 * This frame Action to take when you view the
 	 * @param pl Player number
@@ -167,6 +186,8 @@ public class StandaloneAISelectPanel extends JPanel implements ActionListener {
 		chkBoxAIShowHint.setSelected(aiShowHint);
 		chkBoxAIPrethink.setSelected(aiPrethink);
 		chkBoxAIShowState.setSelected(aiShowState);
+		
+		loadAIConfig();
 	}
 
 	/**
@@ -196,19 +217,40 @@ public class StandaloneAISelectPanel extends JPanel implements ActionListener {
 		return aiName;
 	}
 
+	protected void loadAIConfig() {
+		configuratorPanel.removeAll();
+		configurator = null;
+		if(listboxAI.getSelectedValue() != null) {
+			try {
+				Class<?> cls = Class.forName((String) aiPathList[listboxAI.getSelectedIndex()], true, StandaloneAISelectPanel.class.getClassLoader());
+				if(Configurable.class.isAssignableFrom(cls)) {
+					configurator = ((Configurable) cls.newInstance()).getConfigurator();
+					configuratorPanel.add(configurator.getConfigurationComponent(), BorderLayout.CENTER);
+					configurator.reloadConfiguration(Options.player(playerID).ai.BACKING);
+				}
+			} catch(Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		configuratorPanel.revalidate();
+		configuratorPanel.repaint();
+	}
+	
 	/**
 	 * GUIAInitialization
 	 */
 	protected void initUI() {
 		setLayout(new GridLayout(0, 2));;
 		
+		configuratorPanel = new JPanel(new BorderLayout());
+
 		// AIList
 		JPanel panelAIList = new JPanel();
 		panelAIList.setLayout(new BorderLayout());
 		panelAIList.setBorder(BorderFactory.createTitledBorder("AI Class and Name"));
 		this.add(panelAIList);
 		
-		JPanel right = new JPanel();
+		final JPanel right = new JPanel();
 		right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
 		right.setBorder(BorderFactory.createTitledBorder("AI Configuration"));
 		
@@ -221,6 +263,12 @@ public class StandaloneAISelectPanel extends JPanel implements ActionListener {
 			strList[i] = aiNameList[i] + " (" + aiPathList[i] + ")";
 		}
 		listboxAI = new JList(strList);
+		listboxAI.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				loadAIConfig();
+			}
+		});
 
 		JScrollPane scpaneAI = new JScrollPane(listboxAI);
 		scpaneAI.setPreferredSize(new Dimension(400, 250));
@@ -276,6 +324,9 @@ public class StandaloneAISelectPanel extends JPanel implements ActionListener {
 		chkBoxAIShowState.setMnemonic('S');
 		right.add(chkBoxAIShowState);
 
+		configuratorPanel.setAlignmentX(LEFT_ALIGNMENT);
+		right.add(configuratorPanel);
+		
 		//  buttonKind
 		JPanel panelButtons = new JPanel();
 		panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.X_AXIS));
@@ -325,9 +376,13 @@ public class StandaloneAISelectPanel extends JPanel implements ActionListener {
 			aiPrethink = chkBoxAIPrethink.isSelected();
 			aiShowState = chkBoxAIShowState.isSelected();
 
+			
 //			CustomProperties p = Options.GLOBAL_PROPERTIES;
 			AIOptions opt = Options.player(playerID).ai;
 			
+			if(configurator != null)
+				configurator.applyConfiguration(opt.BACKING);
+
 			if(aiID >= 0) 
 				opt.NAME.set(aiPathList[aiID]);
 			else 

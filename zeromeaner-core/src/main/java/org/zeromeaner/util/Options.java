@@ -84,6 +84,7 @@ public class Options {
 	}
 	
 	public static class AIOptions {
+		public final CustomProperties BACKING;
 		public final Constant<String> NAME;
 		public final Constant<Integer> MOVE_DELAY;
 		public final Constant<Integer> THINK_DELAY;
@@ -93,14 +94,14 @@ public class Options {
 		public final Constant<Boolean> SHOW_STATE;
 		
 		private AIOptions(int playerId) {
-			CustomProperties backing = GLOBAL_PROPERTIES.subProperties("." + playerId + ".ai");
-			NAME = backing.create(STRING, "", "");
-			MOVE_DELAY = backing.create(INTEGER, "MoveDelay", 0);
-			THINK_DELAY = backing.create(INTEGER, "ThinkDelay", 0);
-			USE_THREAD = backing.create(BOOLEAN, "UseThread", true);
-			SHOW_HINT = backing.create(BOOLEAN, "ShowHint", false);
-			PRETHINK = backing.create(BOOLEAN, "Prethink", false);
-			SHOW_STATE = backing.create(BOOLEAN, "ShowState", false);
+			BACKING = GLOBAL_PROPERTIES.subProperties("." + playerId + ".ai");
+			NAME = BACKING.create(STRING, "", "");
+			MOVE_DELAY = BACKING.create(INTEGER, "MoveDelay", 0);
+			THINK_DELAY = BACKING.create(INTEGER, "ThinkDelay", 0);
+			USE_THREAD = BACKING.create(BOOLEAN, "UseThread", true);
+			SHOW_HINT = BACKING.create(BOOLEAN, "ShowHint", false);
+			PRETHINK = BACKING.create(BOOLEAN, "Prethink", false);
+			SHOW_STATE = BACKING.create(BOOLEAN, "ShowState", false);
 		}
 	}
 	
