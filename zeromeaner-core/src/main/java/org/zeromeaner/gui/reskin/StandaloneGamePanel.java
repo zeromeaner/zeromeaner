@@ -368,14 +368,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			}
 		};
 		
-		final Runnable ftask = new FutureTask<Object>(task, null) {
-			@Override
-			public void run() {
-				runAndReset();
-			}
-		};
-		
-		ScheduledFuture<?> f = gexec.scheduleAtFixedRate(ftask, 0, TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / maxfps, TimeUnit.NANOSECONDS);
+		ScheduledFuture<?> f = gexec.scheduleAtFixedRate(task, 0, TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / maxfps, TimeUnit.NANOSECONDS);
 		
 		while(running.get()) {
 			synchronized(running) {
