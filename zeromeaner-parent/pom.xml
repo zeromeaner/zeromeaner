@@ -14,6 +14,7 @@
 		<module>../zeromeaner-netstats</module>
 		<module>../zeromeaner-laf</module>
 
+		<module>../zeromeaner</module>
 	</modules>
 
 	<build>
