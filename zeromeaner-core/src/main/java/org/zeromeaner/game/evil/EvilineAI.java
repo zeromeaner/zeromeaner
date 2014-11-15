@@ -21,7 +21,54 @@ import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 
-public class EvilineAI extends AbstractAI {
+public abstract class EvilineAI extends AbstractAI {
+	protected abstract static class Lookahead extends EvilineAI {
+		public Lookahead(int lookahead) {
+			this.lookahead = lookahead;
+		}
+		
+		@Override
+		public String getName() {
+			return super.getName() + " (lookahead " + lookahead + ")";
+		}
+	}
+	
+	public static class Lookahead_0 extends Lookahead {
+		public Lookahead_0() {
+			super(0);
+		}
+	}
+	
+	public static class Lookahead_1 extends Lookahead {
+		public Lookahead_1() {
+			super(1);
+		}
+	}
+	
+	public static class Lookahead_2 extends Lookahead {
+		public Lookahead_2() {
+			super(2);
+		}
+	}
+	
+	public static class Lookahead_3 extends Lookahead {
+		public Lookahead_3() {
+			super(3);
+		}
+	}
+	
+	public static class Lookahead_4 extends Lookahead {
+		public Lookahead_4() {
+			super(4);
+		}
+	}
+	
+	public static class Lookahead_5 extends Lookahead {
+		public Lookahead_5() {
+			super(5);
+		}
+	}
+
 	protected static final Runnable NOP = new Runnable() {
 		@Override
 		public void run() {
@@ -191,11 +238,16 @@ public class EvilineAI extends AbstractAI {
 	protected byte[] createCommandPath(CommandGraph g) {
 		byte[] computingPaths = new byte[XYShapes.SHAPE_MAX];
 		int xyshape = g.getSelectedShape();
-				
+		
+		boolean tail = true;
+		
 		computingPaths[xyshape] = (byte) Command.HARD_DROP.ordinal();
 		while(xyshape != CommandGraph.NULL_ORIGIN) {
 			int parent = CommandGraph.originOf(g.getVertices(), xyshape);
 			Command c = CommandGraph.commandOf(g.getVertices(), xyshape);
+			if(tail && c == Command.SOFT_DROP)
+				c = Command.HARD_DROP;
+			tail = false;
 			if(parent >= 0 && parent < XYShapes.SHAPE_MAX)
 				computingPaths[parent] = (byte) c.ordinal();
 			if(c == Command.SOFT_DROP) {
@@ -220,6 +272,8 @@ public class EvilineAI extends AbstractAI {
 			nextShapes[i] = XYShapeAdapter.toShapeType(engine.getNextObject(engine.nextPieceCount + i));
 		return nextShapes;
 	}
+	
+	protected EvilineAI() {}
 	
 	protected void resetPipeline() {
 		pipeline.shutdown();

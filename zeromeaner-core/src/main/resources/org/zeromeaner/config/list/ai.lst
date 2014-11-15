@@ -5,4 +5,3 @@ org.zeromeaner.game.subsystem.ai.PoochyBotDefensive
 org.zeromeaner.game.subsystem.ai.RanksAI
 org.zeromeaner.game.subsystem.ai.Nohoho
 org.zeromeaner.game.subsystem.ai.ComboRaceBot
-org.zeromeaner.game.evil.EvilineAI
