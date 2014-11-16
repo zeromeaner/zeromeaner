@@ -1,4 +1,4 @@
-package org.zeromeaner.gui.reskin;
+package org.zeromeaner.plugin.videorecording;
 
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.ICodec.ID;
