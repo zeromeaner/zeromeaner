@@ -9,8 +9,9 @@ public class CodecList {
 		for(ID id : ID.values()) {
 			ICodec c;
 			if((c = ICodec.findEncodingCodec(id)) != null) {
-				if(c.getType() == Type.CODEC_TYPE_VIDEO)
-					System.out.println(id);
+				if(c.getType() == Type.CODEC_TYPE_VIDEO) {
+					System.out.println(id + " -> " + c);
+				}
 			}
 		}
 	}
