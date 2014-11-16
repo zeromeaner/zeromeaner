@@ -36,7 +36,7 @@ public class StandaloneGamePanelHook implements Hook {
 	@Override
 	public void gameStarted(StandaloneGamePanel thiz) {
 		videoBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_3BYTE_BGR);
-		videoFPS = Options.standalone().VIDEO_FPS.value();
+		videoFPS = 30;
 
 		if(Options.standalone().RECORD_VIDEO.value()) {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss");
