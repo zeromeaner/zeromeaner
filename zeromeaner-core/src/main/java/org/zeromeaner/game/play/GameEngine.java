@@ -1730,6 +1730,10 @@ public class GameEngine {
 				//  input Replay recorded in the state
 				replayData.setInputData(ctrl.getButtonBit(), replayTimer);
 			} else {
+				if(replayTimer >= replayData.max()) {
+					gameEnded();
+					return;
+				}
 				//  input Replay the state read from
 				ctrl.setButtonBit(replayData.getInputData(replayTimer));
 			}

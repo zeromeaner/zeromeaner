@@ -153,6 +153,10 @@ public class ReplayData implements Serializable {
 		p.setProperty(id + ".r.max", max);
 	}
 
+	public int max() {
+		return inputDataArray.size();
+	}
+	
 	/**
 	 * Read from the property set
 	 * @param p Property Set
