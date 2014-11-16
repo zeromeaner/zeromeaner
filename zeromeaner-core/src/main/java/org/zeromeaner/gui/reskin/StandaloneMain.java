@@ -78,12 +78,14 @@ public class StandaloneMain {
 		File plugins = new File(System.getProperty("user.dir"), "plugins");
 		plugins.mkdirs();
 		
-		if(StandaloneMain.class.getClassLoader() instanceof URLClassLoader) {
-			Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-			addURL.setAccessible(true);
-			for(File p : plugins.listFiles()) {
-				System.out.println("Injecting plugin " + p);
-				addURL.invoke(StandaloneMain.class.getClassLoader(), p.toURI().toURL());
+		if(args.length == 0 || !"--no-inject".equals(args[0])) {
+			if(StandaloneMain.class.getClassLoader() instanceof URLClassLoader) {
+				Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+				addURL.setAccessible(true);
+				for(File p : plugins.listFiles()) {
+					System.out.println("Injecting plugin " + p);
+					addURL.invoke(StandaloneMain.class.getClassLoader(), p.toURI().toURL());
+				}
 			}
 		}
 		
