@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
-public class ServiceHookInvoker<T> {
+public class ServiceHookDispatcher<T> {
 	protected Class<T> ifc;
 	protected T[] hooks;
 	protected T dispatcher;
 	
-	public ServiceHookInvoker(Class<T> ifc) {
+	public ServiceHookDispatcher(Class<T> ifc) {
 		this.ifc = ifc;
 		
 		List<T> hooks = new ArrayList<>();
@@ -26,10 +26,10 @@ public class ServiceHookInvoker<T> {
 			@Override
 			public Object invoke(Object proxy, Method method, Object[] args)
 					throws Throwable {
-				if(ServiceHookInvoker.this.hooks == null)
+				if(ServiceHookDispatcher.this.hooks == null)
 					return null;
 				Object ret = null;
-				for(T hook : ServiceHookInvoker.this.hooks) {
+				for(T hook : ServiceHookDispatcher.this.hooks) {
 					ret = method.invoke(hook, args);
 				}
 				return ret;

@@ -75,11 +75,20 @@ import org.apache.log4j.Logger;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.MusicList;
 import org.zeromeaner.util.Options;
+import org.zeromeaner.util.ServiceHookDispatcher;
 
 /**
  * Game screen frame
  */
 public class StandaloneGamePanel extends JPanel implements Runnable {
+	public static interface Hook {
+		public void gameStarted(StandaloneGamePanel thiz);
+		public void frameSynced(StandaloneGamePanel thiz);
+		public void gameStopped(StandaloneGamePanel thiz);
+	}
+	
+	protected static final ServiceHookDispatcher<Hook> hooks = new ServiceHookDispatcher<>(Hook.class);
+	
 	/** Serial version ID */
 	private static final long serialVersionUID = 1L;
 
@@ -306,6 +315,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 //			StandaloneGameKey.gamekey[0].clear();
 //			StandaloneGameKey.gamekey[1].clear();
 		}
+		if(render)
+			hooks.dispatcher().frameSynced(this);
 	}
 	
 	/**
@@ -337,6 +348,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 		// Main loop
 		log.debug("Game thread start");
+		
+		hooks.dispatcher().gameStarted(this);
 		
 		running.set(true);
 		
@@ -389,6 +402,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		
 		f.cancel(false);
 
+		hooks.dispatcher().gameStopped(this);
+		
 		owner.gameManager.shutdown();
 		owner.gameManager = null;
 
