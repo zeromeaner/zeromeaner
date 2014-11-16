@@ -8,7 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ServiceHookDispatcher<T> {
+	private static final Logger log = LoggerFactory.getLogger(ServiceHookDispatcher.class);
+	
 	protected Class<T> ifc;
 	protected T[] hooks;
 	protected T dispatcher;
@@ -20,6 +25,7 @@ public class ServiceHookDispatcher<T> {
 		for(T hook : ServiceLoader.load(ifc, ifc.getClassLoader())) {
 			hooks.add(hook);
 			this.hooks = hooks.toArray((T[]) Array.newInstance(ifc, hooks.size()));
+			LoggerFactory.getLogger(ifc).info("Found hook " + hook);
 		}
 		
 		dispatcher = (T) Proxy.newProxyInstance(ifc.getClassLoader(), new Class<?>[]{ifc}, new InvocationHandler() {
