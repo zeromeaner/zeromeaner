@@ -80,11 +80,6 @@ import org.zeromeaner.util.MusicList;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.ServiceHookDispatcher;
 
-import com.xuggle.mediatool.IMediaWriter;
-import com.xuggle.mediatool.ToolFactory;
-import com.xuggle.xuggler.ICodec;
-import com.xuggle.xuggler.IRational;
-
 /**
  * Game screen frame
  */
@@ -123,7 +118,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		}
 	}
 
-	private class FramePerSecond implements Delayed {
+	public static class FramePerSecond implements Delayed {
 		private long expiry = System.nanoTime() + TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS);
 		
 		@Override
@@ -139,7 +134,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	
 	private DelayQueue<FramePerSecond> vps = new DelayQueue<FramePerSecond>();
 	private DelayQueue<FramePerSecond> fps = new DelayQueue<FramePerSecond>();
-	private DelayQueue<FramePerSecond> videoFrames = new DelayQueue<>();
 	
 	/** Parent window */
 	protected StandaloneFrame owner = null;
@@ -151,10 +145,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 	protected JLabel imageBufferLabel;
 
-	protected BufferedImage gameBuffer;
+	public BufferedImage gameBuffer;
 	
-	protected BufferedImage videoBuffer;
-
 	//	/** BufferStrategy */
 	//	protected BufferStrategy bufferStrategy = null;
 
@@ -167,8 +159,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	/** MaximumFPS (Setting) */
 	public int maxfps;
 	
-	public int videoFPS;
-
 	/** Current MaximumFPS */
 	protected int maxfpsCurrent = 0;
 
@@ -228,10 +218,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	/** Current game mode name */
 	public String modeName;
 	
-	public IMediaWriter videoWriter;
-	
-	public File videoFile;
-
 	/**
 	 * Constructor
 	 * @param owner Parent window
@@ -246,7 +232,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 		imageBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB);
 		gameBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB);
-		videoBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_3BYTE_BGR);
 
 		add(
 				imageBufferLabel = new FocusableJLabel(new ImageIcon(imageBuffer)), 
@@ -258,8 +243,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		imageBufferLabel.setBorder(BorderFactory.createMatteBorder(4, 4, 4, 4, new Color(255, 255, 255, 127)));
 
 		maxfps = Options.standalone().MAX_FPS.value();
-
-		videoFPS = Options.standalone().VIDEO_FPS.value();
 
 		log.debug("GameFrame created");
 
@@ -340,8 +323,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			hooks.dispatcher().frameSynced(this);
 	}
 	
-	private long videoStart;
-	
 	/**
 	 * Processing of the thread
 	 */
@@ -369,21 +350,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		showfps = Options.standalone().SHOW_FPS.value();
 		syncDisplay = Options.standalone().SYNC_DISPLAY.value();
 
-		if(Options.standalone().RECORD_VIDEO.value()) {
-			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss");
-			try {
-				videoFile = new File(System.getProperty("user.dir"), "video/" + df.format(System.currentTimeMillis()) + ".mpg");
-				videoFile.getParentFile().mkdirs();
-				videoWriter = ToolFactory.makeWriter(videoFile.getCanonicalPath());
-				videoWriter.addVideoStream(0, 0, ICodec.findEncodingCodec(ICodec.ID.CODEC_ID_MPEG1VIDEO), IRational.make((double) videoFPS), gameBuffer.getWidth(), gameBuffer.getHeight());
-				videoStart = System.currentTimeMillis();
-				log.info("Recording video to " + videoFile);
-			} catch (IOException e) {
-				e.printStackTrace();
-				videoWriter = null;
-			}
-		} else
-			videoWriter = null;
+		
 		
 		// Main loop
 		log.debug("Game thread start");
@@ -437,13 +404,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		
 		f.cancel(false);
 
-		if(videoWriter != null) {
-			synchronized(videoBuffer) {
-				videoWriter.close();
-				log.info("Finished recording video to " + videoFile);
-				videoWriter = null;
-			}
-		}
+		
 		hooks.dispatcher().gameStopped(this);
 		
 		owner.gameManager.shutdown();
@@ -896,17 +857,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			}
 		} else
 			EventQueue.invokeLater(sync);
-		synchronized(videoBuffer) {
-			while(videoFrames.poll() != null)
-				;
-			if(videoFrames.size() < videoFPS) {
-				if(videoWriter != null) {
-					videoBuffer.getGraphics().drawImage(gameBuffer, 0, 0, null);
-					videoWriter.encodeVideo(0, videoBuffer, System.currentTimeMillis() - videoStart, TimeUnit.MILLISECONDS);
-				}
-				videoFrames.add(new FramePerSecond());
-			}
-		}
+		hooks.dispatcher().frameSynced(this);
 	}
 	
 	/**
