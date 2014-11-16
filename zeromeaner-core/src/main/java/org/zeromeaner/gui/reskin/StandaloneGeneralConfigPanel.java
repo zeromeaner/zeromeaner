@@ -36,16 +36,19 @@ import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import org.eviline.swing.IntegerDocument;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.Options.StandaloneOptions;
 import org.zeromeaner.util.SwingUtils;
@@ -129,6 +132,11 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	protected JCheckBox chkboxShowInput;
 
 	protected JTextField userId = new JTextField();
+	
+	protected JCheckBox recordVideo;
+	
+	protected JRadioButton video30FPS;
+	protected JRadioButton video60FPS;
 	
 	/**
 	 * Constructor
@@ -228,6 +236,21 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxShowInput = new JCheckBox(lz.s("GeneralConfig_ShowInput"));
 		chkboxShowInput.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxShowInput);
+		
+		recordVideo = new JCheckBox(lz.s("GeneralConfig_RecordVideo"));
+		recordVideo.setHorizontalAlignment(SwingConstants.CENTER);
+		pBasicTab.add(recordVideo);
+		
+		video30FPS = new JRadioButton(lz.s("GeneralConfig_video30FPS"));
+		video60FPS = new JRadioButton(lz.s("GeneralConfig_video60FPS"));
+		video30FPS.setHorizontalAlignment(SwingConstants.CENTER);
+		video60FPS.setHorizontalAlignment(SwingConstants.CENTER);
+		ButtonGroup g = new ButtonGroup();
+		g.add(video30FPS);
+		g.add(video60FPS);
+		
+		pBasicTab.add(video30FPS);
+		pBasicTab.add(video60FPS);
 
 		// ** Advanced Tab
 		JPanel pAdvancedTab = new JPanel();
@@ -345,6 +368,13 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxShowInput.setSelected(opt.SHOW_INPUT.value());
 		chkboxSyncDisplay.setSelected(opt.SYNC_DISPLAY.value());
 		chkboxShowLineClearEffect.setSelected(opt.SHOW_LINE_EFFECT.value());
+		recordVideo.setSelected(opt.RECORD_VIDEO.value());
+		
+		if(opt.VIDEO_FPS.value() == 30)
+			video30FPS.setSelected(true);
+		else
+			video60FPS.setSelected(true);
+		
 	}
 
 	/*
@@ -392,6 +422,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			opt.SHOW_INPUT.set(chkboxShowInput.isSelected());
 			opt.SYNC_DISPLAY.set(chkboxSyncDisplay.isSelected());
 			opt.SHOW_LINE_EFFECT.set(chkboxShowLineClearEffect.isSelected());
+			opt.RECORD_VIDEO.set(recordVideo.isSelected());
+			opt.VIDEO_FPS.set(video30FPS.isSelected() ? 30 : 60);
 
 			StandaloneMain.saveConfig();
 			StandaloneResourceHolder.soundManager.setVolume(sevolume);
