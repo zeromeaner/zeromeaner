@@ -55,7 +55,7 @@ public class StandaloneGamePanelHook implements Hook {
 				videoFile = new File(System.getProperty("user.dir"), "video/" + df.format(System.currentTimeMillis()) + ".mpg");
 				videoFile.getParentFile().mkdirs();
 				videoWriter = ToolFactory.makeWriter(videoFile.getCanonicalPath());
-				streamIdx = videoWriter.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO, videoBuffer.getWidth(), videoBuffer.getHeight());
+				streamIdx = videoWriter.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO, IRational.make(videoFPS), videoBuffer.getWidth(), videoBuffer.getHeight());
 				videoStart = System.nanoTime();
 				lastFrame = Long.MIN_VALUE;
 				log.info("Recording video to " + videoFile);
