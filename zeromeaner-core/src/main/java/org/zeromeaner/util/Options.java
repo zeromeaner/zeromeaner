@@ -140,6 +140,7 @@ public class Options {
 		public final Constant<Boolean> SE_ENABLED;
 		public final Constant<Boolean> SHOW_INPUT;
 		public final Constant<Boolean> RECORD_VIDEO;
+		public final Constant<Integer> VIDEO_FPS;
 		
 		private StandaloneOptions() {
 			CustomProperties p = GUI_PROPERTIES.subProperties(".options.");
@@ -168,6 +169,7 @@ public class Options {
 			SE_ENABLED = p.create(BOOLEAN, "se.enabled", true);
 			SHOW_INPUT = p.create(BOOLEAN, "showInput", false);
 			RECORD_VIDEO = p.create(BOOLEAN, "record_video", false);
+			VIDEO_FPS = p.create(INTEGER, "record_video.fps", 30);
 		}
 	}
 	

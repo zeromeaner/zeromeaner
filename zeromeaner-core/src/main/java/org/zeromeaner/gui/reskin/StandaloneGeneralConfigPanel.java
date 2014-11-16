@@ -135,6 +135,9 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	
 	protected JCheckBox recordVideo;
 	
+	protected JRadioButton video30FPS;
+	protected JRadioButton video60FPS;
+	
 	/**
 	 * Constructor
 	 * @param owner Parent window
@@ -238,6 +241,17 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		recordVideo.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(recordVideo);
 		
+		video30FPS = new JRadioButton(lz.s("GeneralConfig_video30FPS"));
+		video60FPS = new JRadioButton(lz.s("GeneralConfig_video60FPS"));
+		video30FPS.setHorizontalAlignment(SwingConstants.CENTER);
+		video60FPS.setHorizontalAlignment(SwingConstants.CENTER);
+		ButtonGroup g = new ButtonGroup();
+		g.add(video30FPS);
+		g.add(video60FPS);
+		
+		pBasicTab.add(video30FPS);
+		pBasicTab.add(video60FPS);
+
 		// ** Advanced Tab
 		JPanel pAdvancedTab = new JPanel();
 		pAdvancedTab.setLayout(new GridLayout(0, 1));
@@ -355,6 +369,12 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxSyncDisplay.setSelected(opt.SYNC_DISPLAY.value());
 		chkboxShowLineClearEffect.setSelected(opt.SHOW_LINE_EFFECT.value());
 		recordVideo.setSelected(opt.RECORD_VIDEO.value());
+		
+		if(opt.VIDEO_FPS.value() == 30)
+			video30FPS.setSelected(true);
+		else
+			video60FPS.setSelected(true);
+		
 	}
 
 	/*
@@ -403,6 +423,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			opt.SYNC_DISPLAY.set(chkboxSyncDisplay.isSelected());
 			opt.SHOW_LINE_EFFECT.set(chkboxShowLineClearEffect.isSelected());
 			opt.RECORD_VIDEO.set(recordVideo.isSelected());
+			opt.VIDEO_FPS.set(video30FPS.isSelected() ? 30 : 60);
 
 			StandaloneMain.saveConfig();
 			StandaloneResourceHolder.soundManager.setVolume(sevolume);
