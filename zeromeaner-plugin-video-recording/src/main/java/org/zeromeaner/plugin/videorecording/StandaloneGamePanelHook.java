@@ -66,12 +66,9 @@ public class StandaloneGamePanelHook implements Hook {
 	
 	@Override
 	public void gameStarted(StandaloneGamePanel thiz) {
-		videoBuffer = new BufferedImage(thiz.gameBuffer.getWidth(), thiz.gameBuffer.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-		videoFPS = Options.standalone().VIDEO_FPS.value();
-		
-		
-
-		if(Options.standalone().RECORD_VIDEO.value()) {
+		if(VideoRecordingOptions.get().ENABLED.value()) {
+			videoBuffer = new BufferedImage(thiz.gameBuffer.getWidth(), thiz.gameBuffer.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+			videoFPS = VideoRecordingOptions.get().FPS.value();
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss");
 			try {
 				videoFile = new File(System.getProperty("user.dir"), "video/" + df.format(System.currentTimeMillis()) + ".mpg");

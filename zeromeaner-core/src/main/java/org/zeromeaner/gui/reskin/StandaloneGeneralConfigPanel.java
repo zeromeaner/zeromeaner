@@ -50,6 +50,7 @@ import javax.swing.SwingConstants;
 
 import org.eviline.swing.IntegerDocument;
 import org.zeromeaner.util.Options;
+import org.zeromeaner.util.ServiceHookDispatcher;
 import org.zeromeaner.util.Options.StandaloneOptions;
 import org.zeromeaner.util.SwingUtils;
 
@@ -57,6 +58,14 @@ import org.zeromeaner.util.SwingUtils;
  * Setting screen frame
  */
 public class StandaloneGeneralConfigPanel extends JPanel implements ActionListener {
+	public static interface Hook {
+		public void createTabs(JTabbedPane tabs);
+		public void saveConfiguration();
+		public void loadConfiguration();
+	}
+	
+	protected static final ServiceHookDispatcher<Hook> hooks = new ServiceHookDispatcher<>(Hook.class);
+	
 	/** Serial version ID */
 	private static final long serialVersionUID = 1L;
 
@@ -133,10 +142,6 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 
 	protected JTextField userId = new JTextField();
 	
-	protected JCheckBox recordVideo;
-	
-	protected JRadioButton video30FPS;
-	protected JRadioButton video60FPS;
 	
 	/**
 	 * Constructor
@@ -237,21 +242,6 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxShowInput.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxShowInput);
 		
-		recordVideo = new JCheckBox(lz.s("GeneralConfig_RecordVideo"));
-		recordVideo.setHorizontalAlignment(SwingConstants.CENTER);
-		pBasicTab.add(recordVideo);
-		
-		video30FPS = new JRadioButton(lz.s("GeneralConfig_video30FPS"));
-		video60FPS = new JRadioButton(lz.s("GeneralConfig_video60FPS"));
-		video30FPS.setHorizontalAlignment(SwingConstants.CENTER);
-		video60FPS.setHorizontalAlignment(SwingConstants.CENTER);
-		ButtonGroup g = new ButtonGroup();
-		g.add(video30FPS);
-		g.add(video60FPS);
-		
-		pBasicTab.add(video30FPS);
-		pBasicTab.add(video60FPS);
-
 		// ** Advanced Tab
 		JPanel pAdvancedTab = new JPanel();
 		pAdvancedTab.setLayout(new GridLayout(0, 1));
@@ -312,6 +302,9 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxShowLineClearEffect.setHorizontalAlignment(SwingConstants.CENTER);
 		pAdvancedTab.add(chkboxShowLineClearEffect);
 
+		hooks.dispatcher().createTabs(tabPane);
+		hooks.dispatcher().loadConfiguration();
+		
 		// ---------- The bottom of the screen button ----------
 		JPanel pButtons = new JPanel();
 		pButtons.setAlignmentX(CENTER_ALIGNMENT);
@@ -368,13 +361,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxShowInput.setSelected(opt.SHOW_INPUT.value());
 		chkboxSyncDisplay.setSelected(opt.SYNC_DISPLAY.value());
 		chkboxShowLineClearEffect.setSelected(opt.SHOW_LINE_EFFECT.value());
-		recordVideo.setSelected(opt.RECORD_VIDEO.value());
 		
-		if(opt.VIDEO_FPS.value() == 30)
-			video30FPS.setSelected(true);
-		else
-			video60FPS.setSelected(true);
-		
+		hooks.dispatcher().loadConfiguration();
 	}
 
 	/*
@@ -422,8 +410,6 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			opt.SHOW_INPUT.set(chkboxShowInput.isSelected());
 			opt.SYNC_DISPLAY.set(chkboxSyncDisplay.isSelected());
 			opt.SHOW_LINE_EFFECT.set(chkboxShowLineClearEffect.isSelected());
-			opt.RECORD_VIDEO.set(recordVideo.isSelected());
-			opt.VIDEO_FPS.set(video30FPS.isSelected() ? 30 : 60);
 
 			StandaloneMain.saveConfig();
 			StandaloneResourceHolder.soundManager.setVolume(sevolume);
@@ -434,6 +420,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 				StandaloneResourceHolder.loadLineClearEffectImages();
 			}
 			
+			hooks.dispatcher().saveConfiguration();
 		}
 		else if(e.getActionCommand() == "GeneralConfig_Cancel") {
 			// Cancel
