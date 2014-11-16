@@ -30,6 +30,11 @@ package org.zeromeaner.game.component;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.zeromeaner.util.CustomProperties;
 
@@ -46,6 +51,8 @@ public class ReplayData implements Serializable {
 
 	/** Button input data */
 	public ArrayList<Integer> inputDataArray;
+	
+	public ArrayList<Map<String, Integer>> additionalData;
 
 	/**
 	 * Default constructor
@@ -70,6 +77,7 @@ public class ReplayData implements Serializable {
 			inputDataArray = new ArrayList<Integer>(DEFAULT_ARRAYLIST_SIZE);
 		else
 			inputDataArray.clear();
+		additionalData = new ArrayList<>();
 	}
 
 	/**
@@ -97,6 +105,12 @@ public class ReplayData implements Serializable {
 		}
 	}
 
+	public void setAdditionalData(String key, int value, int frame) {
+		while(additionalData.size() <= frame)
+			additionalData.add(new TreeMap<String, Integer>());
+		additionalData.get(frame).put(key, value);
+	}
+	
 	/**
 	 *  button inputGet status
 	 * @param frame  frame  (Course time)
@@ -107,6 +121,12 @@ public class ReplayData implements Serializable {
 			return 0;
 		}
 		return inputDataArray.get(frame);
+	}
+	
+	public Integer getAdditionalData(String key, int frame) {
+		if(frame >= additionalData.size())
+			return null;
+		return additionalData.get(frame).get(key);
 	}
 
 	/**
@@ -123,6 +143,12 @@ public class ReplayData implements Serializable {
 			int input = getInputData(i);
 			int previous = getInputData(i - 1);
 			if(input != previous) p.setProperty(id + ".r." + i, input);
+			
+			if(i < additionalData.size()) {
+				for(Entry<String, Integer> e : additionalData.get(i).entrySet()) {
+					p.setProperty(id + ".r." + e.getKey() + "." + i, e.getValue());
+				}
+			}
 		}
 		p.setProperty(id + ".r.max", max);
 	}
@@ -141,6 +167,16 @@ public class ReplayData implements Serializable {
 			int data = p.getProperty(id + ".r." + i, -1);
 			if(data != -1) input = data;
 			setInputData(input, i);
+		}
+		
+		Pattern pattern = Pattern.compile(id + "\\.r\\.(.*)\\.(\\d+)");
+		for(String prop : p.stringPropertyNames()) {
+			Matcher m = pattern.matcher(prop);
+			if(!m.matches())
+				continue;
+			String key = m.group(1);
+			int frame = Integer.parseInt(m.group(2));
+			setAdditionalData(key, Integer.parseInt(p.getProperty(prop)), frame);
 		}
 	}
 }

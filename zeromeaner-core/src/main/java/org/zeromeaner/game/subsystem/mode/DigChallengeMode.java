@@ -6,6 +6,7 @@ import static org.zeromeaner.knet.KNetEventArgs.GAME_STATS;
 import static org.zeromeaner.knet.KNetEventArgs.START_1P;
 
 import java.awt.Color;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.zeromeaner.game.component.BGMStatus;
@@ -327,7 +328,7 @@ public class DigChallengeMode extends AbstractNetMode {
 	private long lastFrameTime;
 	
 	private double growthRate;
-
+	
 	/*
 	 * Mode name
 	 */
@@ -722,9 +723,13 @@ public class DigChallengeMode extends AbstractNetMode {
 				}
 			}
 
-			// Add Garbage (Realtime)
-			if((garbageTimer >= getGarbageMaxTime(engine.statistics.level) || fieldShift <= 0) && (goaltype == GOALTYPE_REALTIME) &&
-			   (engine.stat != GameEngine.Status.LINECLEAR) && (!netIsWatch()))
+			if(
+					(garbageTimer >= getGarbageMaxTime(engine.statistics.level) || fieldShift <= 0) 
+					&& (goaltype == GOALTYPE_REALTIME) 
+					&& (engine.stat != GameEngine.Status.LINECLEAR) 
+					&& (!netIsWatch())
+					
+					|| (owner.replayMode && engine.replayData.getAdditionalData("garbage", engine.replayTimer) != null))
 			{
 				addGarbage(engine);
 				garbageTimer = 0;
@@ -952,14 +957,22 @@ public class DigChallengeMode extends AbstractNetMode {
 		int w = field.getWidth();
 		int h = field.getHeight();
 
-		engine.playSE("garbage");
 
 		int prevHole = garbageHole;
 
 		for(int i = 0; i < lines; i++) {
-			do {
-				garbageHole = engine.random.nextInt(w);
-			} while (garbageHole == prevHole);
+			if(owner.replayMode) {
+				if(engine.replayData.getAdditionalData("garbage", engine.replayTimer) == null)
+					return;
+				garbageHole = engine.replayData.getAdditionalData("garbage", engine.replayTimer);
+			} else {
+				do {
+					garbageHole = engine.random.nextInt(w);
+				} while (garbageHole == prevHole);
+				engine.replayData.setAdditionalData("garbage", garbageHole, engine.replayTimer);
+			}
+
+			engine.playSE("garbage");
 
 			field.pushUp();
 

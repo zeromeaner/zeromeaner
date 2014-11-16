@@ -499,11 +499,9 @@ public class StandaloneFrame extends JFrame {
 				previousMode.netplayUnload(netLobby);
 			}
 
-			newMode.modeInit(gameManager);
-			newMode.netplayInit(netLobby);
-			
 			gameManager.mode = newMode;
 			gameManager.init();
+			newMode.netplayInit(netLobby);
 			
 			// Tuning
 			TuningOptions tune = player(0).tuning;
@@ -678,19 +676,21 @@ public class StandaloneFrame extends JFrame {
 			}
 
 			// AI
-			AIOptions ai = Options.player(i).ai;
-			String aiName = ai.NAME.value();
-			if(aiName.length() > 0 && replayPath == null) {
-				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
-				gameManager.engine[i].ai = aiObj;
-				gameManager.engine[i].aiMoveDelay = ai.MOVE_DELAY.value();
-				gameManager.engine[i].aiThinkDelay = ai.THINK_DELAY.value();
-				gameManager.engine[i].aiUseThread = ai.USE_THREAD.value();
-				gameManager.engine[i].aiShowHint = ai.SHOW_HINT.value();
-				gameManager.engine[i].aiPrethink = ai.PRETHINK.value();
-				gameManager.engine[i].aiShowState = ai.SHOW_STATE.value();
+			if(!gameManager.replayMode) {
+				AIOptions ai = Options.player(i).ai;
+				String aiName = ai.NAME.value();
+				if(aiName.length() > 0 && replayPath == null) {
+					AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
+					gameManager.engine[i].ai = aiObj;
+					gameManager.engine[i].aiMoveDelay = ai.MOVE_DELAY.value();
+					gameManager.engine[i].aiThinkDelay = ai.THINK_DELAY.value();
+					gameManager.engine[i].aiUseThread = ai.USE_THREAD.value();
+					gameManager.engine[i].aiShowHint = ai.SHOW_HINT.value();
+					gameManager.engine[i].aiPrethink = ai.PRETHINK.value();
+					gameManager.engine[i].aiShowState = ai.SHOW_STATE.value();
+				}
+				gameManager.showInput = Options.standalone().SHOW_INPUT.value();
 			}
-			gameManager.showInput = Options.standalone().SHOW_INPUT.value();
 
 			// Called at initialization
 			gameManager.engine[i].init();
