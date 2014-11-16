@@ -582,21 +582,43 @@ public class StandaloneFrame extends JFrame {
 	 * Start a new game (Rule will be user-selected one))
 	 */
 	public void startNewGame() {
-		startNewGame(null);
+		startNewGame(null, null);
 	}
 
 	/**
 	 * Start a new game
 	 * @param strRulePath Rule file path (null if you want to use user-selected one)
 	 */
-	public void startNewGame(String strRulePath) {
-		StandaloneRenderer rendererSwing = new StandaloneRenderer(this);
-		gameManager = new GameManager(rendererSwing);
+	public void startNewGame(String strRulePath, String replayPath) {
+		if(gameManager == null) {
+			StandaloneRenderer rendererSwing = new StandaloneRenderer(this);
+			gameManager = new GameManager(rendererSwing);
+		}
 
-		setReplayUrl(null);
-		
 		// Mode
 		String modeName = Options.general().MODE_NAME.value();
+		
+		
+		if(replayPath != null) {
+			log.info("Loading Replay:" + replayPath);
+			CustomProperties prop = new CustomProperties();
+
+			try {
+				ResourceInputStream stream = new ResourceInputStream(replayPath);
+				prop.load(stream);
+				stream.close();
+			} catch (IOException e) {
+				log.error("Couldn't load replay file from " + replayPath, e);
+				return;
+			}
+
+			gameManager.replayMode = true;
+			gameManager.replayProp = prop;
+
+			// Mode
+			modeName = prop.getProperty("name.mode", "");
+		}
+		
 		GameMode modeObj = StandaloneMain.modeManager.get(modeName);
 		if(modeObj == null) {
 			log.error("Couldn't find mode:" + modeName);
@@ -658,7 +680,7 @@ public class StandaloneFrame extends JFrame {
 			// AI
 			AIOptions ai = Options.player(i).ai;
 			String aiName = ai.NAME.value();
-			if(aiName.length() > 0) {
+			if(aiName.length() > 0 && replayPath == null) {
 				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
 				gameManager.engine[i].ai = aiObj;
 				gameManager.engine[i].aiMoveDelay = ai.MOVE_DELAY.value();
@@ -676,82 +698,17 @@ public class StandaloneFrame extends JFrame {
 	}
 
 	public void startReplayGame(String filename) {
-		contentCards.show(content, CARD_PLAY);
+		contentCards.show(content, currentCard = CARD_PLAY);
 		playCard.add(gamePanel, BorderLayout.CENTER);
-
+		if(StandaloneApplet.isApplet())
+			playCard.add(replayButton, BorderLayout.SOUTH);
 		gamePanel.shutdown();
 		try {
 			gamePanel.shutdownWait();
 		} catch(InterruptedException ie) {
 		}
-//		startNewGame();
+		startNewGame(null, filename);
 		gamePanel.displayWindow();
-
-		log.info("Loading Replay:" + filename);
-		CustomProperties prop = new CustomProperties();
-
-		try {
-			ResourceInputStream stream = new ResourceInputStream(filename);
-			prop.load(stream);
-			stream.close();
-		} catch (IOException e) {
-			log.error("Couldn't load replay file from " + filename, e);
-			return;
-		}
-
-		StandaloneRenderer rendererSwing = new StandaloneRenderer(this);
-		gameManager = new GameManager(rendererSwing);
-		gameManager.replayMode = true;
-		gameManager.replayProp = prop;
-
-		// Mode
-		String modeName = prop.getProperty("name.mode", "");
-		GameMode modeObj = StandaloneMain.modeManager.get(modeName);
-		if(modeObj == null) {
-			log.error("Couldn't find mode:" + modeName);
-		} else {
-			gameManager.mode = modeObj;
-		}
-
-		gameManager.init();
-
-		// Initialization for each player
-		for(int i = 0; i < gameManager.getPlayers(); i++) {
-			// Rule
-			RuleOptions ruleopt = new RuleOptions();
-			ruleopt.readProperty(prop, i);
-			gameManager.engine[i].ruleopt = ruleopt;
-
-			// NEXTOrder generation algorithm
-			if((ruleopt.strRandomizer != null) && (ruleopt.strRandomizer.length() > 0)) {
-				Randomizer randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer, gameManager.engine[i]);
-				gameManager.engine[i].randomizer = randomizerObject;
-			}
-
-			// Wallkick
-			if((ruleopt.strWallkick != null) && (ruleopt.strWallkick.length() > 0)) {
-				Wallkick wallkickObject = GeneralUtil.loadWallkick(ruleopt.strWallkick);
-				gameManager.engine[i].wallkick = wallkickObject;
-			}
-
-			// AI (For added replay)
-			AIOptions ai = Options.player(i).ai;
-			String aiName = ai.NAME.value();
-			if(aiName.length() > 0) {
-				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
-				gameManager.engine[i].ai = aiObj;
-				gameManager.engine[i].aiMoveDelay = ai.MOVE_DELAY.value();
-				gameManager.engine[i].aiThinkDelay = ai.THINK_DELAY.value();
-				gameManager.engine[i].aiUseThread = ai.USE_THREAD.value();
-				gameManager.engine[i].aiShowHint = ai.SHOW_HINT.value();
-				gameManager.engine[i].aiPrethink = ai.PRETHINK.value();
-				gameManager.engine[i].aiShowState = ai.SHOW_STATE.value();
-			}
-			gameManager.showInput = Options.standalone().SHOW_INPUT.value();
-
-			// Called at initialization
-			gameManager.engine[i].init();
-		}
 	}
 
 	public URL getReplayUrl() {
