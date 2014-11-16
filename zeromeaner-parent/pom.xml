@@ -15,6 +15,7 @@
 		<module>../zeromeaner-laf</module>
 
 		<module>../zeromeaner</module>
+		<module>../zeromeaner-plugin-video-recording</module>
 	</modules>
 
 	<build>
