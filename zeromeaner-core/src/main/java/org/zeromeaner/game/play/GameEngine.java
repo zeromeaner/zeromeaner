@@ -1731,11 +1731,13 @@ public class GameEngine {
 				replayData.setInputData(ctrl.getButtonBit(), replayTimer);
 			} else {
 				if(replayTimer >= replayData.max()) {
+					stat = GameEngine.Status.GAMEOVER;
+					resetStatc();
 					gameEnded();
-					return;
+				} else {
+					//  input Replay the state read from
+					ctrl.setButtonBit(replayData.getInputData(replayTimer));
 				}
-				//  input Replay the state read from
-				ctrl.setButtonBit(replayData.getInputData(replayTimer));
 			}
 			replayTimer++;
 		}
