@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLClassLoader;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
@@ -72,6 +74,19 @@ public class StandaloneMain {
 	private static void _main(String[] args) throws Exception {
 		System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".zeromeaner");
 		new File(System.getProperty("user.dir")).mkdirs();
+		
+		File plugins = new File(System.getProperty("user.dir"), "plugins");
+		plugins.mkdirs();
+		
+		if(StandaloneMain.class.getClassLoader() instanceof URLClassLoader) {
+			Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+			addURL.setAccessible(true);
+			for(File p : plugins.listFiles()) {
+				System.out.println("Injecting plugin " + p);
+				addURL.invoke(StandaloneMain.class.getClassLoader(), p.toURI().toURL());
+			}
+		}
+		
 		CookieAccess.setInstance(new MainCookieAccess());
 
 		StandaloneApplet.url = new URL("http://www.zeromeaner.org/" + (GameManager.VERSION.isSnapshot() ? "snapshot" : "play") + "/");
