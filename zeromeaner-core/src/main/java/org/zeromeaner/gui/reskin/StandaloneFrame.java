@@ -645,6 +645,9 @@ public class StandaloneFrame extends JFrame {
 			// Rule
 			RuleOptions ruleopt = null;
 			String rulename = strRulePath;
+			if(gameManager.replayMode) {
+				rulename = gameManager.replayProp.getProperty(i + ".ruleopt.strRandomizer");
+			}
 			if(rulename == null) {
 //				rulename = StandaloneMain.propConfig.getProperty(i + ".rule", "");
 				rulename = player(i).RULE_NAME.value();
@@ -656,6 +659,8 @@ public class StandaloneFrame extends JFrame {
 			if((rulename != null) && (rulename.length() > 0)) {
 				log.debug("Load rule options from " + rulename);
 				ruleopt = GeneralUtil.loadRule(rulename);
+				if(gameManager.replayMode)
+					ruleopt.readProperty(gameManager.replayProp, i);
 			} else {
 				log.debug("Load rule options from setting file");
 				ruleopt = new RuleOptions();
