@@ -140,7 +140,7 @@ public class EvilineAI extends AbstractAI implements Configurable {
 			}
 			
 			PathTask tail = pipe.peekLast();
-			if(tail.seq >= gameEngine.nextPieceCount + gameEngine.nextPieceArraySize - lookahead - 2 || !tail.task.isDone())
+			if(tail.seq >= gameEngine.nextPieceCount + gameEngine.nextPieceArraySize - lookahead - 3 || !tail.task.isDone())
 				return false;
 			final PathTask pt = tail.extend(gameEngine);
 			if(pt == null)
@@ -164,13 +164,16 @@ public class EvilineAI extends AbstractAI implements Configurable {
 		public PathTask discardUntil(GameEngine engine) {
 			PathTask pt;
 			for(pt = pipe.peekFirst(); pt != null && pt.seq < engine.nextPieceCount; pt = pipe.peekFirst())
-				pipe.remove(pt);
+				pipe.pollFirst();
 			return pt;
 		}
 		
 		public byte[] currentPath(GameEngine engine) {
-			extend(engine);
 			PathTask pt = discardUntil(engine);
+			if(pt == null) {
+				extend(engine);
+				pt = discardUntil(engine);
+			}
 			if(pt == null || !pt.task.isDone())
 				return null;
 			return pt.path;
@@ -185,10 +188,18 @@ public class EvilineAI extends AbstractAI implements Configurable {
 		}
 		
 		public boolean isDirty(GameEngine engine) {
+			PathTask pt = pipe.peekFirst();
+			if(pt != null) {
+				try {
+					pt.task.get();
+				} catch(Exception e) {
+					return true;
+				}
+			}
 			FieldAdapter f = new FieldAdapter();
 			org.eviline.core.Field expected = expectedField(engine);
 			if(expected == null)
-				return false;
+				return true;
 			f.copyFrom(expected);
 			return f.update(engine.field);
 		}
@@ -236,7 +247,7 @@ public class EvilineAI extends AbstractAI implements Configurable {
 			try {
 				return task.get();
 			} catch(Exception e) {
-				throw new RuntimeException(e);
+				return null;
 			}
 		}
 		
@@ -244,10 +255,13 @@ public class EvilineAI extends AbstractAI implements Configurable {
 			ShapeType[] extnext = createGameNext(gameEngine, seq);
 			if(extnext == null || extnext.length < lookahead + 2)
 				return null;
+			Best best = get();
+			if(best == null)
+				return null;
 			return new PathTask(
 					pipeline,
 					seq+1,
-					get().after,
+					best.after,
 					XYShapes.toXYShape(extnext[0].startX(), extnext[0].startY(), extnext[0].start()),
 					Arrays.copyOfRange(extnext, 1, extnext.length));
 		}
@@ -391,12 +405,16 @@ public class EvilineAI extends AbstractAI implements Configurable {
 		byte[] paths = pipeline.currentPath(engine);
 		
 		if(paths == null) {
+			if(pipeline.isDirty(engine)) {
+				resetPipeline();
+				pipeline.extend(engine);
+			}
 			ctrl.setButtonBit(input);
 			return;
 		}
 		
 		Command c = Command.fromOrdinal(paths[xyshape]);
-		if(c == null) {
+		if(c == null || pipeline.isDirty(engine)) {
 			ctrl.setButtonBit(input);
 			resetPipeline();
 			pipeline.extend(engine);
