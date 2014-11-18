@@ -7,6 +7,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -98,6 +103,13 @@ public class EvilineAI extends AbstractAI implements Configurable {
 			exec = Executors.newSingleThreadExecutor();
 		}
 		
+		public void exec(Runnable task) {
+			try {
+				exec.execute(task);
+			} catch(RejectedExecutionException e) {
+			}
+		}
+		
 		public boolean extend(final GameEngine gameEngine) {
 			if(pipe.size() == 0) {
 				int xyshape = XYShapeAdapter.toXYShape(gameEngine);
@@ -112,11 +124,11 @@ public class EvilineAI extends AbstractAI implements Configurable {
 						XYShapeAdapter.toXYShape(gameEngine),
 						createGameNext(gameEngine, gameEngine.nextPieceCount));
 				pipe.offerLast(pt);
-				exec.execute(new Runnable() {
+				exec(new Runnable() {
 					@Override
 					public void run() {
 						pt.task.run();
-						exec.execute(new Runnable() {
+						exec(new Runnable() {
 							@Override
 							public void run() {
 								extend(gameEngine);
@@ -128,17 +140,17 @@ public class EvilineAI extends AbstractAI implements Configurable {
 			}
 			
 			PathTask tail = pipe.peekLast();
-			if(tail.seq == gameEngine.nextPieceCount || !tail.task.isDone())
+			if(tail.seq >= gameEngine.nextPieceCount + gameEngine.nextPieceArraySize - lookahead - 2 || !tail.task.isDone())
 				return false;
 			final PathTask pt = tail.extend(gameEngine);
 			if(pt == null)
 				return false;
 			pipe.offerLast(pt);
-			exec.execute(new Runnable() {
+			exec(new Runnable() {
 				@Override
 				public void run() {
 					pt.task.run();
-					exec.execute(new Runnable() {
+					exec(new Runnable() {
 						@Override
 						public void run() {
 							extend(gameEngine);
@@ -282,9 +294,10 @@ public class EvilineAI extends AbstractAI implements Configurable {
 	protected ShapeType[] createGameNext(GameEngine engine, int seq) {
 		if(seq < engine.nextPieceCount || seq >= engine.nextPieceCount + engine.nextPieceArraySize)
 			return null;
-		ShapeType[] nextShapes = new ShapeType[engine.nextPieceArraySize];
-		for(int i = 0; i < nextShapes.length; i++)
-			nextShapes[i] = XYShapeAdapter.toShapeType(engine.getNextObject(engine.nextPieceCount + i));
+		int size = engine.nextPieceArraySize - (seq - engine.nextPieceCount);
+		ShapeType[] nextShapes = new ShapeType[size];
+		for(int i = 1; i <= size; i++)
+			nextShapes[size - i] = XYShapeAdapter.toShapeType(engine.getNextObject(engine.nextPieceCount + engine.nextPieceArraySize - i));
 		return nextShapes;
 	}
 	
@@ -295,6 +308,7 @@ public class EvilineAI extends AbstractAI implements Configurable {
 	protected void resetPipeline() {
 		pipeline.shutdown();
 		pipeline = new PathPipeline();
+		lastxy = -1;
 	}
 	
 	@Override
@@ -309,16 +323,30 @@ public class EvilineAI extends AbstractAI implements Configurable {
 		ai = new DefaultAIKernel(new NextFitness());
 		ai.setDropsOnly(DROPS_ONLY.value(opt));
 		ai.setPruneTop(PRUNE_TOP.value(opt));
+		int procs = Runtime.getRuntime().availableProcessors() - 1;
+		ai.setExec(new ThreadPoolExecutor(procs, procs, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactory() {
+			private ThreadFactory f = Executors.defaultThreadFactory();
+			@Override
+			public Thread newThread(Runnable r) {
+				Thread t = f.newThread(r);
+				t.setPriority(Thread.MAX_PRIORITY);
+				return t;
+			}
+		}));
 		pipeline = new PathPipeline();
 		lookahead = LOOKAHEAD.value(opt);
 	}
 
 	@Override
 	public void shutdown(GameEngine engine, int playerID) {
+		if(ai != null)
+			ai.getExec().shutdown();
 		if(pipeline != null)
 			pipeline.shutdown();
 	}
 
+	protected int lastxy = -1;
+	
 	@Override
 	public void setControl(GameEngine engine, int playerID, Controller ctrl) {
 		try {
@@ -331,13 +359,6 @@ public class EvilineAI extends AbstractAI implements Configurable {
 		}
 
 		if(shifting != null) {
-			if(pipeline.isDirty(engine)) {
-				shifting = null;
-				ctrl.setButtonBit(input);
-				resetPipeline();
-				return;
-			}
-			
 			EngineAdapter engineAdapter = new EngineAdapter();
 			engineAdapter.update(engine);
 			
@@ -375,12 +396,14 @@ public class EvilineAI extends AbstractAI implements Configurable {
 		}
 		
 		Command c = Command.fromOrdinal(paths[xyshape]);
-		if(c == null || pipeline.isDirty(engine)) {
+		if(c == null) {
 			ctrl.setButtonBit(input);
 			resetPipeline();
+			pipeline.extend(engine);
 			return;
-		} else
-			paths[xyshape] = (byte) -1;
+		} else if(xyshape != lastxy && lastxy >= 0)
+			paths[lastxy] = -1;
+		lastxy = xyshape;
 		
 		switch(c) {
 		case AUTOSHIFT_LEFT:
@@ -463,12 +486,15 @@ public class EvilineAI extends AbstractAI implements Configurable {
 
 	@Override
 	public void newPiece(GameEngine engine, int playerID) {
+		if(pipeline.isDirty(engine))
+			resetPipeline();
 		try {
 		pipeline.extend(engine);
 		} catch(RuntimeException e) {
 			e.printStackTrace();
 			throw e;
 		}
+		lastxy = -1;
 	}
 
 	@Override
