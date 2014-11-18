@@ -340,15 +340,6 @@ public class EvilineAI extends AbstractAI implements Configurable {
 		ai.setDropsOnly(DROPS_ONLY.value(opt));
 		ai.setPruneTop(PRUNE_TOP.value(opt));
 		int procs = Runtime.getRuntime().availableProcessors();
-		ai.setExec(new ThreadPoolExecutor(procs, procs, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactory() {
-			private ThreadFactory f = Executors.defaultThreadFactory();
-			@Override
-			public Thread newThread(Runnable r) {
-				Thread t = f.newThread(r);
-//				t.setPriority(Thread.MIN_PRIORITY);
-				return t;
-			}
-		}));
 		pipeline = new PathPipeline();
 		lookahead = LOOKAHEAD.value(opt);
 	}
