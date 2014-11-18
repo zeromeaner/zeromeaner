@@ -56,6 +56,7 @@ import org.zeromeaner.util.Options.AIOptions;
 import org.zeromeaner.util.Options.TuningOptions;
 import org.zeromeaner.util.ResourceFileSystemView;
 import org.zeromeaner.util.ResourceInputStream;
+import org.zeromeaner.util.RuleList;
 
 public class StandaloneFrame extends JFrame {
 	private static final Logger log = Logger.getLogger(StandaloneFrame.class);
@@ -646,7 +647,9 @@ public class StandaloneFrame extends JFrame {
 			RuleOptions ruleopt = null;
 			String rulename = strRulePath;
 			if(gameManager.replayMode) {
-				rulename = gameManager.replayProp.getProperty(i + ".ruleopt.strRandomizer");
+				rulename = gameManager.replayProp.getProperty(i + ".ruleopt.strRuleName");
+				ruleopt = RuleList.getRules().getNamed(rulename);
+				ruleopt.readProperty(gameManager.replayProp, i);
 			}
 			if(rulename == null) {
 //				rulename = StandaloneMain.propConfig.getProperty(i + ".rule", "");
@@ -657,10 +660,10 @@ public class StandaloneFrame extends JFrame {
 				}
 			}
 			if((rulename != null) && (rulename.length() > 0)) {
-				log.debug("Load rule options from " + rulename);
-				ruleopt = GeneralUtil.loadRule(rulename);
-				if(gameManager.replayMode)
-					ruleopt.readProperty(gameManager.replayProp, i);
+				if(ruleopt == null) {
+					log.debug("Load rule options from " + rulename);
+					ruleopt = GeneralUtil.loadRule(rulename);
+				}
 			} else {
 				log.debug("Load rule options from setting file");
 				ruleopt = new RuleOptions();
