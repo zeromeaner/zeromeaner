@@ -140,6 +140,8 @@ public class EvilineAI extends AbstractAI implements Configurable {
 			}
 			
 			PathTask tail = pipe.peekLast();
+			if(tail == null)
+				return false;
 			if(tail.seq >= gameEngine.nextPieceCount + gameEngine.nextPieceArraySize - lookahead - 3 || !tail.task.isDone())
 				return false;
 			final PathTask pt = tail.extend(gameEngine);
