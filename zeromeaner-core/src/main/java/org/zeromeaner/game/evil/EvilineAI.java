@@ -191,7 +191,7 @@ public class EvilineAI extends AbstractAI implements Configurable {
 		
 		public boolean isDirty(GameEngine engine) {
 			PathTask pt = pipe.peekFirst();
-			if(pt != null) {
+			if(pt != null && pt.task.isDone()) {
 				try {
 					pt.task.get();
 				} catch(Exception e) {
@@ -339,13 +339,13 @@ public class EvilineAI extends AbstractAI implements Configurable {
 		ai = new DefaultAIKernel(new NextFitness());
 		ai.setDropsOnly(DROPS_ONLY.value(opt));
 		ai.setPruneTop(PRUNE_TOP.value(opt));
-		int procs = Runtime.getRuntime().availableProcessors() - 1;
+		int procs = Runtime.getRuntime().availableProcessors();
 		ai.setExec(new ThreadPoolExecutor(procs, procs, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactory() {
 			private ThreadFactory f = Executors.defaultThreadFactory();
 			@Override
 			public Thread newThread(Runnable r) {
 				Thread t = f.newThread(r);
-				t.setPriority(Thread.MAX_PRIORITY);
+//				t.setPriority(Thread.MIN_PRIORITY);
 				return t;
 			}
 		}));
