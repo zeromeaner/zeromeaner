@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.LstResourceMap;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.Options;
+import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.RuleList;
 
 public class StandaloneModeselectPanel extends JPanel {
@@ -63,11 +65,12 @@ public class StandaloneModeselectPanel extends JPanel {
 	private RuleEditorPanel ruleEditor = new RuleEditorPanel();
 	
 	private void saveCustom() {
-		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		try {
+			OutputStream out = new ResourceOutputStream(custom.resourceName);
 			CustomProperties p = new CustomProperties();
 			custom.writeProperty(p, 0);
-			p.store(bout, "Custom Rule");
+			p.store(out, "Custom Rule");
+			out.close();
 		} catch(IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
@@ -87,7 +90,7 @@ public class StandaloneModeselectPanel extends JPanel {
 				cards.show(StandaloneModeselectPanel.this, SELECT_CARD);
 			}
 		}), BorderLayout.SOUTH);
-		custom = new RuleOptions(RuleList.getRules().getNamed("STANDARD"));
+		custom = new RuleOptions(RuleList.getRules().getNamed("STANDARD-ZERO"));
 		custom.strRuleName = "CUSTOM RULE";
 		custom.resourceName = "config/rule/Custom.rul";
 		saveCustom();

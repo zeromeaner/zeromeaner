@@ -36,17 +36,21 @@ import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import org.eviline.swing.IntegerDocument;
 import org.zeromeaner.util.Options;
+import org.zeromeaner.util.ServiceHookDispatcher;
 import org.zeromeaner.util.Options.StandaloneOptions;
 import org.zeromeaner.util.SwingUtils;
 
@@ -54,6 +58,14 @@ import org.zeromeaner.util.SwingUtils;
  * Setting screen frame
  */
 public class StandaloneGeneralConfigPanel extends JPanel implements ActionListener {
+	public static interface Hook {
+		public void createTabs(JTabbedPane tabs);
+		public void saveConfiguration();
+		public void loadConfiguration();
+	}
+	
+	protected static final ServiceHookDispatcher<Hook> hooks = new ServiceHookDispatcher<>(Hook.class);
+	
 	/** Serial version ID */
 	private static final long serialVersionUID = 1L;
 
@@ -129,6 +141,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	protected JCheckBox chkboxShowInput;
 
 	protected JTextField userId = new JTextField();
+	
 	
 	/**
 	 * Constructor
@@ -228,7 +241,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxShowInput = new JCheckBox(lz.s("GeneralConfig_ShowInput"));
 		chkboxShowInput.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxShowInput);
-
+		
 		// ** Advanced Tab
 		JPanel pAdvancedTab = new JPanel();
 		pAdvancedTab.setLayout(new GridLayout(0, 1));
@@ -289,6 +302,9 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxShowLineClearEffect.setHorizontalAlignment(SwingConstants.CENTER);
 		pAdvancedTab.add(chkboxShowLineClearEffect);
 
+		hooks.dispatcher().createTabs(tabPane);
+		hooks.dispatcher().loadConfiguration();
+		
 		// ---------- The bottom of the screen button ----------
 		JPanel pButtons = new JPanel();
 		pButtons.setAlignmentX(CENTER_ALIGNMENT);
@@ -345,6 +361,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxShowInput.setSelected(opt.SHOW_INPUT.value());
 		chkboxSyncDisplay.setSelected(opt.SYNC_DISPLAY.value());
 		chkboxShowLineClearEffect.setSelected(opt.SHOW_LINE_EFFECT.value());
+		
+		hooks.dispatcher().loadConfiguration();
 	}
 
 	/*
@@ -402,6 +420,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 				StandaloneResourceHolder.loadLineClearEffectImages();
 			}
 			
+			hooks.dispatcher().saveConfiguration();
 		}
 		else if(e.getActionCommand() == "GeneralConfig_Cancel") {
 			// Cancel

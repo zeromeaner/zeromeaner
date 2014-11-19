@@ -1730,8 +1730,14 @@ public class GameEngine {
 				//  input Replay recorded in the state
 				replayData.setInputData(ctrl.getButtonBit(), replayTimer);
 			} else {
-				//  input Replay the state read from
-				ctrl.setButtonBit(replayData.getInputData(replayTimer));
+				if(replayTimer >= replayData.max()) {
+					stat = GameEngine.Status.GAMEOVER;
+					resetStatc();
+					gameEnded();
+				} else {
+					//  input Replay the state read from
+					ctrl.setButtonBit(replayData.getInputData(replayTimer));
+				}
 			}
 			replayTimer++;
 		}

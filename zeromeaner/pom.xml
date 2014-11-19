@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.zeromeaner</groupId>
 		<artifactId>zeromeaner-parent</artifactId>
-		<version>1.2.0-rc1</version>
+		<version>1.2.0-rc2</version>
 		<relativePath>../zeromeaner-parent</relativePath>
 	</parent>
 	<artifactId>zeromeaner</artifactId>
@@ -12,6 +12,12 @@
 		<dependency>
 			<groupId>org.zeromeaner</groupId>
 			<artifactId>zeromeaner-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.zeromeaner</groupId>
+			<artifactId>zeromeaner-plugin-video-recording</artifactId>
+			<version>1.2.0-rc2</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -44,6 +50,33 @@
 									</excludes>
 								</filter>
 							</filters>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.zeromeaner</groupId>
+									<artifactId>zeromeaner-plugin-video-recording</artifactId>
+									<version>${project.version}</version>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${project.build.directory}</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+							<overWriteReleases>true</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
 						</configuration>
 					</execution>
 				</executions>

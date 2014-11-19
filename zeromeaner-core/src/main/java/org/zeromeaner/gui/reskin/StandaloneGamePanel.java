@@ -31,6 +31,7 @@ package org.zeromeaner.gui.reskin;
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
@@ -45,6 +46,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -52,6 +54,7 @@ import java.util.Calendar;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -75,11 +78,20 @@ import org.apache.log4j.Logger;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.util.MusicList;
 import org.zeromeaner.util.Options;
+import org.zeromeaner.util.ServiceHookDispatcher;
 
 /**
  * Game screen frame
  */
 public class StandaloneGamePanel extends JPanel implements Runnable {
+	public static interface Hook {
+		public void gameStarted(StandaloneGamePanel thiz);
+		public void frameSynced(StandaloneGamePanel thiz);
+		public void gameStopped(StandaloneGamePanel thiz);
+	}
+	
+	protected static final ServiceHookDispatcher<Hook> hooks = new ServiceHookDispatcher<>(Hook.class);
+	
 	/** Serial version ID */
 	private static final long serialVersionUID = 1L;
 
@@ -95,6 +107,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		}
 	});
 	
+	protected ExecutorService videoPool = Executors.newSingleThreadExecutor();
+	
 	private static class FocusableJLabel extends JLabel {
 		private FocusableJLabel(Icon image) {
 			super(image);
@@ -104,7 +118,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		}
 	}
 
-	private class FramePerSecond implements Delayed {
+	public static class FramePerSecond implements Delayed {
 		private long expiry = System.nanoTime() + TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS);
 		
 		@Override
@@ -131,8 +145,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 	protected JLabel imageBufferLabel;
 
-	protected BufferedImage gameBuffer;
-
+	public BufferedImage gameBuffer;
+	
 	//	/** BufferStrategy */
 	//	protected BufferStrategy bufferStrategy = null;
 
@@ -144,7 +158,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 	/** MaximumFPS (Setting) */
 	public int maxfps;
-
+	
 	/** Current MaximumFPS */
 	protected int maxfpsCurrent = 0;
 
@@ -203,7 +217,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 	/** Current game mode name */
 	public String modeName;
-
+	
 	/**
 	 * Constructor
 	 * @param owner Parent window
@@ -229,7 +243,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		imageBufferLabel.setBorder(BorderFactory.createMatteBorder(4, 4, 4, 4, new Color(255, 255, 255, 127)));
 
 		maxfps = Options.standalone().MAX_FPS.value();
-
 
 		log.debug("GameFrame created");
 
@@ -306,6 +319,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 //			StandaloneGameKey.gamekey[0].clear();
 //			StandaloneGameKey.gamekey[1].clear();
 		}
+		if(render)
+			hooks.dispatcher().frameSynced(this);
 	}
 	
 	/**
@@ -335,8 +350,12 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		showfps = Options.standalone().SHOW_FPS.value();
 		syncDisplay = Options.standalone().SYNC_DISPLAY.value();
 
+		
+		
 		// Main loop
 		log.debug("Game thread start");
+		
+		hooks.dispatcher().gameStarted(this);
 		
 		running.set(true);
 		
@@ -350,7 +369,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 				if(vps.size() > maxfps)
 					return;
 				fps.add(new FramePerSecond());
-				vps.add(new FramePerSecond());
 				doFrame(true);
 				while(fps.poll() != null)
 					;
@@ -359,13 +377,10 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 				totalFPS = fps.size();
 				visibleFPS = vps.size();
 				int unrenderedFrames = 0;
-				while(totalFPS < maxfps) {
+				while(totalFPS < maxfps - 1) {
 					fps.add(new FramePerSecond());
 					unrenderedFrames++;
-					boolean render = unrenderedFrames % (maxfps / 4) == 0;
-					doFrame(render);
-					if(render)
-						vps.add(new FramePerSecond());
+					doFrame(false);
 					while(fps.poll() != null)
 						;
 					while(vps.poll() != null)
@@ -389,6 +404,9 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		
 		f.cancel(false);
 
+		
+		hooks.dispatcher().gameStopped(this);
+		
 		owner.gameManager.shutdown();
 		owner.gameManager = null;
 
@@ -749,20 +767,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		Graphics g2 = imageBuffer.getGraphics();
 		g2.drawImage(gameBuffer, 0, 0, imageBuffer.getWidth(), imageBuffer.getHeight(), null);
 		g2.dispose();
-		Runnable r = new Runnable() {
-			@Override
-			public void run() {
-//				imageBufferLabel.revalidate();
-				imageBufferLabel.repaint();
-				if(syncDisplay)
-					Toolkit.getDefaultToolkit().sync();
-			}
-		};
-//		try {
-//			EventQueue.invokeAndWait(r);
-//		} catch(Exception ex) {
-//		}
-		r.run();
+		
+		sync();
 
 		ssflag = false;
 		//		} else if((bufferStrategy != null) && !bufferStrategy.contentsLost()) {
@@ -817,20 +823,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		Graphics g2 = imageBuffer.getGraphics();
 		g2.drawImage(gameBuffer, 0, 0, imageBuffer.getWidth(), imageBuffer.getHeight(), null);
 		g2.dispose();
-		Runnable r = new Runnable() {
-			@Override
-			public void run() {
-//				imageBufferLabel.revalidate();
-				imageBufferLabel.repaint();
-				if(syncDisplay)
-					Toolkit.getDefaultToolkit().sync();
-			}
-		};
-//		try {
-//			EventQueue.invokeAndWait(r);
-//		} catch(Exception ex) {
-//		}
-		r.run();
+		
+		sync();
 
 		ssflag = false;
 		//		} else if((bufferStrategy != null) && !bufferStrategy.contentsLost()) {
@@ -839,6 +833,33 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		//		}
 	}
 
+	private boolean syncing = false;
+	private Runnable sync = new Runnable() {
+		@Override
+		public void run() {
+			imageBufferLabel.repaint();
+			if(syncDisplay)
+				Toolkit.getDefaultToolkit().sync();
+			syncing = false;
+			vps.add(new FramePerSecond());
+		}
+	};
+	
+	private void sync() {
+		if(syncing)
+			return;
+		syncing = true;
+		if(syncDisplay) {
+			try {
+				EventQueue.invokeAndWait(sync);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		} else
+			EventQueue.invokeLater(sync);
+		hooks.dispatcher().frameSynced(this);
+	}
+	
 	/**
 	 * Save a screen shot
 	 */

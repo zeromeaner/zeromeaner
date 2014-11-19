@@ -94,7 +94,7 @@ public class Localization {
 	}
 	
 	public String s(String key) {
-		return s(key, "\u00ab" + basename + "::" + key + "\u00bb");
+		return s(key, "\u00ab" + key + "\u00bb");
 	}
 
 }

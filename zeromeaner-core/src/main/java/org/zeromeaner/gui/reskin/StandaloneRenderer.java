@@ -48,6 +48,7 @@ import org.zeromeaner.gui.EffectObject;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.Options.StandaloneOptions;
+import org.zeromeaner.util.Version;
 
 
 //import org.apache.log4j.Logger;
@@ -1383,6 +1384,10 @@ public class StandaloneRenderer extends EventRenderer {
 				drawField(offsetX + 4, offsetY + 4, engine, -1);
 			}
 		}
+		
+		drawDirectFont(engine, playerID, 640 - 20 * 10, 480 - 20, "ZEROMEANER", COLOR_DARKBLUE, 1.25f);
+		String v = Version.getBuildVersion().toString();
+		drawDirectFont(engine, playerID, 640 - 12 * v.length(), 480 - 20 - 12 - 4, v, COLOR_WHITE, 0.75f);
 	}
 
 	/*
