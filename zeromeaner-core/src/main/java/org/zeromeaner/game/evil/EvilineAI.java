@@ -3,6 +3,7 @@ package org.zeromeaner.game.evil;
 import java.awt.GridLayout;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
@@ -45,23 +46,28 @@ public class EvilineAI extends AbstractAI implements Configurable {
 	protected static final Constant<Boolean> DROPS_ONLY = new Constant<>(PropertyConstant.BOOLEAN, ".eviline.drops_only", true);
 	protected static final Constant<Integer> LOOKAHEAD = new Constant<>(PropertyConstant.INTEGER, ".eviline.lookahead", 3);
 	protected static final Constant<Integer> PRUNE_TOP = new Constant<>(PropertyConstant.INTEGER, ".eviline.prune_top", 5);
+	protected static final Constant<Integer> CPU_CORES = new Constant<>(PropertyConstant.INTEGER, ".eviline.cpu_cores", 8);
 
 	protected static class EvilineAIConfigurator implements Configurable.Configurator {
 		
 		private JCheckBox dropsOnly;
 		private JSpinner lookahead;
 		private JSpinner pruneTop;
-		protected JPanel panel;
+		private JSpinner cpuCores;
+		private JPanel panel;
 		
 		public EvilineAIConfigurator() {
 			dropsOnly = new JCheckBox();
 			lookahead = new JSpinner(new SpinnerNumberModel(3, 0, 6, 1));
 			pruneTop = new JSpinner(new SpinnerNumberModel(5, 1, 20, 1));
+			cpuCores = new JSpinner(new SpinnerNumberModel(8, 1, 16, 1));
 			panel = new JPanel(new GridLayout(0, 2));
 			panel.add(new JLabel("Maximum Lookahead: "));
 			panel.add(lookahead);
 			panel.add(new JLabel("Lookahead Choices: "));
 			panel.add(pruneTop);
+			panel.add(new JLabel("Number of AI CPU cores: "));
+			panel.add(cpuCores);
 			panel.add(new JLabel("Only use drops (don't shift down)"));
 			panel.add(dropsOnly);
 		}
@@ -76,6 +82,7 @@ public class EvilineAI extends AbstractAI implements Configurable {
 			LOOKAHEAD.set(p, (Integer) lookahead.getValue());
 			PRUNE_TOP.set(p, (Integer) pruneTop.getValue());
 			DROPS_ONLY.set(p, dropsOnly.isSelected());
+			CPU_CORES.set(p, (Integer) cpuCores.getValue());
 		}
 
 		@Override
@@ -83,18 +90,15 @@ public class EvilineAI extends AbstractAI implements Configurable {
 			lookahead.setValue(LOOKAHEAD.value(p));
 			pruneTop.setValue(PRUNE_TOP.value(p));
 			dropsOnly.setSelected(DROPS_ONLY.value(p));
+			cpuCores.setValue(CPU_CORES.value(p));
 		}
 		
 	}
 	
 	private static EvilineAIConfigurator configurator = new EvilineAIConfigurator();
 
-	protected static final Runnable NOP = new Runnable() {
-		@Override
-		public void run() {
-		}
-	};
-
+	protected static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(1, 1, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+	
 	protected class PathPipeline {
 		public ExecutorService exec;
 		public LinkedBlockingDeque<PathTask> pipe = new LinkedBlockingDeque<PathTask>();
@@ -336,18 +340,24 @@ public class EvilineAI extends AbstractAI implements Configurable {
 	public void init(GameEngine engine, int playerID) {
 		CustomProperties opt = Options.player(playerID).ai.BACKING;
 		
-		ai = new DefaultAIKernel(new NextFitness());
+		int cores = CPU_CORES.value(opt);
+		if(cores > POOL.getCorePoolSize()) {
+			POOL.setMaximumPoolSize(cores);
+			POOL.setCorePoolSize(cores);
+		} else if(cores < POOL.getCorePoolSize()) {
+			POOL.setCorePoolSize(cores);
+			POOL.setMaximumPoolSize(cores);
+		}
+		
+		ai = new DefaultAIKernel(POOL, new NextFitness());
 		ai.setDropsOnly(DROPS_ONLY.value(opt));
 		ai.setPruneTop(PRUNE_TOP.value(opt));
-		int procs = Runtime.getRuntime().availableProcessors();
 		pipeline = new PathPipeline();
 		lookahead = LOOKAHEAD.value(opt);
 	}
 
 	@Override
 	public void shutdown(GameEngine engine, int playerID) {
-		if(ai != null)
-			ai.getExec().shutdown();
 		if(pipeline != null)
 			pipeline.shutdown();
 	}
