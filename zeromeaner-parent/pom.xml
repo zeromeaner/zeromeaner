@@ -6,6 +6,10 @@
 	<version>1.2.0${version.suffix}-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
+	<properties>
+		<version.suffix></version.suffix>
+	</properties>
+
 	<modules>
 		<module>../zeromeaner-core</module>
 		<module>../zeromeaner-tuning</module>
