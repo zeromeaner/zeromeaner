@@ -1,8 +1,6 @@
 package org.zeromeaner.knet;
 
 import static org.zeromeaner.knet.KNetEventArgs.ADDRESS;
-import static org.zeromeaner.knet.KNetEventArgs.CONNECTED;
-import static org.zeromeaner.knet.KNetEventArgs.DISCONNECTED;
 import static org.zeromeaner.knet.KNetEventArgs.IN_REPLY_TO;
 import static org.zeromeaner.knet.KNetEventArgs.UDP;
 
@@ -32,7 +30,7 @@ public class KNetClient implements MessageListener, KNetListener {
 		@Override
 		public void disconnected(Connection connection) {
 			if(source != null)
-				issue(source.event(KNetFromServer.DISCONNECTED, DISCONNECTED, true));
+				issue(source.event(KNetFromServer.DISCONNECTED));
 		}
 
 		@Override
@@ -84,7 +82,7 @@ public class KNetClient implements MessageListener, KNetListener {
 		client.subscribe(new Topic(KNetTopics.GLOBAL), this);
 		client.subscribe(new Topic(KNetTopics.CONNECTION), this);
 		
-		issue(source.event(KNetFromServer.CONNECTED, CONNECTED, true));
+		issue(source.event(KNetFromServer.CONNECTED));
 		return this;
 	}
 

@@ -91,8 +91,7 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 		kryo.writeClassAndObject(output, type);
 		output.writeInt(args.size(), true);
 		for(Map.Entry<KNetEventArgs, Object> e : args.entrySet()) {
-//			output.writeInt(e.getKey().ordinal(), true);
-			output.writeString(e.getKey().name());
+			kryo.writeObject(output, e.getKey());
 			e.getKey().write(kryo, output, e.getValue());
 		}
 	}
@@ -105,9 +104,7 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 			type = (KNetPacket) kryo.readClassAndObject(input);
 			int size = input.readInt(true);
 			for(int i = 0; i < size; i++) {
-//				int ordinal = input.readInt(true);
-//				KNetEventArgs arg = KNetEventArgs.values()[ordinal];
-				KNetEventArgs arg = KNetEventArgs.valueOf(input.readString());
+				KNetEventArgs arg = kryo.readObject(input, KNetEventArgs.class);
 				Object val = arg.read(kryo, input);
 				args.put(arg, val);
 			}

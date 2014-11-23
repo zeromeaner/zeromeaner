@@ -3,6 +3,7 @@ package org.zeromeaner.knet;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.mmmq.Topic;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.subsystem.mode.NetVSBattleMode;
@@ -20,6 +21,8 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
 public enum KNetEventArgs {
+	
+	MMMQ_TOPIC(Topic.class),
 	
 	/** Issued when the packet should be sent via UDP instead of TCP */
 	UDP,
@@ -45,10 +48,6 @@ public enum KNetEventArgs {
 	 */
 	IN_REPLY_TO(KNetEvent.class),
 	
-	/**
-	 * The username of the event sender
-	 * Argument: {@link String}
-	 */
 	USER(KNetEventSource.class),
 	
 	PASSWORD(String.class),
@@ -67,7 +66,8 @@ public enum KNetEventArgs {
 
 	CHANNEL_LISTING(KNetChannelInfo[].class),
 	
-	CHANNEL_INFO, /**
+	CHANNEL_INFO(KNetChannelInfo.class), 
+	/**
 	 * Issued for chats in a room.
 	 */
 	CHANNEL_CHAT_MESSAGE(String.class),
@@ -152,7 +152,6 @@ public enum KNetEventArgs {
 	/**
 	 * argument: Integer: number of seconds
 	 */
-	@Global
 	AUTOSTART_BEGIN(Integer.class),
 	AUTOSTART_STOP,
 	
@@ -181,7 +180,6 @@ public enum KNetEventArgs {
 	
 	private Class<?> type;
 	private boolean nullable;
-	private boolean global;
 	
 	private KNetEventArgs() {
 		this(null, false);
@@ -196,22 +194,8 @@ public enum KNetEventArgs {
 		this.nullable = nullable;
 	}
 	
-	static {
-		for(KNetEventArgs arg : values()) {
-			try {
-				if(arg.getDeclaringClass().getField(arg.name()).isAnnotationPresent(Global.class))
-					arg.global = true;
-			} catch(Exception ex) {
-			}
-		}
-	}
-	
 	public Class<?> getType() {
 		return type;
-	}
-	
-	public boolean isGlobal() {
-		return global;
 	}
 	
 	public void write(Kryo kryo, Output output, Object argValue) {
