@@ -14,6 +14,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.zeromeaner.gui.common.JTextComponentOutputStream;
 
+import com.esotericsoftware.minlog.Log;
+
 public class KNetServerMain {
 
 	private static final Logger log = Logger.getLogger(KNetServerMain.class);
@@ -38,6 +40,8 @@ public class KNetServerMain {
 	}
 	
 	protected void innerMain(String[] args) throws Exception {
+		
+		Log.NONE();
 
 		CommandLine cli = new PosixParser().parse(OPTIONS, args);
 

@@ -22,6 +22,8 @@ import org.zeromeaner.util.PropertyConstant;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ResourceOutputStream;
 
+import com.esotericsoftware.minlog.Log;
+
 public class StandaloneMain {
 	public static ModeList<GameMode> modeManager;
 	public static String userId;
@@ -72,6 +74,8 @@ public class StandaloneMain {
 	}
 
 	private static void _main(String[] args) throws Exception {
+		Log.NONE();
+		
 		System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".zeromeaner");
 		new File(System.getProperty("user.dir")).mkdirs();
 		

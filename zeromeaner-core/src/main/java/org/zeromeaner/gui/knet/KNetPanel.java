@@ -954,7 +954,6 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 
 	@Override
 	public void knetEvented(KNetClient client, KNetEvent e) {
-		System.out.println(e);
 		if(e.is(USER_AUTHENTICATED)) {
 			if(!e.get(USER_AUTHENTICATED, Boolean.class)) {
 				System.out.println("User auth failed");
