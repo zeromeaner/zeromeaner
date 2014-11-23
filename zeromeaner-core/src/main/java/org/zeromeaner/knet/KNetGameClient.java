@@ -1,15 +1,8 @@
 package org.zeromeaner.knet;
 
 import static org.zeromeaner.knet.KNetEventArgs.ADDRESS;
-import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_CHAT;
 import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_ID;
 import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_INFO;
-import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_JOIN;
-import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_LEAVE;
-import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_LIST;
-import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_SPECTATE;
-import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_UPDATE;
-import static org.zeromeaner.knet.KNetEventArgs.CONNECTED;
 import static org.zeromeaner.knet.KNetEventArgs.GAME;
 import static org.zeromeaner.knet.KNetEventArgs.MAPS;
 import static org.zeromeaner.knet.KNetEventArgs.PAYLOAD;
@@ -69,7 +62,6 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	private final Predicate<KNetEvent> I_JOINED_CHANNEL = Predicates.and(CHANNEL_JOINED, USER_IS_ME);
 	private final Predicate<KNetEvent> I_LEFT_CHANNEL = Predicates.and(CHANNEL_PARTED, USER_IS_ME);
 	
-	private List<Field> maps = new ArrayList<Field>();
 	private Map<Integer, KNetChannelInfo> channels = new HashMap<Integer, KNetChannelInfo>();
 	private volatile KNetChannelInfo currentChannel;
 	
@@ -130,9 +122,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 
 	@Override
 	public void knetEvented(KNetClient client, KNetEvent e) {
-		if(e.is(MAPS))
-			maps = Arrays.asList((Field[]) e.get(MAPS));
-		else if(e.isType(KNetFromServer.CONNECTED)) {
+		if(e.isType(KNetFromServer.CONNECTED)) {
 			client.fireTCP(KNetFromClient.LIST_CHANNELS);
 		} else if(e.isType(KNetFromServer.CHANNELS_LISTED)) {
 			List<KNetChannelInfo> chl = Arrays.asList(e.get(KNetEventArgs.CHANNEL_LISTING, KNetChannelInfo[].class));
@@ -176,10 +166,6 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 		return channels.get(channelId);
 	}
 	
-	public List<Field> getMaps() {
-		return maps;
-	}
-
 	public Map<Integer, KNetChannelInfo> getChannels() {
 		return channels;
 	}

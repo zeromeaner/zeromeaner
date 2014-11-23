@@ -1,5 +1,7 @@
 package org.zeromeaner.knet;
 
+import org.mmmq.Topic;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
@@ -59,8 +61,8 @@ public class KNetEventSource implements KryoSerializable {
 		return topic.hashCode();
 	}
 	
-	public KNetEvent event(KNetPacket type, Object... args) {
-		return new KNetEvent(this, type, args);
+	public KNetEvent event(KNetPacket type, Topic topic, Object... args) {
+		return new KNetEvent(this, type, topic, args);
 	}
 	
 	@Override

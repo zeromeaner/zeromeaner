@@ -3,6 +3,7 @@ package org.zeromeaner.knet.obj;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.knet.KNetEventSource;
@@ -18,6 +19,7 @@ public class KNetChannelInfo implements KryoSerializable {
 	
 	private int id;
 	private String name;
+	private List<Field> maps = new ArrayList<>();
 	private List<KNetEventSource> members = new ArrayList<KNetEventSource>();
 	private List<KNetEventSource> players = new ArrayList<KNetEventSource>();
 	private List<KNetPlayerInfo> playerInfo = new ArrayList<KNetPlayerInfo>();
@@ -129,6 +131,11 @@ public class KNetChannelInfo implements KryoSerializable {
 		output.writeInt(maxPlayers, true);
 		kryo.writeObjectOrNull(output, game, KNetGameInfo.class);
 		output.writeBoolean(autoStart);
+		
+		output.writeInt(maps.size(), true);
+		for(Field f : maps) {
+			kryo.writeObject(output, f);
+		}
 	}
 	
 	@Override
@@ -154,6 +161,10 @@ public class KNetChannelInfo implements KryoSerializable {
 		maxPlayers = input.readInt(true);
 		game = kryo.readObjectOrNull(input, KNetGameInfo.class);
 		autoStart = input.readBoolean();
+		msize = input.readInt(true);
+		maps.clear();
+		for(int i = 0; i < msize; i++)
+			maps.add(kryo.readObject(input, Field.class));
 	}
 
 	public synchronized boolean isRuleLock() {
@@ -218,5 +229,13 @@ public class KNetChannelInfo implements KryoSerializable {
 
 	public synchronized void setMode(String mode) {
 		this.mode = mode;
+	}
+
+	public List<Field> getMaps() {
+		return maps;
+	}
+
+	public void setMaps(List<Field> maps) {
+		this.maps = maps;
 	}
 }
