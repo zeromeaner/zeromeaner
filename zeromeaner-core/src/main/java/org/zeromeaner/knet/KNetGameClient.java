@@ -123,7 +123,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 	@Override
 	public void knetEvented(KNetClient client, KNetEvent e) {
 		if(e.isType(KNetFromServer.CONNECTED)) {
-			client.fireTCP(KNetFromClient.LIST_CHANNELS);
+			client.fireTCP(KNetFromClient.LIST_CHANNELS, new Topic(KNetTopics.CHANNEL));
 		} else if(e.isType(KNetFromServer.CHANNELS_LISTED)) {
 			List<KNetChannelInfo> chl = Arrays.asList(e.get(KNetEventArgs.CHANNEL_LISTING, KNetChannelInfo[].class));
 			for(KNetChannelInfo c : chl) {
@@ -178,16 +178,16 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 		if(currentChannel != null && currentChannel.getId() != channelId)
 			leaveChannel();
 		client.subscribe(new Topic(KNetTopics.CHANNEL + channelId), this);
-		fireTCP(KNetFromClient.JOIN_CHANNEL, CHANNEL_ID, channelId);
-		fireTCP(KNetFromClient.JOIN_CHANNEL_GAME, CHANNEL_ID, channelId);
+		fireTCP(KNetFromClient.JOIN_CHANNEL, new Topic(KNetTopics.CHANNEL + channelId), CHANNEL_ID, channelId);
+		fireTCP(KNetFromClient.JOIN_CHANNEL_GAME, new Topic(KNetTopics.CHANNEL + channelId), CHANNEL_ID, channelId);
 	}
 	
 	public void spectateChannel(int channelId) {
 		if(currentChannel != null && currentChannel.getId() != channelId)
 			leaveChannel();
 		client.subscribe(new Topic(KNetTopics.CHANNEL + channelId), this);
-		fireTCP(KNetFromClient.JOIN_CHANNEL, CHANNEL_ID, channelId);
-		fireTCP(KNetFromClient.PART_CHANNEL_GAME, CHANNEL_ID, channelId);
+		fireTCP(KNetFromClient.JOIN_CHANNEL, new Topic(KNetTopics.CHANNEL + channelId), CHANNEL_ID, channelId);
+		fireTCP(KNetFromClient.PART_CHANNEL_GAME, new Topic(KNetTopics.CHANNEL + channelId), CHANNEL_ID, channelId);
 	}
 	
 	public void leaveChannel() {
@@ -195,7 +195,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 			return;
 		if(currentChannel.getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
 			return; // don't even try to leave the lobby
-		fireTCP(KNetFromClient.PART_CHANNEL, CHANNEL_ID, currentChannel.getId());
+		fireTCP(KNetFromClient.PART_CHANNEL, new Topic(KNetTopics.CHANNEL + currentChannel.getId()), CHANNEL_ID, currentChannel.getId());
 		client.unsubscribe(new Topic(KNetTopics.CHANNEL + currentChannel.getId()), this);
 	}
 	

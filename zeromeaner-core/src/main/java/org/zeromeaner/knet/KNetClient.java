@@ -30,7 +30,7 @@ public class KNetClient implements MessageListener, KNetListener {
 		@Override
 		public void disconnected(Connection connection) {
 			if(source != null)
-				issue(source.event(KNetFromServer.DISCONNECTED));
+				issue(source.event(KNetFromServer.DISCONNECTED, null));
 		}
 
 		@Override
@@ -82,7 +82,7 @@ public class KNetClient implements MessageListener, KNetListener {
 		client.subscribe(new Topic(KNetTopics.GLOBAL), this);
 		client.subscribe(new Topic(KNetTopics.CONNECTION), this);
 		
-		issue(source.event(KNetFromServer.CONNECTED));
+		issue(source.event(KNetFromServer.CONNECTED, null));
 		return this;
 	}
 
@@ -131,8 +131,8 @@ public class KNetClient implements MessageListener, KNetListener {
 		return source;
 	}
 
-	public KNetEvent event(KNetPacket type, Object... args) {
-		return getSource().event(type, args);
+	public KNetEvent event(KNetPacket type, Topic topic, Object... args) {
+		return getSource().event(type, topic, args);
 	}
 
 	public void addKNetListener(KNetListener l) {
@@ -155,15 +155,15 @@ public class KNetClient implements MessageListener, KNetListener {
 		return !isLocal(e) && !e.has(ADDRESS) || getSource().equals(e.get(ADDRESS));
 	}
 
-	public void reply(KNetEvent e, KNetPacket type, Object... args) {
-		KNetEvent resp = event(type, args);
+	public void reply(KNetEvent e, KNetPacket type, Topic topic, Object... args) {
+		KNetEvent resp = event(type, topic, args);
 		resp.set(ADDRESS, e.getSource());
 		resp.set(IN_REPLY_TO, e);
 		fire(resp);
 	}
 
-	public void fire(KNetPacket type, Object... args) {
-		fire(event(type, args));
+	public void fire(KNetPacket type, Topic topic, Object... args) {
+		fire(event(type, topic, args));
 	}
 
 	public void fire(KNetEvent e) {
@@ -173,8 +173,8 @@ public class KNetClient implements MessageListener, KNetListener {
 			fireTCP(e);
 	}
 
-	public void fireTCP(KNetPacket type, Object... args) {
-		fireTCP(event(type, args));
+	public void fireTCP(KNetPacket type, Topic topic, Object... args) {
+		fireTCP(event(type, topic, args));
 	}
 
 	public void fireTCP(KNetEvent e) {
@@ -192,8 +192,8 @@ public class KNetClient implements MessageListener, KNetListener {
 		client.sendMessage(m);
 	}
 
-	public void fireUDP(KNetPacket type, Object... args) {
-		fireUDP(event(type, args));
+	public void fireUDP(KNetPacket type, Topic topic, Object... args) {
+		fireUDP(event(type, topic, args));
 	}
 
 	public void fireUDP(KNetEvent e) {
