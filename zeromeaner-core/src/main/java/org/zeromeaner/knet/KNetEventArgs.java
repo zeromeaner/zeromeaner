@@ -50,7 +50,7 @@ public enum KNetEventArgs {
 	
 	USER(KNetEventSource.class),
 	
-	PASSWORD(String.class),
+	PASSWORD(String.class, true),
 	
 	/**
 	 * The timstamp (millis UTC) of this message.

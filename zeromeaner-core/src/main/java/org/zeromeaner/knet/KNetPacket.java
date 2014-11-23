@@ -6,6 +6,7 @@ public class KNetPacket {
 	public interface KNetFromClient {
 		public final KNetPacket UPDATE_SOURCE = new KNetPacket("fc.source.update");
 		public final KNetPacket AUTHENTICATE_USER = new KNetPacket("fc.user.authenticate", KNetEventArgs.PASSWORD);
+		public final KNetPacket CREATE_USER = new KNetPacket("fc.user.create");
 		public final KNetPacket UPDATE_PASSWORD = new KNetPacket("fc.user.password.update", KNetEventArgs.PASSWORD);
 
 		public final KNetPacket LIST_CHANNELS = new KNetPacket("fc.channel.list");

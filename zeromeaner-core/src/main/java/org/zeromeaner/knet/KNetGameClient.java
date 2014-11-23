@@ -174,6 +174,23 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 		return currentChannel;
 	}
 	
+	public Topic getChannelTopic(int channelId, String... tags) {
+		Topic t = new Topic(KNetTopics.CHANNEL + channelId);
+		for(String tag : tags)
+			t = t.addTag(tag);
+		return t;
+	}
+	
+	public Topic getCurrentChannelTopic(String... tags) {
+		if(currentChannel == null)
+			return null;
+		return getChannelTopic(currentChannel.getId(), tags);
+	}
+	
+	public KNetEvent channelEvent(KNetPacket type, String tag, Object... args) {
+		return super.event(type, getCurrentChannelTopic(tag), args);
+	}
+	
 	public void joinChannel(int channelId) {
 		if(currentChannel != null && currentChannel.getId() != channelId)
 			leaveChannel();
