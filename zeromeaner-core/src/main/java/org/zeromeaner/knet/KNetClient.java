@@ -17,6 +17,7 @@ import org.mmmq.MessageListener;
 import org.mmmq.Topic;
 import org.mmmq.io.MasterClient;
 import org.mmmq.io.MessagePacket;
+import org.zeromeaner.knet.KNetPacket.KNetFromServer;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
@@ -31,7 +32,7 @@ public class KNetClient implements MessageListener, KNetListener {
 		@Override
 		public void disconnected(Connection connection) {
 			if(source != null)
-				issue(source.event(DISCONNECTED, true));
+				issue(source.event(KNetFromServer.DISCONNECTED, DISCONNECTED, true));
 		}
 
 		@Override
@@ -83,7 +84,7 @@ public class KNetClient implements MessageListener, KNetListener {
 		client.subscribe(new Topic(KNetTopics.GLOBAL), this);
 		client.subscribe(new Topic(KNetTopics.CONNECTION), this);
 		
-		issue(source.event(CONNECTED, true));
+		issue(source.event(KNetFromServer.CONNECTED, CONNECTED, true));
 		return this;
 	}
 
@@ -132,8 +133,8 @@ public class KNetClient implements MessageListener, KNetListener {
 		return source;
 	}
 
-	public KNetEvent event(Object... args) {
-		return getSource().event(args);
+	public KNetEvent event(KNetPacket type, Object... args) {
+		return getSource().event(type, args);
 	}
 
 	public void addKNetListener(KNetListener l) {
@@ -153,29 +154,29 @@ public class KNetClient implements MessageListener, KNetListener {
 	}
 
 	public boolean isMine(KNetEvent e) {
-		return !isLocal(e) && !e.is(ADDRESS) || getSource().equals(e.get(ADDRESS));
+		return !isLocal(e) && !e.has(ADDRESS) || getSource().equals(e.get(ADDRESS));
 	}
 
-	public void reply(KNetEvent e, Object... args) {
-		KNetEvent resp = event(args);
+	public void reply(KNetEvent e, KNetPacket type, Object... args) {
+		KNetEvent resp = event(type, args);
 		resp.set(ADDRESS, e.getSource());
 		resp.set(IN_REPLY_TO, e);
 		fire(resp);
 	}
 
-	public void fire(Object... args) {
-		fire(event(args));
+	public void fire(KNetPacket type, Object... args) {
+		fire(event(type, args));
 	}
 
 	public void fire(KNetEvent e) {
-		if(e.is(UDP))
+		if(e.has(UDP))
 			fireUDP(e);
 		else
 			fireTCP(e);
 	}
 
-	public void fireTCP(Object... args) {
-		fireTCP(event(args));
+	public void fireTCP(KNetPacket type, Object... args) {
+		fireTCP(event(type, args));
 	}
 
 	public void fireTCP(KNetEvent e) {
@@ -189,12 +190,12 @@ public class KNetClient implements MessageListener, KNetListener {
 			sendKryo.writeClassAndObject(out, e);
 		}
 		out.flush();
-		Message m = (Message) new MessagePacket(origin, new Topic(e.getTopic())).withMessage(bout.toByteArray()).tcp();
+		Message m = (Message) new MessagePacket(origin, e.getTopic()).withMessage(bout.toByteArray()).tcp();
 		client.sendMessage(m);
 	}
 
-	public void fireUDP(Object... args) {
-		fireUDP(event(args));
+	public void fireUDP(KNetPacket type, Object... args) {
+		fireUDP(event(type, args));
 	}
 
 	public void fireUDP(KNetEvent e) {
@@ -207,7 +208,7 @@ public class KNetClient implements MessageListener, KNetListener {
 			sendKryo.writeClassAndObject(out, e);
 		}
 		out.flush();
-		Message m = (Message) new MessagePacket(origin, new Topic(e.getTopic())).withMessage(bout.toByteArray()).udp();
+		Message m = (Message) new MessagePacket(origin, e.getTopic()).withMessage(bout.toByteArray()).udp();
 		client.sendMessage(m);
 	}
 

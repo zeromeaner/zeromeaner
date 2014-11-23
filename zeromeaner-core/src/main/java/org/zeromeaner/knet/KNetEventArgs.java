@@ -21,29 +21,6 @@ import com.esotericsoftware.kryo.io.Output;
 
 public enum KNetEventArgs {
 	
-	/**
-	 * Issued by a server when a server assigns a {@link KNetEventSource} to a client.
-	 * Argument: {@link KNetEventSource}.
-	 */
-	@Global
-	ASSIGN_SOURCE(KNetEventSource.class),
-	
-	/**
-	 * Issued by a client to update fields on the servers' record for that client.
-	 * Argument: {@link KNetEventSource} to get the new data from.
-	 */
-	@Global
-	UPDATE_SOURCE(KNetEventSource.class),
-	/**
-	 * Issued when a client connects to a server, after receiving a {@link KNetEventSource}.
-	 */
-	@Global
-	CONNECTED,
-	/**
-	 * Issued when a client disconnects from a server.
-	 */
-	DISCONNECTED,
-	
 	/** Issued when the packet should be sent via UDP instead of TCP */
 	UDP,
 	
@@ -68,18 +45,13 @@ public enum KNetEventArgs {
 	 */
 	IN_REPLY_TO(KNetEvent.class),
 	
-	USER_AUTHENTICATE(String.class, true),
-	USER_AUTHENTICATED(Boolean.class),
-	USER_CREATE(String.class, true),
-	USER_CREATED(Boolean.class),
-	USER_UPDATE_PASSWORD(String[].class),
-	USER_UPDATED_PASSWORD(Boolean.class),
-	
 	/**
 	 * The username of the event sender
 	 * Argument: {@link String}
 	 */
-	USERNAME(String.class),
+	USER(KNetEventSource.class),
+	
+	PASSWORD(String.class),
 	
 	/**
 	 * The timstamp (millis UTC) of this message.
@@ -92,42 +64,13 @@ public enum KNetEventArgs {
 	 * Argument: {@link Integer}
 	 */
 	CHANNEL_ID(Integer.class), 
-	/**
-	 * Issued by a client to request a list of the current rooms.
-	 * Issued by a server to respond with the list of rooms.  Server responses place
-	 * an array of {@link ChannelInfo} objects in {@link #PAYLOAD}.
-	 */
-	@Global
-	CHANNEL_LIST,
+
+	CHANNEL_LISTING(KNetChannelInfo[].class),
 	
-	/**
+	CHANNEL_INFO, /**
 	 * Issued for chats in a room.
 	 */
-	@Global
-	CHANNEL_CHAT(String.class),
-	
-	@Global
-	CHANNEL_INFO(KNetChannelInfo[].class),
-	
-	/** Issued when joining a room */
-	@Global
-	CHANNEL_JOIN,
-	
-	@Global
-	CHANNEL_SPECTATE,
-	
-	/** Issued when leaving a room */
-	@Global
-	CHANNEL_LEAVE,
-	
-	@Global
-	CHANNEL_CREATE(KNetChannelInfo.class),
-	
-	@Global
-	CHANNEL_DELETE(Integer.class),
-	
-	@Global
-	CHANNEL_UPDATE(KNetChannelInfo.class),
+	CHANNEL_CHAT_MESSAGE(String.class),
 	
 	/** Issued for in-game events */
 	GAME,
@@ -235,11 +178,6 @@ public enum KNetEventArgs {
 	TGMNETVSBATTLE_GAME_ATTACK(TGMNetVSBattleMode.TGMAttackInfo.class),
 	
 	;
-	
-	@Retention(RetentionPolicy.RUNTIME)
-	public static @interface Global {
-		
-	}
 	
 	private Class<?> type;
 	private boolean nullable;

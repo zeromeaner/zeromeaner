@@ -26,46 +26,48 @@ import org.funcish.core.impl.AbstractPredicate;
 import org.funcish.core.util.Predicates;
 import org.mmmq.Topic;
 import org.zeromeaner.game.component.Field;
+import org.zeromeaner.knet.KNetPacket.KNetFromClient;
+import org.zeromeaner.knet.KNetPacket.KNetFromServer;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 
 public class KNetGameClient extends KNetClient implements KNetListener {
 	private final Predicate<KNetEvent> CHANNEL_LISTING = new AbstractPredicate<KNetEvent>(KNetEvent.class) {
 		@Override
 		public boolean test0(KNetEvent value, Integer index) throws Exception {
-			return value.is(CHANNEL_LIST) && (value.is(CHANNEL_INFO, KNetChannelInfo[].class));
+			return value.isType(KNetFromServer.CHANNELS_LISTED);
 		}
 	};
 	
 	private final Predicate<KNetEvent> CURRENT_CHANNEL = new AbstractPredicate<KNetEvent>(KNetEvent.class) {
 		@Override
 		public boolean test0(KNetEvent value, Integer index) throws Exception {
-			return currentChannel != null && value.is(CHANNEL_ID, Integer.class) && currentChannel.getId() == value.get(CHANNEL_ID, Integer.class);
+			return currentChannel != null && value.has(CHANNEL_ID, Integer.class) && currentChannel.getId() == value.get(CHANNEL_ID, Integer.class);
 		}
 	};
 	
-	private final Predicate<KNetEvent> JOIN_CHANNEL = new AbstractPredicate<KNetEvent>(KNetEvent.class) {
+	private final Predicate<KNetEvent> CHANNEL_JOINED = new AbstractPredicate<KNetEvent>(KNetEvent.class) {
 		@Override
 		public boolean test0(KNetEvent value, Integer index) throws Exception {
-			return value.is(CHANNEL_JOIN) && value.is(PAYLOAD);
+			return value.isType(KNetFromServer.CHANNEL_JOINED);
 		}
 	};
 	
-	private final Predicate<KNetEvent> LEAVE_CHANNEL = new AbstractPredicate<KNetEvent>(KNetEvent.class) {
+	private final Predicate<KNetEvent> CHANNEL_PARTED = new AbstractPredicate<KNetEvent>(KNetEvent.class) {
 		@Override
 		public boolean test0(KNetEvent value, Integer index) throws Exception {
-			return value.is(CHANNEL_LEAVE) && value.is(PAYLOAD);
+			return value.isType(KNetFromServer.CHANNEL_PARTED);
 		}
 	};
 	
-	private final Predicate<KNetEvent> I_JOINED_OR_LEFT = new AbstractPredicate<KNetEvent>(KNetEvent.class) {
+	private final Predicate<KNetEvent> I_ = new AbstractPredicate<KNetEvent>(KNetEvent.class) {
 		@Override
 		public boolean test0(KNetEvent value, Integer index) throws Exception {
-			return getSource().equals(value.get(PAYLOAD)) && isMine(value);
+			return isMine(value);
 		}
 	};
 	
-	private final Predicate<KNetEvent> I_JOINED_CHANNEL = Predicates.and(JOIN_CHANNEL, I_JOINED_OR_LEFT);
-	private final Predicate<KNetEvent> I_LEFT_CHANNEL = Predicates.and(LEAVE_CHANNEL, I_JOINED_OR_LEFT);
+	private final Predicate<KNetEvent> I_JOINED_CHANNEL = Predicates.and(CHANNEL_JOINED, I_JOINED_OR_LEFT);
+	private final Predicate<KNetEvent> I_LEFT_CHANNEL = Predicates.and(CHANNEL_PARTED, I_JOINED_OR_LEFT);
 	
 	private List<Field> maps = new ArrayList<Field>();
 	private Map<Integer, KNetChannelInfo> channels = new HashMap<Integer, KNetChannelInfo>();
@@ -141,12 +143,14 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 
 	@Override
 	public void knetEvented(KNetClient client, KNetEvent e) {
-
+		if(client.isLocal(e))
+			return;
+		
 		if(e.is(MAPS))
 			maps = Arrays.asList((Field[]) e.get(MAPS));
 		else if(e.is(CONNECTED)) {
-			client.fireTCP(CHANNEL_LIST, true);
-		} else if(e.is(CHANNEL_LISTING)) {
+			client.fireTCP(KNetFromClient.LIST_CHANNELS);
+		} else if(e.isType(KNetFromServer.CHANNELS_LISTED)) {
 			List<KNetChannelInfo> chl = Arrays.asList((KNetChannelInfo[]) e.get(CHANNEL_INFO));
 			for(KNetChannelInfo c : chl) {
 				if(channels.containsKey(c.getId())) {
@@ -161,7 +165,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 			for(KNetChannelInfo c : deleted) {
 				fireChannelDeleted(e, channels.remove(c.getId()));
 			}
-		} else if(e.is(JOIN_CHANNEL)) {
+		} else if(e.is(CHANNEL_JOINED)) {
 			if(!e.is(CHANNEL_INFO)) {
 				int channelId = e.get(CHANNEL_ID, Integer.class);
 				KNetGameClient.this.client.subscribe(new Topic(KNetTopics.CHANNEL + channelId), KNetGameClient.this);
@@ -174,7 +178,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 					fireChannelJoined(e, c);
 				}
 			}
-		} else if(e.is(LEAVE_CHANNEL)) {
+		} else if(e.is(CHANNEL_PARTED)) {
 			KNetChannelInfo c = e.get(CHANNEL_INFO, KNetChannelInfo[].class)[0];
 			c = updateChannel(e, c);
 			if(e.is(I_LEFT_CHANNEL)) {

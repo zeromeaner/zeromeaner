@@ -59,8 +59,8 @@ public class KNetEventSource implements KryoSerializable {
 		return topic.hashCode();
 	}
 	
-	public KNetEvent event(Object... args) {
-		return new KNetEvent(this, args);
+	public KNetEvent event(KNetPacket type, Object... args) {
+		return new KNetEvent(this, type, args);
 	}
 	
 	@Override
