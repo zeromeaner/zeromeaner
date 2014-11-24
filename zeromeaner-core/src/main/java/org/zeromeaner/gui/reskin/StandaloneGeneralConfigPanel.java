@@ -128,6 +128,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	/** Sync Display */
 	protected JCheckBox chkboxSyncDisplay;
 
+	protected JCheckBox chkboxSyncRender;
+
 	/** Show line clear effect */
 	protected JCheckBox chkboxShowLineClearEffect;
 
@@ -297,6 +299,11 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxSyncDisplay = new JCheckBox(lz.s("GeneralConfig_SyncDisplay"));
 		chkboxSyncDisplay.setHorizontalAlignment(SwingConstants.CENTER);
 		pAdvancedTab.add(chkboxSyncDisplay);
+		
+		chkboxSyncRender = new JCheckBox(lz.s("GeneralConfig_SyncRender"));
+		chkboxSyncRender.setHorizontalAlignment(SwingConstants.CENTER);
+		pAdvancedTab.add(chkboxSyncRender);
+		
 
 		chkboxShowLineClearEffect = new JCheckBox(lz.s("GeneralConfig_ShowLineClearEffect"));
 		chkboxShowLineClearEffect.setHorizontalAlignment(SwingConstants.CENTER);
@@ -359,6 +366,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxDarkNextArea.setSelected(opt.DARK_NEXT_AREA.value());
 		chkboxShowFieldBGGrid.setSelected(opt.SHOW_FIELD_BG_GRID.value());
 		chkboxShowInput.setSelected(opt.SHOW_INPUT.value());
+		chkboxSyncRender.setSelected(opt.SYNC_RENDER.value());
 		chkboxSyncDisplay.setSelected(opt.SYNC_DISPLAY.value());
 		chkboxShowLineClearEffect.setSelected(opt.SHOW_LINE_EFFECT.value());
 		
@@ -408,6 +416,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			opt.DARK_NEXT_AREA.set(chkboxDarkNextArea.isSelected());
 			opt.SHOW_FIELD_BG_GRID.set(chkboxShowFieldBGGrid.isSelected());
 			opt.SHOW_INPUT.set(chkboxShowInput.isSelected());
+			opt.SYNC_RENDER.set(chkboxSyncRender.isSelected());
 			opt.SYNC_DISPLAY.set(chkboxSyncDisplay.isSelected());
 			opt.SHOW_LINE_EFFECT.set(chkboxShowLineClearEffect.isSelected());
 
