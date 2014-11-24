@@ -323,6 +323,17 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			hooks.dispatcher().frameSynced(this);
 	}
 	
+	protected void updateFPS() {
+		while(fps.poll() != null)
+			;
+		while(vps.poll() != null)
+			;
+		totalFPS = fps.size();
+		visibleFPS = vps.size();
+	}
+	
+	private long lastFrameNanos;
+	
 	/**
 	 * Processing of the thread
 	 */
@@ -360,38 +371,32 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		running.set(true);
 		
 		Runnable task = new Runnable() {
+			private long nanosPerFrame = TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / maxfps;
+			
 			@Override
 			public void run() {
-				while(fps.poll() != null)
-					;
-				while(vps.poll() != null)
-					;
-				if(vps.size() > maxfps)
+				if(lastFrameNanos + nanosPerFrame > System.nanoTime())
 					return;
-				fps.add(new FramePerSecond());
-				doFrame(true);
-				while(fps.poll() != null)
-					;
-				while(vps.poll() != null)
-					;
-				totalFPS = fps.size();
-				visibleFPS = vps.size();
-				int unrenderedFrames = 0;
-				while(totalFPS < maxfps - 1) {
+				while(lastFrameNanos + nanosPerFrame <= System.nanoTime() - nanosPerFrame) {
 					fps.add(new FramePerSecond());
-					unrenderedFrames++;
 					doFrame(false);
-					while(fps.poll() != null)
-						;
-					while(vps.poll() != null)
-						;
-					totalFPS = fps.size();
-					visibleFPS = vps.size();
+					lastFrameNanos += nanosPerFrame;
 				}
+				
+				updateFPS();
+				doFrame(true);
+				fps.add(new FramePerSecond());
+				lastFrameNanos += nanosPerFrame;
 			}
 		};
 		
-		ScheduledFuture<?> f = gexec.scheduleAtFixedRate(task, 0, TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / maxfps, TimeUnit.NANOSECONDS);
+		lastFrameNanos = System.nanoTime();
+		
+		ScheduledFuture<?> f = gexec.scheduleAtFixedRate(
+				task, 
+				0, 
+				TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / maxfps, 
+				TimeUnit.NANOSECONDS);
 		
 		while(running.get()) {
 			synchronized(running) {
@@ -833,30 +838,32 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		//		}
 	}
 
-	private boolean syncing = false;
+	private AtomicBoolean syncing = new AtomicBoolean(false);
+	
 	private Runnable sync = new Runnable() {
 		@Override
 		public void run() {
 			imageBufferLabel.repaint();
 			if(syncDisplay)
 				Toolkit.getDefaultToolkit().sync();
-			syncing = false;
 			vps.add(new FramePerSecond());
+			syncing.set(false);
 		}
 	};
 	
 	private void sync() {
-		if(syncing)
-			return;
-		syncing = true;
 		if(syncDisplay) {
 			try {
 				EventQueue.invokeAndWait(sync);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
-		} else
+		} else {
+			if(syncing.get())
+				return;
+			syncing.set(true);
 			EventQueue.invokeLater(sync);
+		}
 		hooks.dispatcher().frameSynced(this);
 	}
 	
