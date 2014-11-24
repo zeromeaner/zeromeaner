@@ -293,6 +293,7 @@ public class EvilineAI extends AbstractAI implements Configurable {
 	
 	protected byte[] createCommandPath(CommandGraph g) {
 		byte[] computingPaths = new byte[XYShapes.SHAPE_MAX];
+		Arrays.fill(computingPaths, (byte) -1);
 		int xyshape = g.getSelectedShape();
 		
 		boolean tail = true;
@@ -306,11 +307,11 @@ public class EvilineAI extends AbstractAI implements Configurable {
 			tail = false;
 			if(parent >= 0 && parent < XYShapes.SHAPE_MAX)
 				computingPaths[parent] = (byte) c.ordinal();
-			if(c == Command.SOFT_DROP) {
+			if(c == Command.SOFT_DROP || c == Command.HARD_DROP) {
 				xyshape = XYShapes.shiftedUp(xyshape);
 				while(xyshape != parent) {
 					if(xyshape >= 0 && xyshape < XYShapes.SHAPE_MAX)
-						computingPaths[xyshape] = (byte) Command.SOFT_DROP.ordinal();
+						computingPaths[xyshape] = (byte) c.ordinal();
 					xyshape = XYShapes.shiftedUp(xyshape);
 				}
 			}
