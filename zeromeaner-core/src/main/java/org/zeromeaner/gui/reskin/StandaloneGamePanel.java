@@ -859,10 +859,10 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 				e.printStackTrace();
 			}
 		} else {
-			if(syncing.get())
-				return;
-			syncing.set(true);
-			EventQueue.invokeLater(sync);
+			if(!syncing.get()) {
+				syncing.set(true);
+				EventQueue.invokeLater(sync);
+			}
 		}
 		hooks.dispatcher().frameSynced(this);
 	}
