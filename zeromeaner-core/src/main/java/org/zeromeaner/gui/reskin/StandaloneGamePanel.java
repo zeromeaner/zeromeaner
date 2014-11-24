@@ -119,16 +119,16 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	}
 
 	public static class FramePerSecond implements Delayed {
-		private long expiry = System.nanoTime() + TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS);
+		private long expiry = System.nanoTime() + TimeUnit.NANOSECONDS.convert(4, TimeUnit.SECONDS);
 		
 		@Override
 		public int compareTo(Delayed o) {
-			return ((Long) getDelay(TimeUnit.NANOSECONDS)).compareTo(o.getDelay(TimeUnit.NANOSECONDS));
+			return Long.compare(expiry, ((FramePerSecond) o).expiry);
 		}
 
 		@Override
 		public long getDelay(TimeUnit unit) {
-			return expiry - System.nanoTime();
+			return unit.convert(expiry - System.nanoTime(), TimeUnit.NANOSECONDS);
 		}
 	}
 	
@@ -328,8 +328,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			;
 		while(vps.poll() != null)
 			;
-		totalFPS = fps.size();
-		visibleFPS = vps.size();
+		totalFPS = Math.rint(fps.size() / 4.);
+		visibleFPS = Math.rint(vps.size() / 4.);
 	}
 	
 	private long lastFrameNanos;
