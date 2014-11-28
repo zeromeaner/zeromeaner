@@ -193,7 +193,6 @@ public class StandaloneFrame extends JFrame {
 					}
 					contentCards.show(content, nextCard);
 					currentCard = nextCard;
-					playCardSelected();
 				}
 				if(evt.getNewValue().equals(JOptionPane.NO_OPTION)) {
 					contentCards.show(content, CARD_PLAY);
