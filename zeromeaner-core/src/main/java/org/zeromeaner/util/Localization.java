@@ -65,9 +65,11 @@ public class Localization {
 		} catch(IOException ioe) {
 		}
 		for(Locale l : locales) {
-			in = base.getResourceAsStream(basename = (base.getSimpleName() + "_" + l.getLanguage() + ".properties"));
-			if(in == null)
+			in = base.getResourceAsStream(base.getSimpleName() + "_" + l.getLanguage() + ".properties");
+			if(in == null) {
 				continue;
+			}
+			basename = base.getSimpleName() + "_" + l.getLanguage() + ".properties";
 			try {
 				props.clear();
 				props.load(in);
