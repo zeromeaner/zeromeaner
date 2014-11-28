@@ -55,6 +55,7 @@ public class Localization {
 		List<Locale> locales = new ArrayList<Locale>();
 		locales.add(Locale.getDefault());
 		locales.addAll(Arrays.asList(defaults));
+		locales.add(Locale.ENGLISH);
 		InputStream in = base.getResourceAsStream(basename = (base.getSimpleName() + ".properties"));
 		try {
 			if(in != null) {
@@ -64,9 +65,11 @@ public class Localization {
 		} catch(IOException ioe) {
 		}
 		for(Locale l : locales) {
-			in = base.getResourceAsStream(basename = (base.getSimpleName() + "_" + l.getLanguage() + ".properties"));
-			if(in == null)
+			in = base.getResourceAsStream(base.getSimpleName() + "_" + l.getLanguage() + ".properties");
+			if(in == null) {
 				continue;
+			}
+			basename = base.getSimpleName() + "_" + l.getLanguage() + ".properties";
 			try {
 				props.clear();
 				props.load(in);
