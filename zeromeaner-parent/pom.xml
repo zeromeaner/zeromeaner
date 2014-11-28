@@ -101,7 +101,7 @@
 			<activation>
 				<property>
 					<name>bamboo.shortPlanKey</name>
-					<value>ZRM</value>
+					<value>ZER</value>
 				</property>
 			</activation>
 			<properties>
