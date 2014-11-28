@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<version.suffix></version.suffix>
+		<version.suffix>-${bamboo.shortPlanKey}</version.suffix>
 	</properties>
 
 	<modules>
@@ -94,5 +94,20 @@
 			<url>http://vps.robinvps.com:7777/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+	<profiles>
+		<profile>
+			<id>master-snapshot</id>
+			<activation>
+				<property>
+					<name>bamboo.shortPlanKey</name>
+					<value>ZRM</value>
+				</property>
+			</activation>
+			<properties>
+				<version.suffix></version.suffix>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>
