@@ -166,7 +166,7 @@ public class StandaloneFrame extends JFrame {
 	private static void add(JToolBar toolbar, ButtonGroup g, AbstractButton b) {
 		b.setFocusable(false);
 		b.setBorder(null);
-		b.setHorizontalAlignment(SwingConstants.RIGHT);
+		b.setHorizontalAlignment(SwingConstants.LEFT);
 		toolbar.add(b);
 		g.add(b);
 	}
