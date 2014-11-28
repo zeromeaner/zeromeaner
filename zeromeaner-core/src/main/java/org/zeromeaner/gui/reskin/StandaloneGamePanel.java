@@ -998,7 +998,9 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 				int[] kmap = isInGame[playerID] ? StandaloneGameKey.gamekey[playerID].keymap : StandaloneGameKey.gamekey[playerID].keymapNav;
 				for(int i = 0; i < StandaloneGameKey.MAX_BUTTON; i++) {
 					if(keyCode == kmap[i]) {
-						//log.debug("KeyCode:" + keyCode + " pressed:" + pressed + " button:" + i);
+						if(playerID != 0 && i != StandaloneGameKey.BUTTON_A)
+							continue;
+//						log.debug("KeyCode:" + keyCode + " pressed:" + pressed + " button:" + i);
 						StandaloneGameKey.gamekey[playerID].setPressState(i, pressed);
 					}
 				}
