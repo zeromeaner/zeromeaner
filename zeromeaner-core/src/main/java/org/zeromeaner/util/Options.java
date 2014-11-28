@@ -33,6 +33,7 @@ public class Options {
 	public static class GeneralOptions {
 		public final Constant<String> MODE_NAME = GLOBAL_PROPERTIES.create(STRING, ".mode.name", "");
 		public final Constant<String> RULE_NAME = GLOBAL_PROPERTIES.create(STRING, ".0.rule", "");
+		public final Constant<String> RULE_NAME_P2 = GLOBAL_PROPERTIES.create(STRING, ".1.rule", "");
 		
 		private GeneralOptions() {}
 	}
