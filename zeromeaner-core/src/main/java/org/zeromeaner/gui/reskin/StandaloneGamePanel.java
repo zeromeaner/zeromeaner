@@ -108,8 +108,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		}
 	});
 	
-	protected ExecutorService videoPool = Executors.newSingleThreadExecutor();
-	
 	private static class FocusableJLabel extends JLabel {
 		private FocusableJLabel(Icon image) {
 			super(image);
