@@ -55,6 +55,7 @@ public class Localization {
 		List<Locale> locales = new ArrayList<Locale>();
 		locales.add(Locale.getDefault());
 		locales.addAll(Arrays.asList(defaults));
+		locales.add(Locale.ENGLISH);
 		InputStream in = base.getResourceAsStream(basename = (base.getSimpleName() + ".properties"));
 		try {
 			if(in != null) {
