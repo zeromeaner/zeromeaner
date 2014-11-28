@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.DelayQueue;
@@ -992,6 +993,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		}
 
 		protected void setButtonPressedState(int keyCode, boolean pressed) {
+			boolean[] isInGame = Arrays.copyOf(StandaloneGamePanel.this.isInGame, StandaloneGamePanel.this.isInGame.length);
 			for(int playerID = 0; playerID < StandaloneGameKey.gamekey.length; playerID++) {
 				int[] kmap = isInGame[playerID] ? StandaloneGameKey.gamekey[playerID].keymap : StandaloneGameKey.gamekey[playerID].keymapNav;
 				for(int i = 0; i < StandaloneGameKey.MAX_BUTTON; i++) {
