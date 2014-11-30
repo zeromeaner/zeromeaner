@@ -582,7 +582,7 @@ public class StandaloneFrame extends JFrame {
 			}
 
 			// AI
-			if(!gameManager.replayMode) {
+			if(!gameManager.replayMode && !isNetPlay) {
 				AIOptions ai = Options.player(i).ai;
 				String aiName = ai.NAME.value();
 				if(aiName.length() > 0 && replayPath == null) {
