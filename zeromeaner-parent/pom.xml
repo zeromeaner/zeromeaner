@@ -90,19 +90,4 @@
 		</snapshotRepository>
 	</distributionManagement>
 
-	<profiles>
-		<profile>
-			<id>master-snapshot</id>
-			<activation>
-				<property>
-					<name>version_suffix</name>
-					<value>-ZER</value>
-				</property>
-			</activation>
-			<properties>
-				<version_suffix></version_suffix>
-			</properties>
-		</profile>
-	</profiles>
-
 </project>
