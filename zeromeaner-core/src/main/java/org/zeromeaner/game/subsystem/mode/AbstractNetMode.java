@@ -730,7 +730,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	 * @param client NetPlayerClient
 	 * @param roomInfo NetRoomInfo
 	 */
-	protected void netOnJoin(KNetClient client, KNetChannelInfo roomInfo) {
+	public void netOnJoin(KNetClient client, KNetChannelInfo roomInfo) {
 		log.debug("onJoin on NetDummyMode");
 
 		netIsNetPlay = true;

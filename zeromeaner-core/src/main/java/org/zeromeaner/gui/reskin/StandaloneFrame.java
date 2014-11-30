@@ -522,6 +522,11 @@ public class StandaloneFrame extends JFrame {
 		
 		gameManager.init();
 
+		if(e != null) {
+			((AbstractNetMode) modeObj).netplayInit(e.getSource());
+			((AbstractNetMode) modeObj).netOnJoin(e.getClient(), e.getChannel());
+		}
+		
 		// Initialization for each player
 		for(int i = 0; i < gameManager.getPlayers(); i++) {
 			// Tuning settings

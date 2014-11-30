@@ -598,7 +598,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 				return;
 			if(e.getChannel().getId() != getChannel().getId())
 				return;
-			if(EQInvoker.reinvoke(false, this, e))
+			if(EQInvoker.reinvoke(true, this, e))
 				return;
 			String text = history.getText();
 			text += text.isEmpty() ? "" : "\n";
