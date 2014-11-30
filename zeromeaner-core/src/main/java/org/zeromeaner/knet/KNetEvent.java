@@ -14,8 +14,6 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
 public class KNetEvent extends EventObject implements KryoSerializable {
-	private KNetPacket type;
-	private Topic topic;
 	private Map<KNetEventArgs, Object> args = new HashMap<KNetEventArgs, Object>();
 	
 	@Deprecated
@@ -23,10 +21,8 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 		super(new Object());
 	}
 	
-	public KNetEvent(KNetEventSource source, KNetPacket type, Topic topic, Object... args) {
+	public KNetEvent(KNetEventSource source, Object... args) {
 		super(source);
-		this.type = type;
-		this.topic = topic;
 		for(int i = 0; i < args.length; i += 2) {
 			if(i+1 < args.length && !(args[i+1] instanceof KNetEventArgs))
 				this.args.put((KNetEventArgs) args[i], args[i+1]);
@@ -35,20 +31,16 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 		}
 	}
 	
-	public KNetPacket getType() {
-		return type;
-	}
-	
-	public Topic getTopic() {
-		return topic;
-	}
-	
-	public boolean has(KNetEventArgs arg) {
-		return args.containsKey(arg);
-	}
-	
-	public boolean has(KNetEventArgs arg, Class<?> cls) {
-		return cls.isInstance(args.get(arg));
+	public String getTopic() {
+		if(is(KNetEventArgs.USER_AUTHENTICATE) || is(KNetEventArgs.USER_CREATE) || is(KNetEventArgs.USER_UPDATE_PASSWORD))
+			return KNetTopics.AUTH + "/" + Topic.PRIVILEGED_TAG;
+		if(is(KNetEventArgs.ADDRESS))
+			return get(KNetEventArgs.ADDRESS, KNetEventSource.class).getTopic();
+		if(is(KNetEventArgs.CHANNEL_JOIN))
+			return KNetTopics.CHANNEL;
+		if(is(KNetEventArgs.CHANNEL_ID))
+			return KNetTopics.CHANNEL + get(KNetEventArgs.CHANNEL_ID);
+		return KNetTopics.GLOBAL;
 	}
 	
 	@Override
@@ -65,8 +57,14 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 		return args.get(arg);
 	}
 	
-	public boolean isType(KNetPacket type) {
-		return this.type == null ? type == null : this.type.equals(type);
+	public boolean is(KNetEventArgs arg) {
+		if(args.containsKey(arg) && arg.getType() != null && !arg.getType().isInstance(args.get(arg)) && args.get(arg) != null)
+			new Throwable().printStackTrace();
+		return args.containsKey(arg);
+	}
+	
+	public boolean is(KNetEventArgs arg, Class<?> cls) {
+		return cls.isInstance(get(arg));
 	}
 	
 	public boolean is(Predicate<KNetEvent> p) {
@@ -88,10 +86,10 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 	@Override
 	public void write(Kryo kryo, Output output) {
 		kryo.writeObject(output, getSource());
-		kryo.writeClassAndObject(output, type);
 		output.writeInt(args.size(), true);
 		for(Map.Entry<KNetEventArgs, Object> e : args.entrySet()) {
-			kryo.writeObject(output, e.getKey());
+//			output.writeInt(e.getKey().ordinal(), true);
+			output.writeString(e.getKey().name());
 			e.getKey().write(kryo, output, e.getValue());
 		}
 	}
@@ -101,10 +99,11 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 		try {
 			source = kryo.readObject(input, KNetEventSource.class);
 			KNetEventSource.class.cast(source);
-			type = (KNetPacket) kryo.readClassAndObject(input);
 			int size = input.readInt(true);
 			for(int i = 0; i < size; i++) {
-				KNetEventArgs arg = kryo.readObject(input, KNetEventArgs.class);
+//				int ordinal = input.readInt(true);
+//				KNetEventArgs arg = KNetEventArgs.values()[ordinal];
+				KNetEventArgs arg = KNetEventArgs.valueOf(input.readString());
 				Object val = arg.read(kryo, input);
 				args.put(arg, val);
 			}

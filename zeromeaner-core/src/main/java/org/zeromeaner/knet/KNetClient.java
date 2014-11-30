@@ -1,6 +1,8 @@
 package org.zeromeaner.knet;
 
 import static org.zeromeaner.knet.KNetEventArgs.ADDRESS;
+import static org.zeromeaner.knet.KNetEventArgs.CONNECTED;
+import static org.zeromeaner.knet.KNetEventArgs.DISCONNECTED;
 import static org.zeromeaner.knet.KNetEventArgs.IN_REPLY_TO;
 import static org.zeromeaner.knet.KNetEventArgs.UDP;
 
@@ -15,7 +17,6 @@ import org.mmmq.MessageListener;
 import org.mmmq.Topic;
 import org.mmmq.io.MasterClient;
 import org.mmmq.io.MessagePacket;
-import org.zeromeaner.knet.KNetPacket.KNetFromServer;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
@@ -30,7 +31,7 @@ public class KNetClient implements MessageListener, KNetListener {
 		@Override
 		public void disconnected(Connection connection) {
 			if(source != null)
-				issue(source.event(KNetFromServer.DISCONNECTED, null));
+				issue(source.event(DISCONNECTED, true));
 		}
 
 		@Override
@@ -82,7 +83,7 @@ public class KNetClient implements MessageListener, KNetListener {
 		client.subscribe(new Topic(KNetTopics.GLOBAL), this);
 		client.subscribe(new Topic(KNetTopics.CONNECTION), this);
 		
-		issue(source.event(KNetFromServer.CONNECTED, null));
+		issue(source.event(CONNECTED, true));
 		return this;
 	}
 
@@ -131,8 +132,8 @@ public class KNetClient implements MessageListener, KNetListener {
 		return source;
 	}
 
-	public KNetEvent event(KNetPacket type, Topic topic, Object... args) {
-		return getSource().event(type, topic, args);
+	public KNetEvent event(Object... args) {
+		return getSource().event(args);
 	}
 
 	public void addKNetListener(KNetListener l) {
@@ -152,29 +153,29 @@ public class KNetClient implements MessageListener, KNetListener {
 	}
 
 	public boolean isMine(KNetEvent e) {
-		return !isLocal(e) && !e.has(ADDRESS) || getSource().equals(e.get(ADDRESS));
+		return !isLocal(e) && !e.is(ADDRESS) || getSource().equals(e.get(ADDRESS));
 	}
 
-	public void reply(KNetEvent e, KNetPacket type, Topic topic, Object... args) {
-		KNetEvent resp = event(type, topic, args);
+	public void reply(KNetEvent e, Object... args) {
+		KNetEvent resp = event(args);
 		resp.set(ADDRESS, e.getSource());
 		resp.set(IN_REPLY_TO, e);
 		fire(resp);
 	}
 
-	public void fire(KNetPacket type, Topic topic, Object... args) {
-		fire(event(type, topic, args));
+	public void fire(Object... args) {
+		fire(event(args));
 	}
 
 	public void fire(KNetEvent e) {
-		if(e.has(UDP))
+		if(e.is(UDP))
 			fireUDP(e);
 		else
 			fireTCP(e);
 	}
 
-	public void fireTCP(KNetPacket type, Topic topic, Object... args) {
-		fireTCP(event(type, topic, args));
+	public void fireTCP(Object... args) {
+		fireTCP(event(args));
 	}
 
 	public void fireTCP(KNetEvent e) {
@@ -188,12 +189,12 @@ public class KNetClient implements MessageListener, KNetListener {
 			sendKryo.writeClassAndObject(out, e);
 		}
 		out.flush();
-		Message m = (Message) new MessagePacket(origin, e.getTopic()).withMessage(bout.toByteArray()).tcp();
+		Message m = (Message) new MessagePacket(origin, new Topic(e.getTopic())).withMessage(bout.toByteArray()).tcp();
 		client.sendMessage(m);
 	}
 
-	public void fireUDP(KNetPacket type, Topic topic, Object... args) {
-		fireUDP(event(type, topic, args));
+	public void fireUDP(Object... args) {
+		fireUDP(event(args));
 	}
 
 	public void fireUDP(KNetEvent e) {
@@ -206,7 +207,7 @@ public class KNetClient implements MessageListener, KNetListener {
 			sendKryo.writeClassAndObject(out, e);
 		}
 		out.flush();
-		Message m = (Message) new MessagePacket(origin, e.getTopic()).withMessage(bout.toByteArray()).udp();
+		Message m = (Message) new MessagePacket(origin, new Topic(e.getTopic())).withMessage(bout.toByteArray()).udp();
 		client.sendMessage(m);
 	}
 

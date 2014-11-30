@@ -1,5 +1,19 @@
 package org.zeromeaner.gui.knet;
 
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_CHAT;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_CREATE;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_ID;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_JOIN;
+import static org.zeromeaner.knet.KNetEventArgs.CHANNEL_LIST;
+import static org.zeromeaner.knet.KNetEventArgs.CONNECTED;
+import static org.zeromeaner.knet.KNetEventArgs.TIMESTAMP;
+import static org.zeromeaner.knet.KNetEventArgs.UPDATE_SOURCE;
+import static org.zeromeaner.knet.KNetEventArgs.USER_AUTHENTICATE;
+import static org.zeromeaner.knet.KNetEventArgs.USER_AUTHENTICATED;
+import static org.zeromeaner.knet.KNetEventArgs.USER_CREATE;
+import static org.zeromeaner.knet.KNetEventArgs.USER_UPDATED_PASSWORD;
+import static org.zeromeaner.knet.KNetEventArgs.USER_UPDATE_PASSWORD;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -37,20 +51,15 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.mmmq.Topic;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.gui.reskin.StandaloneApplet;
 import org.zeromeaner.knet.KNetChannelEvent;
 import org.zeromeaner.knet.KNetChannelListener;
 import org.zeromeaner.knet.KNetClient;
 import org.zeromeaner.knet.KNetEvent;
-import org.zeromeaner.knet.KNetEventArgs;
 import org.zeromeaner.knet.KNetEventSource;
 import org.zeromeaner.knet.KNetGameClient;
 import org.zeromeaner.knet.KNetListener;
-import org.zeromeaner.knet.KNetTopics;
-import org.zeromeaner.knet.KNetPacket.KNetFromClient;
-import org.zeromeaner.knet.KNetPacket.KNetFromServer;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.knet.obj.KNetGameInfo;
 import org.zeromeaner.util.EQInvoker;
@@ -208,7 +217,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			client.addKNetListener(new KNetListener() {
 				@Override
 				public void knetEvented(KNetClient client, KNetEvent e) {
-					if(e.isType(KNetFromServer.CONNECTED)) {
+					if(e.is(CONNECTED)) {
 						String user = username.getText();
 						if(user == null || user.isEmpty())
 							user = "anonymous";
@@ -216,9 +225,10 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 							user += " [AI]";
 						client.getSource().setName(user);
 						client.removeKNetListener(this);
-						client.fireTCP(KNetFromClient.UPDATE_SOURCE, new Topic(KNetTopics.AUTH));
-						client.fireTCP(KNetFromClient.CREATE_USER, new Topic(KNetTopics.AUTH));
-						client.fireTCP(KNetFromClient.AUTHENTICATE_USER, new Topic(KNetTopics.AUTH), KNetEventArgs.PASSWORD, null);
+						client.fireTCP(UPDATE_SOURCE, client.getSource());
+						client.fireTCP(USER_CREATE, null);
+						client.fireTCP(USER_AUTHENTICATE, null);
+						client.fireTCP(CHANNEL_LIST, true);
 					}
 				}
 			});
