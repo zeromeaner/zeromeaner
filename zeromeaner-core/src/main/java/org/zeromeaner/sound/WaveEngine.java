@@ -128,6 +128,9 @@ public class WaveEngine {
 	 * @param name Registered name
 	 */
 	public void play(final String name) {
+		if(buffers.get(name) == null)
+			return;
+		
 		AudioFormat format = buffers.get(name).getFormat();
 		
 		try {
