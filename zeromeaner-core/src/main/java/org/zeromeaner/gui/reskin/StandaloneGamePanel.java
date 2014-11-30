@@ -408,6 +408,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			
 			@Override
 			public void run() {
+				try {
 				if(lastFrameNanos + nanosPerFrame > System.nanoTime())
 					return;
 				while(lastFrameNanos + nanosPerFrame <= System.nanoTime() - nanosPerFrame) {
@@ -420,6 +421,9 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 				doFrame(true);
 				fps.add(new FramePerSecond());
 				lastFrameNanos += nanosPerFrame;
+				} catch(Throwable t) {
+					t.printStackTrace();
+				}
 			}
 		};
 		
@@ -447,7 +451,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		
 		hooks.dispatcher().gameStopped(this);
 		
-		owner.gameManager.shutdown();
+		if(owner.gameManager != null)
+			owner.gameManager.shutdown();
 
 		log.debug("Game thread end");
 	}
@@ -647,7 +652,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 */
 	protected void gameUpdateNet() {
 		if(owner.gameManager == null) return;
-		if(owner.gameManager.engine.length == 0) return;
+//		if(owner.gameManager.engine.length == 0) return;
 
 		try {
 			// Set ingame flag
@@ -717,18 +722,19 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 				strModeToEnter = "";
 			}
 */
-			String newMode = modeToEnter.poll();
-			if(newMode != null) {
-				if("".equals(newMode)) {
-					owner.enterNewMode(null);
-					MusicList.getInstance().stop();
-				}
-				else {
-					owner.enterNewMode(newMode);
-					modesEntered.offer(newMode);
-				}
-			}
+//			String newMode = modeToEnter.poll();
+//			if(newMode != null) {
+//				if("".equals(newMode)) {
+//					owner.enterNewMode(null);
+//					MusicList.getInstance().stop();
+//				}
+//				else {
+//					owner.enterNewMode(newMode);
+//					modesEntered.offer(newMode);
+//				}
+//			}
 		} catch (NullPointerException e) {
+			e.printStackTrace();
 			try {
 				if((owner.gameManager != null) && owner.gameManager.getQuitFlag()) {
 					shutdown(true);
@@ -1063,6 +1069,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		}
 
 		protected void setButtonPressedState(int keyCode, boolean pressed) {
+			if(StandaloneGamePanel.this.isInGame == null)
+				return;
 			boolean[] isInGame = Arrays.copyOf(StandaloneGamePanel.this.isInGame, StandaloneGamePanel.this.isInGame.length);
 			for(int playerID = 0; playerID < StandaloneGameKey.gamekey.length; playerID++) {
 				int[] kmap = isInGame[playerID] ? StandaloneGameKey.gamekey[playerID].keymap : StandaloneGameKey.gamekey[playerID].keymapNav;

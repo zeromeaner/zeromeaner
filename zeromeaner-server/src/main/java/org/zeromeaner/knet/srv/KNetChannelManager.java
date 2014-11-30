@@ -219,6 +219,7 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 	}
 	
 	protected void join(KNetChannelInfo channel, KNetEvent e) {
+		log.info(e.getSource() + " joining " + channel);
 		if(!channel.getMembers().contains(e.getSource())) {
 			List<KNetEventSource> members = new ArrayList<KNetEventSource>(channel.getMembers());
 			members.add(e.getSource());
@@ -264,9 +265,11 @@ public class KNetChannelManager extends KNetClient implements KNetListener {
 	
 	protected void maybeAutostart(KNetChannelInfo channel) {
 		if(channel.getPlayers().size() == channel.getMaxPlayers() && channel.isAutoStart()) {
+			log.info("Autostarting " + channel);
 			fireTCP(AUTOSTART_BEGIN, 10, CHANNEL_ID, channel.getId());
 			states.get(channel).requiredAutostartResponses.addAll(channel.getPlayers());
 		} else {
+			log.info("Autostopping " + channel);
 			fireTCP(AUTOSTART_STOP, CHANNEL_ID, channel.getId());
 		}
 	}

@@ -175,12 +175,10 @@ public class KNetClient implements MessageListener, KNetListener {
 	}
 
 	public void fireTCP(Object... args) {
-		System.err.println(Arrays.asList(args));
 		fireTCP(event(args));
 	}
 
 	public void fireTCP(KNetEvent e) {
-		System.err.println(e);
 		e = process(e);
 		e.getArgs().remove(UDP);
 		issue(e);
