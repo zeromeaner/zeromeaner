@@ -327,6 +327,7 @@ public class StandaloneFrame extends JFrame {
 			gamePanel.shutdownWait();
 		} catch(InterruptedException ie) {
 		}
+		gamePanel.modeToEnter.offer("");
 		startNewGame();
 		gamePanel.displayWindow();
 	}
@@ -696,6 +697,8 @@ public class StandaloneFrame extends JFrame {
 			// Called at initialization
 			gameManager.engine[i].init();
 		}
+		
+		gamePanel.isNetPlay = false;
 	}
 
 	public void startReplayGame(String filename) {
