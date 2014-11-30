@@ -1,16 +1,18 @@
 package org.zeromeaner.sound;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.TimeUnit;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
 
-public class SampleBuffer implements Comparable<SampleBuffer> {
+public class SampleBuffer implements Comparable<SampleBuffer>, SampleSource {
 
 	protected ByteBuffer bytes;
 	protected AudioFormat format;
 
 	protected long startTimeNanos;
+	protected long positionNanos;
 	
 	public SampleBuffer(AudioFormat format, ByteBuffer bytes, long startTimeNanos) {
 		this.format = format;
@@ -33,6 +35,7 @@ public class SampleBuffer implements Comparable<SampleBuffer> {
 	
 	public int nextSample() {
 		int sampleBytes = sampleBytes();
+		
 		long sample = 0;
 		if(format.isBigEndian()) {
 			for(int i = 0; i < sampleBytes; i++) {
@@ -44,6 +47,9 @@ public class SampleBuffer implements Comparable<SampleBuffer> {
 			}
 			sample = sample << ((4 - sampleBytes) * 8);
 		}
+		
+		positionNanos += (long)(1000000000L * format.getSampleRate());
+		
 		if(format.getEncoding().equals(Encoding.PCM_SIGNED))
 			return (int) sample;
 		else 
@@ -52,6 +58,14 @@ public class SampleBuffer implements Comparable<SampleBuffer> {
 	
 	public long getStartTimeNanos() {
 		return startTimeNanos;
+	}
+	
+	public long getPositionNanos() {
+		return positionNanos;
+	}
+	
+	public AudioFormat getFormat() {
+		return format;
 	}
 	
 	@Override
