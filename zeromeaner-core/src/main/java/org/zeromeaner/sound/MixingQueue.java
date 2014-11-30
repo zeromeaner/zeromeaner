@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioFormat.Encoding;
 
 public class MixingQueue implements SampleSource {
 
@@ -23,6 +24,11 @@ public class MixingQueue implements SampleSource {
 		
 		startTimeNanos = System.nanoTime();
 		positionNanos = 0;
+		
+		if(format.getEncoding().equals(Encoding.PCM_SIGNED) || format.getEncoding().equals(Encoding.PCM_UNSIGNED))
+			;
+		else
+			throw new IllegalArgumentException();
 	}
 	
 	public long getStartTimeNanos() {
