@@ -426,20 +426,14 @@ public class StandaloneFrame extends JFrame {
 		b = new JButton(new ToolbarAction("toolbar.close") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				dispose();
+				StandaloneMain.saveConfig();
+				System.exit(0);
 			}
 		});
 		if(!StandaloneApplet.isApplet())
 			add(t, g, b);
 		
 		return t;
-	}
-	
-	@Override
-	public void dispose() {
-		super.dispose();
-		StandaloneMain.saveConfig();
-		System.exit(0);
 	}
 	
 	private class ToolbarAction extends AbstractAction {
@@ -588,10 +582,10 @@ public class StandaloneFrame extends JFrame {
 	 * @param strRulePath Rule file path (null if you want to use user-selected one)
 	 */
 	public void startNewGame(String strRulePath, String replayPath) {
-		if(gameManager == null) {
+//		if(gameManager == null) {
 			StandaloneRenderer rendererSwing = new StandaloneRenderer(this);
 			gameManager = new GameManager(rendererSwing);
-		}
+//		}
 
 		// Mode
 		String modeName = Options.general().MODE_NAME.value();
