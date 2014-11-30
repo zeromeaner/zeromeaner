@@ -48,7 +48,7 @@ public class SampleBuffer implements Comparable<SampleBuffer>, SampleSource {
 			sample = sample << ((4 - sampleBytes) * 8);
 		}
 		
-		positionNanos += (long)(1000000000L * format.getSampleRate());
+		positionNanos += (long)(1000000000L / (double)(format.getSampleRate() * format.getChannels()));
 		
 		if(format.getEncoding().equals(Encoding.PCM_SIGNED))
 			return (int) sample;

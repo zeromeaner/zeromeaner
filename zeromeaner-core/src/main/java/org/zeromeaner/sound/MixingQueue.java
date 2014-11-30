@@ -8,13 +8,16 @@ import java.util.PriorityQueue;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
 
+import org.apache.log4j.Logger;
+
 public class MixingQueue implements SampleSource {
+	private static final Logger log = Logger.getLogger(MixingQueue.class);
 
 	protected AudioFormat format;
 	protected PriorityQueue<SampleBuffer> buffers;
 	protected List<SampleBuffer> active;
 	protected long startTimeNanos;
-	protected long positionNanos;
+	protected long positionSamples;
 	
 	public MixingQueue(AudioFormat format) {
 		this.format = format;
@@ -23,7 +26,7 @@ public class MixingQueue implements SampleSource {
 		active = new ArrayList<>();
 		
 		startTimeNanos = System.nanoTime();
-		positionNanos = 0;
+		positionSamples = 0;
 		
 		if(format.getEncoding().equals(Encoding.PCM_SIGNED) || format.getEncoding().equals(Encoding.PCM_UNSIGNED))
 			;
@@ -36,7 +39,7 @@ public class MixingQueue implements SampleSource {
 	}
 	
 	public long getPositionNanos() {
-		return positionNanos;
+		return positionSamples * 1000000000L / ((int)format.getSampleRate() * format.getChannels());
 	}
 	
 	public AudioFormat getFormat() {
@@ -44,13 +47,23 @@ public class MixingQueue implements SampleSource {
 	}
 	
 	public void offer(SampleBuffer buffer) {
-		buffers.offer(buffer);
+		synchronized(buffers) {
+			buffers.offer(buffer);
+		}
 	}
 
+	public void writeUntil(SampleLineWriter writer, long stopNanos) {
+		while(getStartTimeNanos() + getPositionNanos() < stopNanos) 
+			writer.writeSample(nextSample());
+	}
+	
 	public int nextSample() {
-		long now = startTimeNanos + positionNanos;
-		while(buffers.peek() != null && buffers.peek().getStartTimeNanos() <= now) {
-			active.add(buffers.poll());
+		long now = startTimeNanos + getPositionNanos();
+
+		synchronized(buffers) {
+			while(buffers.peek() != null && buffers.peek().getStartTimeNanos() <= now) {
+				active.add(buffers.poll());
+			}
 		}
 		
 		List<Integer> mix = new ArrayList<>();
@@ -68,7 +81,7 @@ public class MixingQueue implements SampleSource {
 			mix.add(sample);
 		}
 		
-		positionNanos += (long)(1000000000L * format.getSampleRate());
+		positionSamples++;
 		
 		int sample = 0;
 		for(int s : mix)
