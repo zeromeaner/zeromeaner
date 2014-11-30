@@ -7,8 +7,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<bamboo.shortPlanKey></bamboo.shortPlanKey>
-		<version.suffix>${bamboo.shortPlanKey}</version.suffix>
+		<version.suffix></version.suffix>
 	</properties>
 
 	<modules>
@@ -101,7 +100,7 @@
 			<id>master-snapshot</id>
 			<activation>
 				<property>
-					<name>bamboo.shortPlanKey</name>
+					<name>version.suffix</name>
 					<value>-ZER</value>
 				</property>
 			</activation>
