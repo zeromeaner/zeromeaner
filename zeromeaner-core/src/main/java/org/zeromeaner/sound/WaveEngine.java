@@ -168,8 +168,6 @@ public class WaveEngine {
 			this.writer = new SampleLineWriter(format, line);
 			
 			setName(format.toString());
-			
-			setPriority(Thread.MAX_PRIORITY);
 		}
 		
 		public void offer(SampleBuffer buffer) {

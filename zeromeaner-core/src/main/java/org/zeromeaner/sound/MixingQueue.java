@@ -67,7 +67,6 @@ public class MixingQueue {
 				SampleBuffer buffer = ai.next();
 				int sample = 0;
 				if(buffer.remainingSamples() == 0) {
-					ai.remove();
 					continue ai;
 				}
 				sample = buffer.nextSample();
