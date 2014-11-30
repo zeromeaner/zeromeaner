@@ -1048,15 +1048,17 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	protected class GameFrameKeyEvent extends KeyAdapter {
 		@Override
 		public void keyPressed(KeyEvent e) {
-			if(e.isConsumed())
+			if(e.getKeyCode() == KeyEvent.VK_ENTER && e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK)
 				return;
+
 			setButtonPressedState(e.getKeyCode(), true);
 		}
 
 		@Override
 		public void keyReleased(KeyEvent e) {
-			if(e.isConsumed())
+			if(e.getKeyCode() == KeyEvent.VK_ENTER && e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK)
 				return;
+
 			setButtonPressedState(e.getKeyCode(), false);
 		}
 
