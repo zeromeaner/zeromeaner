@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.zeromeaner</groupId>
 	<artifactId>zeromeaner-parent</artifactId>
-	<version>1.2.0${version.suffix}-SNAPSHOT</version>
+	<version>1.2.0${version_suffix}-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
-		<version.suffix></version.suffix>
+		<version_suffix></version_suffix>
 	</properties>
 
 	<modules>
@@ -50,7 +50,7 @@
 			<dependency>
 				<groupId>org.zeromeaner</groupId>
 				<artifactId>zeromeaner-core</artifactId>
-				<version>1.2.0${version.suffix}-SNAPSHOT</version>
+				<version>1.2.0${version_suffix}-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
@@ -100,12 +100,12 @@
 			<id>master-snapshot</id>
 			<activation>
 				<property>
-					<name>version.suffix</name>
+					<name>version_suffix</name>
 					<value>-ZER</value>
 				</property>
 			</activation>
 			<properties>
-				<version.suffix></version.suffix>
+				<version_suffix></version_suffix>
 			</properties>
 		</profile>
 	</profiles>
