@@ -108,14 +108,12 @@ public class EvilineAI extends AbstractAI implements Configurable {
 
 	protected static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(1, 1, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 	
-	protected static ExecutorService pipelineExec = Executors.newSingleThreadExecutor();
-	
 	protected class PathPipeline {
 		public ExecutorService exec;
 		public LinkedBlockingDeque<PathTask> pipe = new LinkedBlockingDeque<PathTask>();
 		
 		public PathPipeline() {
-			exec = pipelineExec;
+			exec = Executors.newSingleThreadExecutor();
 		}
 		
 		public void exec(Runnable task) {
@@ -222,7 +220,7 @@ public class EvilineAI extends AbstractAI implements Configurable {
 		}
 		
 		public void shutdown() {
-//			exec.shutdownNow();
+			exec.shutdownNow();
 			PathTask pt = pipe.peekLast();
 			if(pt != null)
 				pt.task.cancel(true);
@@ -526,8 +524,6 @@ public class EvilineAI extends AbstractAI implements Configurable {
 
 	@Override
 	public void newPiece(GameEngine engine, int playerID) {
-		if(pipeline.isDirty(engine))
-			resetPipeline();
 		try {
 		pipeline.extend(engine);
 		} catch(RuntimeException e) {
