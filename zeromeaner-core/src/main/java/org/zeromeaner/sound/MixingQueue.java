@@ -16,14 +16,14 @@ public class MixingQueue {
 	private static final Logger log = Logger.getLogger(MixingQueue.class);
 
 	protected AudioFormat format;
-	protected Set<SampleBuffer> active;
+	protected List<SampleBuffer> active;
 	protected long startTimeNanos;
 	protected long positionSamples;
 
 	public MixingQueue(AudioFormat format) {
 		this.format = format;
 
-		active = new HashSet<>();
+		active = new ArrayList<>();
 
 		startTimeNanos = System.nanoTime();
 		positionSamples = 0;
@@ -50,37 +50,38 @@ public class MixingQueue {
 
 	public void offer(SampleBuffer buffer) {
 		synchronized(active) {
-			active.add(buffer);
+			if(!active.contains(buffer))
+				active.add(buffer);
 		}
 	}
 	
 	public void writeUntil(SampleLineWriter writer, long stopNanos) {
+		List<Integer> samples = new ArrayList<>();
 		while(getStartTimeNanos() + getPositionNanos() < stopNanos) 
-			writer.writeSample(nextSample());
+			samples.add(nextSample());
+		writer.writeSample(samples);
 	}
 
 	public int nextSample() {
-		List<Integer> mix = new ArrayList<>();
+		long sample = 0;
+		int count = 0;
 		synchronized(active) {
-			Iterator<SampleBuffer> ai = active.iterator();
-			ai: while(ai.hasNext()) {
-				SampleBuffer buffer = ai.next();
-				int sample = 0;
+			for(int i = 0; i < active.size(); i++) {
+
+				SampleBuffer buffer = active.get(i);
 				if(buffer.remainingSamples() == 0) {
-					continue ai;
+					continue;
 				}
-				sample = buffer.nextSample();
-				mix.add(sample);
+				sample += buffer.nextSample();
+				count++;
+
 			}
 		}
 		positionSamples++;
 
-		if(mix.size() == 0)
+		if(count == 0)
 			return 0;
 		
-		int sample = 0;
-		for(int s : mix)
-			sample += s / mix.size() ;
-		return sample;
+		return (int)(sample / count);
 	}
 }
