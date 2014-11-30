@@ -185,6 +185,10 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 
 	protected KNetPanel knetPanel;
 	
+	public void setKnetPanel(KNetPanel knetPanel) {
+		this.knetPanel = knetPanel;
+	}
+	
 	/** NET: Lobby (Declared in NetDummyMode) */
 	protected KNetGameClient knetClient() {
 		if(knetPanel == null)

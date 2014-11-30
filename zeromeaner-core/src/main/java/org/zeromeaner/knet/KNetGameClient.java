@@ -114,7 +114,7 @@ public class KNetGameClient extends KNetClient implements KNetListener {
 		if(getSource().equals(e.get(ADDRESS)))
 			issue = true;
 		if(issue) {
-			knetEvented(this, e);
+//			knetEvented(this, e);
 			super.issue(e);
 		}
 	}

@@ -48,9 +48,11 @@ import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.gui.knet.KNetPanel;
 import org.zeromeaner.gui.knet.KNetPanelAdapter;
 import org.zeromeaner.gui.knet.KNetPanelEvent;
+import org.zeromeaner.knet.obj.KNetChannelInfo;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.Localization;
+import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.Options.AIOptions;
 import org.zeromeaner.util.Options.TuningOptions;
@@ -129,18 +131,19 @@ public class StandaloneFrame extends JFrame {
 			}
 			@Override
 			public void knetPanelJoined(KNetPanelEvent e) {
-//				enterNewMode(e.getChannel().getMode());
-				gamePanel.modeToEnter.offer(e.getChannel().getMode());
-				try {
-					gamePanel.modesEntered.take();
-				} catch(InterruptedException ie) {
+				if(e.getChannel().getId() != KNetChannelInfo.LOBBY_CHANNEL_ID && e.getSource().getClient().getCurrentChannel() != null) {
+					startNewGame(e.getChannel().getRule().resourceName, null, e.getChannel().getMode(), e);
+					gamePanel.displayWindow();
 				}
 			}
 			
 			@Override
 			public void knetPanelParted(KNetPanelEvent e) {
-//				enterNewMode(null);
-				gamePanel.modeToEnter.offer("");
+				gamePanel.shutdown();
+				try {
+					gamePanel.shutdownWait();
+				} catch(InterruptedException ex) {
+				}
 			}
 		});
 		
@@ -341,9 +344,6 @@ public class StandaloneFrame extends JFrame {
 		} catch(InterruptedException ie) {
 		}
 //		enterNewMode(null);
-		gamePanel.modeToEnter.offer("");
-		enterNewMode(null);
-		gamePanel.displayWindow();
 	}
 	
 	private JToolBar createToolbar() {
@@ -465,132 +465,27 @@ public class StandaloneFrame extends JFrame {
 	}
 
 	/**
-	 * Enter to a new mode in netplay
-	 * @param modeName Mode name
-	 */
-	public void enterNewMode(String modeName) {
-		StandaloneMain.loadGlobalConfig();	// Reload global config file
-		
-		if(gameManager == null) {
-			StandaloneRenderer rendererSwing = new StandaloneRenderer(this);
-			gameManager = new GameManager(rendererSwing);
-		}
-		
-		GameMode previousMode = gameManager.mode;
-		GameMode newModeTemp = (modeName == null) ? new AbstractNetMode() : StandaloneMain.modeManager.get(modeName);
-
-		if(newModeTemp == null) {
-			log.error("Cannot find a mode:" + modeName);
-		} else if(newModeTemp instanceof AbstractNetMode) {
-			log.info("Enter new mode:" + newModeTemp.getName());
-
-			AbstractNetMode newMode = (AbstractNetMode)newModeTemp;
-
-			if(previousMode != null && gameManager.engine.length > 0) {
-				if(gameManager.engine[0].ai != null) {
-					gameManager.engine[0].ai.shutdown(gameManager.engine[0], 0);
-					gameManager.engine[0].ai = null;
-				}
-				previousMode.netplayUnload(netLobby);
-			}
-
-			gameManager.mode = newMode;
-			gameManager.init();
-			newMode.netplayInit(netLobby);
-			
-			// Tuning
-			TuningOptions tune = player(0).tuning;
-			
-			gameManager.engine[0].owRotateButtonDefaultRight = tune.ROTATE_BUTTON_DEFAULT_RIGHT.value();
-			gameManager.engine[0].owSkin = tune.SKIN.value();
-			gameManager.engine[0].owMinDAS = tune.MIN_DAS.value();
-			gameManager.engine[0].owMaxDAS = tune.MAX_DAS.value();
-			gameManager.engine[0].owDasDelay = tune.DAS_DELAY.value();
-			gameManager.engine[0].owReverseUpDown = tune.REVERSE_UP_DOWN.value();
-			gameManager.engine[0].owMoveDiagonal = tune.MOVE_DIAGONAL.value();
-			gameManager.engine[0].owBlockOutlineType = tune.BLOCK_OUTLINE_TYPE.value();
-			gameManager.engine[0].owBlockShowOutlineOnly = tune.BLOCK_SHOW_OUTLINE_ONLY.value();
-
-			// Rule
-			RuleOptions ruleopt = null;
-			String rulename = player(0).RULE_NAME.value();
-			if(gameManager.mode.getGameStyle() > 0) {
-				rulename = player(0).RULE_NAME_FOR_STYLE(gameManager.mode.getGameStyle()).value();
-			}
-			if((rulename != null) && (rulename.length() > 0)) {
-				log.info("Load rule options from " + rulename);
-				ruleopt = GeneralUtil.loadRule(rulename);
-			} else {
-				log.info("Load rule options from setting file");
-				ruleopt = new RuleOptions();
-				ruleopt.readProperty(Options.GLOBAL_PROPERTIES, 0);
-			}
-			gameManager.engine[0].ruleopt = ruleopt;
-
-			// Randomizer
-			if((ruleopt.strRandomizer != null) && (ruleopt.strRandomizer.length() > 0)) {
-				Randomizer randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer, gameManager.engine[0]);
-				gameManager.engine[0].randomizer = randomizerObject;
-			}
-
-			// Wallkick
-			if((ruleopt.strWallkick != null) && (ruleopt.strWallkick.length() > 0)) {
-				Wallkick wallkickObject = GeneralUtil.loadWallkick(ruleopt.strWallkick);
-				gameManager.engine[0].wallkick = wallkickObject;
-			}
-
-			// AI
-			String aiName = player(0).ai.NAME.value();
-			if(aiName.length() > 0) {
-				AbstractAI aiObj = GeneralUtil.loadAIPlayer(aiName);
-				AIOptions ai = player(0).ai;
-				gameManager.engine[0].ai = aiObj;
-				gameManager.engine[0].aiMoveDelay = ai.MOVE_DELAY.value();
-				gameManager.engine[0].aiThinkDelay = ai.THINK_DELAY.value();
-				gameManager.engine[0].aiUseThread = ai.USE_THREAD.value();
-				gameManager.engine[0].aiShowHint = ai.SHOW_HINT.value();
-				gameManager.engine[0].aiPrethink = ai.PRETHINK.value();
-				gameManager.engine[0].aiShowState = ai.SHOW_STATE.value();
-			}
-			gameManager.showInput = Options.standalone().SHOW_INPUT.value();
-
-			// Initialization for each player
-			for(int i = 0; i < gameManager.getPlayers(); i++) {
-				gameManager.engine[i].init();
-			}
-
-			gamePanel.isNetPlay = true;
-			
-		} else {
-			log.error("This mode does not support netplay:" + modeName);
-		}
-
-/*
-		if(gameFrame != null) gameFrame.updateTitleBarCaption();
-*/
-	}
-
-
-	/**
 	 * Start a new game (Rule will be user-selected one))
 	 */
 	public void startNewGame() {
-		startNewGame(null, null);
+		startNewGame(null, null, null, null);
 	}
 
 	/**
 	 * Start a new game
 	 * @param strRulePath Rule file path (null if you want to use user-selected one)
 	 */
-	public void startNewGame(String strRulePath, String replayPath) {
+	public void startNewGame(String strRulePath, String replayPath, String modeName, KNetPanelEvent e) {
 //		if(gameManager == null) {
-			StandaloneRenderer rendererSwing = new StandaloneRenderer(this);
-			gameManager = new GameManager(rendererSwing);
+		StandaloneRenderer rendererSwing = new StandaloneRenderer(this);
+		gameManager = new GameManager(rendererSwing);
 //		}
 
-		// Mode
-		String modeName = Options.general().MODE_NAME.value();
+		boolean isNetPlay = (modeName != null);
 		
+		// Mode
+		if(modeName == null)
+			modeName = Options.general().MODE_NAME.value();
 		
 		if(replayPath != null) {
 			log.info("Loading Replay:" + replayPath);
@@ -600,8 +495,8 @@ public class StandaloneFrame extends JFrame {
 				ResourceInputStream stream = new ResourceInputStream(replayPath);
 				prop.load(stream);
 				stream.close();
-			} catch (IOException e) {
-				log.error("Couldn't load replay file from " + replayPath, e);
+			} catch (IOException ex) {
+				log.error("Couldn't load replay file from " + replayPath, ex);
 				return;
 			}
 
@@ -621,6 +516,10 @@ public class StandaloneFrame extends JFrame {
 			gamePanel.modeToEnter.offer(modeName);
 		}
 
+		if(e != null) {
+			((AbstractNetMode) modeObj).setKnetPanel(e.getSource());
+		}
+		
 		gameManager.init();
 
 		// Initialization for each player
@@ -698,7 +597,7 @@ public class StandaloneFrame extends JFrame {
 			gameManager.engine[i].init();
 		}
 		
-		gamePanel.isNetPlay = false;
+		gamePanel.isNetPlay = isNetPlay;
 	}
 
 	public void startReplayGame(String filename) {
@@ -711,7 +610,7 @@ public class StandaloneFrame extends JFrame {
 			gamePanel.shutdownWait();
 		} catch(InterruptedException ie) {
 		}
-		startNewGame(null, filename);
+		startNewGame(null, filename, null, null);
 		gamePanel.displayWindow();
 	}
 
