@@ -116,9 +116,9 @@ public class WaveEngine {
 			for(int r = in.read(b); r != -1; r = in.read(b))
 				out.write(b, 0, r);
 			in.close();
-			out.reset();
 			in = new ByteArrayInputStream(out.toByteArray());
 			AudioInputStream ain = AudioSystem.getAudioInputStream(in);
+			out.reset();
 			for(int r = ain.read(b); r != -1; r = ain.read(b))
 				out.write(b, 0, r);
 			ain.close();
