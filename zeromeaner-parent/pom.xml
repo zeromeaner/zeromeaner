@@ -6,13 +6,8 @@
 	<version>1.2.0${version_suffix}-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<properties>
-		<version_suffix></version_suffix>
-	</properties>
-
 	<modules>
 		<module>../zeromeaner-core</module>
-		<module>../zeromeaner-tuning</module>
 		<module>../zeromeaner-media</module>
 		<module>../zeromeaner-server</module>
 		<module>../zeromeaner-netstats</module>
@@ -47,11 +42,6 @@
 	<name>Zeromeaner Parent</name>
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>org.zeromeaner</groupId>
-				<artifactId>zeromeaner-core</artifactId>
-				<version>1.2.0${version_suffix}-SNAPSHOT</version>
-			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
@@ -94,20 +84,5 @@
 			<url>http://vps.robinvps.com:7777/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
-
-	<profiles>
-		<profile>
-			<id>master-snapshot</id>
-			<activation>
-				<property>
-					<name>version_suffix</name>
-					<value>-ZER</value>
-				</property>
-			</activation>
-			<properties>
-				<version_suffix></version_suffix>
-			</properties>
-		</profile>
-	</profiles>
 
 </project>
