@@ -183,7 +183,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 				if(!GameManager.VERSION.isSnapshot())
 					connectionsModel.addElement("" + StandaloneApplet.url.getHost() + ":61897");
 				else {
-					connectionsModel.addElement("" + StandaloneApplet.url.getHost() + ":61898");
+					connectionsModel.addElement("" + StandaloneApplet.url.getHost() + ":61896");
 				}
 			}
 			
