@@ -63,8 +63,7 @@ public class WaveEngine {
 
 	private Map<AudioFormat, AudioThread> threads = new ConcurrentHashMap<>();
 	
-	private Map<String, AudioFormat> clipFormats = new HashMap<>();
-	private Map<String, byte[]> clipBuffers = new HashMap<>();
+	private Map<String, SampleBuffer> buffers = new HashMap<>();
 
 	/** Volume */
 	private double volume = 1.0;
@@ -99,8 +98,8 @@ public class WaveEngine {
 	
 	private void setVolume(SourceDataLine line) {
 		try {
-//			FloatControl ctrl = (FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN);
-//			ctrl.setValue((float)Math.log10(volume) * 20);
+			FloatControl ctrl = (FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN);
+			ctrl.setValue((float)Math.log10(volume) * 20);
 		} catch (Exception e) {}
 	}
 
@@ -117,8 +116,7 @@ public class WaveEngine {
 			for(int r = in.read(b); r != -1; r = in.read(b))
 				out.write(b, 0, r);
 			in.close();
-			clipBuffers.put(name, out.toByteArray());
-			clipFormats.put(name, in.getFormat());
+			buffers.put(name, new SampleBuffer(in.getFormat(), ByteBuffer.wrap(out.toByteArray())));
 		} catch(Exception e) {
 			log.warn(e);
 		}
@@ -130,7 +128,7 @@ public class WaveEngine {
 	 * @param name Registered name
 	 */
 	public void play(final String name) {
-		AudioFormat format = clipFormats.get(name);
+		AudioFormat format = buffers.get(name).getFormat();
 		
 		try {
 			AudioThread match = null;
@@ -150,7 +148,7 @@ public class WaveEngine {
 				}
 			}
 
-			match.offer(new SampleBuffer(format, ByteBuffer.wrap(clipBuffers.get(name)), System.nanoTime()));
+			match.offer(buffers.get(name).reset());
 		} catch(Exception ex) {
 		}
 	}
@@ -170,6 +168,8 @@ public class WaveEngine {
 			this.writer = new SampleLineWriter(format, line);
 			
 			setName(format.toString());
+			
+			setPriority(Thread.MAX_PRIORITY);
 		}
 		
 		public void offer(SampleBuffer buffer) {
@@ -183,7 +183,7 @@ public class WaveEngine {
 				while(true) {
 					long until = mixer.getStartTimeNanos() + mixer.getPositionNanos() + fillNanos;
 					mixer.writeUntil(writer, until);
-					Thread.sleep(4);
+					Thread.sleep(1);
 				}
 			} catch(Throwable e) {
 				log.warn(e);

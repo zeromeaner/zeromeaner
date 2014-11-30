@@ -6,18 +6,14 @@ import java.util.concurrent.TimeUnit;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
 
-public class SampleBuffer implements Comparable<SampleBuffer>, SampleSource {
+public class SampleBuffer {
 
 	protected ByteBuffer bytes;
 	protected AudioFormat format;
 
-	protected long startTimeNanos;
-	protected long positionNanos;
-	
-	public SampleBuffer(AudioFormat format, ByteBuffer bytes, long startTimeNanos) {
+	public SampleBuffer(AudioFormat format, ByteBuffer bytes) {
 		this.format = format;
 		this.bytes = bytes;
-		this.startTimeNanos = startTimeNanos;
 		
 		if(format.getEncoding().equals(Encoding.PCM_SIGNED) || format.getEncoding().equals(Encoding.PCM_UNSIGNED))
 			;
@@ -33,7 +29,7 @@ public class SampleBuffer implements Comparable<SampleBuffer>, SampleSource {
 		return bytes.remaining() / sampleBytes();
 	}
 	
-	public int nextSample() {
+	public synchronized int nextSample() {
 		int sampleBytes = sampleBytes();
 		
 		long sample = 0;
@@ -48,28 +44,22 @@ public class SampleBuffer implements Comparable<SampleBuffer>, SampleSource {
 			sample = sample << ((4 - sampleBytes) * 8);
 		}
 		
-		positionNanos += (long)(1000000000L / (double)(format.getSampleRate() * format.getChannels()));
-		
 		if(format.getEncoding().equals(Encoding.PCM_SIGNED))
 			return (int) sample;
 		else 
 			return (int)(sample - Integer.MAX_VALUE);
 	}
 	
-	public long getStartTimeNanos() {
-		return startTimeNanos;
-	}
-	
-	public long getPositionNanos() {
-		return positionNanos;
+	public synchronized SampleBuffer reset() {
+		bytes.clear();
+		return this;
 	}
 	
 	public AudioFormat getFormat() {
 		return format;
 	}
 	
-	@Override
-	public int compareTo(SampleBuffer o) {
-		return Long.compare(getStartTimeNanos(), o.getStartTimeNanos());
+	public SampleBuffer clone() {
+		return new SampleBuffer(format, (ByteBuffer) bytes.duplicate().clear());
 	}
 }
