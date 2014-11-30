@@ -3,16 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.zeromeaner</groupId>
 	<artifactId>zeromeaner-parent</artifactId>
-	<version>1.2.0${version.suffix}-SNAPSHOT</version>
+	<version>1.2.0${version_suffix}-SNAPSHOT</version>
 	<packaging>pom</packaging>
-
-	<properties>
-		<version.suffix></version.suffix>
-	</properties>
 
 	<modules>
 		<module>../zeromeaner-core</module>
-		<module>../zeromeaner-tuning</module>
 		<module>../zeromeaner-media</module>
 		<module>../zeromeaner-server</module>
 		<module>../zeromeaner-netstats</module>
@@ -47,11 +42,6 @@
 	<name>Zeromeaner Parent</name>
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>org.zeromeaner</groupId>
-				<artifactId>zeromeaner-core</artifactId>
-				<version>1.2.0${version.suffix}-SNAPSHOT</version>
-			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>

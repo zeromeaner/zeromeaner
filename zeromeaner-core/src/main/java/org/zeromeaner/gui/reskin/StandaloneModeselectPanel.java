@@ -199,6 +199,7 @@ public class StandaloneModeselectPanel extends JPanel {
 					currentRule = RuleButton.this;
 //					StandaloneMain.propConfig.setProperty("0.rule", rule.resourceName);
 					Options.general().RULE_NAME.set(rule.resourceName);
+					Options.general().RULE_NAME_P2.set(rule.resourceName);
 //					StandaloneMain.propConfig.setProperty("mode." + currentMode.mode.getName() + ".rule", rule.resourceName);
 					Options.mode(currentMode.mode.getName()).RULE_RSOURCE.set(rule.resourceName);
 				}

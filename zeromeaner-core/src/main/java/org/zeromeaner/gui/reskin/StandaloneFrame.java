@@ -166,7 +166,7 @@ public class StandaloneFrame extends JFrame {
 	private static void add(JToolBar toolbar, ButtonGroup g, AbstractButton b) {
 		b.setFocusable(false);
 		b.setBorder(null);
-		b.setHorizontalAlignment(SwingConstants.RIGHT);
+		b.setHorizontalAlignment(SwingConstants.LEFT);
 		toolbar.add(b);
 		g.add(b);
 	}
@@ -193,7 +193,6 @@ public class StandaloneFrame extends JFrame {
 					}
 					contentCards.show(content, nextCard);
 					currentCard = nextCard;
-					playCardSelected();
 				}
 				if(evt.getNewValue().equals(JOptionPane.NO_OPTION)) {
 					contentCards.show(content, CARD_PLAY);
@@ -328,6 +327,7 @@ public class StandaloneFrame extends JFrame {
 			gamePanel.shutdownWait();
 		} catch(InterruptedException ie) {
 		}
+		gamePanel.modeToEnter.offer("");
 		startNewGame();
 		gamePanel.displayWindow();
 	}
@@ -384,18 +384,19 @@ public class StandaloneFrame extends JFrame {
 		add(t, g, b);
 		*/
 		
-		b = new JToggleButton(new ToolbarAction("toolbar.ai_1p"));
-		add(t, g, b);
-		
 		b = new JToggleButton(new ToolbarAction("toolbar.keys_1p"));
 		add(t, g, b);
 		
 		b = new JToggleButton(new ToolbarAction("toolbar.tuning_1p"));
 		add(t, g, b);
 		
+		b = new JToggleButton(new ToolbarAction("toolbar.ai_1p"));
+		add(t, g, b);
+		
 		/*
 		b = new JToggleButton(new ToolbarAction("toolbar.rule_2p"));
 		add(t, g, b);
+		 */
 		
 		b = new JToggleButton(new ToolbarAction("toolbar.keys_2p"));
 		add(t, g, b);
@@ -403,7 +404,6 @@ public class StandaloneFrame extends JFrame {
 		b = new JToggleButton(new ToolbarAction("toolbar.tuning_2p"));
 		add(t, g, b);
 		
-		*/
 		b = new JToggleButton(new ToolbarAction("toolbar.ai_2p"));
 		add(t, g, b);
 		
@@ -427,20 +427,14 @@ public class StandaloneFrame extends JFrame {
 		b = new JButton(new ToolbarAction("toolbar.close") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				dispose();
+				StandaloneMain.saveConfig();
+				System.exit(0);
 			}
 		});
 		if(!StandaloneApplet.isApplet())
 			add(t, g, b);
 		
 		return t;
-	}
-	
-	@Override
-	public void dispose() {
-		super.dispose();
-		StandaloneMain.saveConfig();
-		System.exit(0);
 	}
 	
 	private class ToolbarAction extends AbstractAction {
@@ -589,10 +583,10 @@ public class StandaloneFrame extends JFrame {
 	 * @param strRulePath Rule file path (null if you want to use user-selected one)
 	 */
 	public void startNewGame(String strRulePath, String replayPath) {
-		if(gameManager == null) {
+//		if(gameManager == null) {
 			StandaloneRenderer rendererSwing = new StandaloneRenderer(this);
 			gameManager = new GameManager(rendererSwing);
-		}
+//		}
 
 		// Mode
 		String modeName = Options.general().MODE_NAME.value();
@@ -703,6 +697,8 @@ public class StandaloneFrame extends JFrame {
 			// Called at initialization
 			gameManager.engine[i].init();
 		}
+		
+		gamePanel.isNetPlay = false;
 	}
 
 	public void startReplayGame(String filename) {

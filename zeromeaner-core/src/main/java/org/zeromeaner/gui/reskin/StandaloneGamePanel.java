@@ -31,6 +31,8 @@ package org.zeromeaner.gui.reskin;
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -38,6 +40,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.Insets;
+import java.awt.Point;
+import java.awt.SecondaryLoop;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -50,6 +54,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.DelayQueue;
@@ -69,6 +74,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.event.InternalFrameAdapter;
@@ -107,10 +113,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		}
 	});
 	
-	protected ExecutorService videoPool = Executors.newSingleThreadExecutor();
-	
-	private static class FocusableJLabel extends JLabel {
-		private FocusableJLabel(Icon image) {
+	public static class FocusableJLabel extends JLabel {
+		public FocusableJLabel(Icon image) {
 			super(image);
 			setFocusable(true);
 			setFocusCycleRoot(true);
@@ -119,21 +123,31 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	}
 
 	public static class FramePerSecond implements Delayed {
-		private long expiry = System.nanoTime() + TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS);
+		private long created = System.nanoTime();
+		private long expiry = created + TimeUnit.NANOSECONDS.convert(4, TimeUnit.SECONDS);
 		
 		@Override
 		public int compareTo(Delayed o) {
-			return ((Long) getDelay(TimeUnit.NANOSECONDS)).compareTo(o.getDelay(TimeUnit.NANOSECONDS));
+			return Long.compare(expiry, ((FramePerSecond) o).expiry);
 		}
 
 		@Override
 		public long getDelay(TimeUnit unit) {
-			return expiry - System.nanoTime();
+			return unit.convert(expiry - System.nanoTime(), TimeUnit.NANOSECONDS);
+		}
+		
+		public long getCreated() {
+			return created;
+		}
+		
+		public long getExpiry() {
+			return expiry;
 		}
 	}
 	
-	private DelayQueue<FramePerSecond> vps = new DelayQueue<FramePerSecond>();
+	private DelayQueue<FramePerSecond> rps = new DelayQueue<FramePerSecond>();
 	private DelayQueue<FramePerSecond> fps = new DelayQueue<FramePerSecond>();
+	private DelayQueue<FramePerSecond> dps = new DelayQueue<>();
 	
 	/** Parent window */
 	protected StandaloneFrame owner = null;
@@ -150,9 +164,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	//	/** BufferStrategy */
 	//	protected BufferStrategy bufferStrategy = null;
 
-	/** Game loop thread */
-	protected Thread thread = null;
-
 	/** trueThread moves between */
 	public AtomicBoolean running = new AtomicBoolean(false);
 
@@ -167,7 +178,9 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 	
 	/** ActualFPS */
-	public double visibleFPS = 0.0;
+	public double renderedFPS = 0.0;
+	
+	public double drawnFPS = 0.0;
 
 	public double totalFPS = 0;
 
@@ -176,6 +189,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 	/** True if execute Toolkit.getDefaultToolkit().sync() at the end of each frame */
 	public boolean syncDisplay = true;
+	
+	public boolean syncRender = true;
 
 	/** Pause state */
 	protected boolean pause = false;
@@ -223,8 +238,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 * @param owner Parent window
 	 * @throws HeadlessException Keyboard, Mouse, Exceptions such as the display if there is no
 	 */
-	public StandaloneGamePanel(StandaloneFrame owner) throws HeadlessException {
-		super(new GridBagLayout());
+	public StandaloneGamePanel(final StandaloneFrame owner) throws HeadlessException {
+		super(new BorderLayout());
 		this.owner = owner;
 
 		setDoubleBuffered(true);
@@ -235,13 +250,15 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 		add(
 				imageBufferLabel = new FocusableJLabel(new ImageIcon(imageBuffer)), 
-				new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
+				BorderLayout.CENTER);
+		
+		add(
+				new JLabel("Press CTRL+ENTER to enter full-screen mode"),
+				BorderLayout.SOUTH);
 		
 		imageBufferLabel.setText("No Active Game.  Click \"Play\" to start.");
 		imageBufferLabel.setIcon(null);
 		
-		imageBufferLabel.setBorder(BorderFactory.createMatteBorder(4, 4, 4, 4, new Color(255, 255, 255, 127)));
-
 		maxfps = Options.standalone().MAX_FPS.value();
 
 		log.debug("GameFrame created");
@@ -250,6 +267,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		setFocusable(true);
 		setFocusCycleRoot(true);
 		setFocusTraversalKeysEnabled(false);
+		
+		addKeyListener(new FullScreenKeyListener(owner));
 		addKeyListener(new GameFrameKeyEvent());
 
 		MouseListener ml = new MouseAdapter() {
@@ -268,24 +287,21 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 */
 	public void displayWindow() {
 
-		int screenWidth = Options.standalone().SCREEN_WIDTH.value();
-		int screenHeight = Options.standalone().SCREEN_HEIGHT.value();
-
-		imageBuffer = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);
 		imageBufferLabel.setText(null);
 		imageBufferLabel.setIcon(new ImageIcon(imageBuffer));
 		imageBufferLabel.revalidate();
 
-		if(!running.get()) {
-			thread = new Thread(this, "Game Thread");
-			thread.start();
-		}
+		new Thread(this, "Game Thread").start();
 	}
 
+	public void shutdown() {
+		shutdown(false);
+	}
+	
 	/**
 	 * End processing
 	 */
-	public void shutdown() {
+	public void shutdown(boolean restart) {
 		MusicList.getInstance().stop();
 		if(isNetPlay) {
 			// Reload global config (because it can change rules)
@@ -295,8 +311,15 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			running.set(false);
 			running.notifyAll();
 		}
-		imageBufferLabel.setText("No Active Game.  Click \"Play\" to start.");
+		
+		
+		imageBufferLabel.setText("No Active Game.  Click to start.");
 		imageBufferLabel.setIcon(null);
+		
+		if(restart) {
+			owner.startNewGame();
+			displayWindow();
+		}
 	}
 	
 	public void shutdownWait() throws InterruptedException {
@@ -322,6 +345,27 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		if(render)
 			hooks.dispatcher().frameSynced(this);
 	}
+	
+	protected double fpsOf(DelayQueue<FramePerSecond> q) {
+		if(q.size() < 2)
+			return 0;
+		double durationNanos = System.nanoTime() - q.peek().getCreated();
+		return q.size() / (durationNanos / 1000000000L);
+	}
+	
+	protected void updateFPS() {
+		while(fps.poll() != null)
+			;
+		while(rps.poll() != null)
+			;
+		while(dps.poll() != null)
+			;
+		totalFPS = fpsOf(fps); // Math.rint(fps.size() / 4.);
+		renderedFPS = fpsOf(rps); // Math.rint(rps.size() / 4.);
+		drawnFPS = fpsOf(dps); // Math.rint(dps.size() / 4.);
+	}
+	
+	private long lastFrameNanos;
 	
 	/**
 	 * Processing of the thread
@@ -349,7 +393,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		enableframestep = Options.standalone().ENABLE_FRAME_STEP.value();
 		showfps = Options.standalone().SHOW_FPS.value();
 		syncDisplay = Options.standalone().SYNC_DISPLAY.value();
-
+		syncRender = Options.standalone().SYNC_RENDER.value();
 		
 		
 		// Main loop
@@ -360,38 +404,34 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		running.set(true);
 		
 		Runnable task = new Runnable() {
+			private long nanosPerFrame = TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / maxfps;
+			
 			@Override
 			public void run() {
-				while(fps.poll() != null)
-					;
-				while(vps.poll() != null)
-					;
-				if(vps.size() > maxfps)
+				if(lastFrameNanos + nanosPerFrame > System.nanoTime())
 					return;
-				fps.add(new FramePerSecond());
-				doFrame(true);
-				while(fps.poll() != null)
-					;
-				while(vps.poll() != null)
-					;
-				totalFPS = fps.size();
-				visibleFPS = vps.size();
-				int unrenderedFrames = 0;
-				while(totalFPS < maxfps - 1) {
+				while(lastFrameNanos + nanosPerFrame <= System.nanoTime() - nanosPerFrame) {
 					fps.add(new FramePerSecond());
-					unrenderedFrames++;
-					doFrame(false);
-					while(fps.poll() != null)
-						;
-					while(vps.poll() != null)
-						;
-					totalFPS = fps.size();
-					visibleFPS = vps.size();
+					doFrame(syncRender);
+					lastFrameNanos += nanosPerFrame;
 				}
+				
+				updateFPS();
+				doFrame(true);
+				fps.add(new FramePerSecond());
+				lastFrameNanos += nanosPerFrame;
 			}
 		};
 		
-		ScheduledFuture<?> f = gexec.scheduleAtFixedRate(task, 0, TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / maxfps, TimeUnit.NANOSECONDS);
+		lastFrameNanos = System.nanoTime();
+		
+		ScheduledFuture<?> f = gexec.scheduleAtFixedRate(
+				task, 
+				0, 
+				TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / maxfps, 
+				TimeUnit.NANOSECONDS);
+		
+		imageBufferLabel.getParent().requestFocus();
 		
 		while(running.get()) {
 			synchronized(running) {
@@ -408,7 +448,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		hooks.dispatcher().gameStopped(this);
 		
 		owner.gameManager.shutdown();
-		owner.gameManager = null;
 
 		log.debug("Game thread end");
 	}
@@ -504,7 +543,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 					owner.gameManager.reset();
 				} else if(cursor == 2) {
 					// End
-					shutdown();
+					shutdown(true);
 					return;
 				} else if(cursor == 3) {
 					// Replay re-record
@@ -581,7 +620,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 					StandaloneGameKey.gamekey[0].isPushKey(StandaloneGameKey.BUTTON_GIVEUP) ||
 					StandaloneGameKey.gamekey[1].isPushKey(StandaloneGameKey.BUTTON_GIVEUP))
 			{
-				shutdown();
+				shutdown(true);
 				return;
 			}
 		}
@@ -595,7 +634,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		if(StandaloneGameKey.gamekey[0].isPushKey(StandaloneGameKey.BUTTON_QUIT) ||
 				StandaloneGameKey.gamekey[1].isPushKey(StandaloneGameKey.BUTTON_QUIT))
 		{
-			shutdown();
+			shutdown(true);
 /*
 			owner.shutdown();
 */
@@ -652,7 +691,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 				// Return to title
 				if(owner.gameManager.getQuitFlag()) {
-					shutdown();
+					shutdown(true);
 					return;
 				}
 
@@ -692,7 +731,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		} catch (NullPointerException e) {
 			try {
 				if((owner.gameManager != null) && owner.gameManager.getQuitFlag()) {
-					shutdown();
+					shutdown(true);
 					return;
 				} else {
 					log.error("update NPE", e);
@@ -702,7 +741,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			e.printStackTrace();
 			try {
 				if((owner.gameManager != null) && owner.gameManager.getQuitFlag()) {
-					shutdown();
+					shutdown(true);
 					return;
 				} else {
 					log.error("update fail", e);
@@ -756,7 +795,12 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 		// FPSDisplay
 		if(showfps) {
-			StandaloneNormalFont.printFont(0, 480-16, df.format(totalFPS) + "/" + maxfpsCurrent + " (" + df.format(visibleFPS) + " RENDERED)", StandaloneNormalFont.COLOR_BLUE, 1.0f);
+			String fps = df.format(totalFPS) + "/" + maxfpsCurrent + " FPS";
+			if(syncDisplay)
+				fps += " (" + df.format(drawnFPS) + "/" + df.format(renderedFPS) + " DRAWN)";
+			else if(!syncRender)
+				fps += " (" + df.format(renderedFPS) + " RENDERED)";
+			StandaloneNormalFont.printFont(0, 480-16, fps, StandaloneNormalFont.COLOR_BLUE, 1.0f);
 		}
 
 		// Displayed on the screen /ScreenshotCreating
@@ -812,7 +856,12 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 		// FPSDisplay
 		if(showfps) {
-			StandaloneNormalFont.printFont(0, 480-16, df.format(totalFPS) + "/" + maxfpsCurrent + " (" + df.format(visibleFPS) + " RENDERED)", StandaloneNormalFont.COLOR_BLUE, 1.0f);
+			String fps = df.format(totalFPS) + "/" + maxfpsCurrent + " FPS";
+			if(syncDisplay)
+				fps += " (" + df.format(drawnFPS) + "/" + df.format(renderedFPS) + " DRAWN)";
+			else if(!syncRender)
+				fps += " (" + df.format(renderedFPS) + " RENDERED)";
+			StandaloneNormalFont.printFont(0, 480-16, fps, StandaloneNormalFont.COLOR_BLUE, 1.0f);
 		}
 
 		// Displayed on the screen /ScreenshotCreating
@@ -833,30 +882,33 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		//		}
 	}
 
-	private boolean syncing = false;
+	private AtomicBoolean syncing = new AtomicBoolean(false);
+	
 	private Runnable sync = new Runnable() {
 		@Override
 		public void run() {
 			imageBufferLabel.repaint();
 			if(syncDisplay)
 				Toolkit.getDefaultToolkit().sync();
-			syncing = false;
-			vps.add(new FramePerSecond());
+			dps.add(new FramePerSecond());
+			syncing.set(false);
 		}
 	};
 	
 	private void sync() {
-		if(syncing)
-			return;
-		syncing = true;
 		if(syncDisplay) {
 			try {
 				EventQueue.invokeAndWait(sync);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
-		} else
-			EventQueue.invokeLater(sync);
+		} else {
+			if(!syncing.get()) {
+				syncing.set(true);
+				EventQueue.invokeLater(sync);
+			}
+		}
+		rps.add(new FramePerSecond());
 		hooks.dispatcher().frameSynced(this);
 	}
 	
@@ -925,13 +977,68 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 */
 	}
 
-	/**
-	 * Window event Processing
-	 */
-	protected class GameFrameWindowEvent extends InternalFrameAdapter {
+	private class FullScreenKeyListener extends KeyAdapter {
+		private final StandaloneFrame owner;
+		private boolean fullscreen;
+		private int exstate;
+		private Dimension size;
+		private Point location;
+		private Container contentPane;
+	
+		private FullScreenKeyListener(StandaloneFrame owner) {
+			this.owner = owner;
+		}
+	
 		@Override
-		public void internalFrameClosing(InternalFrameEvent e) {
-			shutdown();
+		public void keyPressed(KeyEvent e) {
+			if(e.getKeyCode() != KeyEvent.VK_ENTER || e.getModifiersEx() != KeyEvent.CTRL_DOWN_MASK)
+				return;
+			e.consume();
+			if(!fullscreen) {
+				exstate = owner.getExtendedState();
+				contentPane = owner.getContentPane();
+				size = owner.getSize();
+				location = owner.getLocation();
+				JPanel content = new JPanel(new BorderLayout());
+				content.add(imageBufferLabel, BorderLayout.CENTER);
+				content.add(new JLabel("Press CTRL+ENTER to leave full-screen mode"), BorderLayout.SOUTH);
+				content.addKeyListener(this);
+				content.addKeyListener(new GameFrameKeyEvent());
+				owner.setContentPane(content);
+				owner.setExtendedState(JFrame.MAXIMIZED_BOTH);
+				content.requestFocus();
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						Dimension d = owner.getSize();
+						d = new Dimension(d.width - 32, d.height - 32);
+						Dimension id;
+						if(d.width * 3 / 4 > d.height) {
+							id = new Dimension(d.height * 4 / 3, d.height);
+						} else {
+							id = new Dimension(d.width, d.width * 3 / 4);
+						}
+						imageBuffer = new BufferedImage((int) id.getWidth(), (int) id.getHeight(), BufferedImage.TYPE_INT_ARGB);
+						imageBufferLabel.setIcon(new ImageIcon(imageBuffer));
+						imageBufferLabel.revalidate();
+					}
+				});
+				fullscreen = true;
+			} else {
+				owner.getContentPane().remove(imageBufferLabel);
+				owner.setContentPane(contentPane);
+				add(
+						imageBufferLabel, 
+						BorderLayout.CENTER);
+				owner.setExtendedState(exstate);
+				owner.setSize(size);
+				owner.setLocation(location);
+				imageBuffer = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB);
+				imageBufferLabel.setIcon(new ImageIcon(imageBuffer));
+				imageBufferLabel.revalidate();
+				fullscreen = false;
+				requestFocus();
+			}
 		}
 	}
 
@@ -941,20 +1048,29 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	protected class GameFrameKeyEvent extends KeyAdapter {
 		@Override
 		public void keyPressed(KeyEvent e) {
+			if(e.getKeyCode() == KeyEvent.VK_ENTER && e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK)
+				return;
+
 			setButtonPressedState(e.getKeyCode(), true);
 		}
 
 		@Override
 		public void keyReleased(KeyEvent e) {
+			if(e.getKeyCode() == KeyEvent.VK_ENTER && e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK)
+				return;
+
 			setButtonPressedState(e.getKeyCode(), false);
 		}
 
 		protected void setButtonPressedState(int keyCode, boolean pressed) {
+			boolean[] isInGame = Arrays.copyOf(StandaloneGamePanel.this.isInGame, StandaloneGamePanel.this.isInGame.length);
 			for(int playerID = 0; playerID < StandaloneGameKey.gamekey.length; playerID++) {
 				int[] kmap = isInGame[playerID] ? StandaloneGameKey.gamekey[playerID].keymap : StandaloneGameKey.gamekey[playerID].keymapNav;
 				for(int i = 0; i < StandaloneGameKey.MAX_BUTTON; i++) {
 					if(keyCode == kmap[i]) {
-						//log.debug("KeyCode:" + keyCode + " pressed:" + pressed + " button:" + i);
+						if(playerID != 0 && (i == StandaloneGameKey.BUTTON_UP || i == StandaloneGameKey.BUTTON_DOWN))
+							continue;
+//						log.debug("KeyCode:" + keyCode + " pressed:" + pressed + " button:" + i);
 						StandaloneGameKey.gamekey[playerID].setPressState(i, pressed);
 					}
 				}

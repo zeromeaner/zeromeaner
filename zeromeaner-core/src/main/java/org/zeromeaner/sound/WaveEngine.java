@@ -26,12 +26,13 @@
     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
  */
-package org.zeromeaner.gui;
+package org.zeromeaner.sound;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,7 +40,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -58,9 +61,9 @@ public class WaveEngine {
 	/** Log */
 	private static Logger log = Logger.getLogger(WaveEngine.class);
 
-	private Set<AudioThread> threads = Collections.synchronizedSet(new HashSet<WaveEngine.AudioThread>());
+	private Map<AudioFormat, AudioThread> threads = new ConcurrentHashMap<>();
 	
-	private Map<String, byte[]> clipBuffers = new HashMap<String, byte[]>();
+	private Map<String, SampleBuffer> buffers = new HashMap<>();
 
 	/** Volume */
 	private double volume = 1.0;
@@ -88,7 +91,7 @@ public class WaveEngine {
 		volume = vol;
 
 		synchronized(threads) {
-			for(AudioThread t : threads)
+			for(AudioThread t : threads.values())
 				setVolume(t.line);
 		}
 	}
@@ -113,8 +116,15 @@ public class WaveEngine {
 			for(int r = in.read(b); r != -1; r = in.read(b))
 				out.write(b, 0, r);
 			in.close();
-			clipBuffers.put(name, out.toByteArray());
-		} catch(IOException ioe) {
+			in = new ByteArrayInputStream(out.toByteArray());
+			AudioInputStream ain = AudioSystem.getAudioInputStream(in);
+			out.reset();
+			for(int r = ain.read(b); r != -1; r = ain.read(b))
+				out.write(b, 0, r);
+			ain.close();
+			buffers.put(name, new SampleBuffer(ain.getFormat(), ByteBuffer.wrap(out.toByteArray())));
+		} catch(Exception e) {
+			log.warn(e);
 		}
 	}
 
@@ -124,23 +134,17 @@ public class WaveEngine {
 	 * @param name Registered name
 	 */
 	public void play(final String name) {
-		final AudioInputStream audioIn;
-		try {
-			audioIn = AudioSystem.getAudioInputStream(new ByteArrayInputStream(clipBuffers.get(name)));
-		} catch(Exception ex) {
+		if(buffers.get(name) == null)
 			return;
-		}
 		
-		AudioFormat format = audioIn.getFormat();
+		AudioFormat format = buffers.get(name).getFormat();
 		
 		try {
 			AudioThread match = null;
 			synchronized(threads) {
-				for(AudioThread t : threads) {
-					if(format.matches(t.format)) {
+				for(AudioThread t : threads.values()) {
+					if(format.matches(t.format))
 						match = t;
-						break;
-					}
 				}
 				if(match == null) {
 					SourceDataLine line = AudioSystem.getSourceDataLine(format);
@@ -148,45 +152,48 @@ public class WaveEngine {
 					line.start();
 					setVolume(line);
 					match = new AudioThread(format, line);
-					threads.add(match);
+					threads.put(format, match);
 					match.start();
 				}
 			}
 
-			while(match.data.size() > 2)
-				match.data.pollLast();
-			byte[] buf = new byte[1024 * format.getFrameSize()];
-			for(int r = audioIn.read(buf); r != -1; r = audioIn.read(buf))
-				match.data.offer(Arrays.copyOf(buf, r));
+			match.offer(buffers.get(name).reset());
 		} catch(Exception ex) {
 		}
 	}
 	
 	private class AudioThread extends Thread {
-		public BlockingDeque<byte[]> data = new LinkedBlockingDeque<byte[]>();
-		public AudioFormat format;
-		public SourceDataLine line;
+		protected AudioFormat format;
+		protected SourceDataLine line;
+		
+		protected MixingQueue mixer;
+		protected SampleLineWriter writer;
 		
 		public AudioThread(AudioFormat format, SourceDataLine line) {
 			this.format = format;
 			this.line = line;
+			
+			this.mixer = new MixingQueue(format);
+			this.writer = new SampleLineWriter(format, line);
+			
+			setName(format.toString());
+		}
+		
+		public void offer(SampleBuffer buffer) {
+			mixer.offer(buffer);
 		}
 		
 		@Override
 		public void run() {
+			long fillNanos = TimeUnit.NANOSECONDS.convert(10, TimeUnit.MILLISECONDS);
 			try {
-				long expos = 0;
 				while(true) {
-					byte[] buf = data.poll();
-					if(buf == null) {
-						buf = new byte[1024 * format.getFrameSize()];
-						Arrays.fill(buf, (byte) 127);
-					}
-					expos += line.write(buf, 0, buf.length);
-					while(line.getLongFramePosition() < expos - 512)
-						Thread.sleep(5);
+					long until = mixer.getStartTimeNanos() + mixer.getPositionNanos() + fillNanos;
+					mixer.writeUntil(writer, until);
+					Thread.sleep(1);
 				}
-			} catch(Exception ex) {
+			} catch(Throwable e) {
+				log.warn(e);
 			}
 		}
 	}
