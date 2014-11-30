@@ -59,7 +59,7 @@ import org.zeromeaner.util.LstResourceMap;
 
 public class KNetPanel extends JPanel implements KNetChannelListener, KNetListener {
 	private static final Localization lz = new Localization();
-
+	
 	private static final String CONNECTION_LIST_PANEL_CARD = ConnectionListPanel.class.getName();
 	private static final String LOGGING_IN_PANEL_CARD = LoggingInPanel.class.getName();
 	private static final String LOGIN_PANEL_CARD = LoginPanel.class.getName();
@@ -67,12 +67,12 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 	private static final String CREATE_CHANNEL_PANEL_CARD = CreateChannelPanel.class.getName();
 	private static final String VIEW_CHANEL_CARD = KNetChannelInfoPanel.class.getName();
 	private static final String CHANGE_PASSWORD_CARD = ChangePasswordPanel.class.getName();
-
+	
 	private LstResourceMap config;
-
+	
 	private String defaultUsername;
 	private boolean ai;
-
+	
 	private CardLayout cards;
 	private ConnectionListPanel connectionsListPanel;
 	private LoggingInPanel loggingInPanel;
@@ -81,28 +81,28 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 	private CreateChannelPanel createChannelPanel;
 	private ViewChannelPanel viewChannelPanel;
 	private ChangePasswordPanel changePasswordPanel;
-
+	
 	private Map<Integer, ChannelPanel> channels = new HashMap<Integer, ChannelPanel>();
 	private ChannelPanel activeChannel;
-
+	
 	private KNetGameClient client;
-
+	
 	public class ConnectionListPanel extends JPanel {
 		private LstResourceMap servers = new LstResourceMap("config/list/knet_servers.lst");
-
+		
 		private DefaultListModel connectionsModel = new DefaultListModel();
 		private JList connectionsList = new JList(connectionsModel);
 		{
 			connectionsList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		}
-
+		
 		private JButton connect = new JButton(new AbstractAction(lz.s("conn_list_connect")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				connect();
 			}
 		});
-
+		
 		private JButton add = new JButton(new AbstractAction(lz.s("conn_list_add")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -119,7 +119,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 				servers.write();
 			}
 		});
-
+		
 		private JButton remove = new JButton(new AbstractAction(lz.s("conn_list_remove")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -133,20 +133,20 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 				}
 			}
 		});
-
+		
 		private JButton exit = new JButton(new AbstractAction(lz.s("conn_list_exit")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				shutdown();
 			}
 		});
-
+		
 		private JTextField username = new JTextField(defaultUsername);
-
+		
 		private JTextField host = new JTextField("");
-
+		
 		private JTextField port = new JTextField("");
-
+		
 		public ConnectionListPanel() {
 			super(new BorderLayout());
 			JPanel p = new JPanel(new BorderLayout());
@@ -169,7 +169,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			}
 			p.add(exit);
 			add(p, BorderLayout.EAST);
-
+			
 			if(StandaloneApplet.url != null) {
 				if(!GameManager.VERSION.isSnapshot())
 					connectionsModel.addElement("" + StandaloneApplet.url.getHost() + ":61897");
@@ -177,11 +177,11 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 					connectionsModel.addElement("" + StandaloneApplet.url.getHost() + ":61898");
 				}
 			}
-
+			
 			for(String c : servers.get("")) {
 				connectionsModel.addElement(c);
 			}
-
+			
 			connectionsList.addListSelectionListener(new ListSelectionListener() {
 				@Override
 				public void valueChanged(ListSelectionEvent e) {
@@ -197,11 +197,11 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			});
 			connectionsList.setSelectedIndex(0);
 		}
-
+		
 		public void connect() {
 			String host = this.host.getText();
 			int port = Integer.parseInt(this.port.getText().isEmpty() ? "61897" : this.port.getText());
-
+			
 			client = new KNetGameClient("Player", host, port);
 			client.addKNetChannelListener(KNetPanel.this);
 			client.addKNetListener(KNetPanel.this);
@@ -237,7 +237,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			fireKnetPanelConnected();
 		}
 	}
-
+	
 	public class LoggingInPanel extends JPanel {
 		public LoggingInPanel() {
 			super(new BorderLayout());
@@ -246,7 +246,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			add(l, BorderLayout.CENTER);
 		}
 	}
-
+	
 	public class LoginPanel extends JPanel {
 		private JButton login = new JButton(new AbstractAction(lz.s("lp_login")) {
 			@Override
@@ -254,50 +254,50 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 				String pw = pass.getText();
 				if(pw.isEmpty())
 					pw = null;
-				client.fireTCP(KNetFromClient.AUTHENTICATE_USER, new Topic(KNetTopics.AUTH), KNetEventArgs.PASSWORD, pw);
+				client.fireTCP(USER_AUTHENTICATE, pw);
 			}
 		});
-
+		
 		private JButton disconnect = new JButton(new AbstractAction(lz.s("lp_disconnect")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				connectedPanel.disconnect();
 			}
 		});
-
+		
 		private JTextField user = new JTextField("");
-
+		
 		private JPasswordField pass = new JPasswordField("");
-
+		
 		public LoginPanel() {
 			super(new BorderLayout());
 			JPanel p = new JPanel(new GridLayout(0, 1));
 			p.add(login);
 			p.add(disconnect);
 			add(p, BorderLayout.EAST);
-
+			
 			p = new JPanel(new GridLayout(0, 2));
 			p.add(new JLabel(lz.s("lp_user")));
 			p.add(user);
 			p.add(new JLabel(lz.s("lp_pass")));
 			p.add(pass);
 			add(p, BorderLayout.CENTER);
-
+			
 			user.setEnabled(false);
 			user.setDocument(connectionsListPanel.username.getDocument());
 		}
 	}
-
+	
 	public class ConnectedPanel extends JPanel {
 		private JTabbedPane channels = new JTabbedPane(JTabbedPane.LEFT);
-
+		
 		private JButton add = new JButton(new AbstractAction(lz.s("cp_add")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				add();
 			}
 		});
-
+		
 		private JButton view = new JButton(new AbstractAction(lz.s("cp_view")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -308,42 +308,42 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 				viewChannelPanel.channelPanel.updateEditor();
 			}
 		});
-
+		
 		private JButton spectate = new JButton(new AbstractAction(lz.s("cp_spectate")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				client.spectateChannel(getVisibleChannel().getChannel().getId());
 			}
 		});
-
+		
 		private JButton join = new JButton(new AbstractAction(lz.s("cp_join")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				getVisibleChannel().join();
 			}
 		});
-
+		
 		private JButton leave = new JButton(new AbstractAction(lz.s("cp_leave")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				getVisibleChannel().leave();
 			}
 		});
-
+		
 		private JButton disconnect = new JButton(new AbstractAction(lz.s("cp_disconnect")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				disconnect();
 			}
 		});
-
+		
 		private JButton changePassword = new JButton(new AbstractAction(lz.s("cp_change_password")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cards.show(KNetPanel.this, CHANGE_PASSWORD_CARD);
 			}
 		});
-
+		
 		public ConnectedPanel() {
 			super(new BorderLayout());
 			add(channels, BorderLayout.CENTER);
@@ -357,7 +357,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			p.add(changePassword);
 			add(p, BorderLayout.EAST);
 		}
-
+		
 		public void disconnect() {
 			try {
 				client.stop();
@@ -369,60 +369,59 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			KNetPanel.this.channels.clear();
 			channels.removeAll();
 		}
-
+		
 		public void add() {
 			cards.show(KNetPanel.this, CREATE_CHANNEL_PANEL_CARD);
 		}
-
+		
 		public JTabbedPane getChannels() {
 			return channels;
 		}
-
+		
 		public ChannelPanel getVisibleChannel() {
 			return (ChannelPanel) channels.getSelectedComponent();
 		}
 	}
-
+	
 	public class ChannelPanel extends JPanel implements KNetChannelListener {
 		private KNetChannelInfo channel;
-
+		
 		private DefaultListModel membersModel = new DefaultListModel();
 		private JList membersList = new JList(membersModel);
 		private JTextArea history = new JTextArea("");
 		private JTextField line = new JTextField("");
-
+		
 		public ChannelPanel(KNetChannelInfo c) {
 			this.channel = c;
-
+			
 			setLayout(new BorderLayout());
-
+			
 			JPanel p = new JPanel(new BorderLayout());
-			//			p.add(new JLabel("Chat Messages:"), BorderLayout.NORTH);
+//			p.add(new JLabel("Chat Messages:"), BorderLayout.NORTH);
 			history.setLineWrap(true);
 			history.setWrapStyleWord(true);
 			history.setEditable(false);
 			p.add(new JScrollPane(history), BorderLayout.CENTER);
 			p.setBorder(BorderFactory.createTitledBorder(lz.s("ch_chat_border")));
 			add(p, BorderLayout.CENTER);
-
+			
 			add(line, BorderLayout.SOUTH);
-
+			
 			p = new JPanel(new BorderLayout());
-			//			p.add(new JLabel("User List:"), BorderLayout.NORTH);
+//			p.add(new JLabel("User List:"), BorderLayout.NORTH);
 			p.add(new JScrollPane(membersList), BorderLayout.CENTER);
 			p.setBorder(BorderFactory.createTitledBorder(lz.s("ch_user_border")));
 			add(p, BorderLayout.WEST);
-
+			
 			line.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyPressed(KeyEvent e) {
 					if(e.getKeyCode() != KeyEvent.VK_ENTER)
 						return;
 					client.fireTCP(
-							KNetFromClient.SEND_CHANNEL_MESSAGE,
-							client.getCurrentChannelTopic(),
-							KNetEventArgs.CHANNEL_ID, channel.getId(),
-							KNetEventArgs.CHANNEL_CHAT_MESSAGE, line.getText());
+							CHANNEL_CHAT, line.getText(),
+							CHANNEL_ID, channel.getId(),
+							TIMESTAMP, System.currentTimeMillis());
 					history.setText(
 							history.getText() 
 							+ (history.getText().isEmpty() ? "" : "\n")
@@ -432,27 +431,27 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 					line.setText("");
 				}
 			});
-
+			
 			line.setEnabled(false);
 			line.setText(lz.s("ch_join_to_chat"));
-
+			
 			client.addKNetChannelListener(this);
-
+			
 			update();
 		}
-
+		
 		public KNetChannelInfo getChannel() {
 			return channel;
 		}
-
+		
 		public void join() {
-			//			if(activeChannel != null) {
-			//				activeChannel.leave();
-			//			}
-			//			client.fireTCP(CHANNEL_JOIN, CHANNEL_ID, channel.getId());
+//			if(activeChannel != null) {
+//				activeChannel.leave();
+//			}
+//			client.fireTCP(CHANNEL_JOIN, CHANNEL_ID, channel.getId());
 			client.joinChannel(channel.getId());
 		}
-
+		
 		private void joined() {
 			if(channel.getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
 				return;
@@ -470,12 +469,12 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			client.setCurrentChannel(channel);
 			fireKnetPanelJoined(getChannel());
 		}
-
+		
 		public void leave() {
-			//			client.fireTCP(CHANNEL_LEAVE, CHANNEL_ID, channel.getId());
+//			client.fireTCP(CHANNEL_LEAVE, CHANNEL_ID, channel.getId());
 			client.leaveChannel();
 		}
-
+		
 		private void left() {
 			connectedPanel.channels.setIconAt(
 					connectedPanel.channels.indexOfComponent(this),
@@ -506,7 +505,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 				line.setEnabled(false);
 				line.setText(lz.s("ch_join_to_chat"));
 			}
-
+			
 			Collections.sort(new AbstractList<String>() {
 				@Override
 				public String get(int index) {
@@ -517,7 +516,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 				public int size() {
 					return membersModel.size();
 				}
-
+				
 				@Override
 				public String set(int index, String element) {
 					String old = get(index);
@@ -525,7 +524,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 					return old;
 				}
 			});
-
+			
 			List<String> newMembers = new ArrayList<String>();
 			for(Object m : membersModel.toArray()) {
 				newMembers.add((String) m);
@@ -546,7 +545,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			}
 			revalidate();
 		}
-
+		
 		@Override
 		public void channelJoined(KNetChannelEvent e) {
 			if(EQInvoker.reinvoke(true, this, e))
@@ -574,13 +573,13 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 		@Override
 		public void channelCreated(KNetChannelEvent e) {
 			// TODO Auto-generated method stub
-
+			
 		}
 
 		@Override
 		public void channelDeleted(KNetChannelEvent e) {
 			// TODO Auto-generated method stub
-
+			
 		}
 
 		@Override
@@ -594,128 +593,131 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			String text = history.getText();
 			text += text.isEmpty() ? "" : "\n";
 			text += e.getEvent().getSource().getName() + ": ";
-			text += e.getEvent().get(KNetEventArgs.CHANNEL_CHAT_MESSAGE, String.class);
+			text += (String) e.getEvent().get(CHANNEL_CHAT);
 			history.setText(text);
 		}
 	}
-
+	
 	public class CreateChannelPanel extends JPanel {
 		private KNetChannelInfo channel;
 		private KNetChannelInfoPanel channelPanel;
-
+		
 		private JButton create = new JButton(new AbstractAction(lz.s("ccp_create")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				create();
 			}
 		});
-
+		
 		private JButton cancel = new JButton(new AbstractAction(lz.s("ccp_cancel")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cancel();
 			}
 		});
-
+		
 		public CreateChannelPanel() {
 			setLayout(new BorderLayout());
 			channel = new KNetChannelInfo();
 			channel.setGame(new KNetGameInfo());
 			channelPanel = new KNetChannelInfoPanel(channel);
 			channelPanel.updateEditor();
-
+			
 			JPanel p;
-
+			
 			p = new JPanel(new GridLayout(0, 1));
 			p.add(create);
 			p.add(cancel);
 			add(p, BorderLayout.EAST);
-
+			
 			p = new JPanel(new BorderLayout());
 			p.add(channelPanel, BorderLayout.CENTER);
 			p.setBorder(BorderFactory.createTitledBorder(lz.s("ccp_border")));
 			add(p, BorderLayout.CENTER);
 		}
-
+		
 		public KNetChannelInfo getChannel() {
 			return channel;
 		}
-
+		
 		public KNetChannelInfoPanel getChannelPanel() {
 			return channelPanel;
 		}
-
+		
 		public void create() {
 			channelPanel.updateChannel();
-			client.fireTCP(KNetFromClient.CREATE_CHANNEL, new Topic(KNetTopics.CHANNEL), KNetEventArgs.CHANNEL_INFO, channel);
+			client.fireTCP(CHANNEL_CREATE, channel);
 			KNetPanel.this.remove(CreateChannelPanel.this);
 			KNetPanel.this.add(createChannelPanel = new CreateChannelPanel(), CREATE_CHANNEL_PANEL_CARD);
 			cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
-
+			
 		}
-
+		
 		public void cancel() {
 			KNetPanel.this.remove(CreateChannelPanel.this);
 			KNetPanel.this.add(createChannelPanel = new CreateChannelPanel(), CREATE_CHANNEL_PANEL_CARD);
 			cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
 		}
 	}
-
+	
 	public class ViewChannelPanel extends JPanel {
 		KNetChannelInfoPanel channelPanel = new KNetChannelInfoPanel(new KNetChannelInfo());
-
+		
 		private JButton dismiss = new JButton(new AbstractAction(lz.s("vcp_dismiss")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
 			}
 		});
-
+		
 		public ViewChannelPanel() {
 			channelPanel.setEditable(false);
-
+			
 			setLayout(new BorderLayout());
-
+			
 			JPanel p;
-
+			
 			p = new JPanel(new GridLayout(0, 1));
 			p.add(dismiss);
 			add(p, BorderLayout.EAST);
-
+			
 			p = new JPanel(new BorderLayout());
 			p.add(channelPanel, BorderLayout.CENTER);
 			p.setBorder(BorderFactory.createTitledBorder(lz.s("vcp_border")));
 			add(p, BorderLayout.CENTER);
 		}
 	}
-
+	
 	public class ChangePasswordPanel extends JPanel {
 		private JButton change = new JButton(new AbstractAction(lz.s("cpp_change")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(!newPw.getText().equals(newPwRetype.getText()))
 					return;
+				String o = oldPw.getText();
+				if(o.isEmpty())
+					o = null;
 				String n = newPw.getText();
 				if(n.isEmpty())
 					n = null;
-				client.fireTCP(KNetFromClient.UPDATE_PASSWORD, new Topic(KNetTopics.AUTH), KNetEventArgs.PASSWORD, n);
+				client.fireTCP(USER_UPDATE_PASSWORD, new String[] {o, n});
 			}
 		});
-
+		
 		private JButton cancel = new JButton(new AbstractAction(lz.s("cpp_cancel")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
 			}
 		});
-
+		
 		private JPasswordField oldPw = new JPasswordField("");
 		private JPasswordField newPw = new JPasswordField("");
 		private JPasswordField newPwRetype = new JPasswordField("");
-
+		
 		public ChangePasswordPanel() {
 			super(new BorderLayout());
-
+			
 			JPanel p = new JPanel(new GridLayout(0, 2));
 			p.add(new JLabel(lz.s("cpp_old_pw")));
 			p.add(oldPw);
@@ -724,30 +726,30 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			p.add(new JLabel(lz.s("cpp_new_pw_retype")));
 			p.add(newPwRetype);
 			add(p, BorderLayout.CENTER);
-
+			
 			p = new JPanel(new GridLayout(0, 1));
 			p.add(change);
 			p.add(cancel);
 			add(p, BorderLayout.EAST);
-
+			
 			DocumentListener rt = new DocumentListener() {
 				private Color bg = newPwRetype.getBackground();
-
+				
 				@Override
 				public void removeUpdate(DocumentEvent e) {
 					updateBg();
 				}
-
+				
 				@Override
 				public void insertUpdate(DocumentEvent e) {
 					updateBg();
 				}
-
+				
 				@Override
 				public void changedUpdate(DocumentEvent e) {
 					updateBg();
 				}
-
+				
 				private void updateBg() {
 					if(!newPw.getText().equals(newPwRetype.getText()))
 						newPwRetype.setBackground(Color.PINK);
@@ -755,18 +757,18 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 						newPwRetype.setBackground(bg);
 				}
 			};
-
+			
 			newPw.getDocument().addDocumentListener(rt);
 			newPwRetype.getDocument().addDocumentListener(rt);
 		}
 	}
-
+	
 	public KNetPanel(String defaultUsername, boolean ai) {
 		this.defaultUsername = defaultUsername;
 		this.ai = ai;
-
+		
 		setLayout(cards = new CardLayout());
-
+		
 		add(connectionsListPanel = new ConnectionListPanel(), CONNECTION_LIST_PANEL_CARD);
 		add(loggingInPanel = new LoggingInPanel(), LOGGING_IN_PANEL_CARD);
 		add(loginPanel = new LoginPanel(), LOGIN_PANEL_CARD);
@@ -774,43 +776,43 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 		add(createChannelPanel = new CreateChannelPanel(), CREATE_CHANNEL_PANEL_CARD);
 		add(viewChannelPanel = new ViewChannelPanel(), VIEW_CHANEL_CARD);
 		add(changePasswordPanel = new ChangePasswordPanel(), CHANGE_PASSWORD_CARD);
-
+		
 		cards.show(this, CONNECTION_LIST_PANEL_CARD);
 	}
-
+	
 	public ConnectionListPanel getConnectionsListPanel() {
 		return connectionsListPanel;
 	}
-
+	
 	public ConnectedPanel getConnectedPanel() {
 		return connectedPanel;
 	}
-
+	
 	public CreateChannelPanel getCreateChannelPanel() {
 		return createChannelPanel;
 	}
-
+	
 	public void addKNetPanelListener(KNetPanelListener l) {
 		listenerList.add(KNetPanelListener.class, l);
 	}
-
+	
 	public void removeKNetPanelListener(KNetPanelListener l) {
 		listenerList.remove(KNetPanelListener.class, l);
 	}
-
+	
 	public void init() {
 		fireKnetPanelInit();
 	}
-
+	
 	public void disconnect() {
 		if(client != null)
 			connectedPanel.disconnect.doClick();
 	}
-
+	
 	public void shutdown() {
 		fireKnetPanelShutdown();
 	}
-
+	
 	protected void fireKnetPanelInit() {
 		Object[] ll = listenerList.getListenerList();
 		KNetPanelEvent e = null;
@@ -822,7 +824,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			}
 		}
 	}
-
+	
 	protected void fireKnetPanelConnected() {
 		Object[] ll = listenerList.getListenerList();
 		KNetPanelEvent e = null;
@@ -883,7 +885,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 		}
 	}
 
-
+	
 	public KNetGameClient getClient() {
 		return client;
 	}
@@ -901,13 +903,13 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 	@Override
 	public void channelUpdated(KNetChannelEvent e) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public void channelLeft(KNetChannelEvent e) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -918,7 +920,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 		connectedPanel.channels.addTab(e.getChannel().getName(), chanPan);
 		channels.put(e.getChannel().getId(), chanPan);
 		if(e.getChannel().getId() == KNetChannelInfo.LOBBY_CHANNEL_ID)
-			client.fireTCP(KNetFromClient.JOIN_CHANNEL, new Topic(KNetTopics.CHANNEL), KNetEventArgs.CHANNEL_ID, KNetChannelInfo.LOBBY_CHANNEL_ID);
+			client.fireTCP(CHANNEL_JOIN, CHANNEL_ID, KNetChannelInfo.LOBBY_CHANNEL_ID);
 		connectedPanel.channels.setSelectedComponent(chanPan);
 		revalidate();
 		repaint();
@@ -937,23 +939,30 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 	@Override
 	public void channelChat(KNetChannelEvent e) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public void knetEvented(KNetClient client, KNetEvent e) {
-		if(e.isType(KNetFromServer.USER_NOT_AUTHENTICATED)) {
-			System.out.println("User auth failed");
-			cards.show(KNetPanel.this, LOGIN_PANEL_CARD);
-		} else if(e.isType(KNetFromServer.USER_AUTHENTICATED)) {
-			System.out.println("User auth success");
-			cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
-		} else if(e.isType(KNetFromServer.USER_PASSWORD_UPDATED)) {
-			System.out.println("User auth success");
-			cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
-		} else if(e.isType(KNetFromServer.USER_PASSWORD_NOT_UPDATED)) {
-			System.out.println("User auth failed");
-			cards.show(KNetPanel.this, LOGIN_PANEL_CARD);
+		if(e.is(USER_AUTHENTICATED)) {
+			if(!e.get(USER_AUTHENTICATED, Boolean.class)) {
+				System.out.println("User auth failed");
+				cards.show(KNetPanel.this, LOGIN_PANEL_CARD);
+			} else {
+				System.out.println("User auth success");
+				cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
+				client.fireTCP(CHANNEL_LIST);
+			}
+		}
+		if(e.is(USER_UPDATED_PASSWORD)) {
+			if(!e.get(USER_UPDATED_PASSWORD, Boolean.class)) {
+				System.out.println("User auth failed");
+				cards.show(KNetPanel.this, LOGIN_PANEL_CARD);
+			} else {
+				System.out.println("User auth success");
+				cards.show(KNetPanel.this, CONNECTED_PANEL_CARD);
+				client.fireTCP(CHANNEL_LIST);
+			}
 		}
 	}
 }

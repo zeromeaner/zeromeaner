@@ -25,12 +25,6 @@ public class KNetPacket {
 		public final KNetPacket DISCONNECTED = new KNetPacket("fs.disconnected");
 		public final KNetPacket ASSIGN_SOURCE = new KNetPacket("fs.source.assign", KNetEventArgs.USER);
 		
-		public final KNetPacket USER_CREATED = new KNetPacket("fs.user.created");
-		public final KNetPacket USER_AUTHENTICATED = new KNetPacket("fs.user.authenticated");
-		public final KNetPacket USER_NOT_AUTHENTICATED = new KNetPacket("fs.user.authenticated.no");
-		public final KNetPacket USER_PASSWORD_UPDATED = new KNetPacket("fs.user.passed.updated");
-		public final KNetPacket USER_PASSWORD_NOT_UPDATED = new KNetPacket("fs.user.passed.updated.no");
-		
 		public final KNetPacket CHANNELS_LISTED = new KNetPacket("fs.channel.listed", KNetEventArgs.CHANNEL_LISTING);
 		public final KNetPacket CHANNEL_JOINED = new KNetPacket("fs.channel.joined", KNetEventArgs.CHANNEL_ID, KNetEventArgs.USER);
 		public final KNetPacket CHANNEL_JOINED_GAME = new KNetPacket("fs.channel.joined.game", KNetEventArgs.CHANNEL_ID, KNetEventArgs.USER);
