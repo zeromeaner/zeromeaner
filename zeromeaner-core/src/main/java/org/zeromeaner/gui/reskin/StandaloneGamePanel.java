@@ -1069,6 +1069,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		}
 
 		protected void setButtonPressedState(int keyCode, boolean pressed) {
+			if(StandaloneGamePanel.this.isInGame == null)
+				return;
 			boolean[] isInGame = Arrays.copyOf(StandaloneGamePanel.this.isInGame, StandaloneGamePanel.this.isInGame.length);
 			for(int playerID = 0; playerID < StandaloneGameKey.gamekey.length; playerID++) {
 				int[] kmap = isInGame[playerID] ? StandaloneGameKey.gamekey[playerID].keymap : StandaloneGameKey.gamekey[playerID].keymapNav;
