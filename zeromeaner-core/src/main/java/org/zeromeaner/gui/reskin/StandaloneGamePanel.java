@@ -1005,9 +1005,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 				content.addKeyListener(this);
 				content.addKeyListener(new GameFrameKeyEvent());
 				owner.setContentPane(content);
-				owner.dispose();
-				owner.setUndecorated(true);
-				owner.setVisible(true);
 				owner.setExtendedState(JFrame.MAXIMIZED_BOTH);
 				content.requestFocus();
 				EventQueue.invokeLater(new Runnable() {
@@ -1033,9 +1030,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 				add(
 						imageBufferLabel, 
 						BorderLayout.CENTER);
-				owner.dispose();
-				owner.setUndecorated(false);
-				owner.setVisible(true);
 				owner.setExtendedState(exstate);
 				owner.setSize(size);
 				owner.setLocation(location);
