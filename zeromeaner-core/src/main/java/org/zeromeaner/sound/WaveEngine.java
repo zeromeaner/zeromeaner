@@ -128,9 +128,6 @@ public class WaveEngine {
 	 * @param name Registered name
 	 */
 	public void play(final String name) {
-		if(!buffers.containsKey(name))
-			return;
-		
 		AudioFormat format = buffers.get(name).getFormat();
 		
 		try {
@@ -153,7 +150,6 @@ public class WaveEngine {
 
 			match.offer(buffers.get(name).reset());
 		} catch(Exception ex) {
-			ex.printStackTrace();
 		}
 	}
 	
@@ -185,6 +181,7 @@ public class WaveEngine {
 				while(true) {
 					long until = mixer.getStartTimeNanos() + mixer.getPositionNanos() + fillNanos;
 					mixer.writeUntil(writer, until);
+					Thread.sleep(1);
 				}
 			} catch(Throwable e) {
 				log.warn(e);
