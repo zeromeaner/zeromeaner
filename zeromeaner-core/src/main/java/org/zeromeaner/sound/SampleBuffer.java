@@ -59,6 +59,10 @@ public class SampleBuffer {
 		return format;
 	}
 	
+	public ByteBuffer getBytes() {
+		return bytes;
+	}
+	
 	public SampleBuffer clone() {
 		return new SampleBuffer(format, (ByteBuffer) bytes.duplicate().clear());
 	}
