@@ -26,6 +26,8 @@ public class Version {
 	private String classifier;
 	
 	public Version(String version) {
+		version = version.replace("${version_suffix}", "");
+		version = version.replace("ZER-", "");
 		String[] va = version.split("[\\.\\-]");
 		for(String d : va) {
 			if(d.equals("SNAPSHOT"))
