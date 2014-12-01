@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.zeromeaner</groupId>
 		<artifactId>zeromeaner-parent</artifactId>
-		<version>1.2.0${version.suffix}-SNAPSHOT</version>
+		<version>1.2.0${version_suffix}-SNAPSHOT</version>
 		<relativePath>../zeromeaner-parent</relativePath>
 	</parent>
 	<artifactId>zeromeaner-plugin-video-recording</artifactId>
@@ -12,6 +12,7 @@
 		<dependency>
 			<groupId>org.zeromeaner</groupId>
 			<artifactId>zeromeaner-core</artifactId>
+			<version>1.2.0${version_suffix}-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

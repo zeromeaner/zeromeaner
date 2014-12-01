@@ -284,7 +284,6 @@ public enum KNetEventArgs {
 			throw new ClassCastException();
 		}
 		if(nullable) {
-			System.err.println(this + " writing " + argValue);
 			kryo.writeClassAndObject(output, argValue);
 		} else
 			kryo.writeObject(output, argValue);

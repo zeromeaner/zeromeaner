@@ -111,12 +111,18 @@ public class WaveEngine {
 	public void load(String name, String filename) {
 		try {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			AudioInputStream in = AudioSystem.getAudioInputStream(StandaloneResourceHolder.getURL(filename).openStream());
+			InputStream in = StandaloneResourceHolder.getURL(filename).openStream();
 			byte[] b = new byte[8192];
 			for(int r = in.read(b); r != -1; r = in.read(b))
 				out.write(b, 0, r);
 			in.close();
-			buffers.put(name, new SampleBuffer(in.getFormat(), ByteBuffer.wrap(out.toByteArray())));
+			in = new ByteArrayInputStream(out.toByteArray());
+			AudioInputStream ain = AudioSystem.getAudioInputStream(in);
+			out.reset();
+			for(int r = ain.read(b); r != -1; r = ain.read(b))
+				out.write(b, 0, r);
+			ain.close();
+			buffers.put(name, new SampleBuffer(ain.getFormat(), ByteBuffer.wrap(out.toByteArray())));
 		} catch(Exception e) {
 			log.warn(e);
 		}
@@ -128,6 +134,9 @@ public class WaveEngine {
 	 * @param name Registered name
 	 */
 	public void play(final String name) {
+		if(buffers.get(name) == null)
+			return;
+		
 		AudioFormat format = buffers.get(name).getFormat();
 		
 		try {

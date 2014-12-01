@@ -185,6 +185,10 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 
 	protected KNetPanel knetPanel;
 	
+	public void setKnetPanel(KNetPanel knetPanel) {
+		this.knetPanel = knetPanel;
+	}
+	
 	/** NET: Lobby (Declared in NetDummyMode) */
 	protected KNetGameClient knetClient() {
 		if(knetPanel == null)
@@ -726,7 +730,7 @@ public class AbstractNetMode extends AbstractMode implements KNetListener, KNetP
 	 * @param client NetPlayerClient
 	 * @param roomInfo NetRoomInfo
 	 */
-	protected void netOnJoin(KNetClient client, KNetChannelInfo roomInfo) {
+	public void netOnJoin(KNetClient client, KNetChannelInfo roomInfo) {
 		log.debug("onJoin on NetDummyMode");
 
 		netIsNetPlay = true;

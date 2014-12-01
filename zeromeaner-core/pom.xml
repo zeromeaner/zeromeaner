@@ -133,7 +133,7 @@
 		<dependency>
 			<groupId>org.zeromeaner</groupId>
 			<artifactId>zeromeaner-laf</artifactId>
-			<version>1.2.0${version.suffix}-SNAPSHOT</version>
+			<version>1.2.0${version_suffix}-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -143,7 +143,7 @@
 		<dependency>
 			<groupId>org.mmmq</groupId>
 			<artifactId>mmmq</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.badiff</groupId>
@@ -331,7 +331,7 @@
 	<parent>
 		<groupId>org.zeromeaner</groupId>
 		<artifactId>zeromeaner-parent</artifactId>
-		<version>1.2.0${version.suffix}-SNAPSHOT</version>
+		<version>1.2.0${version_suffix}-SNAPSHOT</version>
 		<relativePath>../zeromeaner-parent</relativePath>
 	</parent>
 	<name>Zeromeaner Core</name>

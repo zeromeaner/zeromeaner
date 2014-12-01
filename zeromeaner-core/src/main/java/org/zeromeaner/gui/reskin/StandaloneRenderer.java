@@ -1511,6 +1511,7 @@ public class StandaloneRenderer extends EventRenderer {
 		if(graphics == null) return;
 		if(engine.allowTextRenderByReceiver == false) return;
 		if(engine.isVisible == false) return;
+		if(engine.statc == null) return;
 
 		if((engine.statc[0] >= engine.field.getHeight() + 1) && (engine.statc[0] < engine.field.getHeight() + 1 + 180)) {
 			int offsetX = getFieldDisplayPositionX(engine, playerID);

@@ -1752,7 +1752,7 @@ public class GameEngine {
 		if((ai != null) && (!owner.replayMode || owner.replayRerecord)) ai.onFirst(this, playerID);
 
 		// Processing status of each
-		if(!lagStop) {
+		if(!lagStop && stat != null) {
 			switch(stat) {
 			case NOTHING:
 				break;
