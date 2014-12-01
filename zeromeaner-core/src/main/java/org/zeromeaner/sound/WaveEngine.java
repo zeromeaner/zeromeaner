@@ -58,6 +58,7 @@ import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.gui.reskin.StandaloneResourceHolder;
+import org.zeromeaner.util.Options;
 
 /**
  * Sound engine
@@ -184,6 +185,7 @@ public class WaveEngine {
 		
 		try {
 			clip.open(format, bytes, 0, bytes.length);
+			setVolume(clip);
 			clip.start();
 		} catch(Exception e) {
 			log.warn(e);
