@@ -180,7 +180,12 @@ public class WaveEngine {
 		}
 		
 		public void offer(SampleBuffer buffer) {
-			mixer.offer(buffer);
+			long fillNanos = TimeUnit.NANOSECONDS.convert(10, TimeUnit.MILLISECONDS);
+			synchronized(mixer) {
+				mixer.offer(buffer);
+				long until = mixer.getStartTimeNanos() + mixer.getPositionNanos() + fillNanos;
+				mixer.writeUntil(writer, until);
+			}
 		}
 		
 		@Override
@@ -188,8 +193,10 @@ public class WaveEngine {
 			long fillNanos = TimeUnit.NANOSECONDS.convert(10, TimeUnit.MILLISECONDS);
 			try {
 				while(true) {
-					long until = mixer.getStartTimeNanos() + mixer.getPositionNanos() + fillNanos;
-					mixer.writeUntil(writer, until);
+					synchronized(mixer) {
+						long until = mixer.getStartTimeNanos() + mixer.getPositionNanos() + fillNanos;
+						mixer.writeUntil(writer, until);
+					}
 					Thread.sleep(1);
 				}
 			} catch(Throwable e) {
