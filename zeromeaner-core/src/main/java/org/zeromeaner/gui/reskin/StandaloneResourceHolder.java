@@ -39,7 +39,7 @@ import java.util.LinkedList;
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
-import org.zeromeaner.gui.WaveEngine;
+import org.zeromeaner.sound.WaveEngine;
 import org.zeromeaner.util.MusicList;
 import org.zeromeaner.util.Options;
 

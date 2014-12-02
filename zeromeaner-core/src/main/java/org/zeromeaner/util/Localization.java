@@ -21,13 +21,13 @@ public class Localization {
 			throw new RuntimeException(cnfe);
 		}
 	}
-	
+
 	private static Map<String, Localization> lzCache = Collections.synchronizedMap(new IdentityHashMap<String, Localization>());
-	
+
 	public static Localization lz() {
 		return new Localization(4);
 	}
-	
+
 	public static String lz(String key, String dv) {
 		Localization lz;
 		synchronized(lzCache) {
@@ -37,50 +37,62 @@ public class Localization {
 		}
 		return lz.s(key, dv);
 	}
-	
+
 	public static String lz(String key) {
 		return lz(key, key);
 	}
-	
+
 	private Class<?> base;
 	private Properties props = new Properties();
 	private String basename;
-	
+
 	public Localization(Locale... defaults) {
 		this(4, defaults);
 	}
-	
+
 	private Localization(int depth, Locale... defaults) {
 		this.base = getCallerClass(depth);
 		List<Locale> locales = new ArrayList<Locale>();
 		locales.add(Locale.getDefault());
 		locales.addAll(Arrays.asList(defaults));
-		InputStream in = base.getResourceAsStream(basename = (base.getSimpleName() + ".properties"));
-		try {
-			if(in != null) {
-				props.load(in);
-				in.close();
-			}
-		} catch(IOException ioe) {
-		}
+		locales.add(Locale.ENGLISH);
+		InputStream in;
 		for(Locale l : locales) {
-			in = base.getResourceAsStream(basename = (base.getSimpleName() + "_" + l.getLanguage() + ".properties"));
-			if(in == null)
+			in = base.getResourceAsStream(base.getSimpleName() + "_" + l.getLanguage() + ".properties");
+			if(in == null) {
 				continue;
+			}
+			basename = base.getSimpleName() + "_" + l.getLanguage() + ".properties";
 			try {
-				props.clear();
-				props.load(in);
+				Properties p = new Properties();
+				p.load(in);
 				in.close();
+				for(String key : p.stringPropertyNames()) {
+					if(!props.containsKey(key))
+						props.put(key, p.getProperty(key));
+				}
 			} catch(IOException ioe) {
 			}
-			break;
+		}
+		in = base.getResourceAsStream(basename = (base.getSimpleName() + ".properties"));
+		if(in != null) {
+			try {
+				Properties p = new Properties();
+				p.load(in);
+				in.close();
+				for(String key : p.stringPropertyNames()) {
+					if(!props.containsKey(key))
+						props.put(key, p.getProperty(key));
+				}
+			} catch(IOException ioe) {
+			}
 		}
 	}
-	
+
 	public Class<?> getBase() {
 		return base;
 	}
-	
+
 	public String s(String key, String dv) {
 		if(!props.containsKey(key))
 			props.setProperty(key, dv);
@@ -92,7 +104,7 @@ public class Localization {
 		}
 		return v;
 	}
-	
+
 	public String s(String key) {
 		return s(key, "\u00ab" + key + "\u00bb");
 	}

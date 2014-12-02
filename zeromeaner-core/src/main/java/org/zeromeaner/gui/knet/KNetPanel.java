@@ -183,7 +183,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 				if(!GameManager.VERSION.isSnapshot())
 					connectionsModel.addElement("" + StandaloneApplet.url.getHost() + ":61897");
 				else {
-					connectionsModel.addElement("" + StandaloneApplet.url.getHost() + ":61898");
+					connectionsModel.addElement("" + StandaloneApplet.url.getHost() + ":61896");
 				}
 			}
 			
@@ -598,7 +598,7 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 				return;
 			if(e.getChannel().getId() != getChannel().getId())
 				return;
-			if(EQInvoker.reinvoke(false, this, e))
+			if(EQInvoker.reinvoke(true, this, e))
 				return;
 			String text = history.getText();
 			text += text.isEmpty() ? "" : "\n";
@@ -954,7 +954,6 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 
 	@Override
 	public void knetEvented(KNetClient client, KNetEvent e) {
-		System.out.println(e);
 		if(e.is(USER_AUTHENTICATED)) {
 			if(!e.get(USER_AUTHENTICATED, Boolean.class)) {
 				System.out.println("User auth failed");

@@ -246,6 +246,8 @@ public class GameManager {
 	 * Dispatches all render events to EventReceiver
 	 */
 	public void renderAll() {
+		if(engine == null)
+			return;
 		for(int i = 0; i < engine.length; i++) {
 			engine[i].render();
 		}

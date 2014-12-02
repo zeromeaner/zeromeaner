@@ -33,6 +33,7 @@ public class Options {
 	public static class GeneralOptions {
 		public final Constant<String> MODE_NAME = GLOBAL_PROPERTIES.create(STRING, ".mode.name", "");
 		public final Constant<String> RULE_NAME = GLOBAL_PROPERTIES.create(STRING, ".0.rule", "");
+		public final Constant<String> RULE_NAME_P2 = GLOBAL_PROPERTIES.create(STRING, ".1.rule", "");
 		
 		private GeneralOptions() {}
 	}
@@ -132,6 +133,7 @@ public class Options {
 		public final Constant<Integer> SCREEN_HEIGHT;
 		public final Constant<Boolean> ENABLE_FRAME_STEP;
 		public final Constant<Boolean> SHOW_FPS;
+		public final Constant<Boolean> SYNC_RENDER;
 		public final Constant<Boolean> SYNC_DISPLAY;
 		public final Constant<Boolean> FULL_SCREEN;
 		public final Constant<Boolean> BGM_ENABLE;
@@ -159,7 +161,8 @@ public class Options {
 			SCREEN_HEIGHT = p.create(INTEGER, "screenheight", 480);
 			ENABLE_FRAME_STEP = p.create(BOOLEAN, "enableframestep", false);
 			SHOW_FPS = p.create(BOOLEAN, "showfps", true);
-			SYNC_DISPLAY = p.create(BOOLEAN, "syncDisplay", true);
+			SYNC_DISPLAY = p.create(BOOLEAN, "syncDisplay", false);
+			SYNC_RENDER = p.create(BOOLEAN, "syncRender", false);
 			FULL_SCREEN = p.create(BOOLEAN, "fullscreen", false);
 			BGM_ENABLE = p.create(BOOLEAN, "bgm.enable", true);
 			BGM_SELECTION = p.create(STRING, "bgm.selection", null);

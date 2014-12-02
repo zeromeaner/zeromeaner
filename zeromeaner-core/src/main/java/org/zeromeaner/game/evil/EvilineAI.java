@@ -15,6 +15,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -30,6 +31,7 @@ import org.eviline.core.ai.AIPlayer;
 import org.eviline.core.ai.CommandGraph;
 import org.eviline.core.ai.DefaultAIKernel;
 import org.eviline.core.ai.DefaultAIKernel.Best;
+import org.eviline.core.ai.Fitness;
 import org.eviline.core.ai.NextFitness;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.play.GameEngine;
@@ -47,13 +49,15 @@ public class EvilineAI extends AbstractAI implements Configurable {
 	protected static final Constant<Integer> LOOKAHEAD = new Constant<>(PropertyConstant.INTEGER, ".eviline.lookahead", 3);
 	protected static final Constant<Integer> PRUNE_TOP = new Constant<>(PropertyConstant.INTEGER, ".eviline.prune_top", 5);
 	protected static final Constant<Integer> CPU_CORES = new Constant<>(PropertyConstant.INTEGER, ".eviline.cpu_cores", 8);
-
+	protected static final Constant<String> FITNESS = new Constant<String>(PropertyConstant.STRING, ".eviline.fitness", "NextFitness");
+	
 	protected static class EvilineAIConfigurator implements Configurable.Configurator {
 		
 		private JCheckBox dropsOnly;
 		private JSpinner lookahead;
 		private JSpinner pruneTop;
 		private JSpinner cpuCores;
+		private JComboBox<String> fitness;
 		private JPanel panel;
 		
 		public EvilineAIConfigurator() {
@@ -61,6 +65,7 @@ public class EvilineAI extends AbstractAI implements Configurable {
 			lookahead = new JSpinner(new SpinnerNumberModel(3, 0, 6, 1));
 			pruneTop = new JSpinner(new SpinnerNumberModel(5, 1, 20, 1));
 			cpuCores = new JSpinner(new SpinnerNumberModel(8, 1, 16, 1));
+			fitness = new JComboBox<>(new String[] {"DefaultFitness", "NextFitness", "ScoreFitness"});
 			panel = new JPanel(new GridLayout(0, 2));
 			panel.add(new JLabel("Maximum Lookahead: "));
 			panel.add(lookahead);
@@ -70,6 +75,8 @@ public class EvilineAI extends AbstractAI implements Configurable {
 			panel.add(cpuCores);
 			panel.add(new JLabel("Only use drops (don't shift down)"));
 			panel.add(dropsOnly);
+			panel.add(new JLabel("AI fitness function: "));
+			panel.add(fitness);
 		}
 		
 		@Override
@@ -83,6 +90,7 @@ public class EvilineAI extends AbstractAI implements Configurable {
 			PRUNE_TOP.set(p, (Integer) pruneTop.getValue());
 			DROPS_ONLY.set(p, dropsOnly.isSelected());
 			CPU_CORES.set(p, (Integer) cpuCores.getValue());
+			FITNESS.set(p, (String) fitness.getSelectedItem());
 		}
 
 		@Override
@@ -91,6 +99,7 @@ public class EvilineAI extends AbstractAI implements Configurable {
 			pruneTop.setValue(PRUNE_TOP.value(p));
 			dropsOnly.setSelected(DROPS_ONLY.value(p));
 			cpuCores.setValue(CPU_CORES.value(p));
+			fitness.setSelectedItem(FITNESS.value(p));
 		}
 		
 	}
@@ -284,6 +293,7 @@ public class EvilineAI extends AbstractAI implements Configurable {
 	
 	protected byte[] createCommandPath(CommandGraph g) {
 		byte[] computingPaths = new byte[XYShapes.SHAPE_MAX];
+		Arrays.fill(computingPaths, (byte) -1);
 		int xyshape = g.getSelectedShape();
 		
 		boolean tail = true;
@@ -297,11 +307,11 @@ public class EvilineAI extends AbstractAI implements Configurable {
 			tail = false;
 			if(parent >= 0 && parent < XYShapes.SHAPE_MAX)
 				computingPaths[parent] = (byte) c.ordinal();
-			if(c == Command.SOFT_DROP) {
+			if(c == Command.SOFT_DROP || c == Command.HARD_DROP) {
 				xyshape = XYShapes.shiftedUp(xyshape);
 				while(xyshape != parent) {
 					if(xyshape >= 0 && xyshape < XYShapes.SHAPE_MAX)
-						computingPaths[xyshape] = (byte) Command.SOFT_DROP.ordinal();
+						computingPaths[xyshape] = (byte) c.ordinal();
 					xyshape = XYShapes.shiftedUp(xyshape);
 				}
 			}
@@ -349,7 +359,14 @@ public class EvilineAI extends AbstractAI implements Configurable {
 			POOL.setMaximumPoolSize(cores);
 		}
 		
-		ai = new DefaultAIKernel(POOL, new NextFitness());
+		Fitness fitness;
+		try {
+			fitness = Class.forName("org.eviline.core.ai." + FITNESS.value(opt)).asSubclass(Fitness.class).newInstance();
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
+		
+		ai = new DefaultAIKernel(POOL, fitness);
 		ai.setDropsOnly(DROPS_ONLY.value(opt));
 		ai.setPruneTop(PRUNE_TOP.value(opt));
 		pipeline = new PathPipeline();
@@ -507,8 +524,6 @@ public class EvilineAI extends AbstractAI implements Configurable {
 
 	@Override
 	public void newPiece(GameEngine engine, int playerID) {
-		if(pipeline.isDirty(engine))
-			resetPipeline();
 		try {
 		pipeline.extend(engine);
 		} catch(RuntimeException e) {

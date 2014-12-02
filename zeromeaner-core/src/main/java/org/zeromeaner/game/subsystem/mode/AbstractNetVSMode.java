@@ -361,7 +361,7 @@ public abstract class AbstractNetVSMode extends AbstractNetMode {
 	 * NET-VS: When you join the room
 	 */
 	@Override
-	protected void netOnJoin(KNetClient client, KNetChannelInfo roomInfo) {
+	public void netOnJoin(KNetClient client, KNetChannelInfo roomInfo) {
 		log.debug("netOnJoin() on NetDummyVSMode");
 
 		netIsNetPlay = true;
