@@ -77,11 +77,11 @@
 	<distributionManagement>
 		<repository>
 			<id>robin-kirkman-releases</id>
-			<url>http://nexus.robindps.com/content/repositories/releases/</url>
+			<url>http://nexus.robindps.com:7777/content/repositories/releases/</url>
 		</repository>
 		<snapshotRepository>
 			<id>robin-kirkman-snapshots</id>
-			<url>http://nexus.robinvps.com/content/repositories/snapshots/</url>
+			<url>http://nexus.robinvps.com:7777/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 
