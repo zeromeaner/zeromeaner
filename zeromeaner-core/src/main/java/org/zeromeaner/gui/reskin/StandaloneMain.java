@@ -1,5 +1,6 @@
 package org.zeromeaner.gui.reskin;
 
+import java.awt.EventQueue;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -138,5 +139,6 @@ public class StandaloneMain {
 			frame.setSize(1366, 768);
 			frame.setVisible(true);
 		}
+		
 	}
 }
