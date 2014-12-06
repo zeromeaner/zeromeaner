@@ -8,6 +8,12 @@ import java.util.Map.Entry;
 
 public class PropertyStore extends AbstractMap<String, String> {
 
+	private PropertyStore instance = new PropertyStore();
+	
+	public PropertyStore get() {
+		return instance;
+	}
+	
 	protected ServiceHookDispatcher<PropertyStoreHook> hook = new ServiceHookDispatcher<>(PropertyStoreHook.class);
 	
 	@Override
