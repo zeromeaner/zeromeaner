@@ -11,7 +11,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.zeromeaner.gui.reskin.StandaloneApplet;
+import org.zeromeaner.applet.StandaloneApplet;
 import org.zeromeaner.gui.reskin.StandaloneMain;
 
 import com.googlecode.sardine.Factory;

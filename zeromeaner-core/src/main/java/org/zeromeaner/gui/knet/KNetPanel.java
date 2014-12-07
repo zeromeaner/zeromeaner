@@ -51,8 +51,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.zeromeaner.applet.StandaloneApplet;
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.gui.reskin.StandaloneApplet;
 import org.zeromeaner.knet.KNetChannelEvent;
 import org.zeromeaner.knet.KNetChannelListener;
 import org.zeromeaner.knet.KNetClient;

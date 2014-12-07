@@ -15,6 +15,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.zeromeaner.applet.StandaloneApplet;
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.MusicList;
 import org.zeromeaner.util.Options;

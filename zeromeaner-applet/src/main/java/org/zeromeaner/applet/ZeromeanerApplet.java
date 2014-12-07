@@ -1,4 +1,4 @@
-package org.zeromeaner.gui.reskin;
+package org.zeromeaner.applet;
 
 import static org.zeromeaner.gui.reskin.StandaloneMain.userId;
 
@@ -20,27 +20,32 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.apache.log4j.PropertyConfigurator;
+import org.zeromeaner.gui.reskin.StandaloneFrame;
+import org.zeromeaner.gui.reskin.StandaloneGameKey;
+import org.zeromeaner.gui.reskin.StandaloneMain;
+import org.zeromeaner.gui.reskin.StandaloneResourceHolder;
 import org.zeromeaner.plaf.ZeroMetalTheme;
 import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.Options;
+import org.zeromeaner.util.PropertyStore;
 import org.zeromeaner.util.ResourceInputStream;
 
-public class StandaloneApplet extends JApplet {
-	private static StandaloneApplet instance;
+public class ZeromeanerApplet extends JApplet {
+	private static ZeromeanerApplet instance;
 	public static URL url;
 
 	public static boolean isApplet() {
 		return instance != null;
 	}
 	
-	public static StandaloneApplet getInstance() {
+	public static ZeromeanerApplet getInstance() {
 		return instance;
 	}
 
 	private JPanel panel = new JPanel(new GridBagLayout());
 
-	public StandaloneApplet() {
+	public ZeromeanerApplet() {
 		panel.setBackground(new Color(0,0,64));
 		panel.setOpaque(true);
 		setLayout(new BorderLayout());
@@ -83,13 +88,6 @@ public class StandaloneApplet extends JApplet {
 	
 	private void startup() {
 		
-		CookieAccess.setInstance(new CookieAccess() {
-			@Override
-			public Map<String, String> get() {
-				return get(StandaloneApplet.this);
-			}
-		});
-
 		url = getDocumentBase();
 		if(System.getProperty("zero_url") != null) {
 			try {
@@ -99,7 +97,7 @@ public class StandaloneApplet extends JApplet {
 		}
 
 		if(userId == null)
-			userId = CookieAccess.get("userId");
+			userId = PropertyStore.get().get("userId");
 		if(userId == null)
 			userId = getParameter("userId");
 
@@ -109,7 +107,7 @@ public class StandaloneApplet extends JApplet {
 			if(create == JOptionPane.YES_OPTION) {
 				userId = (String) JOptionPane.showInputDialog(this, "Enter Config ID", "Enter Config ID", JOptionPane.QUESTION_MESSAGE, null, null, "");
 				if(userId != null)
-					CookieAccess.put("userId", userId);
+					PropertyStore.get().put("userId", userId);
 				else
 					userId = "default";
 			}

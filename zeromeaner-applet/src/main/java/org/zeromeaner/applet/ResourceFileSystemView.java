@@ -1,4 +1,4 @@
-package org.zeromeaner.util;
+package org.zeromeaner.applet;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.swing.filechooser.FileSystemView;
 
-import org.zeromeaner.gui.reskin.StandaloneApplet;
 import org.zeromeaner.gui.reskin.StandaloneMain;
 
 import com.googlecode.sardine.DavResource;
@@ -24,7 +23,7 @@ public class ResourceFileSystemView extends FileSystemView {
 	}
 
 	protected String url() {
-		return "http://" + StandaloneApplet.url.getHost() + "/webdav/" + StandaloneMain.userId + "/";
+		return "http://" + ZeromeanerApplet.url.getHost() + "/webdav/" + StandaloneMain.userId + "/";
 	}
 
 	protected String toSardine(File file) {
