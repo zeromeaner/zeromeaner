@@ -49,7 +49,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import org.eviline.swing.IntegerDocument;
-import org.zeromeaner.applet.StandaloneApplet;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.ServiceHookDispatcher;
 import org.zeromeaner.util.Options.StandaloneOptions;
