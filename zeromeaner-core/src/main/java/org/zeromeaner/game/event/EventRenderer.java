@@ -867,14 +867,14 @@ public class EventRenderer {
 	public void setGraphics(Object g) {}
 
 	/**
-	 * Load properties from "config/setting/mode.cfg"
-	 * @return Properties from "config/setting/mode.cfg". null if load fails.
+	 * Load properties from "setting/mode.cfg"
+	 * @return Properties from "setting/mode.cfg". null if load fails.
 	 */
 	public CustomProperties loadModeConfig() {
 		CustomProperties propModeConfig = new CustomProperties();
 
 		try {
-			ResourceInputStream in = new ResourceInputStream("config/setting/mode.cfg");
+			ResourceInputStream in = new ResourceInputStream("setting/mode.cfg");
 			propModeConfig.load(in);
 			in.close();
 		} catch(IOException e) {
@@ -885,12 +885,12 @@ public class EventRenderer {
 	}
 
 	/**
-	 * Save properties to "config/setting/mode.cfg"
+	 * Save properties to "setting/mode.cfg"
 	 * @param modeConfig Properties you want to save
 	 */
 	public void saveModeConfig(CustomProperties modeConfig) {
 		try {
-			ResourceOutputStream out = new ResourceOutputStream("config/setting/mode.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("setting/mode.cfg");
 			modeConfig.store(out, "zeromeaner Mode Config");
 			out.close();
 		} catch(IOException e) {

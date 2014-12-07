@@ -135,7 +135,7 @@ public class Sequencer extends JFrame implements ActionListener {
 		// Load config file
 		propConfig = new CustomProperties();
 		try {
-			ResourceInputStream in = new ResourceInputStream("config/setting/swing.cfg");
+			ResourceInputStream in = new ResourceInputStream("setting/swing.cfg");
 			propConfig.load(in);
 			in.close();
 		} catch(IOException e) {}

@@ -482,7 +482,7 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 		// Read configuration file
 		propConfig = new CustomProperties();
 		try {
-			ResourceInputStream in = new ResourceInputStream("config/setting/swing.cfg");
+			ResourceInputStream in = new ResourceInputStream("setting/swing.cfg");
 			propConfig.load(in);
 			in.close();
 		} catch(IOException e) {}

@@ -55,6 +55,14 @@ public class StandaloneMain {
 		} catch(IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
+		try {
+			InputStream in = new ResourceInputStream("setting/runtime.cfg");
+			Options.RUNTIME_PROPERTIES.load(in);
+			in.close();
+		} catch(FileNotFoundException fnfe) {
+		} catch(IOException ioe) {
+			throw new RuntimeException(ioe);
+		}
 	}
 
 	public static void saveConfig() {
@@ -68,6 +76,12 @@ public class StandaloneMain {
 		try {
 			ResourceOutputStream out = new ResourceOutputStream("setting/swing.cfg");
 			Options.GUI_PROPERTIES.store(out, "zeromeaner Swing-frontend Config");
+			out.close();
+		} catch(IOException e) {
+		}
+		try {
+			ResourceOutputStream out = new ResourceOutputStream("setting/runtime.cfg");
+			Options.RUNTIME_PROPERTIES.store(out, "zeromeaner Swing-frontend Config");
 			out.close();
 		} catch(IOException e) {
 		}
@@ -126,14 +140,8 @@ public class StandaloneMain {
 		
 		StandaloneFrame frame = new StandaloneFrame();
 		
-		if(PropertyConstant.is(Options.standalone().FULL_SCREEN)) {
-			frame.setUndecorated(true);
-			frame.setVisible(true);
-			frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		} else {
-			frame.setSize(1366, 768);
-			frame.setVisible(true);
-		}
+		frame.setSize(1366, 768);
+		frame.setVisible(true);
 		
 	}
 }
