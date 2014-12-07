@@ -9,7 +9,7 @@ import java.io.OutputStream;
 import java.util.Properties;
 import java.util.Set;
 
-import org.zeromeaner.util.PropertyStoreHook;
+import org.zeromeaner.util.io.PropertyStoreHook;
 
 public class StandalonePropertyStoreHook implements PropertyStoreHook {
 	

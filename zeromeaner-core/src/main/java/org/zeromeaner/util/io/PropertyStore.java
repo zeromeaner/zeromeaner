@@ -1,10 +1,12 @@
-package org.zeromeaner.util;
+package org.zeromeaner.util.io;
 
 import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Map.Entry;
+
+import org.zeromeaner.util.ServiceHookDispatcher;
 
 public class PropertyStore extends AbstractMap<String, String> {
 

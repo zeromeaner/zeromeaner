@@ -1,4 +1,4 @@
-package org.zeromeaner.util;
+package org.zeromeaner.util.io;
 
 import java.util.Set;
 
