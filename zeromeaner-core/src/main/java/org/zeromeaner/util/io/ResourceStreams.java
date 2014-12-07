@@ -1,5 +1,6 @@
 package org.zeromeaner.util.io;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.Callable;
@@ -22,7 +23,7 @@ public class ResourceStreams {
 		hook = new ServiceHookDispatcher<>(ResourceStreamHook.class);
 	}
 	
-	public InputStream inputStream(String resource) {
+	public InputStream inputStream(String resource) throws FileNotFoundException {
 		PrioritizedHandler<Callable<InputStream>> handlers = new PrioritizedHandler<>();
 		hook.dispatcher().addInputHandler(resource, handlers);
 		for(Callable<InputStream> handler : handlers.get()) {
@@ -32,7 +33,7 @@ public class ResourceStreams {
 				log.warn(e);
 			}
 		}
-		return null;
+		throw new FileNotFoundException(resource);
 	}
 	
 	public OutputStream outputStream(String resource) {
