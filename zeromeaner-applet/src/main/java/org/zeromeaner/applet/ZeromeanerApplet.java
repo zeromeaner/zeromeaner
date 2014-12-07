@@ -5,14 +5,20 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 
 import javax.swing.JApplet;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -42,13 +48,10 @@ public class ZeromeanerApplet extends JApplet {
 		return instance;
 	}
 
-	private JPanel panel = new JPanel(new GridBagLayout());
+	private JPanel panel;
+	private JPanel cpanel;
 
 	public ZeromeanerApplet() {
-		panel.setBackground(new Color(0,0,64));
-		panel.setOpaque(true);
-		setLayout(new BorderLayout());
-		add(panel, BorderLayout.CENTER);
 	}
 	
 	@Override
@@ -66,6 +69,7 @@ public class ZeromeanerApplet extends JApplet {
 		};
 		
 		laf.run();
+
 		
 		if(EQInvoker.reinvoke(false, this)) {
 			validate();
@@ -73,8 +77,14 @@ public class ZeromeanerApplet extends JApplet {
 			return;
 		}
 
-
-
+		
+		setLayout(new BorderLayout());
+		panel = new JPanel(new GridBagLayout());
+		panel.setOpaque(true);
+		cpanel = new JPanel(new BorderLayout());
+		panel.add(cpanel, new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+		add(panel, BorderLayout.CENTER);
+		
 		instance = this;
 
 		new Thread(new Runnable() {
@@ -100,64 +110,112 @@ public class ZeromeanerApplet extends JApplet {
 		if(Session.getUser() == null)
 			Session.setUser(getParameter("userId"));
 
-		while(Session.getUser() == null || Session.ANONYMOUS_USER.equals(Session.getUser())) {
+		if(Session.getUser() == null || Session.ANONYMOUS_USER.equals(Session.getUser())) {
 			Session.setUser("none");
-			int create = JOptionPane.showConfirmDialog(this, "To save user configuration, such as custom keys, you must create a user id.\nThere is no need to remember a password.\nIf you choose not to create a user ID the default settings will be used.\n\nCreate a user ID now?", "Create User ID?", JOptionPane.YES_NO_OPTION);
-			if(create == JOptionPane.YES_OPTION) {
-				Session.setUser((String) JOptionPane.showInputDialog(this, "Enter Config ID", "Enter Config ID", JOptionPane.QUESTION_MESSAGE, null, null, ""));
-				if(Session.getUser() != null)
-					PropertyStore.get().put("userId", Session.getUser());
-				else
-					Session.setUser(Session.ANONYMOUS_USER);
-			}
-		}
-
-		try {
-
-			try {
-				PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));
-			} catch(IOException ioe) {
-			}
-
-			StandaloneMain.loadGlobalConfig();
-
-			StandaloneMain.modeManager = ModeList.getModes();
-
-			StandaloneGameKey.initGlobalGameKeySwing();
-			StandaloneGameKey.gamekey[0].loadDefaultKeymap();
-			StandaloneGameKey.gamekey[1].loadDefaultKeymap();
-
-			StandaloneGameKey.gamekey[0].loadConfig(Options.GUI_PROPERTIES);
-			StandaloneGameKey.gamekey[1].loadConfig(Options.GUI_PROPERTIES);
-
-			StandaloneResourceHolder.load();
-
-			final StandaloneFrame frame = new StandaloneFrame();
-			frame.setUndecorated(false);
-
-			panel.add(frame.getRootPane(), new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0,0,0,0), 0, 0));
-			validate();
-
-			if(url.getQuery() != null) {
-				String[] qf = url.getQuery().split("&");
-				for(String qpp : qf) {
-					final String[] qp = qpp.split("=", 2);
-					if("replay".equals(qp[0]) && qp.length > 1) {
-						EventQueue.invokeLater(new Runnable() {
+			final JOptionPane opt = new JOptionPane("To save user configuration, such as custom keys, you must create a user id.\nThere is no need to remember a password.\nIf you choose not to create a user ID the default settings will be used.\n\nCreate a user ID now?", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+			opt.addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, new PropertyChangeListener() {
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					cpanel.removeAll();
+					if(evt.getNewValue().equals(JOptionPane.YES_OPTION)) {
+						final JTextField tf = new JTextField("");
+						JPanel p = new JPanel(new GridLayout(0, 1));
+						p.add(new JLabel("Enter Config ID"));
+						p.add(tf);
+						JOptionPane opt2 = new JOptionPane(p, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+						opt2.addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, new PropertyChangeListener() {
 							@Override
-							public void run() {
-								frame.startReplayGame(qp[1]);
+							public void propertyChange(PropertyChangeEvent evt) {
+								cpanel.removeAll();
+								if(evt.getNewValue().equals(JOptionPane.OK_OPTION)) {
+									Session.setUser(tf.getText());
+									load();
+								} else {
+									cpanel.add(opt, BorderLayout.CENTER);
+									cpanel.revalidate();
+								}
 							}
 						});
-						break;
+						cpanel.add(opt2, BorderLayout.CENTER);
+						cpanel.revalidate();
+					} else
+						load();
+				}
+			});
+			cpanel.add(opt, BorderLayout.CENTER);
+			cpanel.revalidate();
+		} else
+			load();
+	}
+	
+	private void load() {
+		
+		if(Session.getUser() == null || "none".equals(Session.getUser()))
+			Session.setUser(Session.ANONYMOUS_USER);
+	
+		panel.removeAll();
+		panel.setLayout(new BorderLayout());
+		JLabel l = new JLabel("Loading Zeromeaner");
+		l.setForeground(Color.WHITE);
+		l.setHorizontalAlignment(SwingConstants.CENTER);
+		panel.add(l, BorderLayout.CENTER);
+		panel.revalidate();
+		repaint();
+		
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				try {
+
+					try {
+						PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));
+					} catch(IOException ioe) {
 					}
 
+					StandaloneMain.loadGlobalConfig();
+
+					StandaloneMain.modeManager = ModeList.getModes();
+
+					StandaloneGameKey.initGlobalGameKeySwing();
+					StandaloneGameKey.gamekey[0].loadDefaultKeymap();
+					StandaloneGameKey.gamekey[1].loadDefaultKeymap();
+
+					StandaloneGameKey.gamekey[0].loadConfig(Options.GUI_PROPERTIES);
+					StandaloneGameKey.gamekey[1].loadConfig(Options.GUI_PROPERTIES);
+
+					StandaloneResourceHolder.load();
+
+					final StandaloneFrame frame = new StandaloneFrame();
+					frame.setUndecorated(false);
+
+					panel.removeAll();
+					panel.add(frame.getContentPane(), BorderLayout.CENTER);
+					panel.revalidate();
+
+					if(url.getQuery() != null) {
+						String[] qf = url.getQuery().split("&");
+						for(String qpp : qf) {
+							final String[] qp = qpp.split("=", 2);
+							if("replay".equals(qp[0]) && qp.length > 1) {
+								EventQueue.invokeLater(new Runnable() {
+									@Override
+									public void run() {
+										frame.startReplayGame(qp[1]);
+									}
+								});
+								break;
+							}
+
+						}
+					}
+
+				} catch(Exception ex) {
+					ex.printStackTrace();
 				}
 			}
+		});
 
-		} catch(Exception ex) {
-			ex.printStackTrace();
-		}
+
 	}
 
 	@Override
