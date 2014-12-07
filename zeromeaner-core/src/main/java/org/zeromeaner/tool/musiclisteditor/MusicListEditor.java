@@ -110,7 +110,7 @@ public class MusicListEditor extends JFrame implements ActionListener {
 		// Read configuration file
 		propConfig = new CustomProperties();
 		try {
-			ResourceInputStream in = new ResourceInputStream("config/setting/swing.cfg");
+			ResourceInputStream in = new ResourceInputStream("setting/swing.cfg");
 			propConfig.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -262,7 +262,7 @@ public class MusicListEditor extends JFrame implements ActionListener {
 	private void loadMusicList() {
 		propMusic = new CustomProperties();
 		try {
-			ResourceInputStream in = new ResourceInputStream("config/setting/music.cfg");
+			ResourceInputStream in = new ResourceInputStream("setting/music.cfg");
 			propMusic.load(in);
 			in.close();
 		} catch (IOException e) {}
@@ -274,7 +274,7 @@ public class MusicListEditor extends JFrame implements ActionListener {
 	 */
 	private void saveMusicList() throws IOException {
 		try {
-			ResourceOutputStream out = new ResourceOutputStream("config/setting/music.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("setting/music.cfg");
 			propMusic.store(out, "zeromeaner Music List");
 			out.close();
 		} catch (IOException e) {

@@ -13,6 +13,8 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -35,6 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileSystemView;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.component.RuleOptions;
@@ -54,9 +57,11 @@ import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.Options;
+import org.zeromeaner.util.Session;
 import org.zeromeaner.util.Options.AIOptions;
 import org.zeromeaner.util.Options.TuningOptions;
-import org.zeromeaner.util.ResourceFileSystemView;
+import org.zeromeaner.util.io.DavFileSystemView;
+import org.zeromeaner.util.io.FileSystemViews;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.RuleList;
 
@@ -105,10 +110,6 @@ public class StandaloneFrame extends JFrame {
 	KNetPanel netLobby;
 	volatile GameManager gameManager;
 	private StandaloneGamePanel gamePanel;
-	private StandaloneMusicVolumePanel musicPanel;
-	
-	private JButton replayButton;
-	private URL replayUrl;
 	
 	public StandaloneFrame() {
 		setTitle("zeromeaner");
@@ -120,7 +121,7 @@ public class StandaloneFrame extends JFrame {
 		add(toolbar = createToolbar(), BorderLayout.EAST);
 		add(content = new JPanel(contentCards = new CardLayout()), BorderLayout.CENTER);
 
-		netLobby = new KNetPanel(StandaloneMain.userId, false);
+		netLobby = new KNetPanel(Session.getUser(), false);
 		netLobby.setPreferredSize(new Dimension(800, 250));
 		netLobby.addKNetPanelListener(new KNetPanelAdapter() {
 			@Override
@@ -148,19 +149,6 @@ public class StandaloneFrame extends JFrame {
 		});
 		
 		gamePanel = new StandaloneGamePanel(this);
-		musicPanel = new StandaloneMusicVolumePanel();
-		
-		replayButton = new JButton(new AbstractAction("") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(replayUrl == null)
-					return;
-				StringSelection url = new StringSelection(replayUrl.toString());
-				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(url, url);
-			}
-		});
-		
-		setReplayUrl(null);
 		
 		createCards();
 		
@@ -271,60 +259,35 @@ public class StandaloneFrame extends JFrame {
 		gc.load();
 		content.add(gc, CARD_GENERAL);
 
-		JFileChooser fc;
+		final JFileChooser fc;
 		
-		if(!StandaloneApplet.isApplet()) {
-			fc = new JFileChooser(System.getProperty("user.dir") + File.separator + "local-resources" + File.separator + "replay");
-			fc.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if(!e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION))
-						return;
-					JFileChooser fc = (JFileChooser) e.getSource();
-					String path = fc.getSelectedFile().getPath();
-					startReplayGame(path);
-				}
-			});
-			content.add(fc, CARD_OPEN);
-		}
-	}
-	
-	private boolean openOnlineCardCreated = false;
-	
-	private void createOpenOnlineCard() {
-		if(openOnlineCardCreated)
-			return;
-		openOnlineCardCreated = true;
-		JFileChooser fc = new JFileChooser(new ResourceFileSystemView() {
-			@Override
-			protected String url() {
-				return super.url() + "replay/";
-			}
-			@Override
-			public Boolean isTraversable(File f) {
-				if(f.getName().endsWith(".rep"))
-					return false;
-				return super.isTraversable(f);
-			}
-		});
+		FileSystemView fsv = FileSystemViews.get().fileSystemView("replay/");
+		if(fsv instanceof DavFileSystemView)
+			fc = new JFileChooser("", fsv);
+		else
+			fc = new JFileChooser(new File(System.getProperty("user.dir"), "local-resources/replay"), fsv);
 		fc.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(!e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION))
 					return;
 				JFileChooser fc = (JFileChooser) e.getSource();
-				String path = "replay/" + fc.getSelectedFile().getPath();
-				startReplayGame(path.replaceAll("/+", "/"));
+				String path = fc.getSelectedFile().getPath();
+				startReplayGame(path);
 			}
 		});
-		content.add(fc, CARD_OPEN_ONLINE);
+		fc.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentShown(ComponentEvent e) {
+				fc.rescanCurrentDirectory();
+			}
+		});
+		content.add(fc, CARD_OPEN);
 	}
 	
 	private void playCardSelected() {
 		playCard.add(gamePanel, BorderLayout.CENTER);
 //		playCard.add(musicPanel, BorderLayout.WEST);
-		if(StandaloneApplet.isApplet())
-			playCard.add(replayButton, BorderLayout.SOUTH);
 		gamePanel.shutdown();
 		try {
 			gamePanel.shutdownWait();
@@ -410,19 +373,8 @@ public class StandaloneFrame extends JFrame {
 		b = new JToggleButton(new ToolbarAction("toolbar.general"));
 		add(t, g, b);
 		
-		if(!StandaloneApplet.isApplet()) {
-			b = new JToggleButton(new ToolbarAction("toolbar.open"));
-			add(t, g, b);
-		} else {
-			b = new JToggleButton(new ToolbarAction("toolbar.open_online") {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					createOpenOnlineCard();
-					super.actionPerformed(e);
-				}
-			});
-			add(t, g, b);
-		}
+		b = new JToggleButton(new ToolbarAction("toolbar.open"));
+		add(t, g, b);
 		
 		b = new JButton(new ToolbarAction("toolbar.close") {
 			@Override
@@ -431,8 +383,7 @@ public class StandaloneFrame extends JFrame {
 				System.exit(0);
 			}
 		});
-		if(!StandaloneApplet.isApplet())
-			add(t, g, b);
+		add(t, g, b);
 		
 		return t;
 	}
@@ -608,8 +559,6 @@ public class StandaloneFrame extends JFrame {
 	public void startReplayGame(String filename) {
 		contentCards.show(content, currentCard = CARD_PLAY);
 		playCard.add(gamePanel, BorderLayout.CENTER);
-		if(StandaloneApplet.isApplet())
-			playCard.add(replayButton, BorderLayout.SOUTH);
 		gamePanel.shutdown();
 		try {
 			gamePanel.shutdownWait();
@@ -617,19 +566,6 @@ public class StandaloneFrame extends JFrame {
 		}
 		startNewGame(null, filename, null, null);
 		gamePanel.displayWindow();
-	}
-
-	public URL getReplayUrl() {
-		return replayUrl;
-	}
-
-	public void setReplayUrl(URL replayUrl) {
-		this.replayUrl = replayUrl;
-		if(replayUrl == null) {
-			replayButton.setText("No replay URL available");
-			return;
-		}
-		replayButton.setText("Copy replay URL " + replayUrl + " to clipboard");
 	}
 
 }

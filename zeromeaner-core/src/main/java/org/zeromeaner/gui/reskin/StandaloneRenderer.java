@@ -356,29 +356,7 @@ public class StandaloneRenderer extends EventRenderer {
 	@Override
 	public void saveReplay(GameManager owner, CustomProperties prop) {
 		if(owner.mode.isNetplayMode()) return;
-
-		String filename = saveReplay(owner, prop, "replay");
-
-		
-		String replayUrl = StandaloneApplet.url + "?replay=replay/../../" + StandaloneMain.userId + "/" + filename;
-		try {
-			frame.setReplayUrl(new URL(replayUrl));
-		} catch (MalformedURLException e) {
-		}
-		/*
-		StringSelection ss = new StringSelection(replayUrl);
-		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, ss);
-//		JOptionPane.showInternalMessageDialog(
-//				AppletMain.instance.desktop, 
-//				"Replay URL saved to clipboard.  Paste into another app to save.", 
-//				"Replay URL Copied", 
-//				JOptionPane.INFORMATION_MESSAGE);
-		if(AppletMain.isApplet())
-			AppletMain.instance.notifyUser(
-					UIManager.getIcon("OptionPane.informationIcon"), 
-					"Replay URL saved to clipboard.  Paste into another app to save.",
-					replayUrl);
-*/
+		saveReplay(owner, prop, "replay");
 	}
 
 	/*

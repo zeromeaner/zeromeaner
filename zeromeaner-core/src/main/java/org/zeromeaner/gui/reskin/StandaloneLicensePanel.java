@@ -16,7 +16,7 @@ public class StandaloneLicensePanel extends JPanel {
 	
 	public StandaloneLicensePanel() {
 		super(new BorderLayout());
-		URL about = StandaloneLicensePanel.class.getClassLoader().getResource("org/zeromeaner/About.html");
+		URL about = StandaloneLicensePanel.class.getClassLoader().getResource("org/zeromeaner/res/About.html");
 		try {
 			editor = new JEditorPane();
 			editor.setEditable(false);
