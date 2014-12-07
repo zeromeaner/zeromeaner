@@ -8,9 +8,9 @@ import java.util.Map.Entry;
 
 public class PropertyStore extends AbstractMap<String, String> {
 
-	private PropertyStore instance = new PropertyStore();
+	private static PropertyStore instance = new PropertyStore();
 	
-	public PropertyStore get() {
+	public static PropertyStore get() {
 		return instance;
 	}
 	

@@ -15,7 +15,6 @@ import java.util.Set;
 
 import netscape.javascript.JSObject;
 
-import org.zeromeaner.gui.reskin.StandaloneApplet;
 import org.zeromeaner.util.PropertyStoreHook;
 
 public class AppletPropertyStoreHook implements PropertyStoreHook {
@@ -26,7 +25,7 @@ public class AppletPropertyStoreHook implements PropertyStoreHook {
 		props = new Properties();
 		try {
 			String data = "";
-			JSObject myBrowser = JSObject.getWindow(StandaloneApplet.getInstance());
+			JSObject myBrowser = JSObject.getWindow(ZeromeanerApplet.getInstance());
 			JSObject myDocument = (JSObject) myBrowser.getMember("document");
 
 			String myCookie = (String) myDocument.getMember("cookie");
@@ -64,7 +63,7 @@ public class AppletPropertyStoreHook implements PropertyStoreHook {
 				sb.append(String.format("%02x", b));
 			}
 			String value = sb.toString();
-			JSObject win = JSObject.getWindow(StandaloneApplet.getInstance());
+			JSObject win = JSObject.getWindow(ZeromeanerApplet.getInstance());
 			JSObject doc = (JSObject) win.getMember("document");
 			String data = "c=" + value + "; path=/; expires=Thu, 31-Dec-2019 12:00:00 GMT";
 			doc.setMember("cookie", data);
