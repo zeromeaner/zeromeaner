@@ -1,7 +1,5 @@
 package org.zeromeaner.applet;
 
-import static org.zeromeaner.gui.reskin.StandaloneMain.userId;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -30,6 +28,7 @@ import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.PropertyStore;
 import org.zeromeaner.util.ResourceInputStream;
+import org.zeromeaner.util.Session;
 
 public class ZeromeanerApplet extends JApplet {
 	private static ZeromeanerApplet instance;
@@ -96,20 +95,20 @@ public class ZeromeanerApplet extends JApplet {
 			}
 		}
 
-		if(userId == null)
-			userId = PropertyStore.get().get("userId");
-		if(userId == null)
-			userId = getParameter("userId");
+		if(Session.ANONYMOUS_USER.equals(Session.getUser()))
+			Session.setUser(PropertyStore.get().get("userId"));
+		if(Session.getUser() == null)
+			Session.setUser(getParameter("userId"));
 
-		while(userId == null || "default".equals(userId)) {
-			userId = "none";
+		while(Session.getUser() == null || Session.ANONYMOUS_USER.equals(Session.getUser())) {
+			Session.setUser("none");
 			int create = JOptionPane.showConfirmDialog(this, "To save user configuration, such as custom keys, you must create a user id.\nThere is no need to remember a password.\nIf you choose not to create a user ID the default settings will be used.\n\nCreate a user ID now?", "Create User ID?", JOptionPane.YES_NO_OPTION);
 			if(create == JOptionPane.YES_OPTION) {
-				userId = (String) JOptionPane.showInputDialog(this, "Enter Config ID", "Enter Config ID", JOptionPane.QUESTION_MESSAGE, null, null, "");
-				if(userId != null)
-					PropertyStore.get().put("userId", userId);
+				Session.setUser((String) JOptionPane.showInputDialog(this, "Enter Config ID", "Enter Config ID", JOptionPane.QUESTION_MESSAGE, null, null, ""));
+				if(Session.getUser() != null)
+					PropertyStore.get().put("userId", Session.getUser());
 				else
-					userId = "default";
+					Session.setUser(Session.ANONYMOUS_USER);
 			}
 		}
 
