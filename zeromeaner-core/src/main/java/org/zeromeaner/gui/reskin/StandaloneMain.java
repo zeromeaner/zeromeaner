@@ -22,6 +22,7 @@ import org.zeromeaner.util.Options;
 import org.zeromeaner.util.PropertyConstant;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ResourceOutputStream;
+import org.zeromeaner.util.io.PropertyStore;
 
 import com.esotericsoftware.minlog.Log;
 
@@ -54,7 +55,6 @@ public class StandaloneMain {
 		} catch(IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
-		Options.RUNTIME_PROPERTIES.putAll(CookieAccess.getInstance().get());
 	}
 
 	public static void saveConfig() {
@@ -71,7 +71,6 @@ public class StandaloneMain {
 			out.close();
 		} catch(IOException e) {
 		}
-		CookieAccess.getInstance().set(Options.RUNTIME_PROPERTIES.getAll());
 	}
 
 	private static void _main(String[] args) throws Exception {
@@ -99,13 +98,9 @@ public class StandaloneMain {
 			}
 		}
 		
-		CookieAccess.setInstance(new MainCookieAccess());
-
-		StandaloneApplet.url = new URL("http://www.zeromeaner.org/" + (GameManager.VERSION.isSnapshot() ? "snapshot" : "play") + "/");
-
 		userId = System.getProperty("user.name");
-		if(CookieAccess.get("userId") != null)
-			userId = CookieAccess.get("userId");
+		if(PropertyStore.get().get("userId") != null)
+			userId = PropertyStore.get().get("userId");
 
 		try {
 			PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));

@@ -52,6 +52,7 @@ import org.eviline.swing.IntegerDocument;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.ServiceHookDispatcher;
 import org.zeromeaner.util.Options.StandaloneOptions;
+import org.zeromeaner.util.io.PropertyStore;
 import org.zeromeaner.util.SwingUtils;
 
 /**
@@ -163,12 +164,10 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	protected void initUI() {
 		setLayout(new BorderLayout(10, 10));
 
-		if(StandaloneApplet.isApplet()) {
-			JPanel login = new JPanel(new BorderLayout());
-			login.add(new JLabel("www.zeromeaner.org user ID:"), BorderLayout.WEST);
-			login.add(userId, BorderLayout.CENTER);
-			this.add(login, BorderLayout.NORTH);
-		}
+		JPanel login = new JPanel(new BorderLayout());
+		login.add(new JLabel("www.zeromeaner.org user ID:"), BorderLayout.WEST);
+		login.add(userId, BorderLayout.CENTER);
+		this.add(login, BorderLayout.NORTH);
 		
 		// * Tab pane
 		JTabbedPane tabPane = new JTabbedPane();
@@ -190,12 +189,6 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		txtfldSEVolume = new JTextField(5);
 		pSEVolume.add(txtfldSEVolume);
 
-		// ---------- checkBox ----------
-		maximizeStandalone = new JCheckBox(lz.s("GeneralConfig_MaximizeStandalone"));
-		maximizeStandalone.setHorizontalAlignment(SwingConstants.CENTER);
-		if(!StandaloneApplet.isApplet())
-			pBasicTab.add(maximizeStandalone);
-		
 		chkboxShowBackground = new JCheckBox(lz.s("GeneralConfig_ShowBackground"));
 		chkboxShowBackground.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxShowBackground);
@@ -381,7 +374,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			// OK
 			
 			StandaloneMain.userId = userId.getText();
-			CookieAccess.put("userId", StandaloneMain.userId);
+			PropertyStore.get().put("userId", StandaloneMain.userId);
 			
 			StandaloneOptions opt = Options.standalone();
 			
