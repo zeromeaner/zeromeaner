@@ -11,7 +11,6 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.zeromeaner.gui.reskin.StandaloneApplet;
 import org.zeromeaner.gui.reskin.StandaloneMain;
 import org.zeromeaner.util.io.ResourceStreams;
 

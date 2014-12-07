@@ -15,7 +15,11 @@ import com.googlecode.sardine.util.SardineException;
 
 public class DavResourceStreamHook implements ResourceStreamHook {
 	
-	protected static final String URL_BASE = "http://www.zeromeaner.org/dav/";
+	public static final String URL_BASE = "http://www.zeromeaner.org/dav/";
+	
+	public static final String getUserURLBase() {
+		return URL_BASE + Session.getUser() + "/";
+	}
 	
 	protected static final Pattern NON_DAV = Pattern.compile("^(config|gui|res)/.*");
 	

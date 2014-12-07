@@ -56,7 +56,7 @@ import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.Options.AIOptions;
 import org.zeromeaner.util.Options.TuningOptions;
-import org.zeromeaner.util.ResourceFileSystemView;
+import org.zeromeaner.util.io.DavFileSystemView;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.RuleList;
 
@@ -295,7 +295,7 @@ public class StandaloneFrame extends JFrame {
 		if(openOnlineCardCreated)
 			return;
 		openOnlineCardCreated = true;
-		JFileChooser fc = new JFileChooser(new ResourceFileSystemView() {
+		JFileChooser fc = new JFileChooser(new DavFileSystemView() {
 			@Override
 			protected String url() {
 				return super.url() + "replay/";
