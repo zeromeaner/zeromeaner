@@ -172,19 +172,15 @@ public class KNetPanel extends JPanel implements KNetChannelListener, KNetListen
 			add(p, BorderLayout.CENTER);
 			p = new JPanel(new GridLayout(0, 1));
 			p.add(connect);
-			if(!StandaloneApplet.isApplet()) {
-				p.add(add);
-				p.add(remove);
-			}
+			p.add(add);
+			p.add(remove);
 			p.add(exit);
 			add(p, BorderLayout.EAST);
 			
-			if(StandaloneApplet.url != null) {
-				if(!GameManager.VERSION.isSnapshot())
-					connectionsModel.addElement("" + StandaloneApplet.url.getHost() + ":61897");
-				else {
-					connectionsModel.addElement("" + StandaloneApplet.url.getHost() + ":61896");
-				}
+			if(!GameManager.VERSION.isSnapshot())
+				connectionsModel.addElement("www.zeromeaner.org:61897");
+			else {
+				connectionsModel.addElement("www.zeromeaner.org:61896");
 			}
 			
 			for(String c : servers.get("")) {

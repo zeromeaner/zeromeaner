@@ -23,12 +23,13 @@ import org.zeromeaner.util.Options;
 import org.zeromeaner.util.PropertyConstant;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ResourceOutputStream;
+import org.zeromeaner.util.Session;
+import org.zeromeaner.util.io.PropertyStore;
 
 import com.esotericsoftware.minlog.Log;
 
 public class StandaloneMain {
 	public static ModeList<GameMode> modeManager;
-	public static String userId;
 	
 	public static void main(String[] args) {
 		try {
@@ -40,7 +41,7 @@ public class StandaloneMain {
 	
 	public static void loadGlobalConfig() {
 		try {
-			InputStream in = new ResourceInputStream("config/setting/global.cfg");
+			InputStream in = new ResourceInputStream("setting/global.cfg");
 			Options.GLOBAL_PROPERTIES.load(in);
 			in.close();
 		} catch(FileNotFoundException fnfe) {
@@ -48,31 +49,43 @@ public class StandaloneMain {
 			throw new RuntimeException(ioe);
 		}
 		try {
-			InputStream in = new ResourceInputStream("config/setting/swing.cfg");
+			InputStream in = new ResourceInputStream("setting/swing.cfg");
 			Options.GUI_PROPERTIES.load(in);
 			in.close();
 		} catch(FileNotFoundException fnfe) {
 		} catch(IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
-		Options.RUNTIME_PROPERTIES.putAll(CookieAccess.getInstance().get());
+		try {
+			InputStream in = new ResourceInputStream("setting/runtime.cfg");
+			Options.RUNTIME_PROPERTIES.load(in);
+			in.close();
+		} catch(FileNotFoundException fnfe) {
+		} catch(IOException ioe) {
+			throw new RuntimeException(ioe);
+		}
 	}
 
 	public static void saveConfig() {
 		try {
-			ResourceOutputStream out = new ResourceOutputStream("config/setting/global.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("setting/global.cfg");
 			Options.GLOBAL_PROPERTIES.store(out, "zeromeaner global Config");
 			out.close();
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
 		try {
-			ResourceOutputStream out = new ResourceOutputStream("config/setting/swing.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("setting/swing.cfg");
 			Options.GUI_PROPERTIES.store(out, "zeromeaner Swing-frontend Config");
 			out.close();
 		} catch(IOException e) {
 		}
-		CookieAccess.getInstance().set(Options.RUNTIME_PROPERTIES.getAll());
+		try {
+			ResourceOutputStream out = new ResourceOutputStream("setting/runtime.cfg");
+			Options.RUNTIME_PROPERTIES.store(out, "zeromeaner Swing-frontend Config");
+			out.close();
+		} catch(IOException e) {
+		}
 	}
 
 	private static void _main(String[] args) throws Exception {
@@ -100,13 +113,9 @@ public class StandaloneMain {
 			}
 		}
 		
-		CookieAccess.setInstance(new MainCookieAccess());
-
-		StandaloneApplet.url = new URL("http://www.zeromeaner.org/" + (GameManager.VERSION.isSnapshot() ? "snapshot" : "play") + "/");
-
-		userId = System.getProperty("user.name");
-		if(CookieAccess.get("userId") != null)
-			userId = CookieAccess.get("userId");
+		Session.setUser(System.getProperty("user.name"));
+		if(PropertyStore.get().get("userId") != null)
+			Session.setUser(PropertyStore.get().get("userId"));
 
 		try {
 			PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));
@@ -132,14 +141,8 @@ public class StandaloneMain {
 		
 		StandaloneFrame frame = new StandaloneFrame();
 		
-		if(PropertyConstant.is(Options.standalone().FULL_SCREEN)) {
-			frame.setUndecorated(true);
-			frame.setVisible(true);
-			frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		} else {
-			frame.setSize(1366, 768);
-			frame.setVisible(true);
-		}
+		frame.setSize(1366, 768);
+		frame.setVisible(true);
 		
 	}
 }

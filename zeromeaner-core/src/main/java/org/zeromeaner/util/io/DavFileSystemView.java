@@ -1,4 +1,4 @@
-package org.zeromeaner.applet;
+package org.zeromeaner.util.io;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import com.googlecode.sardine.DavResource;
 import com.googlecode.sardine.Factory;
 import com.googlecode.sardine.Sardine;
 
-public class ResourceFileSystemView extends FileSystemView {
+public class DavFileSystemView extends FileSystemView {
 	private static Sardine s;
 	static {
 		try {
@@ -22,8 +22,14 @@ public class ResourceFileSystemView extends FileSystemView {
 		}
 	}
 
+	protected String limit;
+	
+	public DavFileSystemView(String limit) {
+		this.limit = limit;
+	}
+	
 	protected String url() {
-		return "http://" + ZeromeanerApplet.url.getHost() + "/webdav/" + StandaloneMain.userId + "/";
+		return DavResourceStreamHook.getUserURLBase() + limit;
 	}
 
 	protected String toSardine(File file) {

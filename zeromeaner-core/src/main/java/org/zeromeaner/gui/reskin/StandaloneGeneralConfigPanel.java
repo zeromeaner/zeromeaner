@@ -53,6 +53,8 @@ import org.zeromeaner.applet.StandaloneApplet;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.ServiceHookDispatcher;
 import org.zeromeaner.util.Options.StandaloneOptions;
+import org.zeromeaner.util.Session;
+import org.zeromeaner.util.io.PropertyStore;
 import org.zeromeaner.util.SwingUtils;
 
 /**
@@ -76,8 +78,6 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		{320,240}, {400,300}, {480,360}, {512,384}, {640,480}, {800,600}, {1024,768}, {1152,864}, {1280,960}
 	};
 	
-	protected JCheckBox maximizeStandalone;
-
 	/** Model of screen size combobox */
 	protected DefaultComboBoxModel modelScreenSize;
 
@@ -164,12 +164,10 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	protected void initUI() {
 		setLayout(new BorderLayout(10, 10));
 
-		if(StandaloneApplet.isApplet()) {
-			JPanel login = new JPanel(new BorderLayout());
-			login.add(new JLabel("www.zeromeaner.org user ID:"), BorderLayout.WEST);
-			login.add(userId, BorderLayout.CENTER);
-			this.add(login, BorderLayout.NORTH);
-		}
+		JPanel login = new JPanel(new BorderLayout());
+		login.add(new JLabel("www.zeromeaner.org user ID:"), BorderLayout.WEST);
+		login.add(userId, BorderLayout.CENTER);
+		this.add(login, BorderLayout.NORTH);
 		
 		// * Tab pane
 		JTabbedPane tabPane = new JTabbedPane();
@@ -191,12 +189,6 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		txtfldSEVolume = new JTextField(5);
 		pSEVolume.add(txtfldSEVolume);
 
-		// ---------- checkBox ----------
-		maximizeStandalone = new JCheckBox(lz.s("GeneralConfig_MaximizeStandalone"));
-		maximizeStandalone.setHorizontalAlignment(SwingConstants.CENTER);
-		if(!StandaloneApplet.isApplet())
-			pBasicTab.add(maximizeStandalone);
-		
 		chkboxShowBackground = new JCheckBox(lz.s("GeneralConfig_ShowBackground"));
 		chkboxShowBackground.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(chkboxShowBackground);
@@ -335,7 +327,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	 * Current SettingsGUIBe reflected in the
 	 */
 	public void load() {
-		userId.setText(StandaloneMain.userId);
+		userId.setText(Session.getUser());
 		
 		StandaloneOptions opt = Options.standalone();
 		
@@ -349,7 +341,6 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			}
 		}
 
-		maximizeStandalone.setSelected(opt.FULL_SCREEN.value());
 		txtfldMaxFPS.setText("" + opt.MAX_FPS.value());
 		txtfldSEVolume.setText("" + opt.SE_VOLUME.value());
 		txtfldLineClearEffectSpeed.setText("" + opt.LINE_EFFECT_SPEED.value());
@@ -381,8 +372,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		if(e.getActionCommand() == "GeneralConfig_OK") {
 			// OK
 			
-			StandaloneMain.userId = userId.getText();
-			CookieAccess.put("userId", StandaloneMain.userId);
+			PropertyStore.get().put("userId", userId.getText());
+			Session.setUser(userId.getText());
 			
 			StandaloneOptions opt = Options.standalone();
 			
@@ -402,7 +393,6 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			if(lineeffectspeed < 0) lineeffectspeed = 0;
 			opt.LINE_EFFECT_SPEED.set(lineeffectspeed);
 
-			opt.FULL_SCREEN.set(maximizeStandalone.isSelected());
 			opt.SHOW_FPS.set(chkboxShowFPS.isSelected());
 			opt.SHOW_BG.set(chkboxShowBackground.isSelected());
 			opt.SHOW_METER.set(chkboxShowMeter.isSelected());
