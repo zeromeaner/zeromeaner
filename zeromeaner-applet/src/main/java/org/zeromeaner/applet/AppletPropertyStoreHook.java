@@ -15,6 +15,7 @@ import java.util.Set;
 
 import netscape.javascript.JSObject;
 
+import org.apache.commons.codec.binary.Base64;
 import org.zeromeaner.util.PropertyStoreHook;
 
 public class AppletPropertyStoreHook implements PropertyStoreHook {
@@ -42,11 +43,8 @@ public class AppletPropertyStoreHook implements PropertyStoreHook {
 			}
 			if("".equals(data))
 				return;
-			ByteArrayOutputStream bout = new ByteArrayOutputStream();
-			for(int i = 0; i < data.length(); i += 2) {
-				bout.write(Integer.parseInt(data.substring(i, i+2), 16));
-			}
-			props = (Properties) new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray())).readObject();
+			byte[] buf = Base64.decodeBase64(data);
+			props = (Properties) new ObjectInputStream(new ByteArrayInputStream(buf)).readObject();
 		} catch(Throwable t) {
 		}
 	}
@@ -58,11 +56,7 @@ public class AppletPropertyStoreHook implements PropertyStoreHook {
 			out.writeObject(props);
 			out.close();
 
-			StringBuilder sb = new StringBuilder();
-			for(byte b : bout.toByteArray()) {
-				sb.append(String.format("%02x", b));
-			}
-			String value = sb.toString();
+			String value = Base64.encodeBase64String(bout.toByteArray());
 			JSObject win = JSObject.getWindow(ZeromeanerApplet.getInstance());
 			JSObject doc = (JSObject) win.getMember("document");
 			String data = "c=" + value + "; path=/; expires=Thu, 31-Dec-2019 12:00:00 GMT";
