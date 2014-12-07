@@ -20,9 +20,9 @@ public class FileSystemViews {
 	
 	private FileSystemViews() {}
 	
-	public FileSystemView fileSystemView() {
+	public FileSystemView fileSystemView(String limit) {
 		PrioritizedHandler<Callable<FileSystemView>> handlers = new PrioritizedHandler<>();
-		hook.dispatcher().addFileSystemView(handlers);
+		hook.dispatcher().addFileSystemView(limit, handlers);
 		for(Callable<FileSystemView> handler : handlers.get()) {
 			try {
 				return handler.call();

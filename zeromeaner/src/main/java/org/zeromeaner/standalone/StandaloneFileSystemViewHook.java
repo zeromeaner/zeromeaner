@@ -10,7 +10,7 @@ import org.zeromeaner.util.io.PrioritizedHandler;
 public class StandaloneFileSystemViewHook implements FileSystemViewHook {
 
 	@Override
-	public void addFileSystemView(PrioritizedHandler<Callable<FileSystemView>> handlers) {
+	public void addFileSystemView(String limit, PrioritizedHandler<Callable<FileSystemView>> handlers) {
 		Callable<FileSystemView> handler = new Callable<FileSystemView>() {
 			@Override
 			public FileSystemView call() throws Exception {

@@ -8,6 +8,8 @@ import java.util.concurrent.Callable;
 import org.apache.log4j.Logger;
 import org.zeromeaner.util.ServiceHookDispatcher;
 
+import com.google.common.io.NullOutputStream;
+
 public class ResourceStreams {
 	
 	private static final Logger log = Logger.getLogger(ResourceStreams.class);
@@ -46,6 +48,6 @@ public class ResourceStreams {
 				log.warn(e);
 			}
 		}
-		return null;
+		return new NullOutputStream();
 	}
 }

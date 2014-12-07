@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileSystemView;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.component.RuleOptions;
@@ -54,6 +55,7 @@ import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.Options;
+import org.zeromeaner.util.Session;
 import org.zeromeaner.util.Options.AIOptions;
 import org.zeromeaner.util.Options.TuningOptions;
 import org.zeromeaner.util.io.DavFileSystemView;
@@ -117,7 +119,7 @@ public class StandaloneFrame extends JFrame {
 		add(toolbar = createToolbar(), BorderLayout.EAST);
 		add(content = new JPanel(contentCards = new CardLayout()), BorderLayout.CENTER);
 
-		netLobby = new KNetPanel(StandaloneMain.userId, false);
+		netLobby = new KNetPanel(Session.getUser(), false);
 		netLobby.setPreferredSize(new Dimension(800, 250));
 		netLobby.addKNetPanelListener(new KNetPanelAdapter() {
 			@Override
@@ -257,8 +259,11 @@ public class StandaloneFrame extends JFrame {
 
 		JFileChooser fc;
 		
-		fc = new JFileChooser();
-		fc.setFileSystemView(FileSystemViews.get().fileSystemView());
+		FileSystemView fsv = FileSystemViews.get().fileSystemView("replay/");
+		if(fsv instanceof DavFileSystemView)
+			fc = new JFileChooser("", fsv);
+		else
+			fc = new JFileChooser(new File(System.getProperty("user.dir"), "local-resources/replay"), fsv);
 		fc.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -270,37 +275,6 @@ public class StandaloneFrame extends JFrame {
 			}
 		});
 		content.add(fc, CARD_OPEN);
-	}
-	
-	private boolean openOnlineCardCreated = false;
-	
-	private void createOpenOnlineCard() {
-		if(openOnlineCardCreated)
-			return;
-		openOnlineCardCreated = true;
-		JFileChooser fc = new JFileChooser(new DavFileSystemView() {
-			@Override
-			protected String url() {
-				return super.url() + "replay/";
-			}
-			@Override
-			public Boolean isTraversable(File f) {
-				if(f.getName().endsWith(".rep"))
-					return false;
-				return super.isTraversable(f);
-			}
-		});
-		fc.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(!e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION))
-					return;
-				JFileChooser fc = (JFileChooser) e.getSource();
-				String path = "replay/" + fc.getSelectedFile().getPath();
-				startReplayGame(path.replaceAll("/+", "/"));
-			}
-		});
-		content.add(fc, CARD_OPEN_ONLINE);
 	}
 	
 	private void playCardSelected() {

@@ -22,8 +22,14 @@ public class DavFileSystemView extends FileSystemView {
 		}
 	}
 
+	protected String limit;
+	
+	public DavFileSystemView(String limit) {
+		this.limit = limit;
+	}
+	
 	protected String url() {
-		return DavResourceStreamHook.getUserURLBase();
+		return DavResourceStreamHook.getUserURLBase() + limit;
 	}
 
 	protected String toSardine(File file) {

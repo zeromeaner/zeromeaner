@@ -22,13 +22,13 @@ import org.zeromeaner.util.Options;
 import org.zeromeaner.util.PropertyConstant;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ResourceOutputStream;
+import org.zeromeaner.util.Session;
 import org.zeromeaner.util.io.PropertyStore;
 
 import com.esotericsoftware.minlog.Log;
 
 public class StandaloneMain {
 	public static ModeList<GameMode> modeManager;
-	public static String userId;
 	
 	public static void main(String[] args) {
 		try {
@@ -98,9 +98,9 @@ public class StandaloneMain {
 			}
 		}
 		
-		userId = System.getProperty("user.name");
+		Session.setUser(System.getProperty("user.name"));
 		if(PropertyStore.get().get("userId") != null)
-			userId = PropertyStore.get().get("userId");
+			Session.setUser(PropertyStore.get().get("userId"));
 
 		try {
 			PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));

@@ -5,5 +5,5 @@ import java.util.concurrent.Callable;
 import javax.swing.filechooser.FileSystemView;
 
 public interface FileSystemViewHook {
-	public void addFileSystemView(PrioritizedHandler<Callable<FileSystemView>> handlers);
+	public void addFileSystemView(String limit, PrioritizedHandler<Callable<FileSystemView>> handlers);
 }
