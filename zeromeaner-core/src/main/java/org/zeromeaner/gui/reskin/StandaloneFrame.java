@@ -13,6 +13,8 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -257,7 +259,7 @@ public class StandaloneFrame extends JFrame {
 		gc.load();
 		content.add(gc, CARD_GENERAL);
 
-		JFileChooser fc;
+		final JFileChooser fc;
 		
 		FileSystemView fsv = FileSystemViews.get().fileSystemView("replay/");
 		if(fsv instanceof DavFileSystemView)
@@ -272,6 +274,12 @@ public class StandaloneFrame extends JFrame {
 				JFileChooser fc = (JFileChooser) e.getSource();
 				String path = fc.getSelectedFile().getPath();
 				startReplayGame(path);
+			}
+		});
+		fc.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentShown(ComponentEvent e) {
+				fc.rescanCurrentDirectory();
 			}
 		});
 		content.add(fc, CARD_OPEN);

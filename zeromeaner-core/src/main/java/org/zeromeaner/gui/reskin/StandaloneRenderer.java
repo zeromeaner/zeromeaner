@@ -356,6 +356,7 @@ public class StandaloneRenderer extends EventRenderer {
 	@Override
 	public void saveReplay(GameManager owner, CustomProperties prop) {
 		if(owner.mode.isNetplayMode()) return;
+		saveReplay(owner, prop, "replay");
 	}
 
 	/*

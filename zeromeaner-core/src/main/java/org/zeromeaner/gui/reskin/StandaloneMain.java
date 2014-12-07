@@ -40,7 +40,7 @@ public class StandaloneMain {
 	
 	public static void loadGlobalConfig() {
 		try {
-			InputStream in = new ResourceInputStream("config/setting/global.cfg");
+			InputStream in = new ResourceInputStream("setting/global.cfg");
 			Options.GLOBAL_PROPERTIES.load(in);
 			in.close();
 		} catch(FileNotFoundException fnfe) {
@@ -48,7 +48,7 @@ public class StandaloneMain {
 			throw new RuntimeException(ioe);
 		}
 		try {
-			InputStream in = new ResourceInputStream("config/setting/swing.cfg");
+			InputStream in = new ResourceInputStream("setting/swing.cfg");
 			Options.GUI_PROPERTIES.load(in);
 			in.close();
 		} catch(FileNotFoundException fnfe) {
@@ -59,14 +59,14 @@ public class StandaloneMain {
 
 	public static void saveConfig() {
 		try {
-			ResourceOutputStream out = new ResourceOutputStream("config/setting/global.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("setting/global.cfg");
 			Options.GLOBAL_PROPERTIES.store(out, "zeromeaner global Config");
 			out.close();
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
 		try {
-			ResourceOutputStream out = new ResourceOutputStream("config/setting/swing.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("setting/swing.cfg");
 			Options.GUI_PROPERTIES.store(out, "zeromeaner Swing-frontend Config");
 			out.close();
 		} catch(IOException e) {

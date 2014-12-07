@@ -26,7 +26,7 @@ public class DavResourceStreamHook implements ResourceStreamHook {
 	protected Sardine sardine;
 	
 	public DavResourceStreamHook() throws SardineException {
-		sardine = SardineFactory.begin();
+		sardine = SardineFactory.begin("zero", "zero");
 	}
 
 	@Override
@@ -74,6 +74,18 @@ public class DavResourceStreamHook implements ResourceStreamHook {
 		@Override
 		public void close() throws IOException {
 			super.close();
+			String dirs = (Session.getUser() + "/" + resource).replaceAll("/[^/]*$", "");
+			String dir = "";
+			for(String s : dirs.split("/")) {
+				if(dir.isEmpty())
+					dir = s;
+				else
+					dir = dir + "/" + s;
+				try {
+					sardine.createDirectory(URL_BASE + dir);
+				} catch(SardineException e) {
+				}
+			}
 			sardine.put(URL_BASE + Session.getUser() + "/" + resource, toByteArray());
 		}
 	}
