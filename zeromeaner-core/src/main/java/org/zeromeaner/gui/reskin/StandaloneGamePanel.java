@@ -239,7 +239,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 * @throws HeadlessException Keyboard, Mouse, Exceptions such as the display if there is no
 	 */
 	public StandaloneGamePanel(final StandaloneFrame owner) throws HeadlessException {
-		super(new BorderLayout());
+		super(new GridBagLayout());
 		this.owner = owner;
 
 		setDoubleBuffered(true);
@@ -250,11 +250,11 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 		add(
 				imageBufferLabel = new FocusableJLabel(new ImageIcon(imageBuffer)), 
-				BorderLayout.CENTER);
+				new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
 		
 		add(
 				new JLabel("Press CTRL+ENTER to enter full-screen mode"),
-				BorderLayout.SOUTH);
+				new GridBagConstraints(0, 1, 1, 0, 1, 1, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
 		
 		imageBufferLabel.setText("No Active Game.  Click \"Play\" to start.");
 		imageBufferLabel.setIcon(null);
@@ -289,6 +289,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 		imageBufferLabel.setText(null);
 		imageBufferLabel.setIcon(new ImageIcon(imageBuffer));
+		imageBufferLabel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 10));
 		imageBufferLabel.revalidate();
 
 		new Thread(this, "Game Thread").start();
@@ -315,6 +316,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		
 		imageBufferLabel.setText("No Active Game.  Click to start.");
 		imageBufferLabel.setIcon(null);
+		imageBufferLabel.setBorder(null);
 		
 		if(restart) {
 			owner.startNewGame();
