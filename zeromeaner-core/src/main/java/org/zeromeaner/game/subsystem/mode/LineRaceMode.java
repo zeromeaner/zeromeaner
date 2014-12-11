@@ -33,6 +33,8 @@ import static org.zeromeaner.knet.KNetEventArgs.GAME_OPTIONS;
 import static org.zeromeaner.knet.KNetEventArgs.GAME_STATS;
 import static org.zeromeaner.knet.KNetEventArgs.START_1P;
 
+import java.text.DecimalFormat;
+
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.component.BGMStatus;
 import org.zeromeaner.game.component.Controller;
@@ -340,6 +342,8 @@ public class LineRaceMode extends AbstractNetMode {
 		engine.meterValue = receiver.getMeterMax(engine);
 	}
 
+	private static final DecimalFormat tenths = new DecimalFormat("0.0");
+	
 	/*
 	 * Score display
 	 */
@@ -386,10 +390,10 @@ public class LineRaceMode extends AbstractNetMode {
 			receiver.drawScoreFont(engine, playerID, 0, 7, String.valueOf(engine.statistics.totalPieceLocked));
 
 			receiver.drawScoreFont(engine, playerID, 0, 9, "LINE/MIN", EventRenderer.COLOR_BLUE);
-			receiver.drawScoreFont(engine, playerID, 0, 10, String.valueOf(engine.statistics.lpm));
+			receiver.drawScoreFont(engine, playerID, 0, 10, tenths.format(engine.statistics.lpm));
 
 			receiver.drawScoreFont(engine, playerID, 0, 12, "PIECE/SEC", EventRenderer.COLOR_BLUE);
-			receiver.drawScoreFont(engine, playerID, 0, 13, String.valueOf(engine.statistics.pps));
+			receiver.drawScoreFont(engine, playerID, 0, 13, tenths.format(engine.statistics.pps));
 
 			receiver.drawScoreFont(engine, playerID, 0, 15, "TIME", EventRenderer.COLOR_BLUE);
 			receiver.drawScoreFont(engine, playerID, 0, 16, GeneralUtil.getTime(engine.statistics.time));
