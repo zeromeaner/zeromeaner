@@ -1044,7 +1044,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 				owner.setContentPane(contentPane);
 				add(
 						imageBufferLabel, 
-						BorderLayout.CENTER);
+						new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
 				owner.setExtendedState(exstate);
 				owner.setSize(size);
 				owner.setLocation(location);
