@@ -809,9 +809,9 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		// FPSDisplay
 		if(showfps) {
 			String fps = df.format(totalFPS) + "/" + maxfpsCurrent + " FPS";
-			if(syncDisplay)
+			if(syncDisplay && syncRender)
 				fps += " (" + df.format(drawnFPS) + "/" + df.format(renderedFPS) + " DRAWN)";
-			else if(syncRender)
+			else if(!syncDisplay)
 				fps += " (" + df.format(renderedFPS) + " RENDERED)";
 			StandaloneNormalFont.printFont(0, 480-16, fps, StandaloneNormalFont.COLOR_BLUE, 1.0f);
 		}
@@ -870,9 +870,9 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		// FPSDisplay
 		if(showfps) {
 			String fps = df.format(totalFPS) + "/" + maxfpsCurrent + " FPS";
-			if(syncDisplay)
+			if(syncDisplay && syncRender)
 				fps += " (" + df.format(drawnFPS) + "/" + df.format(renderedFPS) + " DRAWN)";
-			else if(syncRender)
+			else if(!syncDisplay)
 				fps += " (" + df.format(renderedFPS) + " RENDERED)";
 			StandaloneNormalFont.printFont(0, 480-16, fps, StandaloneNormalFont.COLOR_BLUE, 1.0f);
 		}
