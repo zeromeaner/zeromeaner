@@ -77,6 +77,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -186,7 +187,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 	/** FPSDisplayDecimalFormat */
 	public DecimalFormat df = new DecimalFormat("0");
-
+	
 	/** True if execute Toolkit.getDefaultToolkit().sync() at the end of each frame */
 	public boolean syncDisplay = true;
 	
@@ -254,7 +255,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		
 		add(
 				new JLabel("Press CTRL+ENTER to enter full-screen mode"),
-				new GridBagConstraints(0, 1, 1, 0, 1, 1, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
+				new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
 		
 		imageBufferLabel.setText("No Active Game.  Click \"Play\" to start.");
 		imageBufferLabel.setIcon(null);
@@ -289,7 +290,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 		imageBufferLabel.setText(null);
 		imageBufferLabel.setIcon(new ImageIcon(imageBuffer));
-		imageBufferLabel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 10));
+		imageBufferLabel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 		imageBufferLabel.revalidate();
 
 		new Thread(this, "Game Thread").start();
@@ -811,7 +812,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		// FPSDisplay
 		if(showfps) {
 			String fps = df.format(totalFPS) + "/" + maxfpsCurrent + " FPS";
-			if(syncDisplay && syncRender)
+			if(!syncDisplay && !syncRender)
 				fps += " (" + df.format(drawnFPS) + "/" + df.format(renderedFPS) + " DRAWN)";
 			else if(!syncDisplay)
 				fps += " (" + df.format(renderedFPS) + " RENDERED)";
@@ -872,7 +873,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		// FPSDisplay
 		if(showfps) {
 			String fps = df.format(totalFPS) + "/" + maxfpsCurrent + " FPS";
-			if(syncDisplay && syncRender)
+			if(!syncDisplay && !syncRender)
 				fps += " (" + df.format(drawnFPS) + "/" + df.format(renderedFPS) + " DRAWN)";
 			else if(!syncDisplay)
 				fps += " (" + df.format(renderedFPS) + " RENDERED)";
@@ -1014,19 +1015,28 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 				contentPane = owner.getContentPane();
 				size = owner.getSize();
 				location = owner.getLocation();
-				JPanel content = new JPanel(new BorderLayout());
-				content.add(imageBufferLabel, BorderLayout.CENTER);
-				content.add(new JLabel("Press CTRL+ENTER to leave full-screen mode"), BorderLayout.SOUTH);
+				owner.getContentPane().remove(imageBufferLabel);
+				JPanel content = new JPanel(new GridBagLayout());
+				content.add(
+						imageBufferLabel, 
+						new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
+				content.add(
+						new JLabel("Press CTRL+ENTER to leave full-screen mode"), 
+						new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
 				content.addKeyListener(this);
 				content.addKeyListener(new GameFrameKeyEvent());
 				owner.setContentPane(content);
 				owner.setExtendedState(JFrame.MAXIMIZED_BOTH);
 				content.requestFocus();
 				EventQueue.invokeLater(new Runnable() {
+					private Dimension last = null;
 					@Override
 					public void run() {
 						Dimension d = owner.getSize();
-						d = new Dimension(d.width - 32, d.height - 32);
+						if(d.equals(last))
+							return;
+						last = d;
+						d = new Dimension(d.width - 48, d.height - 48);
 						Dimension id;
 						if(d.width * 3 / 4 > d.height) {
 							id = new Dimension(d.height * 4 / 3, d.height);
@@ -1036,6 +1046,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 						imageBuffer = new BufferedImage((int) id.getWidth(), (int) id.getHeight(), BufferedImage.TYPE_INT_ARGB);
 						imageBufferLabel.setIcon(new ImageIcon(imageBuffer));
 						imageBufferLabel.revalidate();
+						EventQueue.invokeLater(this);
 					}
 				});
 				fullscreen = true;
