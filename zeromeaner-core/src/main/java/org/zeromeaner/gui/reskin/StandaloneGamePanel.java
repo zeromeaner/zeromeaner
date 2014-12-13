@@ -432,12 +432,14 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		
 		lastFrameNanos = System.nanoTime();
 		
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
-			}
-		});
+		if(Options.standalone().INCREASE_EQ_PRIORITY.value()) {
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+				}
+			});
+		}
 		
 		ScheduledFuture<?> f = gexec.scheduleAtFixedRate(
 				task, 

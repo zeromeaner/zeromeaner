@@ -145,6 +145,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	protected JTextField userId = new JTextField();
 	
 	
+	protected JCheckBox increaseEQPriority;
+	
 	/**
 	 * Constructor
 	 * @param owner Parent window
@@ -301,6 +303,10 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxShowLineClearEffect.setHorizontalAlignment(SwingConstants.CENTER);
 		pAdvancedTab.add(chkboxShowLineClearEffect);
 
+		increaseEQPriority = new JCheckBox(lz.s("GeneralConfig_IncreasedEQPriority"));
+		increaseEQPriority.setHorizontalAlignment(SwingConstants.CENTER);
+		pAdvancedTab.add(increaseEQPriority);
+		
 		hooks.dispatcher().createTabs(tabPane);
 		hooks.dispatcher().loadConfiguration();
 		
@@ -360,6 +366,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxSyncRender.setSelected(opt.SYNC_RENDER.value());
 		chkboxSyncDisplay.setSelected(opt.SYNC_DISPLAY.value());
 		chkboxShowLineClearEffect.setSelected(opt.SHOW_LINE_EFFECT.value());
+		increaseEQPriority.setSelected(opt.INCREASE_EQ_PRIORITY.value());
 		
 		hooks.dispatcher().loadConfiguration();
 	}
@@ -418,6 +425,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			if(chkboxShowLineClearEffect.isSelected()) {
 				StandaloneResourceHolder.loadLineClearEffectImages();
 			}
+			
+			opt.INCREASE_EQ_PRIORITY.set(increaseEQPriority.isSelected());
 			
 			hooks.dispatcher().saveConfiguration();
 		}
