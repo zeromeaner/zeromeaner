@@ -34,17 +34,17 @@ public class ZeroMetalTheme extends DefaultMetalTheme {
 
 	@Override
 	protected ColorUIResource getSecondary2() {
-		return new ColorUIResource(128, 128, 255);
+		return new ColorUIResource(192, 192, 255);
 	}
 
 	@Override
 	protected ColorUIResource getSecondary3() {
-		return new ColorUIResource(0, 32, 64);
+		return new ColorUIResource(0xcc, 0xcc, 0xcc);
 	}
 
 	@Override
 	protected ColorUIResource getBlack() {
-		return new ColorUIResource(255, 255, 255);
+		return new ColorUIResource(0x60, 0x60, 0x60);
 	}
 	
 	@Override
