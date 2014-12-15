@@ -44,4 +44,17 @@ public class StandaloneResourceStreamHook implements ResourceStreamHook {
 		handlers.add(-1, handler);
 	}
 
+	@Override
+	public void addDeleteHandler(String resource, PrioritizedHandler<Callable<Boolean>> handlers) {
+		final File f = new File(FILE_BASE, resource);
+		f.getParentFile().mkdirs();
+		Callable<Boolean> handler = new Callable<Boolean>() {
+			@Override
+			public Boolean call() throws Exception {
+				return f.delete();
+			}
+		};
+		handlers.add(-1, handler);
+	}
+
 }

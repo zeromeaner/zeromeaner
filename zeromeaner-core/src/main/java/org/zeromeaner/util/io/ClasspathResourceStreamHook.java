@@ -26,4 +26,10 @@ public class ClasspathResourceStreamHook implements ResourceStreamHook {
 		// can't write to the classpath
 	}
 
+	@Override
+	public void addDeleteHandler(String resource, PrioritizedHandler<Callable<Boolean>> handlers) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

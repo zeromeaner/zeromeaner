@@ -37,6 +37,7 @@ import org.zeromeaner.util.Options;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.RuleList;
+import org.zeromeaner.util.io.ResourceStreams;
 
 public class StandaloneModeselectPanel extends JPanel {
 	private static String formatButtonText(String modeOrRuleName) {
@@ -267,6 +268,15 @@ public class StandaloneModeselectPanel extends JPanel {
 									StandaloneModeselectPanel.this.custom = rule;
 									ruleEditor.readRuleToUI(rule);
 									cards.show(StandaloneModeselectPanel.this, EDIT_CARD);
+								}
+							});
+							menu.add(new AbstractAction("Delete Rule") {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									ResourceStreams.get().delete(rule.resourceName);
+									ruleButtonsPanel.remove(RuleButton.this);
+									ruleButtonsPanel.revalidate();
+									ruleButtonsPanel.repaint();
 								}
 							});
 						}
