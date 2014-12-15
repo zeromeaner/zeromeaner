@@ -12,7 +12,7 @@ import org.zeromeaner.util.io.ResourceStreamHook;
 
 public class StandaloneResourceStreamHook implements ResourceStreamHook {
 	
-	protected static final File FILE_BASE = new File(System.getProperty("user.home"), ".zeromeaner");
+	protected static final File FILE_BASE = new File(System.getProperty("user.home"), ".zeromeaner/local-resources/org/zeromeaner");
 	static {
 		FILE_BASE.mkdirs();
 	}

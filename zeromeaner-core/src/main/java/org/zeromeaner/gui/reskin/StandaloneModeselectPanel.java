@@ -2,6 +2,8 @@ package org.zeromeaner.gui.reskin;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.GradientPaint;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -72,6 +74,7 @@ public class StandaloneModeselectPanel extends JPanel {
 	
 	private JPanel modeButtonsPanel;
 	private JPanel ruleButtonsPanel;
+	private ButtonGroup ruleButtonGroup;
 	
 	private void saveCustom() {
 		try {
@@ -96,6 +99,7 @@ public class StandaloneModeselectPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				ruleEditor.writeRuleFromUI(custom);
 				saveCustom();
+				revalidate();
 				cards.show(StandaloneModeselectPanel.this, SELECT_CARD);
 			}
 		}), BorderLayout.SOUTH);
@@ -121,7 +125,7 @@ public class StandaloneModeselectPanel extends JPanel {
 		p.add(modeButtonsPanel, BorderLayout.CENTER);
 		select.add(p, BorderLayout.NORTH);
 		
-		g = new ButtonGroup();
+		ruleButtonGroup = new ButtonGroup();
 		ruleButtonsPanel = new JPanel(new GridLayout(0, 8, 10, 10));
 		ruleButtonsPanel.setBorder(BorderFactory.createTitledBorder("Available Rules"));
 		p = new JPanel(new BorderLayout());
@@ -131,7 +135,7 @@ public class StandaloneModeselectPanel extends JPanel {
 			
 			ruleButtonsPanel.add(b);
 			this.ruleButtons.add(b);
-			g.add(b);
+			ruleButtonGroup.add(b);
 			for(ModeButton mb : this.modeButtons) {
 				mb.addActionListener(b);
 			}
@@ -184,13 +188,22 @@ public class StandaloneModeselectPanel extends JPanel {
 	private class RuleButton extends JToggleButton implements ActionListener {
 		private RuleOptions rule;
 		private boolean custom;
+		
+		@Override
+		public String getText() {
+			if(rule == null)
+				return null;
+			setText(formatButtonText(rule.strRuleName));
+			return super.getText();
+		}
+		
 		public RuleButton(RuleOptions r) {
-//			super("<html>" + r.strRuleName.replaceAll("-+", "<br>"));
-			super(formatButtonText(r.strRuleName));
 			this.rule = r;
 			this.custom = r.resourceName.contains("/Custom_");
-//			setFont(getFont().deriveFont(8f));
 			setMargin(new Insets(0, 3, 0, 3));
+			if(custom) {
+				setBorder(BorderFactory.createDashedBorder(new GradientPaint(0, 0, Color.WHITE, 5, 5, Color.BLACK, true)));
+			}
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -226,7 +239,7 @@ public class StandaloneModeselectPanel extends JPanel {
 										throw new RuntimeException(ex);
 									}
 								}
-								custom.resourceName = "config/rule/Custom_" + custnum;
+								custom.resourceName = "config/rule/Custom_" + custnum + ".rul";
 								custom.strRuleName = "Custom " + rule.strRuleName + " " + custnum;
 								try {
 									ResourceOutputStream out = new ResourceOutputStream("config/rule/Custom_" + custnum);
@@ -244,6 +257,7 @@ public class StandaloneModeselectPanel extends JPanel {
 								}
 								RuleButton rb = new RuleButton(custom);
 								ruleButtonsPanel.add(rb);
+								ruleButtonGroup.add(rb);
 								rb.revalidate();
 							}
 						});
