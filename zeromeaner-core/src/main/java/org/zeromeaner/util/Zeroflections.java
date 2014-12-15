@@ -35,16 +35,9 @@ public class Zeroflections {
 	private static final Pattern RULE = Pattern.compile("org/zeromeaner/config/rule/.*\\.rul");
 	private static Reflections classes = Reflections.collect();
 	static {
-		Scanner s;
-		classes.getConfiguration().getScanners().add(s = new ResourcesScanner());
-		s.setStore(classes.getStore().getOrCreate(s.getClass().getSimpleName()));
-		classes.getConfiguration().getScanners().add(new SubTypesScanner());
-		s.setStore(classes.getStore().getOrCreate(s.getClass().getSimpleName()));
-		try {
-			classes.scan(new File(System.getProperty("user.dir"), "local-resources").toURI().toURL());
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
+		ServiceHookDispatcher<ZeroflectionsHook> hooks = new ServiceHookDispatcher<>(ZeroflectionsHook.class);
+		hooks.dispatcher().reflect(classes);
+		
 	}
 	
 	private static List<String> list(String listName) {
