@@ -134,6 +134,11 @@ public class StandaloneMain {
 		StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 		StandaloneGameKey.gamekey[1].loadDefaultKeymap();
 		
+		if(Options.GUI_PROPERTIES.subProperties("key.p").getAll().size() == 0) {
+			StandaloneGameKey.gamekey[0].saveConfig(Options.GUI_PROPERTIES);
+			StandaloneGameKey.gamekey[1].saveConfig(Options.GUI_PROPERTIES);
+		}
+		
 		StandaloneGameKey.gamekey[0].loadConfig(Options.GUI_PROPERTIES);
 		StandaloneGameKey.gamekey[1].loadConfig(Options.GUI_PROPERTIES);
 		
