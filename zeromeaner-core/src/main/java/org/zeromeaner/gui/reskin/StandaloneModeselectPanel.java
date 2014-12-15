@@ -23,6 +23,7 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
@@ -100,7 +101,8 @@ public class StandaloneModeselectPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				ruleEditor.writeRuleFromUI(custom);
 				saveCustom();
-				revalidate();
+				for(int i = 0; i < ruleButtonsPanel.getComponentCount(); i++)
+					((JComponent) ruleButtonsPanel.getComponent(i)).revalidate();
 				cards.show(StandaloneModeselectPanel.this, SELECT_CARD);
 			}
 		}), BorderLayout.SOUTH);
@@ -294,9 +296,9 @@ public class StandaloneModeselectPanel extends JPanel {
 		
 		@Override
 		public void revalidate() {
-			super.revalidate();
 			if(rule != null)
 				setText(formatButtonText(rule.strRuleName));
+			super.revalidate();
 		}
 		
 		@Override
