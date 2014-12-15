@@ -50,4 +50,21 @@ public class ResourceStreams {
 		}
 		return new NullOutputStream();
 	}
+	
+	public boolean delete(String resource) {
+		PrioritizedHandler<Callable<Boolean>> handlers = new PrioritizedHandler<>();
+		hook.dispatcher().addDeleteHandler(resource, handlers);
+		boolean success = false;
+		for(Callable<Boolean> handler : handlers.get()) {
+			try {
+				success = handler.call();
+			} catch(Exception e) {
+				log.warn(e);
+			}
+			if(success)
+				return true;
+		}
+		return false;
+	}
+	
 }

@@ -109,6 +109,7 @@ public class StandaloneMain {
 					System.out.println("Injecting plugin " + p);
 					addURL.invoke(StandaloneMain.class.getClassLoader(), p.toURI().toURL());
 				}
+				addURL.invoke(StandaloneMain.class.getClassLoader(), new File(System.getProperty("user.dir"), "local-resources").toURI().toURL());
 			}
 		}
 		

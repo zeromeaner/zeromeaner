@@ -9,4 +9,5 @@ import java.util.concurrent.Callable;
 public interface ResourceStreamHook {
 	public void addInputHandler(String resource, PrioritizedHandler<Callable<InputStream>> handlers);
 	public void addOutputHandler(String resource, PrioritizedHandler<Callable<OutputStream>> handlers);
+	public void addDeleteHandler(String resource, PrioritizedHandler<Callable<Boolean>> handlers);
 }
