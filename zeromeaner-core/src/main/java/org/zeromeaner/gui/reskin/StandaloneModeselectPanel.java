@@ -152,6 +152,8 @@ public class StandaloneModeselectPanel extends JPanel {
 				mb.doClick();
 
 		}
+		
+		revalidate();
 	}
 	
 	private class ModeButton extends JToggleButton {
@@ -190,20 +192,17 @@ public class StandaloneModeselectPanel extends JPanel {
 		private boolean custom;
 		
 		@Override
-		public String getText() {
-			if(rule == null)
-				return null;
-			setText(formatButtonText(rule.strRuleName));
-			return super.getText();
+		public boolean isBorderPainted() {
+			return custom || super.isBorderPainted();
 		}
 		
 		public RuleButton(RuleOptions r) {
 			this.rule = r;
 			this.custom = r.resourceName.contains("/Custom_");
 			setMargin(new Insets(0, 3, 0, 3));
-			if(custom) {
-				setBorder(BorderFactory.createDashedBorder(new GradientPaint(0, 0, Color.WHITE, 5, 5, Color.BLACK, true)));
-			}
+			if(custom)
+				setBorder(BorderFactory.createDashedBorder(new GradientPaint(0, 0, Color.BLACK, 5, 5, Color.WHITE, true)));
+
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -275,6 +274,13 @@ public class StandaloneModeselectPanel extends JPanel {
 					}
 				}
 			});
+		}
+		
+		@Override
+		public void revalidate() {
+			super.revalidate();
+			if(rule != null)
+				setText(formatButtonText(rule.strRuleName));
 		}
 		
 		@Override
