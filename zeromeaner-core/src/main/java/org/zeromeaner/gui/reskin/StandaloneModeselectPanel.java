@@ -227,10 +227,15 @@ public class StandaloneModeselectPanel extends JPanel {
 							public void actionPerformed(ActionEvent e) {
 								RuleOptions custom = new RuleOptions();
 								custom.copy(rule);
+								
 								int custnum = 1;
+								String rn = rule.resourceName.replaceAll(".*/([^/]+)\\.rul", "$1");
+								custom.resourceName = "config/rule/Custom_" + rn + "_" + custnum + ".rul";
+								
 								for(;; custnum++) {
 									try {
-										InputStream in = new ResourceInputStream("config/rule/Custom_" + custnum);
+										custom.resourceName = "config/rule/Custom_" + rn + "_" + custnum + ".rul";
+										InputStream in = new ResourceInputStream(custom.resourceName);
 										in.close();
 										continue;
 									} catch(FileNotFoundException ex) {
@@ -239,10 +244,11 @@ public class StandaloneModeselectPanel extends JPanel {
 										throw new RuntimeException(ex);
 									}
 								}
-								custom.resourceName = "config/rule/Custom_" + custnum + ".rul";
+								
+								
 								custom.strRuleName = "Custom " + rule.strRuleName + " " + custnum;
 								try {
-									ResourceOutputStream out = new ResourceOutputStream("config/rule/Custom_" + custnum);
+									ResourceOutputStream out = new ResourceOutputStream(custom.resourceName);
 									if(out != null) {
 										try {
 											CustomProperties p = new CustomProperties();
