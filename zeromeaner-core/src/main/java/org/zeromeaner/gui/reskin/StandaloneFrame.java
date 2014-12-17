@@ -265,7 +265,7 @@ public class StandaloneFrame extends JFrame {
 		if(fsv instanceof DavFileSystemView)
 			fc = new JFileChooser("", fsv);
 		else
-			fc = new JFileChooser(new File(System.getProperty("user.dir"), "local-resources/org/zeromeaner/replay"), fsv);
+			fc = new JFileChooser(new File(System.getProperty("user.dir"), "replay"), fsv);
 		fc.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

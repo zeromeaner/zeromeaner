@@ -19,7 +19,7 @@ public class StandaloneZeroflectionsHook implements ZeroflectionsHook {
 		classes.getConfiguration().getScanners().add(new SubTypesScanner());
 		s.setStore(classes.getStore().getOrCreate(s.getClass().getSimpleName()));
 		try {
-			classes.scan(new File(System.getProperty("user.dir"), "local-resources").toURI().toURL());
+			classes.scan(new File(System.getProperty("user.dir")).toURI().toURL());
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
