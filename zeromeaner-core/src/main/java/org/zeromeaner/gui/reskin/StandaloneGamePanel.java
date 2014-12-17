@@ -904,8 +904,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		@Override
 		public void run() {
 			imageBufferLabel.repaint();
-			if(syncDisplay)
-				Toolkit.getDefaultToolkit().sync();
+			Toolkit.getDefaultToolkit().sync();
 			dps.add(new FramePerSecond());
 			syncing.set(false);
 		}
