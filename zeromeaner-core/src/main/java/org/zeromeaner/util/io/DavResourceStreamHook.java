@@ -90,4 +90,25 @@ public class DavResourceStreamHook implements ResourceStreamHook {
 		}
 	}
 
+	@Override
+	public void addDeleteHandler(final String resource, PrioritizedHandler<Callable<Boolean>> handlers) {
+		if(Session.ANONYMOUS_USER.equals(Session.getUser()))
+			return;
+		if(NON_DAV.matcher(resource).matches())
+			return;
+		try {
+			sardine.getInputStream(URL_BASE + Session.getUser() + "/" + resource).close();;
+		} catch(Exception e) {
+			return;
+		}
+		Callable<Boolean> handler = new Callable<Boolean>() {
+			@Override
+			public Boolean call() throws Exception {
+				sardine.delete(URL_BASE + Session.getUser() + "/" + resource);
+				return true;
+			}
+		};
+		handlers.add(0, handler);
+	}
+
 }

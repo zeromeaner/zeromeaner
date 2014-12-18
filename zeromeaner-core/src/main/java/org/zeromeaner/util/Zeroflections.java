@@ -1,8 +1,10 @@
 package org.zeromeaner.util;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,6 +20,9 @@ import org.funcish.core.util.Mappings;
 import org.funcish.core.util.Predicates;
 import org.funcish.core.util.Sequences;
 import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.Scanner;
+import org.reflections.scanners.SubTypesScanner;
 import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.mode.GameMode;
@@ -27,11 +32,18 @@ import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 
 public class Zeroflections {
 	private static final Pattern ALL = Pattern.compile(".*");
-	private static final Pattern RULE = Pattern.compile("org/zeromeaner/config/rule/.*\\.rul");
+	private static final Pattern RULE = Pattern.compile("(org/zeromeaner/)?config/rule/.*\\.rul");
 	private static Reflections classes = Reflections.collect();
+	static {
+		ServiceHookDispatcher<ZeroflectionsHook> hooks = new ServiceHookDispatcher<>(ZeroflectionsHook.class);
+		hooks.dispatcher().reflect(classes);
+		
+	}
 	
 	private static List<String> list(String listName) {
-		InputStream rsrc = Zeroflections.class.getClassLoader().getResourceAsStream("org/zeromeaner/config/list/" + listName);
+		InputStream rsrc = Zeroflections.class.getClassLoader().getResourceAsStream("config/list/" + listName);
+		if(rsrc == null)
+			rsrc = Zeroflections.class.getClassLoader().getResourceAsStream("org/zeromeaner/config/list/" + listName);
 		Sequence<String> lines = Sequences.lines(new InputStreamReader(rsrc));
 		return Sequences.sequencer(String.class, lines).list();
 	}

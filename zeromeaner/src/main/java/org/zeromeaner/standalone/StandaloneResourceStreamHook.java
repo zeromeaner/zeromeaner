@@ -12,7 +12,7 @@ import org.zeromeaner.util.io.ResourceStreamHook;
 
 public class StandaloneResourceStreamHook implements ResourceStreamHook {
 	
-	protected static final File FILE_BASE = new File(System.getProperty("user.home"), ".zeromeaner");
+	protected static final File FILE_BASE = new File(System.getProperty("user.dir"));
 	static {
 		FILE_BASE.mkdirs();
 	}
@@ -39,6 +39,19 @@ public class StandaloneResourceStreamHook implements ResourceStreamHook {
 			@Override
 			public OutputStream call() throws Exception {
 				return new FileOutputStream(f);
+			}
+		};
+		handlers.add(-1, handler);
+	}
+
+	@Override
+	public void addDeleteHandler(String resource, PrioritizedHandler<Callable<Boolean>> handlers) {
+		final File f = new File(FILE_BASE, resource);
+		f.getParentFile().mkdirs();
+		Callable<Boolean> handler = new Callable<Boolean>() {
+			@Override
+			public Boolean call() throws Exception {
+				return f.delete();
 			}
 		};
 		handlers.add(-1, handler);

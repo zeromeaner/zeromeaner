@@ -109,6 +109,7 @@ public class StandaloneMain {
 					System.out.println("Injecting plugin " + p);
 					addURL.invoke(StandaloneMain.class.getClassLoader(), p.toURI().toURL());
 				}
+				addURL.invoke(StandaloneMain.class.getClassLoader(), new File(System.getProperty("user.dir")).toURI().toURL());
 			}
 		}
 		
@@ -132,6 +133,11 @@ public class StandaloneMain {
 		StandaloneGameKey.initGlobalGameKeySwing();
 		StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 		StandaloneGameKey.gamekey[1].loadDefaultKeymap();
+		
+		if(Options.GUI_PROPERTIES.subProperties("key.p").getAll().size() == 0) {
+			StandaloneGameKey.gamekey[0].saveConfig(Options.GUI_PROPERTIES);
+			StandaloneGameKey.gamekey[1].saveConfig(Options.GUI_PROPERTIES);
+		}
 		
 		StandaloneGameKey.gamekey[0].loadConfig(Options.GUI_PROPERTIES);
 		StandaloneGameKey.gamekey[1].loadConfig(Options.GUI_PROPERTIES);
