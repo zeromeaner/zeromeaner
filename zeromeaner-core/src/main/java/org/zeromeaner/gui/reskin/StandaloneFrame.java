@@ -259,13 +259,8 @@ public class StandaloneFrame extends JFrame {
 		gc.load();
 		content.add(gc, CARD_GENERAL);
 
-		final JFileChooser fc;
+		final JFileChooser fc = FileSystemViews.get().fileChooser("replay/");
 		
-		FileSystemView fsv = FileSystemViews.get().fileSystemView("replay/");
-		if(fsv instanceof DavFileSystemView)
-			fc = new JFileChooser("", fsv);
-		else
-			fc = new JFileChooser(new File(System.getProperty("user.dir"), "replay"), fsv);
 		fc.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

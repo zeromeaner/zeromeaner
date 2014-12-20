@@ -2,6 +2,7 @@ package org.zeromeaner.util.io;
 
 import java.util.concurrent.Callable;
 
+import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 
 import org.apache.log4j.Logger;
@@ -31,5 +32,18 @@ public class FileSystemViews {
 			}
 		}
 		return FileSystemView.getFileSystemView();
+	}
+	
+	public JFileChooser fileChooser(String path) {
+		PrioritizedHandler<Callable<JFileChooser>> handlers = new PrioritizedHandler<>();
+		hook.dispatcher().addFileChooser(path, handlers);
+		for(Callable<JFileChooser> handler : handlers.get()) {
+			try {
+				return handler.call();
+			} catch(Exception e) {
+				log.warn(e);
+			}
+		}
+		return new JFileChooser();
 	}
 }
