@@ -252,10 +252,10 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		add(
 				imageBufferLabel = new FocusableJLabel(new ImageIcon(imageBuffer)), 
 				new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
-		
-		add(
-				new JLabel("Press CTRL+ENTER to enter full-screen mode"),
-				new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
+		if(!StandaloneMain.isApplet())
+			add(
+					new JLabel("Press CTRL+ENTER to enter full-screen mode"),
+					new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
 		
 		imageBufferLabel.setText("No Active Game.  Click \"Play\" to start.");
 		imageBufferLabel.setIcon(null);
@@ -269,7 +269,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		setFocusCycleRoot(true);
 		setFocusTraversalKeysEnabled(false);
 		
-		addKeyListener(new FullScreenKeyListener(owner));
+		if(!StandaloneMain.isApplet())
+			addKeyListener(new FullScreenKeyListener(owner));
 		addKeyListener(new GameFrameKeyEvent());
 
 		MouseListener ml = new MouseAdapter() {

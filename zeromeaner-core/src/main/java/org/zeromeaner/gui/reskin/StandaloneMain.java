@@ -30,9 +30,19 @@ import com.esotericsoftware.minlog.Log;
 public class StandaloneMain {
 	public static ModeList<GameMode> modeManager;
 	
+	private static boolean applet;
+	
+	public static boolean isApplet() {
+		return applet;
+	}
+	
+	public static void setApplet(boolean applet) {
+		StandaloneMain.applet = applet;
+	}
+	
 	public static void main(String[] args) {
 		try {
-			_main(args);
+			init(args).setVisible(true);
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
@@ -87,7 +97,7 @@ public class StandaloneMain {
 		}
 	}
 
-	private static void _main(String[] args) throws Exception {
+	public static StandaloneFrame init(String[] args) throws Exception {
 		Log.NONE();
 		
 		System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".zeromeaner");
@@ -147,7 +157,7 @@ public class StandaloneMain {
 		StandaloneFrame frame = new StandaloneFrame();
 		
 		frame.setSize(1366, 768);
-		frame.setVisible(true);
-		
+
+		return frame;
 	}
 }

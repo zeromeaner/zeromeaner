@@ -172,25 +172,13 @@ public class ZeromeanerApplet extends JApplet {
 					} catch(IOException ioe) {
 					}
 
-					StandaloneMain.loadGlobalConfig();
-
-					StandaloneMain.modeManager = ModeList.getModes();
-
-					StandaloneGameKey.initGlobalGameKeySwing();
-					StandaloneGameKey.gamekey[0].loadDefaultKeymap();
-					StandaloneGameKey.gamekey[1].loadDefaultKeymap();
-
-					StandaloneGameKey.gamekey[0].loadConfig(Options.GUI_PROPERTIES);
-					StandaloneGameKey.gamekey[1].loadConfig(Options.GUI_PROPERTIES);
-
-					StandaloneResourceHolder.load();
-
-					final StandaloneFrame frame = new StandaloneFrame();
-					frame.setUndecorated(false);
+					StandaloneMain.setApplet(true);
+					
+					final StandaloneFrame frame = StandaloneMain.init(new String[0]);
 
 					panel.removeAll();
 					panel.add(frame.getContentPane(), BorderLayout.CENTER);
-					panel.revalidate();
+					frame.getContentPane().revalidate();
 
 					if(url.getQuery() != null) {
 						String[] qf = url.getQuery().split("&");
