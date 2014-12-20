@@ -168,7 +168,7 @@ public class StandaloneModeselectPanel extends JPanel {
 //			super("<html>" + m.getName().replaceAll("-+", "<br>"));
 			super(formatButtonText(m.getName()));
 			this.mode = m;
-			setFont(getFont().deriveFont(getFont().getSize() * 0.8f).deriveFont(Font.PLAIN));
+			setFont(getFont().deriveFont(getFont().getSize() * 0.75f));
 			setMargin(new Insets(0, 3, 0, 3));
 			addActionListener(new ActionListener() {
 				@Override
@@ -204,7 +204,7 @@ public class StandaloneModeselectPanel extends JPanel {
 			this.rule = r;
 			this.custom = r.resourceName.contains("/Custom_");
 			setMargin(new Insets(0, 3, 0, 3));
-			setFont(getFont().deriveFont(getFont().getSize() * 0.8f).deriveFont(Font.PLAIN));
+			setFont(getFont().deriveFont(getFont().getSize() * 0.75f));
 			if(custom)
 				setBorder(BorderFactory.createDashedBorder(new GradientPaint(0, 0, Color.BLACK, 5, 5, Color.WHITE, true)));
 
