@@ -83,4 +83,8 @@
 			</plugin>
 		</plugins>
 	</build>
+	<name>zeromeaner</name>
+	<organization>
+		<name>Robin Kirkman</name>
+	</organization>
 </project>
