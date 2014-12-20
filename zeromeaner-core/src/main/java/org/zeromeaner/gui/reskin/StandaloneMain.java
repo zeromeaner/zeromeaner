@@ -29,17 +29,17 @@ import com.esotericsoftware.minlog.Log;
 
 public class StandaloneMain {
 	public static ModeList<GameMode> modeManager;
-	
+
 	private static boolean applet;
-	
+
 	public static boolean isApplet() {
 		return applet;
 	}
-	
+
 	public static void setApplet(boolean applet) {
 		StandaloneMain.applet = applet;
 	}
-	
+
 	public static void main(String[] args) {
 		try {
 			init(args).setVisible(true);
@@ -47,7 +47,7 @@ public class StandaloneMain {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public static void loadGlobalConfig() {
 		try {
 			InputStream in = new ResourceInputStream("setting/global.cfg");
@@ -99,63 +99,66 @@ public class StandaloneMain {
 
 	public static StandaloneFrame init(String[] args) throws Exception {
 		Log.NONE();
-		
-		System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".zeromeaner");
-		new File(System.getProperty("user.dir")).mkdirs();
-		
-		if(args.length == 0 || !"--no-inject".equals(args[0])) {
-			File plugins = new File(System.getProperty("user.dir"), "plugins");
-			plugins.mkdirs();
-			
-			File disabled = new File(plugins, "disabled-plugins");
-			disabled.mkdirs();
-			
-			if(StandaloneMain.class.getClassLoader() instanceof URLClassLoader) {
-				Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-				addURL.setAccessible(true);
-				for(File p : plugins.listFiles()) {
-					if(p.equals(disabled))
-						continue;
-					System.out.println("Injecting plugin " + p);
-					addURL.invoke(StandaloneMain.class.getClassLoader(), p.toURI().toURL());
+
+		if(!isApplet()) {
+			System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".zeromeaner");
+			new File(System.getProperty("user.dir")).mkdirs();
+
+			if(args.length == 0 || !"--no-inject".equals(args[0])) {
+				File plugins = new File(System.getProperty("user.dir"), "plugins");
+				plugins.mkdirs();
+
+				File disabled = new File(plugins, "disabled-plugins");
+				disabled.mkdirs();
+
+				if(StandaloneMain.class.getClassLoader() instanceof URLClassLoader) {
+					Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+					addURL.setAccessible(true);
+					for(File p : plugins.listFiles()) {
+						if(p.equals(disabled))
+							continue;
+						System.out.println("Injecting plugin " + p);
+						addURL.invoke(StandaloneMain.class.getClassLoader(), p.toURI().toURL());
+					}
+					addURL.invoke(StandaloneMain.class.getClassLoader(), new File(System.getProperty("user.dir")).toURI().toURL());
 				}
-				addURL.invoke(StandaloneMain.class.getClassLoader(), new File(System.getProperty("user.dir")).toURI().toURL());
+			}
+
+			Session.setUser(System.getProperty("user.name"));
+
+			try {
+				PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));
+			} catch(IOException ioe) {
+				ioe.printStackTrace();
 			}
 		}
-		
-		Session.setUser(System.getProperty("user.name"));
 		if(PropertyStore.get().get("userId") != null)
 			Session.setUser(PropertyStore.get().get("userId"));
 
-		try {
-			PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));
-		} catch(IOException ioe) {
-			ioe.printStackTrace();
-		}
-		
+
 		MetalLookAndFeel.setCurrentTheme(new ZeroMetalTheme());
 		UIManager.setLookAndFeel(new MetalLookAndFeel());
-		
+
 		loadGlobalConfig();
-		
+
 		modeManager = ModeList.getModes();
-		
+
 		StandaloneGameKey.initGlobalGameKeySwing();
 		StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 		StandaloneGameKey.gamekey[1].loadDefaultKeymap();
-		
+
 		if(Options.GUI_PROPERTIES.subProperties("key.p").getAll().size() == 0) {
 			StandaloneGameKey.gamekey[0].saveConfig(Options.GUI_PROPERTIES);
 			StandaloneGameKey.gamekey[1].saveConfig(Options.GUI_PROPERTIES);
 		}
-		
+
 		StandaloneGameKey.gamekey[0].loadConfig(Options.GUI_PROPERTIES);
 		StandaloneGameKey.gamekey[1].loadConfig(Options.GUI_PROPERTIES);
-		
+
 		StandaloneResourceHolder.load();
-		
+
 		StandaloneFrame frame = new StandaloneFrame();
-		
+
 		frame.setSize(1366, 768);
 
 		return frame;

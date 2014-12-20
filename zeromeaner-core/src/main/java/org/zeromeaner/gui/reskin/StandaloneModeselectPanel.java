@@ -3,6 +3,7 @@ package org.zeromeaner.gui.reskin;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.GridLayout;
 import java.awt.Insets;
@@ -167,7 +168,7 @@ public class StandaloneModeselectPanel extends JPanel {
 //			super("<html>" + m.getName().replaceAll("-+", "<br>"));
 			super(formatButtonText(m.getName()));
 			this.mode = m;
-			setFont(getFont().deriveFont(getFont().getSize() * 0.8f));
+			setFont(getFont().deriveFont(getFont().getSize() * 0.8f).deriveFont(Font.PLAIN));
 			setMargin(new Insets(0, 3, 0, 3));
 			addActionListener(new ActionListener() {
 				@Override
@@ -203,7 +204,7 @@ public class StandaloneModeselectPanel extends JPanel {
 			this.rule = r;
 			this.custom = r.resourceName.contains("/Custom_");
 			setMargin(new Insets(0, 3, 0, 3));
-			setFont(getFont().deriveFont(getFont().getSize() * 0.8f));
+			setFont(getFont().deriveFont(getFont().getSize() * 0.8f).deriveFont(Font.PLAIN));
 			if(custom)
 				setBorder(BorderFactory.createDashedBorder(new GradientPaint(0, 0, Color.BLACK, 5, 5, Color.WHITE, true)));
 
