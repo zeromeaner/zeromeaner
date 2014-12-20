@@ -9,6 +9,8 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.ByteArrayOutputStream;
@@ -28,6 +30,8 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
+import javax.swing.UIManager;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.subsystem.mode.GameMode;
@@ -168,7 +172,12 @@ public class StandaloneModeselectPanel extends JPanel {
 //			super("<html>" + m.getName().replaceAll("-+", "<br>"));
 			super(formatButtonText(m.getName()));
 			this.mode = m;
-			setFont(getFont().deriveFont(getFont().getSize() * 0.75f));
+
+			MetalLookAndFeel laf = (MetalLookAndFeel) UIManager.getLookAndFeel();
+			Font f = laf.getControlTextFont();
+			f = f.deriveFont(f.getSize() * 0.8f);
+			setFont(f);
+
 			setMargin(new Insets(0, 3, 0, 3));
 			addActionListener(new ActionListener() {
 				@Override
@@ -204,7 +213,12 @@ public class StandaloneModeselectPanel extends JPanel {
 			this.rule = r;
 			this.custom = r.resourceName.contains("/Custom_");
 			setMargin(new Insets(0, 3, 0, 3));
-			setFont(getFont().deriveFont(getFont().getSize() * 0.75f));
+
+			MetalLookAndFeel laf = (MetalLookAndFeel) UIManager.getLookAndFeel();
+			Font f = laf.getControlTextFont();
+			f = f.deriveFont(f.getSize() * 0.8f);
+			setFont(f);
+
 			if(custom)
 				setBorder(BorderFactory.createDashedBorder(new GradientPaint(0, 0, Color.BLACK, 5, 5, Color.WHITE, true)));
 

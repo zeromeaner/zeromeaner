@@ -1,8 +1,10 @@
 package org.zeromeaner.plaf;
 
 import java.awt.Color;
+import java.awt.Font;
 
 import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 
 public class ZeroMetalTheme extends DefaultMetalTheme {
@@ -62,4 +64,48 @@ public class ZeroMetalTheme extends DefaultMetalTheme {
 		return getPrimary1();
 	}
 	
+	private static FontUIResource zeroFont(Font base) {
+		Font f = Font.decode("Arial");
+		if(f == null)
+			f = base;
+		f = f.deriveFont((float) base.getSize()).deriveFont(Font.BOLD);
+		return new FontUIResource(f);
+	}
+	
+	private FontUIResource controlTextFont = zeroFont(super.getControlTextFont());
+	private FontUIResource menuTextFont = zeroFont(super.getMenuTextFont());
+	private FontUIResource subTextFont = zeroFont(super.getSubTextFont());
+	private FontUIResource userTextFont = zeroFont(super.getUserTextFont());
+	private FontUIResource systemTextFont = zeroFont(super.getSystemTextFont());
+	private FontUIResource windowTitleFont = zeroFont(super.getWindowTitleFont());
+	
+	@Override
+	public FontUIResource getControlTextFont() {
+		return controlTextFont;
+	}
+	
+	@Override
+	public FontUIResource getMenuTextFont() {
+		return menuTextFont;
+	}
+	
+	@Override
+	public FontUIResource getSubTextFont() {
+		return subTextFont;
+	}
+	
+	@Override
+	public FontUIResource getUserTextFont() {
+		return userTextFont;
+	}
+	
+	@Override
+	public FontUIResource getSystemTextFont() {
+		return systemTextFont;
+	}
+	
+	@Override
+	public FontUIResource getWindowTitleFont() {
+		return windowTitleFont;
+	}
 }
