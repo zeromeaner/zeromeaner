@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.javaApplet">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/zeromeaner-core/src/main/java/org/zeromeaner/gui/reskin/StandaloneApplet.java"/>
+<listEntry value="/zeromeaner-applet/src/main/java/org/zeromeaner/applet/ZeromeanerApplet.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
-<intAttribute key="org.eclipse.jdt.launching.APPLET_HEIGHT" value="700"/>
+<intAttribute key="org.eclipse.jdt.launching.APPLET_HEIGHT" value="640"/>
 <stringAttribute key="org.eclipse.jdt.launching.APPLET_NAME" value=""/>
 <mapAttribute key="org.eclipse.jdt.launching.APPLET_PARAMETERS"/>
-<intAttribute key="org.eclipse.jdt.launching.APPLET_WIDTH" value="1280"/>
+<intAttribute key="org.eclipse.jdt.launching.APPLET_WIDTH" value="1100"/>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.zeromeaner.gui.reskin.StandaloneApplet"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="zeromeaner-core"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.zeromeaner.applet.ZeromeanerApplet"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="zeromeaner-applet"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-DuserId=${system_property:user.name} -Dzero_url=http://www.0mino.org/play -Xmx2048m"/>
 </launchConfiguration>

@@ -13,7 +13,7 @@ public class Version {
 			return buildVersion;
 		try {
 			Properties p = new Properties();
-			p.load(Version.class.getClassLoader().getResourceAsStream("org/zeromeaner/version.properties"));
+			p.load(Version.class.getClassLoader().getResourceAsStream("org/zeromeaner/res/version.properties"));
 			buildVersion = new Version(p.getProperty("project.version"));
 		} catch(IOException ioe) {
 			throw new RuntimeException(ioe);

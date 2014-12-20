@@ -77,6 +77,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -186,7 +187,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 	/** FPSDisplayDecimalFormat */
 	public DecimalFormat df = new DecimalFormat("0");
-
+	
 	/** True if execute Toolkit.getDefaultToolkit().sync() at the end of each frame */
 	public boolean syncDisplay = true;
 	
@@ -239,7 +240,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 * @throws HeadlessException Keyboard, Mouse, Exceptions such as the display if there is no
 	 */
 	public StandaloneGamePanel(final StandaloneFrame owner) throws HeadlessException {
-		super(new BorderLayout());
+		super(new GridBagLayout());
 		this.owner = owner;
 
 		setDoubleBuffered(true);
@@ -250,11 +251,11 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 		add(
 				imageBufferLabel = new FocusableJLabel(new ImageIcon(imageBuffer)), 
-				BorderLayout.CENTER);
-		
-		add(
-				new JLabel("Press CTRL+ENTER to enter full-screen mode"),
-				BorderLayout.SOUTH);
+				new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
+		if(!StandaloneMain.isApplet())
+			add(
+					new JLabel("Press CTRL+ENTER to enter full-screen mode"),
+					new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
 		
 		imageBufferLabel.setText("No Active Game.  Click \"Play\" to start.");
 		imageBufferLabel.setIcon(null);
@@ -268,7 +269,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		setFocusCycleRoot(true);
 		setFocusTraversalKeysEnabled(false);
 		
-		addKeyListener(new FullScreenKeyListener(owner));
+		if(!StandaloneMain.isApplet())
+			addKeyListener(new FullScreenKeyListener(owner));
 		addKeyListener(new GameFrameKeyEvent());
 
 		MouseListener ml = new MouseAdapter() {
@@ -289,6 +291,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 		imageBufferLabel.setText(null);
 		imageBufferLabel.setIcon(new ImageIcon(imageBuffer));
+		imageBufferLabel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 		imageBufferLabel.revalidate();
 
 		new Thread(this, "Game Thread").start();
@@ -315,6 +318,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		
 		imageBufferLabel.setText("No Active Game.  Click to start.");
 		imageBufferLabel.setIcon(null);
+		imageBufferLabel.setBorder(null);
 		
 		if(restart) {
 			owner.startNewGame();
@@ -428,6 +432,13 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		};
 		
 		lastFrameNanos = System.nanoTime();
+		
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+			}
+		});
 		
 		ScheduledFuture<?> f = gexec.scheduleAtFixedRate(
 				task, 
@@ -802,9 +813,9 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		// FPSDisplay
 		if(showfps) {
 			String fps = df.format(totalFPS) + "/" + maxfpsCurrent + " FPS";
-			if(syncDisplay)
+			if(!syncDisplay && !syncRender)
 				fps += " (" + df.format(drawnFPS) + "/" + df.format(renderedFPS) + " DRAWN)";
-			else if(!syncRender)
+			else if(!syncDisplay)
 				fps += " (" + df.format(renderedFPS) + " RENDERED)";
 			StandaloneNormalFont.printFont(0, 480-16, fps, StandaloneNormalFont.COLOR_BLUE, 1.0f);
 		}
@@ -863,9 +874,9 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		// FPSDisplay
 		if(showfps) {
 			String fps = df.format(totalFPS) + "/" + maxfpsCurrent + " FPS";
-			if(syncDisplay)
+			if(!syncDisplay && !syncRender)
 				fps += " (" + df.format(drawnFPS) + "/" + df.format(renderedFPS) + " DRAWN)";
-			else if(!syncRender)
+			else if(!syncDisplay)
 				fps += " (" + df.format(renderedFPS) + " RENDERED)";
 			StandaloneNormalFont.printFont(0, 480-16, fps, StandaloneNormalFont.COLOR_BLUE, 1.0f);
 		}
@@ -894,8 +905,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		@Override
 		public void run() {
 			imageBufferLabel.repaint();
-			if(syncDisplay)
-				Toolkit.getDefaultToolkit().sync();
+			Toolkit.getDefaultToolkit().sync();
 			dps.add(new FramePerSecond());
 			syncing.set(false);
 		}
@@ -1005,19 +1015,28 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 				contentPane = owner.getContentPane();
 				size = owner.getSize();
 				location = owner.getLocation();
-				JPanel content = new JPanel(new BorderLayout());
-				content.add(imageBufferLabel, BorderLayout.CENTER);
-				content.add(new JLabel("Press CTRL+ENTER to leave full-screen mode"), BorderLayout.SOUTH);
+				owner.getContentPane().remove(imageBufferLabel);
+				JPanel content = new JPanel(new GridBagLayout());
+				content.add(
+						imageBufferLabel, 
+						new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
+				content.add(
+						new JLabel("Press CTRL+ENTER to leave full-screen mode"), 
+						new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
 				content.addKeyListener(this);
 				content.addKeyListener(new GameFrameKeyEvent());
 				owner.setContentPane(content);
 				owner.setExtendedState(JFrame.MAXIMIZED_BOTH);
 				content.requestFocus();
 				EventQueue.invokeLater(new Runnable() {
+					private Dimension last = null;
 					@Override
 					public void run() {
 						Dimension d = owner.getSize();
-						d = new Dimension(d.width - 32, d.height - 32);
+						if(d.equals(last))
+							return;
+						last = d;
+						d = new Dimension(d.width - 48, d.height - 48);
 						Dimension id;
 						if(d.width * 3 / 4 > d.height) {
 							id = new Dimension(d.height * 4 / 3, d.height);
@@ -1027,6 +1046,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 						imageBuffer = new BufferedImage((int) id.getWidth(), (int) id.getHeight(), BufferedImage.TYPE_INT_ARGB);
 						imageBufferLabel.setIcon(new ImageIcon(imageBuffer));
 						imageBufferLabel.revalidate();
+						EventQueue.invokeLater(this);
 					}
 				});
 				fullscreen = true;
@@ -1035,7 +1055,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 				owner.setContentPane(contentPane);
 				add(
 						imageBufferLabel, 
-						BorderLayout.CENTER);
+						new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
 				owner.setExtendedState(exstate);
 				owner.setSize(size);
 				owner.setLocation(location);

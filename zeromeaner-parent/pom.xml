@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.zeromeaner</groupId>
 	<artifactId>zeromeaner-parent</artifactId>
-	<version>1.2.0-rc3</version>
+	<version>1.2.0-rc4</version>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -15,6 +15,7 @@
 
 		<module>../zeromeaner</module>
 		<module>../zeromeaner-plugin-video-recording</module>
+		<module>../zeromeaner-applet</module>
 	</modules>
 
 	<build>
@@ -53,8 +54,8 @@
 
 	<repositories>
 		<repository>
-			<id>robin-kirkman-snapshots</id>
-			<url>http://vps.robinvps.com:7777/nexus/content/groups/everything/</url>
+			<id>robin-kirkman</id>
+			<url>http://nexus.robindps.com/nexus/content/groups/everything/</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
@@ -77,11 +78,11 @@
 	<distributionManagement>
 		<repository>
 			<id>robin-kirkman-releases</id>
-			<url>http://vps.robinvps.com:7777/nexus/content/repositories/releases/</url>
+			<url>http://nexus.robindps.com:7777/nexus/content/repositories/releases/</url>
 		</repository>
 		<snapshotRepository>
 			<id>robin-kirkman-snapshots</id>
-			<url>http://vps.robinvps.com:7777/nexus/content/repositories/snapshots/</url>
+			<url>http://nexus.robinvps.com:7777/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 

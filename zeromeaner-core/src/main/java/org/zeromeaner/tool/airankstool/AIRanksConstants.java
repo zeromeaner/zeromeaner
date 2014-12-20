@@ -5,6 +5,6 @@ package org.zeromeaner.tool.airankstool;
  */
 public class AIRanksConstants {
 	public static String RANKSAI_DIR="res/ranksAI/";
-	public static String RANKSAI_CONFIG_FILE="config/setting/ranksai.cfg";
+	public static String RANKSAI_CONFIG_FILE="setting/ranksai.cfg";
 	public static String DEFAULT_RANKS_FILE="ranks";
 }
