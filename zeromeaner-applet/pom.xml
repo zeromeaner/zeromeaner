@@ -20,6 +20,12 @@
 			<version>1.7.0</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>webstart-maven-plugin</artifactId>
+			<version>1.0-beta-6</version>
+			<type>maven-plugin</type>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -38,6 +44,7 @@
 							<codebase>http://www.zeromeaner.org/jnlp</codebase>
 							<filenameMapping>full</filenameMapping>
 							<jnlp>
+								<inputTemplate>zero.vm</inputTemplate>
 								<!-- default values -->
 								<!--inputTemplateResourcePath>${project.basedir}</inputTemplateResourcePath -->
 								<!--inputTemplate>src/main/jnlp/template.vm</inputTemplate --> <!-- relative to inputTemplateResourcePath -->
