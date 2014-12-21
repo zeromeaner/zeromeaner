@@ -38,6 +38,7 @@
 							<codebase>http://www.zeromeaner.org/jnlp</codebase>
 							<filenameMapping>full</filenameMapping>
 							<jnlp>
+								<inputTemplate>zero.vm</inputTemplate>
 								<!-- default values -->
 								<!--inputTemplateResourcePath>${project.basedir}</inputTemplateResourcePath -->
 								<!--inputTemplate>src/main/jnlp/template.vm</inputTemplate --> <!-- relative to inputTemplateResourcePath -->
@@ -83,4 +84,8 @@
 			</plugin>
 		</plugins>
 	</build>
+	<name>zeromeaner</name>
+	<organization>
+		<name>Robin Kirkman</name>
+	</organization>
 </project>
