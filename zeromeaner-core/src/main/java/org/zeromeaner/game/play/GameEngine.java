@@ -773,6 +773,7 @@ public class GameEngine {
 		nextPieceArrayID = null;
 		nextPieceArrayObject = null;
 		nextPieceCount = 0;
+		nextPieceArrayCount = 0;
 
 		holdPieceObject = null;
 		holdDisable = false;
