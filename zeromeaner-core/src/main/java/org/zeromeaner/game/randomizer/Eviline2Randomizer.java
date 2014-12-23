@@ -1,5 +1,6 @@
 package org.zeromeaner.game.randomizer;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -10,6 +11,8 @@ import org.eviline.core.Field;
 import org.eviline.core.ShapeSource;
 import org.eviline.core.ShapeType;
 import org.eviline.core.ai.DefaultAIKernel;
+import org.eviline.core.ai.DefaultAIKernel.Best;
+import org.eviline.core.ai.DefaultAIKernel.BestAdjuster;
 import org.eviline.core.ai.DefaultFitness;
 import org.eviline.core.ai.NextFitness;
 import org.eviline.core.ai.ScoreFitness;
@@ -37,7 +40,29 @@ public class Eviline2Randomizer extends Randomizer {
 					return t;
 				}
 			});
-	protected static final SubtaskExecutor subtasks = new SubtaskExecutor(EXEC, 0);
+	protected static final SubtaskExecutor SUBTASKS = new SubtaskExecutor(EXEC, 0);
+	
+	protected static final BestAdjuster ADJUSTER = new BestAdjuster() {
+		@Override
+		public Best adjust(Best best) {
+			List<Long> counts = new ArrayList<>();
+			long min = Long.MAX_VALUE;
+			long max = Long.MIN_VALUE;
+			for(long c : best.after.getTypeBlitCounts()) {
+				counts.add(c);
+				if(c < min)
+					min = c;
+				if(c > max)
+					max = c;
+			}
+			double variance = 0;
+			for(long c : counts)
+				variance += Math.max(c - min, max - c);
+			double score = best.score;
+			score += Math.abs(score) * Math.pow(0.9, variance) - Math.abs(score);
+			return new Best(best.graph, best.shape, score, best.after, best.type, best.deeper);
+		}
+	}; 
 	
 	protected GameEngine engine;
 	protected EngineAdapter evilEngine;
@@ -57,7 +82,8 @@ public class Eviline2Randomizer extends Randomizer {
 	@Override
 	public void init() {
 		evilEngine = new EngineAdapter();
-		ai = new DefaultAIKernel(subtasks, new DefaultFitness());
+		ai = new DefaultAIKernel(SUBTASKS, new DefaultFitness());
+		ai.setAdjuster(ADJUSTER);
 		shapes = new EvilBag7NShapeSource(DEFAULT_BAG_N, DEFAULT_LOOKAHEAD);
 		shapes.setAi(ai);
 		evilEngine.setShapes(shapes);
