@@ -8,6 +8,28 @@ import org.zeromeaner.game.play.GameEngine;
 
 public abstract class XYShapeAdapter {
 
+	public static int fromShapeType(ShapeType type) {
+		if(type == null)
+			return Piece.PIECE_NONE;
+		switch(type) {
+		case I:
+			return Piece.PIECE_I;
+		case J:
+			return Piece.PIECE_J;
+		case L:
+			return Piece.PIECE_L;
+		case O:
+			return Piece.PIECE_O;
+		case S:
+			return Piece.PIECE_S;
+		case T:
+			return Piece.PIECE_T;
+		case Z:
+			return Piece.PIECE_Z;
+		}
+		return Piece.PIECE_NONE;
+	}
+	
 	public static ShapeType toShapeType(Piece p) {
 		if(p == null)
 			return null;
