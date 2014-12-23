@@ -60,6 +60,7 @@ public class Eviline2Randomizer extends Randomizer {
 		ai = new DefaultAIKernel(subtasks, new DefaultFitness());
 		shapes = new EvilBag7NShapeSource(DEFAULT_BAG_N, DEFAULT_LOOKAHEAD);
 		shapes.setAi(ai);
+		evilEngine.setShapes(shapes);
 	}
 	
 	@Override
