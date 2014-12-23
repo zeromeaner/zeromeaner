@@ -21,6 +21,7 @@ import org.zeromeaner.game.eviline.XYShapeAdapter;
 import org.zeromeaner.game.play.GameEngine;
 
 public class Eviline2Randomizer extends Randomizer {
+	public static final int LOOKAHEAD = 2;
 	
 	protected static final ExecutorService EXEC = Executors.newFixedThreadPool(
 			Math.max(2, Runtime.getRuntime().availableProcessors()-1),
@@ -87,7 +88,7 @@ public class Eviline2Randomizer extends Randomizer {
 			field.blit(best.shape, 0);
 			field.clearLines();
 		}
-		ShapeType worst = ai.worstNext(field, shapes, ShapeType.NONE, 3);
+		ShapeType worst = ai.worstNext(field, shapes, ShapeType.NONE, LOOKAHEAD);
 		shapes.remove(worst);
 		int id = XYShapeAdapter.fromShapeType(worst);
 		return id;
