@@ -1,4 +1,4 @@
-package org.zeromeaner.game.evil;
+package org.zeromeaner.game.eviline;
 
 import org.eviline.core.Block;
 import org.eviline.core.Field;

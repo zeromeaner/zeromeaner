@@ -1,4 +1,4 @@
-package org.zeromeaner.game.evil;
+package org.zeromeaner.game.subsystem.ai;
 
 import java.awt.GridLayout;
 import java.util.Arrays;
@@ -34,8 +34,10 @@ import org.eviline.core.ai.DefaultAIKernel.Best;
 import org.eviline.core.ai.Fitness;
 import org.eviline.core.ai.NextFitness;
 import org.zeromeaner.game.component.Controller;
+import org.zeromeaner.game.eviline.EngineAdapter;
+import org.zeromeaner.game.eviline.FieldAdapter;
+import org.zeromeaner.game.eviline.XYShapeAdapter;
 import org.zeromeaner.game.play.GameEngine;
-import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.gui.common.Configurable;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.Options;
@@ -43,7 +45,7 @@ import org.zeromeaner.util.PropertyConstant;
 import org.zeromeaner.util.PropertyConstant.Constant;
 import org.zeromeaner.util.PropertyConstant.ConstantParser;
 
-public class EvilineAI extends AbstractAI implements Configurable {
+public class Eviline2AI extends AbstractAI implements Configurable {
 	
 	protected static final Constant<Boolean> DROPS_ONLY = new Constant<>(PropertyConstant.BOOLEAN, ".eviline.drops_only", true);
 	protected static final Constant<Integer> LOOKAHEAD = new Constant<>(PropertyConstant.INTEGER, ".eviline.lookahead", 3);
@@ -331,7 +333,7 @@ public class EvilineAI extends AbstractAI implements Configurable {
 		return nextShapes;
 	}
 	
-	public EvilineAI() {}
+	public Eviline2AI() {}
 	
 	
 	

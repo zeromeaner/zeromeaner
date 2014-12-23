@@ -1,4 +1,4 @@
-package org.zeromeaner.game.evil;
+package org.zeromeaner.game.eviline;
 
 import org.eviline.core.Shape;
 import org.eviline.core.ShapeType;
