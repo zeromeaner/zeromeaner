@@ -148,6 +148,7 @@ public class StandaloneMain {
 		StandaloneGameKey.gamekey[1].loadDefaultKeymap();
 
 		if(Options.GUI_PROPERTIES.subProperties("key.p").getAll().size() == 0) {
+			System.out.println("no key prefs?  adding defaults!");
 			StandaloneGameKey.gamekey[0].saveConfig(Options.GUI_PROPERTIES);
 			StandaloneGameKey.gamekey[1].saveConfig(Options.GUI_PROPERTIES);
 		}
