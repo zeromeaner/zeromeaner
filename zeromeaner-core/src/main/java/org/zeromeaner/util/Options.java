@@ -141,6 +141,7 @@ public class Options {
 		public final Constant<Double> SE_VOLUME;
 		public final Constant<Boolean> SE_ENABLED;
 		public final Constant<Boolean> SHOW_INPUT;
+		public final Constant<Boolean> INCREASE_EQ_PRIORITY;
 		
 		private StandaloneOptions() {
 			CustomProperties p = GUI_PROPERTIES.subProperties(".options.");
@@ -169,6 +170,7 @@ public class Options {
 			SE_VOLUME = p.create(DOUBLE, "se.volume", 1.0d);
 			SE_ENABLED = p.create(BOOLEAN, "se.enabled", true);
 			SHOW_INPUT = p.create(BOOLEAN, "showInput", false);
+			INCREASE_EQ_PRIORITY = p.create(BOOLEAN, "event_queue.priority.increase", true);
 		}
 	}
 	
