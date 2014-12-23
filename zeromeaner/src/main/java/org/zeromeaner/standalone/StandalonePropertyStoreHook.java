@@ -2,6 +2,7 @@ package org.zeromeaner.standalone;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,13 +16,18 @@ public class StandalonePropertyStoreHook implements PropertyStoreHook {
 	
 	protected Properties props;
 	
-	public StandalonePropertyStoreHook() throws IOException{
+	public StandalonePropertyStoreHook() {
 		props = new Properties();
-		InputStream in = new FileInputStream(new File(System.getProperty("user.dir"), "zeromeaner.properties"));
 		try {
-			props.load(in);
-		} finally {
-			in.close();
+			InputStream in = new FileInputStream(new File(System.getProperty("user.dir"), "zeromeaner.properties"));
+			try {
+				props.load(in);
+			} finally {
+				in.close();
+			}
+		} catch(FileNotFoundException e) {
+		} catch(IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
