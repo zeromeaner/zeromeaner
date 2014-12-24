@@ -43,22 +43,26 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineEvent.Type;
 import javax.sound.sampled.LineListener;
+import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.gui.reskin.StandaloneResourceHolder;
 import org.zeromeaner.util.Options;
+import org.zeromeaner.util.Threads;
 
 /**
  * Sound engine
@@ -67,15 +71,22 @@ import org.zeromeaner.util.Options;
 public class WaveEngine {
 	/** Log */
 	private static Logger log = Logger.getLogger(WaveEngine.class);
+	
+	private static final byte[] noclick = new byte[256];
+	static {
+		Arrays.fill(noclick, (byte) 0x80);
+	}
 
+	private ExecutorService exec = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), Threads.namedFactory("Sound Dispatcher"), new ThreadPoolExecutor.DiscardPolicy());
+	
 	private Object sync = new Object();
 	
-	private List<Clip> activeClips = new ArrayList<>();
-	private List<Clip> inactiveClips = new ArrayList<>();
+	private List<SampleBufferClippish> activeClips = new ArrayList<>();
+	private List<SampleBufferClippish> inactiveClips = new ArrayList<>();
 	
 	private Map<String, SampleBuffer> buffers = new HashMap<>();
-	private Map<String, Clip> loadedClipsByName = new HashMap<>();
-	private Map<Clip, String> loadedNamesByClip = new HashMap<>();
+	
+	private Map<String, SampleBufferClippish> playing = new HashMap<>();
 
 	/** Volume */
 	private double volume = 1.0;
@@ -86,22 +97,27 @@ public class WaveEngine {
 	public WaveEngine() {
 	}
 
-	private void maybeAddClip() {
+	private void maybeAddClip(AudioFormat format) {
 		try {
-			Clip clip = AudioSystem.getClip();
+			SourceDataLine line = AudioSystem.getSourceDataLine(format);
+			line.open(format);
+			line.start();
+			final SampleBufferClippish clip = new SampleBufferClippish(format, line);
 			inactiveClips.add(clip);
-			clip.addLineListener(new LineListener() {
+			clip.setEmptiedTask(new Runnable() {
 				@Override
-				public void update(LineEvent event) {
-					if(event.getType() == Type.STOP) {
-						synchronized(sync) {
-							inactiveClips.add((Clip) event.getLine());
-							activeClips.remove(event.getLine());
-						}
+				public void run() {
+					synchronized(sync) {
+						inactiveClips.add(clip);
+						activeClips.remove(clip);
+						playing.values().remove(clip);
 					}
 				}
 			});
+			clip.start();
+			setVolume(clip);
 		} catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -121,16 +137,19 @@ public class WaveEngine {
 		volume = vol;
 
 		synchronized(sync) {
-			for(Clip c : activeClips)
+			for(SampleBufferClippish c : activeClips)
 				setVolume(c);
-			for(Clip c : inactiveClips)
+			for(SampleBufferClippish c : inactiveClips)
 				setVolume(c);
 		}
 	}
 	
-	private void setVolume(Clip line) {
+	private void setVolume(SampleBufferClippish clip) {
+		setVolume(clip, volume);
+	}
+	private void setVolume(SampleBufferClippish clip, double volume) {
 		try {
-			FloatControl ctrl = (FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN);
+			FloatControl ctrl = (FloatControl)clip.getLine().getControl(FloatControl.Type.MASTER_GAIN);
 			ctrl.setValue((float)Math.log10(volume) * 20);
 		} catch (Exception e) {}
 	}
@@ -141,7 +160,6 @@ public class WaveEngine {
 	 * @param filename Filename
 	 */
 	public void load(String name, String filename) {
-		maybeAddClip();
 		try {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			InputStream in = StandaloneResourceHolder.getURL(filename).openStream();
@@ -166,29 +184,37 @@ public class WaveEngine {
 	 * Playback
 	 * @param name Registered name
 	 */
+	
 	public void play(final String name) {
+		exec.execute(new Runnable() {
+			@Override
+			public void run() {
+				playTask(name);
+			}
+		});
+	}
+	
+	private void playTask(final String name) {
 		if(buffers.get(name) == null)
 			return;
 		
+		SampleBuffer sample = buffers.get(name);
+		
+		SampleBufferClippish clip;
+		
 		synchronized(sync) {
-			Clip clip = loadedClipsByName.get(name);
+			clip = playing.get(name);
 			if(clip != null) {
-				clip.setFramePosition(0);
-				clip.start();
+				clip.setSample(sample, true);
 				return;
 			}
-		}
-		
-		AudioFormat format = buffers.get(name).getFormat();
-		byte[] bytes = buffers.get(name).getBytes().array();
-		
-		Clip clip = null;
-		
-		synchronized(sync) {
+			
+			if(inactiveClips.size() == 0)
+				maybeAddClip(sample.getFormat());
 			if(inactiveClips.size() > 0) {
 				clip = inactiveClips.remove(0);
-				loadedClipsByName.remove(loadedNamesByClip.remove(clip));
 				activeClips.add(clip);
+				playing.put(name, clip);
 			}
 		}
 		
@@ -196,12 +222,8 @@ public class WaveEngine {
 			return;
 		
 		try {
-			clip.close();
-			clip.open(format, bytes, 0, bytes.length);
+			clip.setSample(sample, true);
 			setVolume(clip);
-			loadedClipsByName.put(name, clip);
-			loadedNamesByClip.put(clip, name);
-			clip.start();
 		} catch(Exception e) {
 			log.warn(e);
 		}
