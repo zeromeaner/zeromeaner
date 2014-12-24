@@ -5,6 +5,7 @@
 
 	<properties>
 		<maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
+		<git.revision></git.revision>
 	</properties>
 
 	<build>

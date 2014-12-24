@@ -60,6 +60,7 @@ import org.zeromeaner.util.Options;
 import org.zeromeaner.util.Session;
 import org.zeromeaner.util.Options.AIOptions;
 import org.zeromeaner.util.Options.TuningOptions;
+import org.zeromeaner.util.Version;
 import org.zeromeaner.util.io.DavFileSystemView;
 import org.zeromeaner.util.io.FileSystemViews;
 import org.zeromeaner.util.ResourceInputStream;
@@ -112,7 +113,9 @@ public class StandaloneFrame extends JFrame {
 	private StandaloneGamePanel gamePanel;
 	
 	public StandaloneFrame() {
-		setTitle("zeromeaner");
+		setTitle("zeromeaner " + Version.getBuildVersion());
+		if(!Version.getBuildRevision().isEmpty())
+			setTitle(getTitle() + " rev " + Version.getBuildRevision());
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
