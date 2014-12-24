@@ -85,6 +85,8 @@ public class WaveEngine {
 	private List<SampleBufferClippish> inactiveClips = new ArrayList<>();
 	
 	private Map<String, SampleBuffer> buffers = new HashMap<>();
+	
+	private Map<String, SampleBufferClippish> playing = new HashMap<>();
 
 	/** Volume */
 	private double volume = 1.0;
@@ -108,6 +110,7 @@ public class WaveEngine {
 					synchronized(sync) {
 						inactiveClips.add(clip);
 						activeClips.remove(clip);
+						playing.values().remove(clip);
 					}
 				}
 			});
@@ -197,15 +200,22 @@ public class WaveEngine {
 		
 		SampleBuffer sample = buffers.get(name);
 		
-		SampleBufferClippish clip = null;
+		SampleBufferClippish clip;
 		
 		synchronized(sync) {
+			clip = playing.get(name);
+			if(clip != null) {
+				clip.setSample(sample, true);
+				return;
+			}
+			
 			if(inactiveClips.size() == 0)
 				maybeAddClip(sample.getFormat());
 			if(inactiveClips.size() > 0) {
 				clip = inactiveClips.remove(0);
 				activeClips.add(clip);
 			}
+			playing.put(name, clip);
 		}
 		
 		if(clip == null)
