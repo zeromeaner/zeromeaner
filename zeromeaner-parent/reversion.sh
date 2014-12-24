@@ -20,5 +20,5 @@ VERSION=$(mvn -q \
 
 NEW_VERSION=$(echo $VERSION | perl -p -e "s/-SNAPSHOT/${VSFX}-SNAPSHOT/")
 
-echo ${NEW_VERSION}
+mvn versions:set versions:commit -DnewVersion=${NEW_VERSION}
 
