@@ -65,6 +65,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.codec.binary.Base64InputStream;
@@ -460,6 +461,8 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 	private JButton loadBase64;
 	
 	private JTextField base64;
+	
+	private JLabel resourceName;
 
 	public JTabbedPane getTabPane() {
 		return tabPane;
@@ -482,7 +485,7 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 		// Read configuration file
 		propConfig = new CustomProperties();
 		try {
-			ResourceInputStream in = new ResourceInputStream("config/setting/swing.cfg");
+			ResourceInputStream in = new ResourceInputStream("setting/swing.cfg");
 			propConfig.load(in);
 			in.close();
 		} catch(IOException e) {}
@@ -500,9 +503,13 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 	private void initUI() {
 		setLayout(new BorderLayout());
 
+		resourceName = new JLabel("");
+		resourceName.setHorizontalAlignment(SwingConstants.CENTER);
+		add(resourceName, BorderLayout.NORTH);
+		
 		// Entire tab --------------------------------------------------
 		tabPane = new JTabbedPane();
-		add(tabPane, BorderLayout.NORTH);
+		add(tabPane, BorderLayout.CENTER);
 
 		// Preferences tab --------------------------------------------------
 		JPanel panelBasic = new JPanel();
@@ -1348,6 +1355,7 @@ public class RuleEditorPanel extends JPanel implements ActionListener {
 	 * @param r Rule Set
 	 */
 	public void readRuleToUI(RuleOptions r) {
+		resourceName.setText(r.resourceName);
 		txtfldRuleName.setText(String.valueOf(r.strRuleName));
 		txtfldNextDisplay.setText(String.valueOf(r.nextDisplay));
 		comboboxStyle.setSelectedIndex(r.style);

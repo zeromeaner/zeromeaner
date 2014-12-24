@@ -1,5 +1,8 @@
 package org.zeromeaner.util;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 import org.funcish.core.coll.ArrayFunctionalList;
 import org.funcish.core.coll.FunctionalList;
 import org.funcish.core.fn.Mapper;
@@ -14,8 +17,22 @@ public class RuleList extends ArrayFunctionalList<RuleOptions> {
 			rule = rule.replaceAll("^org/zeromeaner/", "");
 			ret.add(GeneralUtil.loadRule(rule));
 		}
+		Collections.sort(ret, RULE_ORDER);
 		return ret;
 	}
+	
+	public static final Comparator<RuleOptions> RULE_ORDER = new Comparator<RuleOptions>() {
+		@Override
+		public int compare(RuleOptions o1, RuleOptions o2) {
+			boolean c1 = o1.resourceName.matches(".*/Custom_[^/]+");
+			boolean c2 = o2.resourceName.matches(".*/Custom_[^/]+");
+			if(c1 && !c2)
+				return 1;
+			if(!c1 && c2)
+				return -1;
+			return o1.strRuleName.toUpperCase().compareTo(o2.strRuleName.toUpperCase());
+		}
+	};
 	
 	public static Mapper<RuleOptions, String> RESOURCE_NAME = new AbstractMapper<RuleOptions, String>(RuleOptions.class, String.class) {
 		@Override

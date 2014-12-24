@@ -2,12 +2,21 @@ package org.zeromeaner.gui.reskin;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GradientPaint;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,8 +26,12 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
+import javax.swing.UIManager;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.subsystem.mode.GameMode;
@@ -27,8 +40,10 @@ import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.LstResourceMap;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.Options;
+import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ResourceOutputStream;
 import org.zeromeaner.util.RuleList;
+import org.zeromeaner.util.io.ResourceStreams;
 
 public class StandaloneModeselectPanel extends JPanel {
 	private static String formatButtonText(String modeOrRuleName) {
@@ -64,6 +79,10 @@ public class StandaloneModeselectPanel extends JPanel {
 	
 	private RuleEditorPanel ruleEditor = new RuleEditorPanel();
 	
+	private JPanel modeButtonsPanel;
+	private JPanel ruleButtonsPanel;
+	private ButtonGroup ruleButtonGroup;
+	
 	private void saveCustom() {
 		try {
 			OutputStream out = new ResourceOutputStream(custom.resourceName);
@@ -87,6 +106,8 @@ public class StandaloneModeselectPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				ruleEditor.writeRuleFromUI(custom);
 				saveCustom();
+				for(int i = 0; i < ruleButtonsPanel.getComponentCount(); i++)
+					((JComponent) ruleButtonsPanel.getComponent(i)).revalidate();
 				cards.show(StandaloneModeselectPanel.this, SELECT_CARD);
 			}
 		}), BorderLayout.SOUTH);
@@ -100,40 +121,29 @@ public class StandaloneModeselectPanel extends JPanel {
 		cards.show(this, SELECT_CARD);
 
 		ButtonGroup g = new ButtonGroup();
-		JPanel modeButtons = new JPanel(new GridLayout(0, 8, 10, 10));
-		modeButtons.setBorder(BorderFactory.createTitledBorder("Available Modes"));
+		modeButtonsPanel = new JPanel(new GridLayout(0, 8, 10, 10));
+		modeButtonsPanel.setBorder(BorderFactory.createTitledBorder("Available Modes"));
 		JPanel p = new JPanel(new BorderLayout());
 		for(GameMode mode : ModeList.getModes()) {
 			ModeButton b = new ModeButton(mode);
-			modeButtons.add(b);
+			modeButtonsPanel.add(b);
 			g.add(b);
 			this.modeButtons.add(b);
 		}
-		p.add(modeButtons, BorderLayout.CENTER);
+		p.add(modeButtonsPanel, BorderLayout.CENTER);
 		select.add(p, BorderLayout.NORTH);
 		
-		g = new ButtonGroup();
-		JPanel ruleButtons = new JPanel(new GridLayout(0, 8, 10, 10));
-		ruleButtons.setBorder(BorderFactory.createTitledBorder("Available Rules"));
+		ruleButtonGroup = new ButtonGroup();
+		ruleButtonsPanel = new JPanel(new GridLayout(0, 8, 10, 10));
+		ruleButtonsPanel.setBorder(BorderFactory.createTitledBorder("Available Rules"));
 		p = new JPanel(new BorderLayout());
 		RuleList rules = RuleList.getRules();
-		rules.add(0, custom);
 		for(RuleOptions rule : rules) {
 			RuleButton b = new RuleButton(rule);
 			
-			if(rule == custom) {
-				b.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						ruleEditor.readRuleToUI(custom);
-						cards.show(StandaloneModeselectPanel.this, EDIT_CARD);
-					}
-				});
-			}
-			
-			ruleButtons.add(b);
+			ruleButtonsPanel.add(b);
 			this.ruleButtons.add(b);
-			g.add(b);
+			ruleButtonGroup.add(b);
 			for(ModeButton mb : this.modeButtons) {
 				mb.addActionListener(b);
 			}
@@ -141,7 +151,7 @@ public class StandaloneModeselectPanel extends JPanel {
 			if(rule.resourceName.equals(Options.general().RULE_NAME.value()))
 				b.setSelected(true);
 		}
-		p.add(ruleButtons, BorderLayout.CENTER);
+		p.add(ruleButtonsPanel, BorderLayout.CENTER);
 		select.add(p, BorderLayout.SOUTH);
 		
 		for(ModeButton mb : this.modeButtons) {
@@ -150,6 +160,8 @@ public class StandaloneModeselectPanel extends JPanel {
 				mb.doClick();
 
 		}
+		
+		revalidate();
 	}
 	
 	private class ModeButton extends JToggleButton {
@@ -160,7 +172,12 @@ public class StandaloneModeselectPanel extends JPanel {
 //			super("<html>" + m.getName().replaceAll("-+", "<br>"));
 			super(formatButtonText(m.getName()));
 			this.mode = m;
-//			setFont(getFont().deriveFont(8f));
+
+			MetalLookAndFeel laf = (MetalLookAndFeel) UIManager.getLookAndFeel();
+			Font f = laf.getControlTextFont();
+			f = f.deriveFont(f.getSize() * 0.8f);
+			setFont(f);
+
 			setMargin(new Insets(0, 3, 0, 3));
 			addActionListener(new ActionListener() {
 				@Override
@@ -185,12 +202,26 @@ public class StandaloneModeselectPanel extends JPanel {
 	
 	private class RuleButton extends JToggleButton implements ActionListener {
 		private RuleOptions rule;
+		private boolean custom;
+		
+		@Override
+		public boolean isBorderPainted() {
+			return custom || super.isBorderPainted();
+		}
+		
 		public RuleButton(RuleOptions r) {
-//			super("<html>" + r.strRuleName.replaceAll("-+", "<br>"));
-			super(formatButtonText(r.strRuleName));
 			this.rule = r;
-//			setFont(getFont().deriveFont(8f));
+			this.custom = r.resourceName.contains("/Custom_");
 			setMargin(new Insets(0, 3, 0, 3));
+
+			MetalLookAndFeel laf = (MetalLookAndFeel) UIManager.getLookAndFeel();
+			Font f = laf.getControlTextFont();
+			f = f.deriveFont(f.getSize() * 0.8f);
+			setFont(f);
+
+			if(custom)
+				setBorder(BorderFactory.createDashedBorder(new GradientPaint(0, 0, Color.BLACK, 5, 5, Color.WHITE, true)));
+
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -204,6 +235,86 @@ public class StandaloneModeselectPanel extends JPanel {
 					Options.mode(currentMode.mode.getName()).RULE_RSOURCE.set(rule.resourceName);
 				}
 			});
+			addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					if(e.isPopupTrigger()) {
+						JPopupMenu menu = new JPopupMenu();
+						menu.add(new AbstractAction("Copy to Custom Rule") {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								RuleOptions custom = new RuleOptions();
+								custom.copy(rule);
+								
+								int custnum = 1;
+								String rn = rule.resourceName.replaceAll(".*/([^/]+)\\.rul", "$1");
+								custom.resourceName = "config/rule/Custom_" + rn + "_" + custnum + ".rul";
+								
+								for(;; custnum++) {
+									try {
+										custom.resourceName = "config/rule/Custom_" + rn + "_" + custnum + ".rul";
+										InputStream in = new ResourceInputStream(custom.resourceName);
+										in.close();
+										continue;
+									} catch(FileNotFoundException ex) {
+										break;
+									} catch(IOException ex) {
+										throw new RuntimeException(ex);
+									}
+								}
+								
+								
+								custom.strRuleName = "Custom " + rule.strRuleName + " " + custnum;
+								try {
+									ResourceOutputStream out = new ResourceOutputStream(custom.resourceName);
+									if(out != null) {
+										try {
+											CustomProperties p = new CustomProperties();
+											custom.writeProperty(p, 0);
+											p.store(out, "Custom Rule " + custnum);
+										} finally {
+											out.close();
+										}
+									}
+								} catch(IOException ex) {
+									throw new RuntimeException(ex);
+								}
+								RuleButton rb = new RuleButton(custom);
+								ruleButtonsPanel.add(rb);
+								ruleButtonGroup.add(rb);
+								rb.revalidate();
+							}
+						});
+						if(custom) {
+							menu.add(new AbstractAction("Edit Rule") {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									StandaloneModeselectPanel.this.custom = rule;
+									ruleEditor.readRuleToUI(rule);
+									cards.show(StandaloneModeselectPanel.this, EDIT_CARD);
+								}
+							});
+							menu.add(new AbstractAction("Delete Rule") {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									ResourceStreams.get().delete(rule.resourceName);
+									ruleButtonsPanel.remove(RuleButton.this);
+									ruleButtonsPanel.revalidate();
+									ruleButtonsPanel.repaint();
+								}
+							});
+						}
+						menu.show(RuleButton.this, 0, RuleButton.this.getHeight());
+					}
+				}
+			});
+		}
+		
+		@Override
+		public void revalidate() {
+			if(rule != null)
+				setText(formatButtonText(rule.strRuleName));
+			super.revalidate();
 		}
 		
 		@Override

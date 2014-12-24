@@ -1,5 +1,6 @@
 package org.zeromeaner.gui.reskin;
 
+import java.awt.EventQueue;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,24 +22,35 @@ import org.zeromeaner.util.Options;
 import org.zeromeaner.util.PropertyConstant;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.ResourceOutputStream;
+import org.zeromeaner.util.Session;
+import org.zeromeaner.util.io.PropertyStore;
 
 import com.esotericsoftware.minlog.Log;
 
 public class StandaloneMain {
 	public static ModeList<GameMode> modeManager;
-	public static String userId;
-	
+
+	private static boolean applet;
+
+	public static boolean isApplet() {
+		return applet;
+	}
+
+	public static void setApplet(boolean applet) {
+		StandaloneMain.applet = applet;
+	}
+
 	public static void main(String[] args) {
 		try {
-			_main(args);
+			init(args).setVisible(true);
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public static void loadGlobalConfig() {
 		try {
-			InputStream in = new ResourceInputStream("config/setting/global.cfg");
+			InputStream in = new ResourceInputStream("setting/global.cfg");
 			Options.GLOBAL_PROPERTIES.load(in);
 			in.close();
 		} catch(FileNotFoundException fnfe) {
@@ -46,97 +58,110 @@ public class StandaloneMain {
 			throw new RuntimeException(ioe);
 		}
 		try {
-			InputStream in = new ResourceInputStream("config/setting/swing.cfg");
+			InputStream in = new ResourceInputStream("setting/swing.cfg");
 			Options.GUI_PROPERTIES.load(in);
 			in.close();
 		} catch(FileNotFoundException fnfe) {
 		} catch(IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
-		Options.RUNTIME_PROPERTIES.putAll(CookieAccess.getInstance().get());
+		try {
+			InputStream in = new ResourceInputStream("setting/runtime.cfg");
+			Options.RUNTIME_PROPERTIES.load(in);
+			in.close();
+		} catch(FileNotFoundException fnfe) {
+		} catch(IOException ioe) {
+			throw new RuntimeException(ioe);
+		}
 	}
 
 	public static void saveConfig() {
 		try {
-			ResourceOutputStream out = new ResourceOutputStream("config/setting/global.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("setting/global.cfg");
 			Options.GLOBAL_PROPERTIES.store(out, "zeromeaner global Config");
 			out.close();
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
 		try {
-			ResourceOutputStream out = new ResourceOutputStream("config/setting/swing.cfg");
+			ResourceOutputStream out = new ResourceOutputStream("setting/swing.cfg");
 			Options.GUI_PROPERTIES.store(out, "zeromeaner Swing-frontend Config");
 			out.close();
 		} catch(IOException e) {
 		}
-		CookieAccess.getInstance().set(Options.RUNTIME_PROPERTIES.getAll());
+		try {
+			ResourceOutputStream out = new ResourceOutputStream("setting/runtime.cfg");
+			Options.RUNTIME_PROPERTIES.store(out, "zeromeaner Swing-frontend Config");
+			out.close();
+		} catch(IOException e) {
+		}
 	}
 
-	private static void _main(String[] args) throws Exception {
+	public static StandaloneFrame init(String[] args) throws Exception {
 		Log.NONE();
-		
-		System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".zeromeaner");
-		new File(System.getProperty("user.dir")).mkdirs();
-		
-		if(args.length == 0 || !"--no-inject".equals(args[0])) {
-			File plugins = new File(System.getProperty("user.dir"), "plugins");
-			plugins.mkdirs();
-			
-			File disabled = new File(plugins, "disabled-plugins");
-			disabled.mkdirs();
-			
-			if(StandaloneMain.class.getClassLoader() instanceof URLClassLoader) {
-				Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-				addURL.setAccessible(true);
-				for(File p : plugins.listFiles()) {
-					if(p.equals(disabled))
-						continue;
-					System.out.println("Injecting plugin " + p);
-					addURL.invoke(StandaloneMain.class.getClassLoader(), p.toURI().toURL());
+
+		if(!isApplet()) {
+			System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".zeromeaner");
+			new File(System.getProperty("user.dir")).mkdirs();
+
+			if(args.length == 0 || !"--no-inject".equals(args[0])) {
+				File plugins = new File(System.getProperty("user.dir"), "plugins");
+				plugins.mkdirs();
+
+				File disabled = new File(plugins, "disabled-plugins");
+				disabled.mkdirs();
+
+				if(StandaloneMain.class.getClassLoader() instanceof URLClassLoader) {
+					Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+					addURL.setAccessible(true);
+					for(File p : plugins.listFiles()) {
+						if(p.equals(disabled))
+							continue;
+						System.out.println("Injecting plugin " + p);
+						addURL.invoke(StandaloneMain.class.getClassLoader(), p.toURI().toURL());
+					}
+					addURL.invoke(StandaloneMain.class.getClassLoader(), new File(System.getProperty("user.dir")).toURI().toURL());
 				}
 			}
+
+			Session.setUser(System.getProperty("user.name"));
+
+			try {
+				PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));
+			} catch(IOException ioe) {
+				ioe.printStackTrace();
+			}
 		}
-		
-		CookieAccess.setInstance(new MainCookieAccess());
+		if(PropertyStore.get().get("userId") != null)
+			Session.setUser(PropertyStore.get().get("userId"));
 
-		StandaloneApplet.url = new URL("http://www.zeromeaner.org/" + (GameManager.VERSION.isSnapshot() ? "snapshot" : "play") + "/");
 
-		userId = System.getProperty("user.name");
-		if(CookieAccess.get("userId") != null)
-			userId = CookieAccess.get("userId");
-
-		try {
-			PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));
-		} catch(IOException ioe) {
-			ioe.printStackTrace();
-		}
-		
 		MetalLookAndFeel.setCurrentTheme(new ZeroMetalTheme());
 		UIManager.setLookAndFeel(new MetalLookAndFeel());
-		
+
 		loadGlobalConfig();
-		
+
 		modeManager = ModeList.getModes();
-		
+
 		StandaloneGameKey.initGlobalGameKeySwing();
 		StandaloneGameKey.gamekey[0].loadDefaultKeymap();
 		StandaloneGameKey.gamekey[1].loadDefaultKeymap();
-		
+
+		if(Options.GUI_PROPERTIES.subProperties("key.p").getAll().size() == 0) {
+			System.out.println("no key prefs?  adding defaults!");
+			StandaloneGameKey.gamekey[0].saveConfig(Options.GUI_PROPERTIES);
+			StandaloneGameKey.gamekey[1].saveConfig(Options.GUI_PROPERTIES);
+		}
+
 		StandaloneGameKey.gamekey[0].loadConfig(Options.GUI_PROPERTIES);
 		StandaloneGameKey.gamekey[1].loadConfig(Options.GUI_PROPERTIES);
-		
+
 		StandaloneResourceHolder.load();
-		
+
 		StandaloneFrame frame = new StandaloneFrame();
-		
-		if(PropertyConstant.is(Options.standalone().FULL_SCREEN)) {
-			frame.setUndecorated(true);
-			frame.setVisible(true);
-			frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		} else {
-			frame.setSize(1366, 768);
-			frame.setVisible(true);
-		}
+
+		frame.setSize(1366, 768);
+
+		return frame;
 	}
 }
