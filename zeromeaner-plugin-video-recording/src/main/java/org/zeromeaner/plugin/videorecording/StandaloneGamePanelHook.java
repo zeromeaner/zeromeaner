@@ -13,7 +13,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.gui.reskin.StandaloneGamePanel;
-import org.zeromeaner.gui.reskin.StandaloneGamePanel.FramePerSecond;
 import org.zeromeaner.gui.reskin.StandaloneGamePanel.Hook;
 import org.zeromeaner.util.Options;
 

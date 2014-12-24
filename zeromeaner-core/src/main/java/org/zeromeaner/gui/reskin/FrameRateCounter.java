@@ -5,8 +5,16 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
 public class FrameRateCounter {
-	public static class Frame implements Delayed {
-		private long expiry = System.nanoTime() + TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS);
+	public class Frame implements Delayed {
+		private long expiry;
+		
+		public Frame() {
+			expiry = System.nanoTime() + TimeUnit.NANOSECONDS.convert(durationSeconds, TimeUnit.SECONDS);
+		}
+		
+		public Frame(long expiry) {
+			this.expiry = expiry;
+		}
 		
 		@Override
 		public int compareTo(Delayed o) {
@@ -19,13 +27,31 @@ public class FrameRateCounter {
 		}
 	}
 	
+	private int durationSeconds;
 	private DelayQueue<Frame> q = new DelayQueue<Frame>();
+	
+	public FrameRateCounter() {
+		this(10);
+	}
+	
+	public FrameRateCounter(int durationSeconds) {
+		this.durationSeconds = durationSeconds;
+	}
+	
+	public synchronized void set(int rate) {
+		q.clear();
+		long now = System.nanoTime();
+		long delayNanos = TimeUnit.NANOSECONDS.convert(durationSeconds, TimeUnit.SECONDS);
+		for(int i = 0; i < rate * durationSeconds; i++) {
+			add(new Frame(now + delayNanos * i / (rate * durationSeconds)));
+		}
+	}
 	
 	public synchronized void add() {
 		add(new Frame());
 	}
 	
-	public synchronized void add(Frame f) {
+	protected synchronized void add(Frame f) {
 		while(q.poll() != null)
 			;
 		q.offer(f);
@@ -34,6 +60,6 @@ public class FrameRateCounter {
 	public synchronized int rate() {
 		while(q.poll() != null)
 			;
-		return q.size();
+		return Math.round(q.size() / (float) durationSeconds);
 	}
 }
