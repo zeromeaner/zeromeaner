@@ -160,7 +160,7 @@ public class StandaloneMain {
 
 		StandaloneFrame frame = new StandaloneFrame();
 
-		frame.setSize(1366, 768);
+		frame.setSize(900, 550);
 
 		return frame;
 	}
