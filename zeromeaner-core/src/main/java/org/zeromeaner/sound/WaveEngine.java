@@ -52,7 +52,6 @@ import java.util.concurrent.TimeUnit;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineEvent.Type;
@@ -82,12 +81,10 @@ public class WaveEngine {
 	
 	private Object sync = new Object();
 	
-	private List<Clip> activeClips = new ArrayList<>();
-	private List<Clip> inactiveClips = new ArrayList<>();
+	private List<SampleBufferClippish> activeClips = new ArrayList<>();
+	private List<SampleBufferClippish> inactiveClips = new ArrayList<>();
 	
 	private Map<String, SampleBuffer> buffers = new HashMap<>();
-	private Map<String, Clip> loadedClipsByName = new HashMap<>();
-	private Map<Clip, String> loadedNamesByClip = new HashMap<>();
 
 	/** Volume */
 	private double volume = 1.0;
@@ -98,22 +95,26 @@ public class WaveEngine {
 	public WaveEngine() {
 	}
 
-	private void maybeAddClip() {
+	private void maybeAddClip(AudioFormat format) {
 		try {
-			Clip clip = AudioSystem.getClip();
+			SourceDataLine line = AudioSystem.getSourceDataLine(format);
+			line.open(format);
+			line.start();
+			final SampleBufferClippish clip = new SampleBufferClippish(format, line);
 			inactiveClips.add(clip);
-			clip.addLineListener(new LineListener() {
+			clip.setEmptiedTask(new Runnable() {
 				@Override
-				public void update(LineEvent event) {
-					if(event.getType() == Type.STOP) {
-						synchronized(sync) {
-							inactiveClips.add((Clip) event.getLine());
-							activeClips.remove(event.getLine());
-						}
+				public void run() {
+					synchronized(sync) {
+						inactiveClips.add(clip);
+						activeClips.remove(clip);
 					}
 				}
 			});
+			clip.start();
+			setVolume(clip);
 		} catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -133,19 +134,19 @@ public class WaveEngine {
 		volume = vol;
 
 		synchronized(sync) {
-			for(Clip c : activeClips)
+			for(SampleBufferClippish c : activeClips)
 				setVolume(c);
-			for(Clip c : inactiveClips)
+			for(SampleBufferClippish c : inactiveClips)
 				setVolume(c);
 		}
 	}
 	
-	private void setVolume(Clip clip) {
+	private void setVolume(SampleBufferClippish clip) {
 		setVolume(clip, volume);
 	}
-	private void setVolume(Clip clip, double volume) {
+	private void setVolume(SampleBufferClippish clip, double volume) {
 		try {
-			FloatControl ctrl = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
+			FloatControl ctrl = (FloatControl)clip.getLine().getControl(FloatControl.Type.MASTER_GAIN);
 			ctrl.setValue((float)Math.log10(volume) * 20);
 		} catch (Exception e) {}
 	}
@@ -156,7 +157,6 @@ public class WaveEngine {
 	 * @param filename Filename
 	 */
 	public void load(String name, String filename) {
-		maybeAddClip();
 		try {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			InputStream in = StandaloneResourceHolder.getURL(filename).openStream();
@@ -195,27 +195,15 @@ public class WaveEngine {
 		if(buffers.get(name) == null)
 			return;
 		
-		synchronized(sync) {
-			Clip clip = loadedClipsByName.get(name);
-			if(clip != null) {
-				clip.setFramePosition(0);
-				setVolume(clip, 0);
-				clip.flush();
-				clip.start();
-				setVolume(clip);
-				return;
-			}
-		}
+		SampleBuffer sample = buffers.get(name);
 		
-		AudioFormat format = buffers.get(name).getFormat();
-		byte[] bytes = buffers.get(name).getBytes().array();
-		
-		Clip clip = null;
+		SampleBufferClippish clip = null;
 		
 		synchronized(sync) {
+			if(inactiveClips.size() == 0)
+				maybeAddClip(sample.getFormat());
 			if(inactiveClips.size() > 0) {
 				clip = inactiveClips.remove(0);
-				loadedClipsByName.remove(loadedNamesByClip.remove(clip));
 				activeClips.add(clip);
 			}
 		}
@@ -224,12 +212,7 @@ public class WaveEngine {
 			return;
 		
 		try {
-			clip.close();
-			clip.open(format, bytes, 0, bytes.length);
-			setVolume(clip);
-			loadedClipsByName.put(name, clip);
-			loadedNamesByClip.put(clip, name);
-			clip.start();
+			clip.setSample(sample, true);
 			setVolume(clip);
 		} catch(Exception e) {
 			log.warn(e);

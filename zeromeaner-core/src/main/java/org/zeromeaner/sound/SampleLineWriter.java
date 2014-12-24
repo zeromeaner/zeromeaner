@@ -44,5 +44,28 @@ public class SampleLineWriter {
 		}
 		line.write(buf, 0, buf.length);
 	}
+	
+	public void writeSamples(int[] samples) {
+		byte[] buf = new byte[this.buf.length * samples.length];
+		int sampleBytes = sampleBytes();
+		int off = 0;
+		for(int si = 0; si < samples.length; si++) {
+			long s = samples[si];
+			if(format.getEncoding().equals(Encoding.PCM_UNSIGNED))
+				s += Integer.MAX_VALUE;
+			if(format.isBigEndian()) {
+				for(int i = 0; i < sampleBytes; i++) {
+					buf[off + i] = (byte)(s >>> (24 - 8 * i));
+				}
+			} else {
+				long t = s >>> ((4 - sampleBytes) * 8);
+				for(int i = 0; i < sampleBytes; i++) {
+					buf[off + i] = (byte)(t >>> (8 * i));
+				}
+			}
+			off += this.buf.length;
+		}
+		line.write(buf, 0, buf.length);
+	}
 
 }
