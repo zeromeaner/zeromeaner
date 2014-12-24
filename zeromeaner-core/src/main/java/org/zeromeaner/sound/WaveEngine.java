@@ -72,6 +72,11 @@ import org.zeromeaner.util.Threads;
 public class WaveEngine {
 	/** Log */
 	private static Logger log = Logger.getLogger(WaveEngine.class);
+	
+	private static final byte[] noclick = new byte[256];
+	static {
+		Arrays.fill(noclick, (byte) 0x80);
+	}
 
 	private ExecutorService exec = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), Threads.namedFactory("Sound Dispatcher"), new ThreadPoolExecutor.DiscardPolicy());
 	
@@ -105,6 +110,8 @@ public class WaveEngine {
 							inactiveClips.add((Clip) event.getLine());
 							activeClips.remove(event.getLine());
 						}
+						((SourceDataLine) event.getLine()).write(noclick, 0, noclick.length);
+						((Clip) event.getLine()).start();
 					}
 				}
 			});
