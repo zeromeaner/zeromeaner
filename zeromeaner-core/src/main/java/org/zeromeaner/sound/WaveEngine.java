@@ -74,6 +74,8 @@ public class WaveEngine {
 	private List<Clip> inactiveClips = new ArrayList<>();
 	
 	private Map<String, SampleBuffer> buffers = new HashMap<>();
+	private Map<String, Clip> loadedClipsByName = new HashMap<>();
+	private Map<Clip, String> loadedNamesByClip = new HashMap<>();
 
 	/** Volume */
 	private double volume = 1.0;
@@ -82,28 +84,27 @@ public class WaveEngine {
 	 * Constructor
 	 */
 	public WaveEngine() {
-		try {
-			for(int i = 0; i < 8; i++) {
-				Clip clip = AudioSystem.getClip();
-				inactiveClips.add(clip);
-				clip.addLineListener(new LineListener() {
-					@Override
-					public void update(LineEvent event) {
-						if(event.getType() == Type.STOP) {
-							synchronized(sync) {
-								inactiveClips.add((Clip) event.getLine());
-								activeClips.remove(event.getLine());
-								((Clip) event.getLine()).close();
-							}
-						}
-					}
-				});
-			}
-		} catch(Exception e) {
-		}
-		log.info("Created " + inactiveClips.size() + " clips");
 	}
 
+	private void maybeAddClip() {
+		try {
+			Clip clip = AudioSystem.getClip();
+			inactiveClips.add(clip);
+			clip.addLineListener(new LineListener() {
+				@Override
+				public void update(LineEvent event) {
+					if(event.getType() == Type.STOP) {
+						synchronized(sync) {
+							inactiveClips.add((Clip) event.getLine());
+							activeClips.remove(event.getLine());
+						}
+					}
+				}
+			});
+		} catch(Exception e) {
+		}
+	}
+	
 	/**
 	 * Current Get the volume setting
 	 * @return Current Volume setting (1.0The default )
@@ -140,6 +141,7 @@ public class WaveEngine {
 	 * @param filename Filename
 	 */
 	public void load(String name, String filename) {
+		maybeAddClip();
 		try {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			InputStream in = StandaloneResourceHolder.getURL(filename).openStream();
@@ -168,6 +170,15 @@ public class WaveEngine {
 		if(buffers.get(name) == null)
 			return;
 		
+		synchronized(sync) {
+			Clip clip = loadedClipsByName.get(name);
+			if(clip != null) {
+				clip.setFramePosition(0);
+				clip.start();
+				return;
+			}
+		}
+		
 		AudioFormat format = buffers.get(name).getFormat();
 		byte[] bytes = buffers.get(name).getBytes().array();
 		
@@ -176,6 +187,7 @@ public class WaveEngine {
 		synchronized(sync) {
 			if(inactiveClips.size() > 0) {
 				clip = inactiveClips.remove(0);
+				loadedClipsByName.remove(loadedNamesByClip.remove(clip));
 				activeClips.add(clip);
 			}
 		}
@@ -184,8 +196,11 @@ public class WaveEngine {
 			return;
 		
 		try {
+			clip.close();
 			clip.open(format, bytes, 0, bytes.length);
 			setVolume(clip);
+			loadedClipsByName.put(name, clip);
+			loadedNamesByClip.put(clip, name);
 			clip.start();
 		} catch(Exception e) {
 			log.warn(e);
