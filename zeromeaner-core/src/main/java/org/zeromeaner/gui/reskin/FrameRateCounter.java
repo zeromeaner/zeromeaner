@@ -21,6 +21,10 @@ public class FrameRateCounter {
 	
 	private DelayQueue<Frame> q = new DelayQueue<Frame>();
 	
+	public synchronized void add() {
+		add(new Frame());
+	}
+	
 	public synchronized void add(Frame f) {
 		while(q.poll() != null)
 			;
