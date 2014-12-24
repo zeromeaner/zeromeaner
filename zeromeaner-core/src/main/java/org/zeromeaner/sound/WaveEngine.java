@@ -96,15 +96,6 @@ public class WaveEngine {
 	 * Constructor
 	 */
 	public WaveEngine() {
-		try {
-			Clip silentClip = AudioSystem.getClip();
-			AudioInputStream silentIn = AudioSystem.getAudioInputStream(StandaloneResourceHolder.getURL("res/se/silence.wav"));
-			silentClip.open(silentIn);
-			silentClip.loop(Clip.LOOP_CONTINUOUSLY);
-			silentClip.start();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	private void maybeAddClip() {
