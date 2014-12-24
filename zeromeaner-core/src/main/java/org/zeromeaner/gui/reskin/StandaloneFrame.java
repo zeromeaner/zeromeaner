@@ -4,6 +4,7 @@ import static org.zeromeaner.util.Options.player;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -162,7 +163,8 @@ public class StandaloneFrame extends JFrame {
 		b.setBorder(null);
 		b.setHorizontalAlignment(SwingConstants.LEFT);
 		toolbar.add(b);
-		g.add(b);
+		if(g != null)
+			g.add(b);
 	}
 	
 	private void createCards() {
@@ -373,6 +375,23 @@ public class StandaloneFrame extends JFrame {
 		
 		b = new JToggleButton(new ToolbarAction("toolbar.open"));
 		add(t, g, b);
+		
+		b = new JButton(new AbstractAction("Feedback", new ImageIcon(StandaloneFrame.class.getResource("feedback.png"))) {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					URL url = new URL("http://jira.robindps.com/secure/CreateIssue!default.jspa?selectedProjectId=10000");
+					if(Desktop.isDesktopSupported())
+						Desktop.getDesktop().browse(url.toURI());
+					else
+						Runtime.getRuntime().exec("xdg-open " + url);
+				} catch (Exception e1) {
+					throw new RuntimeException(e1);
+				}
+			}
+		});
+		add(t, null, b);
 		
 		b = new JButton(new ToolbarAction("toolbar.close") {
 			@Override
