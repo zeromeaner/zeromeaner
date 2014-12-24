@@ -214,8 +214,8 @@ public class WaveEngine {
 			if(inactiveClips.size() > 0) {
 				clip = inactiveClips.remove(0);
 				activeClips.add(clip);
+				playing.put(name, clip);
 			}
-			playing.put(name, clip);
 		}
 		
 		if(clip == null)
