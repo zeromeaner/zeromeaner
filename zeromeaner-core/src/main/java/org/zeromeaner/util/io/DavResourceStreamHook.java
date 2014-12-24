@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 
+import org.zeromeaner.util.Options;
 import org.zeromeaner.util.Session;
 
 import com.googlecode.sardine.Sardine;
@@ -31,6 +32,8 @@ public class DavResourceStreamHook implements ResourceStreamHook {
 
 	@Override
 	public void addInputHandler(final String resource, PrioritizedHandler<Callable<InputStream>> handlers) {
+		if(!Options.general().DAV_ENABLED.value())
+			return;
 		if(Session.ANONYMOUS_USER.equals(Session.getUser()))
 			return;
 		if(NON_DAV.matcher(resource).matches())
@@ -51,6 +54,8 @@ public class DavResourceStreamHook implements ResourceStreamHook {
 
 	@Override
 	public void addOutputHandler(final String resource, PrioritizedHandler<Callable<OutputStream>> handlers) {
+		if(!Options.general().DAV_ENABLED.value())
+			return;
 		if(Session.ANONYMOUS_USER.equals(Session.getUser()))
 			return;
 		if(NON_DAV.matcher(resource).matches())
@@ -92,6 +97,8 @@ public class DavResourceStreamHook implements ResourceStreamHook {
 
 	@Override
 	public void addDeleteHandler(final String resource, PrioritizedHandler<Callable<Boolean>> handlers) {
+		if(!Options.general().DAV_ENABLED.value())
+			return;
 		if(Session.ANONYMOUS_USER.equals(Session.getUser()))
 			return;
 		if(NON_DAV.matcher(resource).matches())

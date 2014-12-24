@@ -35,6 +35,8 @@ public class Options {
 		public final Constant<String> RULE_NAME = GLOBAL_PROPERTIES.create(STRING, ".0.rule", "");
 		public final Constant<String> RULE_NAME_P2 = GLOBAL_PROPERTIES.create(STRING, ".1.rule", "");
 		
+		public final Constant<Boolean> DAV_ENABLED = GLOBAL_PROPERTIES.create(BOOLEAN, ".dav.enabled", false);
+		
 		private GeneralOptions() {}
 	}
 	
