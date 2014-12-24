@@ -1,3 +1,5 @@
+PATH=~/bin:$PATH
+
 BRANCH=$(git symbolic-ref --short HEAD | xargs echo -n)
 
 case $BRANCH in
