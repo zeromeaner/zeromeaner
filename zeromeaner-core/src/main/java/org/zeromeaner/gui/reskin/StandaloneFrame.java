@@ -4,6 +4,7 @@ import static org.zeromeaner.util.Options.player;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -25,6 +26,7 @@ import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -34,11 +36,14 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileSystemView;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameManager;
@@ -60,6 +65,7 @@ import org.zeromeaner.util.Options;
 import org.zeromeaner.util.Session;
 import org.zeromeaner.util.Options.AIOptions;
 import org.zeromeaner.util.Options.TuningOptions;
+import org.zeromeaner.util.Version;
 import org.zeromeaner.util.io.DavFileSystemView;
 import org.zeromeaner.util.io.FileSystemViews;
 import org.zeromeaner.util.ResourceInputStream;
@@ -91,6 +97,7 @@ public class StandaloneFrame extends JFrame {
 	public static final String CARD_TUNING_2P = "toolbar.tuning_2p";
 	public static final String CARD_AI_2P = "toolbar.ai_2p";
 	public static final String CARD_GENERAL = "toolbar.general";
+	public static final String CARD_FEEDBACK = "toolbar.feedback";
 	public static final String CARD_CLOSE = "toolbar.close";
 	
 	private JToolBar toolbar;
@@ -112,7 +119,9 @@ public class StandaloneFrame extends JFrame {
 	private StandaloneGamePanel gamePanel;
 	
 	public StandaloneFrame() {
-		setTitle("zeromeaner");
+		setTitle("zeromeaner " + Version.getBuildVersion());
+		if(!Version.getBuildRevision().isEmpty())
+			setTitle(getTitle() + " rev " + Version.getBuildRevision());
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
@@ -159,7 +168,8 @@ public class StandaloneFrame extends JFrame {
 		b.setBorder(null);
 		b.setHorizontalAlignment(SwingConstants.LEFT);
 		toolbar.add(b);
-		g.add(b);
+		if(g != null)
+			g.add(b);
 	}
 	
 	private void createCards() {
@@ -278,6 +288,47 @@ public class StandaloneFrame extends JFrame {
 			}
 		});
 		content.add(fc, CARD_OPEN);
+		
+		JPanel feedback = new JPanel(new GridBagLayout());
+		String header = "zeromeaner\n"
+				+ "version: " + Version.getBuildVersion() + "\n"
+				+ "revision: " + Version.getBuildRevision() + "\n\n";
+		JTextArea fbta;
+		try {
+			fbta = new JTextArea(
+					header + 
+					IOUtils.toString(StandaloneFrame.class.getResource("feedback.txt"), "UTF-8"));
+		} catch (IOException e1) {
+			throw new RuntimeException(e1);
+		}
+		fbta.setEditable(false);
+		fbta.setLineWrap(true);
+		fbta.setWrapStyleWord(true);
+		fbta.setMargin(new Insets(25,25,25,25));
+		JScrollPane fbs = new JScrollPane(fbta);
+		
+		JButton submitFeedback = new JButton(new AbstractAction("Submit Feedback Online") {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					URL url = new URL("http://jira.robindps.com/secure/CreateIssue!default.jspa?selectedProjectId=10000");
+					if(Desktop.isDesktopSupported())
+						Desktop.getDesktop().browse(url.toURI());
+					else
+						Runtime.getRuntime().exec("xdg-open " + url);
+				} catch (Exception e1) {
+					throw new RuntimeException(e1);
+				}
+			}
+		});
+		feedback.add(
+				submitFeedback, 
+				new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(25,25,0,25), 0, 0));
+		feedback.add(
+				fbs, 
+				new GridBagConstraints(0, 1, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(25,25,25,25), 0, 0));
+		content.add(feedback, CARD_FEEDBACK);
 	}
 	
 	private void playCardSelected() {
@@ -369,6 +420,9 @@ public class StandaloneFrame extends JFrame {
 		add(t, g, b);
 		
 		b = new JToggleButton(new ToolbarAction("toolbar.open"));
+		add(t, g, b);
+		
+		b = new JButton(new ToolbarAction(CARD_FEEDBACK));
 		add(t, g, b);
 		
 		b = new JButton(new ToolbarAction("toolbar.close") {

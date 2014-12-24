@@ -1,0 +1,13 @@
+Please click the button above to open a browser window and enter your feedback into the issue tracker.
+
+Feedback in the issue tracker is the absolute best way to improve zeromeaner.  Be it a bug report, a feature request, or even a complaint (ESPECIALLY a complaint!), I want to hear it.  Don't worry about submitting duplicate issues; I can sort out duplicates, and if something gets submitted more than once that tells me it's something I need to focus on.
+
+Seriously, this issue tracker is the lifeblood of zeromeaner development.
+
+:)
+
+--Robin Kirkman
+
+http://jira.robindps.com/secure/CreateIssue!default.jspa?selectedProjectId=10000
+
+PS: Please include the version of zeromeaner in your feedback.  If you are playing a -SNAPSHOT version, it would also be helpful to include the revision.

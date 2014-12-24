@@ -123,32 +123,9 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		}
 	}
 
-	public static class FramePerSecond implements Delayed {
-		private long created = System.nanoTime();
-		private long expiry = created + TimeUnit.NANOSECONDS.convert(4, TimeUnit.SECONDS);
-		
-		@Override
-		public int compareTo(Delayed o) {
-			return Long.compare(expiry, ((FramePerSecond) o).expiry);
-		}
-
-		@Override
-		public long getDelay(TimeUnit unit) {
-			return unit.convert(expiry - System.nanoTime(), TimeUnit.NANOSECONDS);
-		}
-		
-		public long getCreated() {
-			return created;
-		}
-		
-		public long getExpiry() {
-			return expiry;
-		}
-	}
-	
-	private DelayQueue<FramePerSecond> rps = new DelayQueue<FramePerSecond>();
-	private DelayQueue<FramePerSecond> fps = new DelayQueue<FramePerSecond>();
-	private DelayQueue<FramePerSecond> dps = new DelayQueue<>();
+	private FrameRateCounter rps = new FrameRateCounter();
+	private FrameRateCounter fps = new FrameRateCounter();
+	private FrameRateCounter dps = new FrameRateCounter();
 	
 	/** Parent window */
 	protected StandaloneFrame owner = null;
@@ -350,23 +327,10 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			hooks.dispatcher().frameSynced(this);
 	}
 	
-	protected double fpsOf(DelayQueue<FramePerSecond> q) {
-		if(q.size() < 2)
-			return 0;
-		double durationNanos = System.nanoTime() - q.peek().getCreated();
-		return q.size() / (durationNanos / 1000000000L);
-	}
-	
 	protected void updateFPS() {
-		while(fps.poll() != null)
-			;
-		while(rps.poll() != null)
-			;
-		while(dps.poll() != null)
-			;
-		totalFPS = fpsOf(fps); // Math.rint(fps.size() / 4.);
-		renderedFPS = fpsOf(rps); // Math.rint(rps.size() / 4.);
-		drawnFPS = fpsOf(dps); // Math.rint(dps.size() / 4.);
+		totalFPS = fps.rate(); // Math.rint(fps.size() / 4.);
+		renderedFPS = rps.rate(); // Math.rint(rps.size() / 4.);
+		drawnFPS = dps.rate(); // Math.rint(dps.size() / 4.);
 	}
 	
 	private long lastFrameNanos;
@@ -399,6 +363,9 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		syncDisplay = Options.standalone().SYNC_DISPLAY.value();
 		syncRender = Options.standalone().SYNC_RENDER.value();
 		
+		fps.set(maxfps);
+		rps.set(maxfps);
+		dps.set(maxfps);
 		
 		// Main loop
 		log.debug("Game thread start");
@@ -416,14 +383,14 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 				if(lastFrameNanos + nanosPerFrame > System.nanoTime())
 					return;
 				while(lastFrameNanos + nanosPerFrame <= System.nanoTime() - nanosPerFrame) {
-					fps.add(new FramePerSecond());
+					fps.add();
 					doFrame(syncRender);
 					lastFrameNanos += nanosPerFrame;
 				}
 				
 				updateFPS();
 				doFrame(true);
-				fps.add(new FramePerSecond());
+				fps.add();
 				lastFrameNanos += nanosPerFrame;
 				} catch(Throwable t) {
 					t.printStackTrace();
@@ -474,7 +441,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 * Update game state
 	 */
 	protected void gameUpdate() {
-		if(owner.gameManager == null) return;
+		if(owner.gameManager == null || owner.gameManager.engine == null) return;
 
 		// Set ingame flag
 		for(int i = 0; i < 2; i++) {
@@ -664,7 +631,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 * Update game state (for netplay)
 	 */
 	protected void gameUpdateNet() {
-		if(owner.gameManager == null) return;
+		if(owner.gameManager == null || owner.gameManager.engine == null) return;
 //		if(owner.gameManager.engine.length == 0) return;
 
 		try {
@@ -815,9 +782,9 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		// FPSDisplay
 		if(showfps) {
 			String fps = df.format(totalFPS) + "/" + maxfpsCurrent + " FPS";
-			if(!syncDisplay && !syncRender)
+			if(!syncDisplay)
 				fps += " (" + df.format(drawnFPS) + "/" + df.format(renderedFPS) + " DRAWN)";
-			else if(!syncDisplay)
+			else if(!syncRender)
 				fps += " (" + df.format(renderedFPS) + " RENDERED)";
 			StandaloneNormalFont.printFont(0, 480-16, fps, StandaloneNormalFont.COLOR_BLUE, 1.0f);
 		}
@@ -876,9 +843,9 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		// FPSDisplay
 		if(showfps) {
 			String fps = df.format(totalFPS) + "/" + maxfpsCurrent + " FPS";
-			if(!syncDisplay && !syncRender)
+			if(!syncDisplay)
 				fps += " (" + df.format(drawnFPS) + "/" + df.format(renderedFPS) + " DRAWN)";
-			else if(!syncDisplay)
+			else if(!syncRender)
 				fps += " (" + df.format(renderedFPS) + " RENDERED)";
 			StandaloneNormalFont.printFont(0, 480-16, fps, StandaloneNormalFont.COLOR_BLUE, 1.0f);
 		}
@@ -908,7 +875,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		public void run() {
 			imageBufferLabel.repaint();
 			Toolkit.getDefaultToolkit().sync();
-			dps.add(new FramePerSecond());
+			dps.add();
 			syncing.set(false);
 		}
 	};
@@ -926,7 +893,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 				EventQueue.invokeLater(sync);
 			}
 		}
-		rps.add(new FramePerSecond());
+		rps.add();
 		hooks.dispatcher().frameSynced(this);
 	}
 	

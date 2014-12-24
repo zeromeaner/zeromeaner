@@ -7,18 +7,27 @@ import java.util.Properties;
 
 public class Version {
 	private static Version buildVersion;
+	private static String buildRevision;
 	
-	public static Version getBuildVersion() {
-		if(buildVersion != null)
-			return buildVersion;
+	static {
 		try {
 			Properties p = new Properties();
 			p.load(Version.class.getClassLoader().getResourceAsStream("org/zeromeaner/res/version.properties"));
 			buildVersion = new Version(p.getProperty("project.version"));
+			buildRevision = p.getProperty("git.revision");
+			if(buildRevision.isEmpty())
+				buildRevision = "IDE";
 		} catch(IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
+	}
+	
+	public static Version getBuildVersion() {
 		return buildVersion;
+	}
+	
+	public static String getBuildRevision() {
+		return buildRevision;
 	}
 	
 	private List<Integer> digits = new ArrayList<Integer>();
