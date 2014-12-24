@@ -15,6 +15,8 @@ public class Version {
 			p.load(Version.class.getClassLoader().getResourceAsStream("org/zeromeaner/res/version.properties"));
 			buildVersion = new Version(p.getProperty("project.version"));
 			buildRevision = p.getProperty("git.revision");
+			if(buildRevision.isEmpty())
+				buildRevision = "IDE";
 		} catch(IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
