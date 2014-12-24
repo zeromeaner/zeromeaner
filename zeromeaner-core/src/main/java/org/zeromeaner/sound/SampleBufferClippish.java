@@ -35,7 +35,7 @@ public class SampleBufferClippish extends Thread {
 	public SampleBufferClippish(AudioFormat format, SourceDataLine line) {
 		this.format = format;
 		this.line = line;
-		sbuf = new byte[512];
+		sbuf = new byte[1024];
 	}
 	
 	@Override
@@ -59,12 +59,13 @@ public class SampleBufferClippish extends Thread {
 					}
 					count = Math.min(sample.getBytes().remaining(), sbuf.length);
 					sample.getBytes().get(sbuf, 0, count);
+					count = Math.min(count + 256, sbuf.length);
 				} else
 					count = sbuf.length;
 				line.write(sbuf, 0, count);
 				framesWritten += count;
 				try {
-					Thread.sleep(Math.max(0, (long)((framesWritten - (line.getFramePosition() - framePositionOffset)) * 1000L / format.getSampleRate()) - 20));
+					Thread.sleep(Math.max(0, (long)((framesWritten - (line.getFramePosition() - framePositionOffset)) * 1000L / format.getSampleRate()) - 50));
 				} catch (InterruptedException e) {
 				}
 			}
