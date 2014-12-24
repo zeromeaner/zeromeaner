@@ -9,3 +9,5 @@ Seriously, this issue tracker is the lifeblood of zeromeaner development.
 --Robin Kirkman
 
 http://jira.robindps.com/secure/CreateIssue!default.jspa?selectedProjectId=10000
+
+PS: Please include the version of zeromeaner in your feedback.  If you are playing a -SNAPSHOT version, it would also be helpful to include the revision.
