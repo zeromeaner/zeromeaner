@@ -105,8 +105,8 @@ public class CornerPileLayout implements LayoutManager2 {
 				for(int i = 0; i < buf.getWidth() * buf.getHeight(); i++) {
 					if(isAvailable(r))
 						break;
-					r.x--;
-					r.y++;
+					r.x-=6;
+					r.y+=6;
 					if(r.x < 0) {
 						r.x = r.y;
 						r.y = 0;
@@ -122,8 +122,8 @@ public class CornerPileLayout implements LayoutManager2 {
 				for(int i = 0; i < buf.getWidth() * buf.getHeight(); i++) {
 					if(isAvailable(r))
 						break;
-					r.x++;
-					r.y--;
+					r.x+=6;
+					r.y-=6;
 					if(r.x >= buf.getWidth()) {
 						r.x = buf.getWidth() - (buf.getHeight() - r.y);
 						r.y = buf.getHeight() - 1;
