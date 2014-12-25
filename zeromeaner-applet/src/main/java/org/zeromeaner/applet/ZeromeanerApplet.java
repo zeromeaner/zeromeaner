@@ -32,7 +32,7 @@ import org.zeromeaner.plaf.ZeroMetalTheme;
 import org.zeromeaner.util.EQInvoker;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.Options;
-import org.zeromeaner.util.PropertyStore;
+import org.zeromeaner.util.io.PropertyStore;
 import org.zeromeaner.util.ResourceInputStream;
 import org.zeromeaner.util.Session;
 

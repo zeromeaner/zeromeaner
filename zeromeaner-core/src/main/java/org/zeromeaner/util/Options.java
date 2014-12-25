@@ -6,6 +6,7 @@ import static org.zeromeaner.util.PropertyConstant.INTEGER;
 import static org.zeromeaner.util.PropertyConstant.STRING;
 
 import org.zeromeaner.util.PropertyConstant.Constant;
+import org.zeromeaner.util.io.PropertyStore;
 
 public class Options {
 	public static final CustomProperties ROOT_PROPERTIES = new CustomProperties();
@@ -30,12 +31,22 @@ public class Options {
 		return new StandaloneOptions();
 	}
 	
+	private static Boolean davEnabled;
+	
+	public static boolean isDavEnabled() {
+		if(davEnabled == null)
+			davEnabled = Boolean.parseBoolean(PropertyStore.get().get("dav.enabled"));
+		return davEnabled;
+	}
+	
+	public static void setDavEnabled(boolean davEnabled) {
+		PropertyStore.get().put("dav.enabled", "" + davEnabled);
+	}
+	
 	public static class GeneralOptions {
 		public final Constant<String> MODE_NAME = GLOBAL_PROPERTIES.create(STRING, ".mode.name", "");
 		public final Constant<String> RULE_NAME = GLOBAL_PROPERTIES.create(STRING, ".0.rule", "");
 		public final Constant<String> RULE_NAME_P2 = GLOBAL_PROPERTIES.create(STRING, ".1.rule", "");
-		
-		public final Constant<Boolean> DAV_ENABLED = GLOBAL_PROPERTIES.create(BOOLEAN, ".dav.enabled", false);
 		
 		private GeneralOptions() {}
 	}

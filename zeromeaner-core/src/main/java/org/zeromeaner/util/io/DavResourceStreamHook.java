@@ -32,7 +32,7 @@ public class DavResourceStreamHook implements ResourceStreamHook {
 
 	@Override
 	public void addInputHandler(final String resource, PrioritizedHandler<Callable<InputStream>> handlers) {
-		if(!Options.general().DAV_ENABLED.value())
+		if(!Options.isDavEnabled())
 			return;
 		if(Session.ANONYMOUS_USER.equals(Session.getUser()))
 			return;
@@ -54,7 +54,7 @@ public class DavResourceStreamHook implements ResourceStreamHook {
 
 	@Override
 	public void addOutputHandler(final String resource, PrioritizedHandler<Callable<OutputStream>> handlers) {
-		if(!Options.general().DAV_ENABLED.value())
+		if(!Options.isDavEnabled())
 			return;
 		if(Session.ANONYMOUS_USER.equals(Session.getUser()))
 			return;
@@ -97,7 +97,7 @@ public class DavResourceStreamHook implements ResourceStreamHook {
 
 	@Override
 	public void addDeleteHandler(final String resource, PrioritizedHandler<Callable<Boolean>> handlers) {
-		if(!Options.general().DAV_ENABLED.value())
+		if(!Options.isDavEnabled())
 			return;
 		if(Session.ANONYMOUS_USER.equals(Session.getUser()))
 			return;

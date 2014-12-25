@@ -16,7 +16,7 @@ import java.util.Set;
 import netscape.javascript.JSObject;
 
 import org.apache.commons.codec.binary.Base64;
-import org.zeromeaner.util.PropertyStoreHook;
+import org.zeromeaner.util.io.PropertyStoreHook;
 
 public class AppletPropertyStoreHook implements PropertyStoreHook {
 

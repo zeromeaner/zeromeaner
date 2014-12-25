@@ -11,7 +11,7 @@ public class DavFileSystemViewHook implements FileSystemViewHook {
 
 	@Override
 	public void addFileSystemView(final String limit, PrioritizedHandler<Callable<FileSystemView>> handlers) {
-		if(!Options.general().DAV_ENABLED.value())
+		if(!Options.isDavEnabled())
 			return;
 		Callable<FileSystemView> handler = new Callable<FileSystemView>() {
 			@Override
@@ -24,7 +24,7 @@ public class DavFileSystemViewHook implements FileSystemViewHook {
 
 	@Override
 	public void addFileChooser(final String path, PrioritizedHandler<Callable<JFileChooser>> handlers) {
-		if(!Options.general().DAV_ENABLED.value())
+		if(!Options.isDavEnabled())
 			return;
 		Callable<JFileChooser> handler = new Callable<JFileChooser>() {
 			@Override

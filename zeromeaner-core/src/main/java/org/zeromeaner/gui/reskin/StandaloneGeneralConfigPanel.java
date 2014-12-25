@@ -147,6 +147,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	
 	protected JCheckBox increaseEQPriority;
 	
+	protected JCheckBox davEnabled;
+	
 	/**
 	 * Constructor
 	 * @param owner Parent window
@@ -179,6 +181,10 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		pBasicTab.setLayout(new GridLayout(0, 1));
 		tabPane.addTab(lz.s("GeneralConfig_TabName_Basic"), pBasicTab);
 
+		davEnabled = new JCheckBox(lz.s("GeneralConfig_DavEnabled"));
+		davEnabled.setHorizontalAlignment(SwingConstants.CENTER);
+		pBasicTab.add(davEnabled);
+		
 		// ---------- Sound effectsVolume of ----------
 		JPanel pSEVolume = new JPanel();
 		pSEVolume.setAlignmentX(CENTER_ALIGNMENT);
@@ -346,6 +352,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			}
 		}
 
+		davEnabled.setSelected(Options.isDavEnabled());
+		
 		txtfldMaxFPS.setText("" + opt.MAX_FPS.value());
 		txtfldSEVolume.setText("" + opt.SE_VOLUME.value());
 		txtfldLineClearEffectSpeed.setText("" + opt.LINE_EFFECT_SPEED.value());
@@ -380,6 +388,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			
 			PropertyStore.get().put("userId", userId.getText());
 			Session.setUser(userId.getText());
+			
+			Options.setDavEnabled(davEnabled.isSelected());
 			
 			StandaloneOptions opt = Options.standalone();
 			
