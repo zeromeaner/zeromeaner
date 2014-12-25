@@ -38,6 +38,7 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.gui.tool.RuleEditorPanel;
+import org.zeromeaner.plaf.CornerPileLayout;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.LstResourceMap;
 import org.zeromeaner.util.ModeList;
@@ -56,10 +57,14 @@ public class StandaloneModeselectPanel extends JPanel {
 		}
 		StringBuilder sb = new StringBuilder();
 		String sep = "<html><center>";
+		boolean first = true;
 		for(String line : lines) {
 			sb.append(sep);
+			if(first)
+				line = "<b style=\"color:#000000;\">" + line.charAt(0) + "</b>" + line.substring(1);
 			sb.append(line);
 			sep = "<br>";
+			first = false;
 		}
 		return sb.toString();
 	}
@@ -81,8 +86,7 @@ public class StandaloneModeselectPanel extends JPanel {
 	
 	private RuleEditorPanel ruleEditor = new RuleEditorPanel();
 	
-	private JPanel modeButtonsPanel;
-	private JPanel ruleButtonsPanel;
+	private JPanel buttonsPanel;
 	private ButtonGroup ruleButtonGroup;
 	
 	private void saveCustom() {
@@ -108,8 +112,8 @@ public class StandaloneModeselectPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				ruleEditor.writeRuleFromUI(custom);
 				saveCustom();
-				for(int i = 0; i < ruleButtonsPanel.getComponentCount(); i++)
-					((JComponent) ruleButtonsPanel.getComponent(i)).revalidate();
+				for(int i = 0; i < buttonsPanel.getComponentCount(); i++)
+					((JComponent) buttonsPanel.getComponent(i)).revalidate();
 				cards.show(StandaloneModeselectPanel.this, SELECT_CARD);
 			}
 		}), BorderLayout.SOUTH);
@@ -123,43 +127,32 @@ public class StandaloneModeselectPanel extends JPanel {
 		cards.show(this, SELECT_CARD);
 
 		ButtonGroup g = new ButtonGroup();
-		modeButtonsPanel = new JPanel(new GridBagLayout());
-		modeButtonsPanel.setBorder(BorderFactory.createTitledBorder("Available Modes"));
-		JPanel p = new JPanel(new BorderLayout());
+		buttonsPanel = new JPanel(new CornerPileLayout());
 		for(GameMode mode : ModeList.getModes()) {
 			ModeButton b = new ModeButton(mode);
-			modeButtonsPanel.add(
+			buttonsPanel.add(
 					b,
-					new GridBagConstraints(modeButtons.size() % 6, modeButtons.size() / 6, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5,5,5,5), 0, 0));
+					CornerPileLayout.NORTH_WEST);
 			g.add(b);
 			this.modeButtons.add(b);
 		}
-		p.add(modeButtonsPanel, BorderLayout.CENTER);
-		select.add(p, BorderLayout.NORTH);
 		
 		ruleButtonGroup = new ButtonGroup();
-		ruleButtonsPanel = new JPanel(new GridBagLayout());
-		ruleButtonsPanel.setBorder(BorderFactory.createTitledBorder("Available Rules"));
-		p = new JPanel(new BorderLayout());
 		RuleList rules = RuleList.getRules();
 		for(RuleOptions rule : rules) {
 			RuleButton b = new RuleButton(rule);
 			
-			ruleButtonsPanel.add(
+			buttonsPanel.add(
 					b,
-					new GridBagConstraints(ruleButtons.size() % 6, ruleButtons.size() / 6, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5,5,5,5), 0, 0));
+					CornerPileLayout.SOUTH_EAST);
 
 			this.ruleButtons.add(b);
 			ruleButtonGroup.add(b);
-			for(ModeButton mb : this.modeButtons) {
-				mb.addActionListener(b);
-			}
 //			if(rule.resourceName.equals(StandaloneMain.propConfig.getProperty("0.rule")))
 			if(rule.resourceName.equals(Options.general().RULE_NAME.value()))
 				b.setSelected(true);
 		}
-		p.add(ruleButtonsPanel, BorderLayout.CENTER);
-		select.add(p, BorderLayout.SOUTH);
+		select.add(buttonsPanel, BorderLayout.CENTER);
 		
 		for(ModeButton mb : this.modeButtons) {
 //			if(mb.mode.getName().equals(StandaloneMain.propConfig.getProperty("name.mode")))
@@ -182,9 +175,9 @@ public class StandaloneModeselectPanel extends JPanel {
 
 			MetalLookAndFeel laf = (MetalLookAndFeel) UIManager.getLookAndFeel();
 			Font f = laf.getControlTextFont();
-			f = f.deriveFont(f.getSize() * 0.8f);
+			f = f.deriveFont(Font.PLAIN);
 			setFont(f);
-
+//
 			setMargin(new Insets(0, 3, 0, 3));
 			addActionListener(new ActionListener() {
 				@Override
@@ -207,7 +200,7 @@ public class StandaloneModeselectPanel extends JPanel {
 		}
 	}
 	
-	private class RuleButton extends JToggleButton implements ActionListener {
+	private class RuleButton extends JToggleButton {
 		private RuleOptions rule;
 		private boolean custom;
 		
@@ -223,7 +216,7 @@ public class StandaloneModeselectPanel extends JPanel {
 
 			MetalLookAndFeel laf = (MetalLookAndFeel) UIManager.getLookAndFeel();
 			Font f = laf.getControlTextFont();
-			f = f.deriveFont(f.getSize() * 0.8f);
+			f = f.deriveFont(Font.PLAIN);
 			setFont(f);
 
 			if(custom)
@@ -287,7 +280,7 @@ public class StandaloneModeselectPanel extends JPanel {
 									throw new RuntimeException(ex);
 								}
 								RuleButton rb = new RuleButton(custom);
-								ruleButtonsPanel.add(rb);
+								buttonsPanel.add(rb, CornerPileLayout.SOUTH_EAST);
 								ruleButtonGroup.add(rb);
 								rb.revalidate();
 							}
@@ -305,9 +298,9 @@ public class StandaloneModeselectPanel extends JPanel {
 								@Override
 								public void actionPerformed(ActionEvent e) {
 									ResourceStreams.get().delete(rule.resourceName);
-									ruleButtonsPanel.remove(RuleButton.this);
-									ruleButtonsPanel.revalidate();
-									ruleButtonsPanel.repaint();
+									buttonsPanel.remove(RuleButton.this);
+									buttonsPanel.revalidate();
+									buttonsPanel.repaint();
 								}
 							});
 						}
@@ -322,17 +315,6 @@ public class StandaloneModeselectPanel extends JPanel {
 			if(rule != null)
 				setText(formatButtonText(rule.strRuleName));
 			super.revalidate();
-		}
-		
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if(!(e.getSource() instanceof ModeButton))
-				return;
-			ModeButton mb = (ModeButton) e.getSource();
-			if(recommended.get(mb.mode.getName()).contains(rule.resourceName))
-				setBorderPainted(true);
-			else
-				setBorderPainted(false);
 		}
 	}
 }
