@@ -28,7 +28,9 @@
 */
 package org.zeromeaner.game.play;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -284,6 +286,8 @@ public class GameEngine {
 	/** Number of pieces put (Used by next piece sequence) */
 	public int nextPieceCount;
 
+	public List<Piece> upcomingNextPieces;
+	
 	/** Hold piece (null: None) */
 	public Piece holdPieceObject;
 
@@ -771,6 +775,7 @@ public class GameEngine {
 		nextPieceArrayID = null;
 		nextPieceArrayObject = null;
 		nextPieceCount = 0;
+		upcomingNextPieces = new ArrayList<>();
 
 		holdPieceObject = null;
 		holdDisable = false;
@@ -983,10 +988,7 @@ public class GameEngine {
 	 * @return NEXTOf PeaceID
 	 */
 	public int getNextID(int c) {
-		if(nextPieceArrayID == null) return Piece.PIECE_NONE;
-		int c2 = c;
-		while(c2 >= nextPieceArrayID.length) c2 = c2 - nextPieceArrayID.length;
-		return nextPieceArrayID[c2];
+		return getNextObject(c).id;
 	}
 
 	/**
@@ -996,11 +998,52 @@ public class GameEngine {
 	 */
 	public Piece getNextObject(int c) {
 		if(nextPieceArrayObject == null) return null;
-		int c2 = c;
-		while(c2 >= nextPieceArrayObject.length) c2 = c2 - nextPieceArrayObject.length;
-		return nextPieceArrayObject[c2];
+		if(c == nextPieceCount - 1)
+			return nowPieceObject;
+		int o = c - nextPieceCount;
+		if(nextPieceCount / nextPieceArraySize == c / nextPieceArraySize) {
+			return nextPieceArrayObject[c % nextPieceArraySize];
+		}
+		o = c - (nextPieceArraySize * (nextPieceCount / nextPieceArraySize));
+		while(upcomingNextPieces.size() <= o) {
+			Piece p = new Piece(randomizer.next());
+			p.direction = ruleopt.pieceDefaultDirection[p.id];
+			if(p.direction >= Piece.DIRECTION_COUNT) {
+				p.direction = random.nextInt(Piece.DIRECTION_COUNT);
+			}
+			p.connectBlocks = this.connectBlocks;
+			p.setColor(ruleopt.pieceColor[p.id]);
+			p.setSkin(getSkin());
+			p.updateConnectData();
+			p.setAttribute(Block.BLOCK_ATTRIBUTE_VISIBLE, true);
+			p.setAttribute(Block.BLOCK_ATTRIBUTE_BONE, bone);
+			
+			if (randomBlockColor)
+			{
+				int size = p.getMaxBlock();
+				int[] colors = new int[size];
+				for (int j = 0; j < size; j++)
+					colors[j] = blockColors[random.nextInt(numColors)];
+				p.setColor(colors);
+				p.updateConnectData();
+			}
+			
+			upcomingNextPieces.add(p);
+		}
+		return upcomingNextPieces.get(o);
 	}
 
+	public void incrementNextPieceCount() {
+		nextPieceCount++;
+		if((nextPieceCount % nextPieceArraySize) == 0) {
+			for(int i = 1; i <= nextPieceArraySize; i++)
+				getNextObject(nextPieceCount + i);
+			for(int i = 0; i < nextPieceArraySize; i++) {
+				nextPieceArrayObject[i] = upcomingNextPieces.remove(0);
+			}
+		}
+	}
+	
 	/**
 	 * NEXTObtain a copy of the object of the piece
 	 * @param c Want to getNEXTThe position of the
@@ -2045,7 +2088,7 @@ public class GameEngine {
 			playSE("initialhold");
 			holdPieceObject = getNextObjectCopy(nextPieceCount);
 			holdPieceObject.applyOffsetArray(ruleopt.pieceOffsetX[holdPieceObject.id], ruleopt.pieceOffsetY[holdPieceObject.id]);
-			nextPieceCount++;
+			incrementNextPieceCount();
 			if(nextPieceCount < 0) nextPieceCount = 0;
 		}
 
@@ -2101,7 +2144,7 @@ public class GameEngine {
 			if((statc[1] == 0) && (initialHoldFlag == false)) {
 				// Normal appearance
 				nowPieceObject = getNextObjectCopy(nextPieceCount);
-				nextPieceCount++;
+				incrementNextPieceCount();
 				if(nextPieceCount < 0) nextPieceCount = 0;
 				holdDisable = false;
 			} else {
@@ -2118,7 +2161,7 @@ public class GameEngine {
 						if(bone == true) getNextObject(nextPieceCount + ruleopt.nextDisplay - 1).setAttribute(Block.BLOCK_ATTRIBUTE_BONE, true);
 
 						nowPieceObject = getNextObjectCopy(nextPieceCount);
-						nextPieceCount++;
+						incrementNextPieceCount();
 						if(nextPieceCount < 0) nextPieceCount = 0;
 					} else {
 						// 2Subsequent
@@ -2126,7 +2169,7 @@ public class GameEngine {
 						holdPieceObject = getNextObjectCopy(nextPieceCount);
 						holdPieceObject.applyOffsetArray(ruleopt.pieceOffsetX[holdPieceObject.id], ruleopt.pieceOffsetY[holdPieceObject.id]);
 						nowPieceObject = pieceTemp;
-						nextPieceCount++;
+						incrementNextPieceCount();
 						if(nextPieceCount < 0) nextPieceCount = 0;
 					}
 				} else {
@@ -2136,7 +2179,7 @@ public class GameEngine {
 						nowPieceObject.big = false;
 						holdPieceObject = nowPieceObject;
 						nowPieceObject = getNextObjectCopy(nextPieceCount);
-						nextPieceCount++;
+						incrementNextPieceCount();
 						if(nextPieceCount < 0) nextPieceCount = 0;
 					} else {
 						// 2Subsequent
