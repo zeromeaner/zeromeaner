@@ -45,10 +45,8 @@ public class CornerPileLayout implements LayoutManager2 {
 			String t2 = ((AbstractButton) o2).getText();
 			t1 = t1.replaceAll("<.*?>", "");
 			t2 = t2.replaceAll("<.*?>", "");
-			int c = String.CASE_INSENSITIVE_ORDER.compare(t1.substring(0, 1), t2.substring(0, 1));
-			if(c != 0)
-				return c;
-			return PREFERRED_SIZE_ORDER.compare(o1, o2);
+			int c = String.CASE_INSENSITIVE_ORDER.compare(t1, t2);
+			return c;
 		}
 	};
 
@@ -107,32 +105,22 @@ public class CornerPileLayout implements LayoutManager2 {
 				for(int i = 0; i < buf.getWidth() * buf.getHeight(); i++) {
 					if(isAvailable(r))
 						break;
-					r.x-=STEP;
-					r.y+=STEP;
-					if(r.x < 0) {
-						r.x = r.y;
-						r.y = 0;
-					}
-					if(r.y >= buf.getHeight()) {
-						r.x += r.y;
+					r.y += STEP;
+					if(r.y >= buf.getHeight() - r.x - 50) {
+						r.x += STEP;
 						r.y = 0;
 					}
 				}
 			} else {
-				r.x = buf.getWidth() - 1;
-				r.y = buf.getHeight() - 1;
+				r.x = buf.getWidth() - 1 - r.width;
+				r.y = 50;
 				for(int i = 0; i < buf.getWidth() * buf.getHeight(); i++) {
 					if(isAvailable(r))
 						break;
-					r.x+=STEP;
-					r.y-=STEP;
-					if(r.x >= buf.getWidth()) {
-						r.x = buf.getWidth() - (buf.getHeight() - r.y);
-						r.y = buf.getHeight() - 1;
-					}
-					if(r.y < 0) {
-						r.x -= buf.getHeight();
-						r.y = buf.getHeight() - 1;
+					r.y+=STEP;
+					if(r.y >= buf.getHeight()) {
+						r.x -= STEP;
+						r.y = 50 + (buf.getWidth() - r.x - r.width);
 					}
 				}
 			}

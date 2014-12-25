@@ -202,9 +202,15 @@ public class StandaloneModeselectPanel extends JPanel {
 					String ruleResource = Options.mode(mode.getName()).RULE_RSOURCE.value();
 					if(ruleResource != null) {
 						for(RuleButton rb : ruleButtons) {
+							ModeButton mb = (ModeButton) e.getSource();
+							if(recommended.get(mb.mode.getName()).contains(rb.rule.resourceName))
+								rb.setBackground(new Color(222,255,222));
+							else if(!rb.custom)
+								rb.setBackground(new Color(222, 233, 233));
+							else
+								rb.setBackground(new Color(244, 233, 222));
 							if(ruleResource.equals(rb.rule.resourceName)) {
 								rb.doClick();
-								cards.show(StandaloneModeselectPanel.this, SELECT_CARD);
 							}
 						}
 					}
@@ -232,7 +238,10 @@ public class StandaloneModeselectPanel extends JPanel {
 			setFont(f);
 
 			setMargin(new Insets(2, 2, 2, 2));
-			setBackground(new Color(222, 233, 233));
+			if(!custom)
+				setBackground(new Color(222, 233, 233));
+			else
+				setBackground(new Color(244, 233, 222));
 			setOpaque(true);
 			
 			
@@ -278,7 +287,7 @@ public class StandaloneModeselectPanel extends JPanel {
 								}
 								
 								
-								custom.strRuleName = "Custom " + rule.strRuleName + " " + custnum;
+								custom.strRuleName = rule.strRuleName + " (Custom " + custnum + ")";
 								try {
 									ResourceOutputStream out = new ResourceOutputStream(custom.resourceName);
 									if(out != null) {
