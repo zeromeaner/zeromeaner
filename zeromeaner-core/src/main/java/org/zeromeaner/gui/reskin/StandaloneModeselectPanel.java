@@ -120,10 +120,6 @@ public class StandaloneModeselectPanel extends JPanel {
 				cards.show(StandaloneModeselectPanel.this, SELECT_CARD);
 			}
 		}), BorderLayout.SOUTH);
-		custom = new RuleOptions(RuleList.getRules().getNamed("STANDARD-ZERO"));
-		custom.strRuleName = "CUSTOM RULE";
-		custom.resourceName = "config/rule/Custom.rul";
-		saveCustom();
 		
 		JPanel select = new JPanel(new BorderLayout());
 		add(select, SELECT_CARD);
