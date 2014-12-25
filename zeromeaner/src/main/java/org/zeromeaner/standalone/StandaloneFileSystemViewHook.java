@@ -19,7 +19,7 @@ public class StandaloneFileSystemViewHook implements FileSystemViewHook {
 				return FileSystemView.getFileSystemView();
 			}
 		};
-		handlers.add(-1, handler);
+		handlers.add(0, handler);
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class StandaloneFileSystemViewHook implements FileSystemViewHook {
 				return new JFileChooser(new File(System.getProperty("user.dir"), path), FileSystemView.getFileSystemView());
 			}
 		};
-		handlers.add(-1, handler);
+		handlers.add(0, handler);
 	}
 
 }

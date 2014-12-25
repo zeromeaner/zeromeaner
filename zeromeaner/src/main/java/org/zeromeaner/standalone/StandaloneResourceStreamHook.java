@@ -24,7 +24,7 @@ public class StandaloneResourceStreamHook implements ResourceStreamHook {
 				return new FileInputStream(f);
 			}
 		};
-		handlers.add(-1, handler);
+		handlers.add(0, handler);
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class StandaloneResourceStreamHook implements ResourceStreamHook {
 				return new FileOutputStream(f);
 			}
 		};
-		handlers.add(-1, handler);
+		handlers.add(0, handler);
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class StandaloneResourceStreamHook implements ResourceStreamHook {
 				return f.delete();
 			}
 		};
-		handlers.add(-1, handler);
+		handlers.add(0, handler);
 	}
 
 }

@@ -19,7 +19,7 @@ public class DavFileSystemViewHook implements FileSystemViewHook {
 				return new DavFileSystemView(limit);
 			}
 		};
-		handlers.add(0, handler);
+		handlers.add(-1, handler);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class DavFileSystemViewHook implements FileSystemViewHook {
 				return new JFileChooser("", new DavFileSystemView(path));
 			}
 		};
-		handlers.add(0, handler);
+		handlers.add(-1, handler);
 	}
 
 }

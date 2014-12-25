@@ -49,7 +49,7 @@ public class DavResourceStreamHook implements ResourceStreamHook {
 				return sardine.getInputStream(URL_BASE + Session.getUser() + "/" + resource);
 			}
 		};
-		handlers.add(0, handler);
+		handlers.add(-1, handler);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class DavResourceStreamHook implements ResourceStreamHook {
 				return new DavOutputStream(resource);
 			}
 		};
-		handlers.add(0, handler);
+		handlers.add(-1, handler);
 	}
 	
 	protected class DavOutputStream extends ByteArrayOutputStream {
@@ -115,7 +115,7 @@ public class DavResourceStreamHook implements ResourceStreamHook {
 				return true;
 			}
 		};
-		handlers.add(0, handler);
+		handlers.add(-1, handler);
 	}
 
 }
