@@ -53,10 +53,10 @@ public class StandaloneModeselectPanel extends JPanel {
 	private static String formatButtonText(String modeOrRuleName) {
 		List<String> lines = new ArrayList<String>(Arrays.asList(modeOrRuleName.split("[- ]+")));
 		for(int i = 1; i < lines.size(); i++) {
-			if(lines.get(i).length() + lines.get(i-1).length() < 20) {
+//			if(lines.get(i).length() + lines.get(i-1).length() < 20) {
 				lines.set(i-1, lines.get(i-1) + " " + lines.remove(i));
 				i--;
-			}
+//			}
 		}
 		StringBuilder sb = new StringBuilder();
 		String sep = "<html><center>";
