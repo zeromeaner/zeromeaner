@@ -740,7 +740,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 * Rendering
 	 */
 	protected void gameRender() {
-		if(owner.gameManager == null) return;
+		if(owner.gameManager == null || owner.gameManager.engine == null) return;
 
 		// Prepare the screen
 
@@ -811,7 +811,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 * Rendering(For net play)
 	 */
 	protected void gameRenderNet() {
-		if(owner.gameManager == null) return;
+		if(owner.gameManager == null || owner.gameManager.engine == null) return;
 
 		Graphics g = null;
 		//		if(ssflag || (screenWidth != 640) || (screenHeight != 480)) {
