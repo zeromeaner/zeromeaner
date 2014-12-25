@@ -162,9 +162,13 @@ public class StandaloneModeselectPanel extends JPanel {
 				mb.doClick();
 
 		}
-		
-		invalidate();
-		revalidate();
+
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				revalidate();
+			}
+		});
 	}
 	
 	private class ModeButton extends JToggleButton {

@@ -161,6 +161,8 @@ public class StandaloneFrame extends JFrame {
 		
 		createCards();
 		
+		
+		setMinimumSize(new Dimension(900, 550));
 	}
 	
 	private static void add(JToolBar toolbar, ButtonGroup g, AbstractButton b) {
