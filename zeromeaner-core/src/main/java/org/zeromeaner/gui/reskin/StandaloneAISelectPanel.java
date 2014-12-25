@@ -260,7 +260,7 @@ public class StandaloneAISelectPanel extends JPanel implements ActionListener {
 
 		String[] strList = new String[aiPathList.length];
 		for(int i = 0; i < strList.length; i++) {
-			strList[i] = aiNameList[i] + " (" + aiPathList[i] + ")";
+			strList[i] = aiNameList[i] + " (" + aiPathList[i].replaceAll(".*\\.", "") + ")";
 		}
 		listboxAI = new JList(strList);
 		listboxAI.addListSelectionListener(new ListSelectionListener() {
