@@ -101,6 +101,7 @@ public class CornerPileLayout implements LayoutManager2 {
 		while(pending.size() > 0) {
 			Component c = pending.poll();
 			Rectangle r = new Rectangle(0, 0, c.getPreferredSize().width, c.getPreferredSize().height);
+			r.width = (int)(6 * Math.ceil(r.width / 6.));
 			if(nw.contains(c)) {
 				for(int i = 0; i < buf.getWidth() * buf.getHeight(); i++) {
 					if(isAvailable(r))
@@ -134,7 +135,7 @@ public class CornerPileLayout implements LayoutManager2 {
 					}
 				}
 			}
-			c.setSize(c.getPreferredSize());
+			c.setSize(new Dimension(r.width, r.height));
 			c.setLocation(r.x, r.y);
 			Graphics g = buf.getGraphics();
 			g.setColor(Color.BLACK);
