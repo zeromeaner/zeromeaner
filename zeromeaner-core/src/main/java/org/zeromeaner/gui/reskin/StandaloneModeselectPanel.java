@@ -33,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
+import javax.swing.border.LineBorder;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.zeromeaner.game.component.RuleOptions;
@@ -177,8 +178,12 @@ public class StandaloneModeselectPanel extends JPanel {
 			Font f = laf.getControlTextFont();
 			f = f.deriveFont(Font.PLAIN);
 			setFont(f);
-//
-			setMargin(new Insets(0, 3, 0, 3));
+
+			setMargin(new Insets(3, 3, 3, 3));
+			
+			setBackground(new Color(233, 222, 222));
+			setOpaque(true);
+			
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -212,16 +217,17 @@ public class StandaloneModeselectPanel extends JPanel {
 		public RuleButton(RuleOptions r) {
 			this.rule = r;
 			this.custom = r.resourceName.contains("/Custom_");
-			setMargin(new Insets(0, 3, 0, 3));
 
 			MetalLookAndFeel laf = (MetalLookAndFeel) UIManager.getLookAndFeel();
 			Font f = laf.getControlTextFont();
 			f = f.deriveFont(Font.PLAIN);
 			setFont(f);
 
-			if(custom)
-				setBorder(BorderFactory.createDashedBorder(new GradientPaint(0, 0, Color.BLACK, 5, 5, Color.WHITE, true)));
-
+			setMargin(new Insets(3, 3, 3, 3));
+			setBackground(new Color(222, 233, 233));
+			setOpaque(true);
+			
+			
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {

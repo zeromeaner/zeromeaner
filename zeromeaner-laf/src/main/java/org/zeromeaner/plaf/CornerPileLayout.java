@@ -18,6 +18,7 @@ import java.util.PriorityQueue;
 import java.util.Set;
 
 import javax.swing.AbstractButton;
+import javax.swing.JComponent;
 import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
 
@@ -40,7 +41,14 @@ public class CornerPileLayout implements LayoutManager2 {
 	public static final Comparator<Component> TEXT_ORDER = new Comparator<Component>() {
 		@Override
 		public int compare(Component o1, Component o2) {
-			return String.CASE_INSENSITIVE_ORDER.compare(((AbstractButton) o1).getText(), ((AbstractButton) o2).getText());
+			String t1 = ((AbstractButton) o1).getText();
+			String t2 = ((AbstractButton) o2).getText();
+			t1 = t1.replaceAll("<.*?>", "");
+			t2 = t2.replaceAll("<.*?>", "");
+			int c = String.CASE_INSENSITIVE_ORDER.compare(t1.substring(0, 1), t2.substring(0, 1));
+			if(c != 0)
+				return c;
+			return PREFERRED_SIZE_ORDER.compare(o1, o2);
 		}
 	};
 
@@ -130,7 +138,7 @@ public class CornerPileLayout implements LayoutManager2 {
 			c.setLocation(r.x, r.y);
 			Graphics g = buf.getGraphics();
 			g.setColor(Color.BLACK);
-			((Graphics2D) g).setStroke(new BasicStroke(10f));
+			((Graphics2D) g).setStroke(new BasicStroke(6f));
 			g.drawRect(r.x, r.y, r.width, r.height);
 			g.fillRect(r.x, r.y, r.width, r.height);
 		}
