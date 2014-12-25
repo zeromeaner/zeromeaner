@@ -283,8 +283,6 @@ public class GameEngine {
 
 	/** Number of pieces put (Used by next piece sequence) */
 	public int nextPieceCount;
-	
-	public int nextPieceArrayCount;
 
 	/** Hold piece (null: None) */
 	public Piece holdPieceObject;
@@ -773,7 +771,6 @@ public class GameEngine {
 		nextPieceArrayID = null;
 		nextPieceArrayObject = null;
 		nextPieceCount = 0;
-		nextPieceArrayCount = 0;
 
 		holdPieceObject = null;
 		holdDisable = false;
@@ -986,7 +983,10 @@ public class GameEngine {
 	 * @return NEXTOf PeaceID
 	 */
 	public int getNextID(int c) {
-		return getNextObject(c).id;
+		if(nextPieceArrayID == null) return Piece.PIECE_NONE;
+		int c2 = c;
+		while(c2 >= nextPieceArrayID.length) c2 = c2 - nextPieceArrayID.length;
+		return nextPieceArrayID[c2];
 	}
 
 	/**
@@ -996,50 +996,9 @@ public class GameEngine {
 	 */
 	public Piece getNextObject(int c) {
 		if(nextPieceArrayObject == null) return null;
-		
-		int n = ((c % nextPieceArraySize) + nextPieceArraySize) % nextPieceArraySize;
-		
-		if(nextPieceArrayCount < c / nextPieceArraySize) {
-			nextPieceArrayCount = c / nextPieceArraySize;
-
-			for(int i = 0; i < nextPieceArraySize; i++)
-				nextPieceArrayID[i] = randomizer.next();
-			
-			nextPieceArrayObject = new Piece[nextPieceArrayID.length];
-
-			for(int i = 0; i < nextPieceArraySize; i++) {
-				nextPieceArrayObject[i] = new Piece(nextPieceArrayID[i]);
-				nextPieceArrayObject[i].direction = ruleopt.pieceDefaultDirection[nextPieceArrayObject[i].id];
-				if(nextPieceArrayObject[i].direction >= Piece.DIRECTION_COUNT) {
-					nextPieceArrayObject[i].direction = random.nextInt(Piece.DIRECTION_COUNT);
-				}
-				nextPieceArrayObject[i].connectBlocks = this.connectBlocks;
-				nextPieceArrayObject[i].setColor(ruleopt.pieceColor[nextPieceArrayObject[i].id]);
-				nextPieceArrayObject[i].setSkin(getSkin());
-				nextPieceArrayObject[i].updateConnectData();
-				nextPieceArrayObject[i].setAttribute(Block.BLOCK_ATTRIBUTE_VISIBLE, true);
-				nextPieceArrayObject[i].setAttribute(Block.BLOCK_ATTRIBUTE_BONE, bone);
-			}
-			if (randomBlockColor)
-			{
-				if (blockColors.length < numColors || numColors < 1)
-					numColors = blockColors.length;
-				for(int i = 0; i < nextPieceArrayObject.length; i++) {
-					int size = nextPieceArrayObject[i].getMaxBlock();
-					int[] colors = new int[size];
-					for (int j = 0; j < size; j++)
-						colors[j] = blockColors[random.nextInt(numColors)];
-					nextPieceArrayObject[i].setColor(colors);
-					nextPieceArrayObject[i].updateConnectData();
-				}
-			}
-		}
-		
-		return nextPieceArrayObject[n];
-		
-//		int c2 = c;
-//		while(c2 >= nextPieceArrayObject.length) c2 = c2 - nextPieceArrayObject.length;
-//		return nextPieceArrayObject[c2];
+		int c2 = c;
+		while(c2 >= nextPieceArrayObject.length) c2 = c2 - nextPieceArrayObject.length;
+		return nextPieceArrayObject[c2];
 	}
 
 	/**

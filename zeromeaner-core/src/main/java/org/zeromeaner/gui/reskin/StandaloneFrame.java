@@ -280,6 +280,8 @@ public class StandaloneFrame extends JFrame {
 					return;
 				JFileChooser fc = (JFileChooser) e.getSource();
 				String path = fc.getSelectedFile().getPath();
+				if(!path.contains("replay/"))
+					path = "replay/" + path;
 				startReplayGame(path);
 			}
 		});
