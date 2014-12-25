@@ -302,6 +302,9 @@ public class StandaloneModeselectPanel extends JPanel {
 								buttonsPanel.add(rb, CornerPileLayout.SOUTH_EAST);
 								ruleButtonGroup.add(rb);
 								rb.revalidate();
+								StandaloneModeselectPanel.this.custom = custom;
+								ruleEditor.readRuleToUI(custom);
+								cards.show(StandaloneModeselectPanel.this, EDIT_CARD);
 							}
 						});
 						if(custom) {
