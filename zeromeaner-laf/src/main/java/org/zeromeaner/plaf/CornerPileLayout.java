@@ -34,7 +34,7 @@ public class CornerPileLayout implements LayoutManager2 {
 		public int compare(Component o1, Component o2) {
 			Dimension d1 = o1.getPreferredSize();
 			Dimension d2 = o2.getPreferredSize();
-			return -((Integer) (d1.width * d1.height)).compareTo(d2.width * d2.height);
+			return -((Integer) (int)Math.pow(d1.width * d1.height, 1.5)).compareTo((int) Math.pow(d2.width * d2.height, 1.5));
 		}
 	};
 	
@@ -52,6 +52,8 @@ public class CornerPileLayout implements LayoutManager2 {
 		}
 	};
 
+	private static final int STEP = 10;
+	
 	protected Set<Component> nw;
 	protected Set<Component> se;
 	protected PriorityQueue<Component> pending; 
@@ -101,19 +103,18 @@ public class CornerPileLayout implements LayoutManager2 {
 		while(pending.size() > 0) {
 			Component c = pending.poll();
 			Rectangle r = new Rectangle(0, 0, c.getPreferredSize().width, c.getPreferredSize().height);
-			r.width = (int)(6 * Math.ceil(r.width / 6.));
 			if(nw.contains(c)) {
 				for(int i = 0; i < buf.getWidth() * buf.getHeight(); i++) {
 					if(isAvailable(r))
 						break;
-					r.x-=6;
-					r.y+=6;
+					r.x-=STEP;
+					r.y+=STEP;
 					if(r.x < 0) {
 						r.x = r.y;
 						r.y = 0;
 					}
 					if(r.y >= buf.getHeight()) {
-						r.x += buf.getHeight();
+						r.x += r.y;
 						r.y = 0;
 					}
 				}
@@ -123,8 +124,8 @@ public class CornerPileLayout implements LayoutManager2 {
 				for(int i = 0; i < buf.getWidth() * buf.getHeight(); i++) {
 					if(isAvailable(r))
 						break;
-					r.x+=6;
-					r.y-=6;
+					r.x+=STEP;
+					r.y-=STEP;
 					if(r.x >= buf.getWidth()) {
 						r.x = buf.getWidth() - (buf.getHeight() - r.y);
 						r.y = buf.getHeight() - 1;
@@ -139,13 +140,15 @@ public class CornerPileLayout implements LayoutManager2 {
 			c.setLocation(r.x, r.y);
 			Graphics g = buf.getGraphics();
 			g.setColor(Color.BLACK);
-			((Graphics2D) g).setStroke(new BasicStroke(6f));
+			((Graphics2D) g).setStroke(new BasicStroke((float) STEP));
 			g.drawRect(r.x, r.y, r.width, r.height);
 			g.fillRect(r.x, r.y, r.width, r.height);
 		}
 	}
 	
 	protected boolean isAvailable(Rectangle r) {
+		if(r.x < 0 || r.y < 0)
+			return false;
 		if(r.x + r.width >= buf.getWidth())
 			return false;
 		if(r.y + r.height >= buf.getHeight())

@@ -51,10 +51,12 @@ import org.zeromeaner.util.io.ResourceStreams;
 
 public class StandaloneModeselectPanel extends JPanel {
 	private static String formatButtonText(String modeOrRuleName) {
-		List<String> lines = new ArrayList<String>(Arrays.asList(modeOrRuleName.split("-+")));
-		for(int i = lines.size() - 1; i > 0; i--) {
-			if(lines.get(i).length() + lines.get(i-1).length() < 20)
+		List<String> lines = new ArrayList<String>(Arrays.asList(modeOrRuleName.split("[- ]+")));
+		for(int i = 1; i < lines.size(); i++) {
+			if(lines.get(i).length() + lines.get(i-1).length() < 20) {
 				lines.set(i-1, lines.get(i-1) + " " + lines.remove(i));
+				i--;
+			}
 		}
 		StringBuilder sb = new StringBuilder();
 		String sep = "<html><center>";
@@ -142,7 +144,6 @@ public class StandaloneModeselectPanel extends JPanel {
 		RuleList rules = RuleList.getRules();
 		for(RuleOptions rule : rules) {
 			RuleButton b = new RuleButton(rule);
-			
 			buttonsPanel.add(
 					b,
 					CornerPileLayout.SOUTH_EAST);
@@ -162,6 +163,7 @@ public class StandaloneModeselectPanel extends JPanel {
 
 		}
 		
+		invalidate();
 		revalidate();
 	}
 	
@@ -179,7 +181,7 @@ public class StandaloneModeselectPanel extends JPanel {
 			f = f.deriveFont(Font.PLAIN);
 			setFont(f);
 
-			setMargin(new Insets(3, 3, 3, 3));
+			setMargin(new Insets(2, 2, 2, 2));
 			
 			setBackground(new Color(233, 222, 222));
 			setOpaque(true);
@@ -223,7 +225,7 @@ public class StandaloneModeselectPanel extends JPanel {
 			f = f.deriveFont(Font.PLAIN);
 			setFont(f);
 
-			setMargin(new Insets(3, 3, 3, 3));
+			setMargin(new Insets(2, 2, 2, 2));
 			setBackground(new Color(222, 233, 233));
 			setOpaque(true);
 			
