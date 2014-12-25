@@ -59,7 +59,7 @@ public class Eviline2Randomizer extends Randomizer {
 			for(long c : counts)
 				variance += Math.max(c - min, max - c);
 			double score = best.score;
-			score += Math.abs(score) * Math.pow(0.98, variance) - Math.abs(score);
+			score += Math.abs(score) * Math.pow(0.95, variance) - Math.abs(score);
 			return new Best(best.graph, best.shape, score, best.after, best.type, best.deeper);
 		}
 	}; 
@@ -83,7 +83,7 @@ public class Eviline2Randomizer extends Randomizer {
 	public void init() {
 		evilEngine = new EngineAdapter();
 		ai = new DefaultAIKernel(SUBTASKS, new DefaultFitness());
-//		ai.setAdjuster(ADJUSTER);
+		ai.setAdjuster(ADJUSTER);
 		shapes = new EvilBag7NShapeSource(DEFAULT_BAG_N, DEFAULT_LOOKAHEAD);
 		shapes.setAi(ai);
 		evilEngine.setShapes(shapes);
