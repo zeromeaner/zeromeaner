@@ -52,7 +52,7 @@ public class CornerPileLayout implements LayoutManager2 {
 		}
 	};
 
-	private static final int STEP = 10;
+	private static final int STEP = 5;
 	
 	protected Set<Component> nw;
 	protected Set<Component> se;
@@ -140,7 +140,7 @@ public class CornerPileLayout implements LayoutManager2 {
 			c.setLocation(r.x, r.y);
 			Graphics g = buf.getGraphics();
 			g.setColor(Color.BLACK);
-			((Graphics2D) g).setStroke(new BasicStroke((float) STEP));
+			((Graphics2D) g).setStroke(new BasicStroke((float) 10));
 			g.drawRect(r.x, r.y, r.width, r.height);
 			g.fillRect(r.x, r.y, r.width, r.height);
 		}

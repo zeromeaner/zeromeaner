@@ -132,6 +132,8 @@ public class StandaloneModeselectPanel extends JPanel {
 		ButtonGroup g = new ButtonGroup();
 		buttonsPanel = new JPanel(new CornerPileLayout());
 		for(GameMode mode : ModeList.getModes()) {
+			if(mode.isNetplayMode())
+				continue;
 			ModeButton b = new ModeButton(mode);
 			buttonsPanel.add(
 					b,
