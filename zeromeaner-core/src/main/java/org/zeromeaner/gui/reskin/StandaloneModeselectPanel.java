@@ -5,6 +5,8 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GradientPaint;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -121,12 +123,14 @@ public class StandaloneModeselectPanel extends JPanel {
 		cards.show(this, SELECT_CARD);
 
 		ButtonGroup g = new ButtonGroup();
-		modeButtonsPanel = new JPanel(new GridLayout(0, 8, 10, 10));
+		modeButtonsPanel = new JPanel(new GridBagLayout());
 		modeButtonsPanel.setBorder(BorderFactory.createTitledBorder("Available Modes"));
 		JPanel p = new JPanel(new BorderLayout());
 		for(GameMode mode : ModeList.getModes()) {
 			ModeButton b = new ModeButton(mode);
-			modeButtonsPanel.add(b);
+			modeButtonsPanel.add(
+					b,
+					new GridBagConstraints(modeButtons.size() % 6, modeButtons.size() / 6, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5,5,5,5), 0, 0));
 			g.add(b);
 			this.modeButtons.add(b);
 		}
@@ -134,14 +138,17 @@ public class StandaloneModeselectPanel extends JPanel {
 		select.add(p, BorderLayout.NORTH);
 		
 		ruleButtonGroup = new ButtonGroup();
-		ruleButtonsPanel = new JPanel(new GridLayout(0, 8, 10, 10));
+		ruleButtonsPanel = new JPanel(new GridBagLayout());
 		ruleButtonsPanel.setBorder(BorderFactory.createTitledBorder("Available Rules"));
 		p = new JPanel(new BorderLayout());
 		RuleList rules = RuleList.getRules();
 		for(RuleOptions rule : rules) {
 			RuleButton b = new RuleButton(rule);
 			
-			ruleButtonsPanel.add(b);
+			ruleButtonsPanel.add(
+					b,
+					new GridBagConstraints(ruleButtons.size() % 6, ruleButtons.size() / 6, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5,5,5,5), 0, 0));
+
 			this.ruleButtons.add(b);
 			ruleButtonGroup.add(b);
 			for(ModeButton mb : this.modeButtons) {
