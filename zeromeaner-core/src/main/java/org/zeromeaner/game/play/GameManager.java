@@ -35,6 +35,7 @@ import org.zeromeaner.game.component.BackgroundStatus;
 import org.zeromeaner.game.event.EventRenderer;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.util.CustomProperties;
+import org.zeromeaner.util.GeneralUtil;
 import org.zeromeaner.util.Version;
 
 /**
@@ -81,6 +82,8 @@ public class GameManager {
 
 	/** Show input */
 	public boolean showInput;
+	
+	protected String replayFile;
 
 	/**
 	 * Get version information as String
@@ -121,6 +124,7 @@ public class GameManager {
 			replayProp = new CustomProperties();
 			replayMode = false;
 		}
+		replayFile = GeneralUtil.getReplayFilename();
 
 		replayRerecord = false;
 		menuOnly = false;
@@ -258,6 +262,7 @@ public class GameManager {
 	 */
 	public void saveReplay() {
 		replayProp = new CustomProperties();
+		replayProp.setProperty("replay.file", replayFile);
 		for(int i = 0; i < engine.length; i++) {
 			engine[i].saveReplay();
 		}

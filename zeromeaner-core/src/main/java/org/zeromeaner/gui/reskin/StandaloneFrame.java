@@ -20,9 +20,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -496,7 +498,9 @@ public class StandaloneFrame extends JFrame {
 			CustomProperties prop = new CustomProperties();
 
 			try {
-				ResourceInputStream stream = new ResourceInputStream(replayPath);
+				InputStream stream = new ResourceInputStream(replayPath);
+				if(replayPath.endsWith(".repz"))
+					stream = new GZIPInputStream(stream);
 				prop.load(stream);
 				stream.close();
 			} catch (IOException ex) {

@@ -30,6 +30,8 @@ package org.zeromeaner.game.event;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.component.Block;
@@ -1233,19 +1235,14 @@ public class EventRenderer {
 	public String saveReplay(GameManager owner, CustomProperties prop, String foldername) {
 		if(owner.mode.isNetplayMode()) return null;
 
-		String filename = foldername + "/" + GeneralUtil.getReplayFilename();
+		String filename = foldername + "/" + prop.getProperty("replay.file");
 		try {
-			File repfolder = new File(foldername);
-			if (!repfolder.exists()) {
-				if (repfolder.mkdir()) {
-					log.info("Created replay folder: " + foldername);
-				} else {
-					log.info("Couldn't create replay folder at "+ foldername);
-				}
-			}
-
-			ResourceOutputStream out = new ResourceOutputStream(filename);
+			OutputStream out = new ResourceOutputStream(filename);
+			if(filename.endsWith(".repz"))
+				out = new GZIPOutputStream(out);
 			prop.store(out, "zeromeaner Replay");
+			if(filename.endsWith(".repz"))
+				((GZIPOutputStream) out).finish();
 			out.close();
 			log.info("Saved replay file: " + filename);
 		} catch(IOException e) {

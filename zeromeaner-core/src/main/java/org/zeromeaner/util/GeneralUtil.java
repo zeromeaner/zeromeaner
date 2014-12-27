@@ -86,9 +86,8 @@ public class GeneralUtil {
 	 * @return Replay's filename
 	 */
 	public static String getReplayFilename() {
-		Calendar c = Calendar.getInstance();
 		DateFormat dfm = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-		String filename = dfm.format(c.getTime()) + ".rep";
+		String filename = dfm.format(new Date()) + ".repz";
 		return filename;
 	}
 
