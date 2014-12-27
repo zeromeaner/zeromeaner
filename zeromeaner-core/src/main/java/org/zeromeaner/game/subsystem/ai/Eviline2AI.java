@@ -320,7 +320,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 	protected PathPipeline pipeline;
 
-	protected int pipeLength = 0;
+	protected int pipeLength = 1;
 
 	protected byte[] createCommandPath(CommandGraph g) {
 		byte[] computingPaths = new byte[XYShapes.SHAPE_MAX];
