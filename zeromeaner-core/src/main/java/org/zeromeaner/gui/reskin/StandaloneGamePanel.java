@@ -367,8 +367,8 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		syncRender = Options.standalone().SYNC_RENDER.value();
 		
 		fps.set(maxfps);
-		rps.set(maxfps);
-		dps.set(maxfps);
+		rps.set(fps.rate());
+		dps.set(rps.rate());
 		
 		// Main loop
 		log.debug("Game thread start");

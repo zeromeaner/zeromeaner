@@ -33,6 +33,7 @@ import org.eviline.core.ai.DefaultAIKernel;
 import org.eviline.core.ai.DefaultAIKernel.Best;
 import org.eviline.core.ai.Fitness;
 import org.eviline.core.ai.NextFitness;
+import org.eviline.core.conc.SubtaskExecutor;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.eviline.EngineAdapter;
 import org.zeromeaner.game.eviline.FieldAdapter;
@@ -381,7 +382,9 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			throw new RuntimeException(e);
 		}
 
-		ai = new DefaultAIKernel(POOL, fitness);
+		SubtaskExecutor sexec = new SubtaskExecutor(POOL, 0);
+		
+		ai = new DefaultAIKernel(sexec, fitness);
 		ai.setDropsOnly(DROPS_ONLY.value(opt));
 		ai.setPruneTop(PRUNE_TOP.value(opt));
 		pipeline = new PathPipeline();

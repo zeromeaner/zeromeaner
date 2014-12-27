@@ -1,34 +1,14 @@
 package org.zeromeaner.gui.reskin;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
 public class FrameRateCounter {
-	public class Frame implements Delayed {
-		private long expiry;
-		
-		public Frame() {
-			expiry = System.nanoTime() + TimeUnit.NANOSECONDS.convert(durationSeconds, TimeUnit.SECONDS);
-		}
-		
-		public Frame(long expiry) {
-			this.expiry = expiry;
-		}
-		
-		@Override
-		public int compareTo(Delayed o) {
-			return ((Long) getDelay(TimeUnit.NANOSECONDS)).compareTo(o.getDelay(TimeUnit.NANOSECONDS));
-		}
-
-		@Override
-		public long getDelay(TimeUnit unit) {
-			return expiry - System.nanoTime();
-		}
-	}
-	
 	private int durationSeconds;
-	private DelayQueue<Frame> q = new DelayQueue<Frame>();
+	private Deque<Long> q = new ArrayDeque<>();
 	
 	public FrameRateCounter() {
 		this(10);
@@ -43,23 +23,23 @@ public class FrameRateCounter {
 		long now = System.nanoTime();
 		long delayNanos = TimeUnit.NANOSECONDS.convert(durationSeconds, TimeUnit.SECONDS);
 		for(int i = 0; i < rate * durationSeconds; i++) {
-			add(new Frame(now + delayNanos * i / (rate * durationSeconds)));
+			add(now + delayNanos * i / (rate * durationSeconds));
 		}
 	}
 	
 	public synchronized void add() {
-		add(new Frame());
+		add(System.nanoTime() + TimeUnit.NANOSECONDS.convert(durationSeconds, TimeUnit.SECONDS));
 	}
 	
-	protected synchronized void add(Frame f) {
-		while(q.poll() != null)
-			;
-		q.offer(f);
+	protected synchronized void add(long f) {
+		while(q.peekFirst() != null && q.peekFirst() < System.nanoTime())
+			q.pollFirst();
+		q.offerLast(f);
 	}
 	
 	public synchronized int rate() {
-		while(q.poll() != null)
-			;
+		while(q.peekFirst() != null && q.peekFirst() < System.nanoTime())
+			q.pollFirst();
 		return Math.round(q.size() / (float) durationSeconds);
 	}
 }
