@@ -10,6 +10,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -112,7 +113,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	protected static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(
 			1, 1, 
 			10, TimeUnit.SECONDS, 
-			new LinkedBlockingQueue<Runnable>(),
+			new SynchronousQueue<Runnable>(),
 			new ThreadPoolExecutor.DiscardPolicy());
 
 	protected class PathPipeline {
@@ -221,18 +222,17 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		}
 
 		public boolean isDirty(GameEngine engine) {
+			if(engine.lockDelayNow > 0)
+				return false;
 			extend(engine);
 			PathTask pt = discardUntil(engine);
 			if(pt == null)
 				return false;
 			org.eviline.core.Field expected1 = pt.field;
-			org.eviline.core.Field expected2 = pt.after;
-			if(expected1 == null || expected2 == null || engine.lockDelayNow > 0)
+			if(expected1 == null)
 				return false;
 			FieldAdapter f1 = new FieldAdapter();
 			f1.copyFrom(expected1);
-			FieldAdapter f2 = new FieldAdapter();
-			f2.copyFrom(expected2);
 			boolean dirty = f1.update(engine.field);// && f2.update(engine.field);
 			if(dirty)
 				System.out.println("dirty field");
@@ -291,8 +291,8 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		}
 
 		public PathTask extend(GameEngine gameEngine) {
-			ShapeType[] extnext = createGameNext(gameEngine, seq);
-			if(extnext == null || extnext.length < lookahead + 1)
+			ShapeType[] extnext = Arrays.copyOfRange(next, 1, next.length);
+			if(extnext == null || extnext.length < lookahead + 2)
 				return null;
 			Best best = get();
 			if(best == null)
@@ -346,12 +346,12 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	}
 
 	protected ShapeType[] createGameNext(GameEngine engine, int seq) {
-		if(seq < engine.nextPieceCount || seq >= engine.nextPieceCount + engine.nextPieceArraySize - 2)
+		if(seq < engine.nextPieceCount || seq >= engine.nextPieceCount + engine.nextPieceArraySize - lookahead - 1)
 			return null;
-		int size = engine.nextPieceArraySize - (seq - engine.nextPieceCount);
+		int size = Math.min(engine.nextPieceArraySize - (seq - engine.nextPieceCount), lookahead + 3);
 		ShapeType[] nextShapes = new ShapeType[size];
 		for(int i = 0; i < size; i++)
-			nextShapes[i] = XYShapeAdapter.toShapeType(engine.getNextObject(seq + i));
+			nextShapes[i] = XYShapeAdapter.toShapeType(engine.getNextObject(seq + i - 1));
 		return nextShapes;
 	}
 
@@ -360,7 +360,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 
 	protected void resetPipeline() {
-//		System.out.println("reset pipeline");
+		System.out.println("reset pipeline");
 		pipeline.shutdown();
 		pipeline = new PathPipeline();
 		lastxy = -1;
