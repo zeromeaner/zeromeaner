@@ -6,6 +6,10 @@ import org.eviline.core.Field;
 public class FieldAdapter extends Field {
 	protected static Block FILLED = new Block(0);
 	
+	public FieldAdapter() {
+		setNoBlocks(true);
+	}
+	
 	public boolean update(org.zeromeaner.game.component.Field nullpo) {
 		boolean changed = false;
 		for(int y = -BUFFER; y < HEIGHT; y++) {
