@@ -14,7 +14,8 @@ public class FieldAdapter extends Field {
 		boolean changed = false;
 		for(int y = -BUFFER; y < HEIGHT; y++) {
 			for(int x = 0; x < WIDTH; x++) {
-				boolean empty = nullpo.getBlockEmpty(x, y);
+				org.zeromeaner.game.component.Block npb = nullpo.getBlock(x, y); 
+				boolean empty = npb.color == org.zeromeaner.game.component.Block.BLOCK_COLOR_NONE;
 				boolean wasEmpty = block(x, y) == null;
 				if(empty ^ wasEmpty) {
 					setBlock(x, y, empty ? null : FILLED);

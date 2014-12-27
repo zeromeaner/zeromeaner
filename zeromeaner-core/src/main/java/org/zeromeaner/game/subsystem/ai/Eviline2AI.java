@@ -139,7 +139,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 				f.update(gameEngine.field);
 				final PathTask pt = new PathTask(
 						this,
-						gameEngine.nextPieceCount,
+						gameEngine.nextPieceCount - 1,
 						f,
 						XYShapeAdapter.toXYShape(gameEngine),
 						createGameNext(gameEngine, gameEngine.nextPieceCount));
@@ -185,7 +185,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 		public PathTask discardUntil(GameEngine engine) {
 			PathTask pt;
-			for(pt = pipe.peekFirst(); pt != null && pt.seq < engine.nextPieceCount; pt = pipe.peekFirst())
+			for(pt = pipe.peekFirst(); pt != null && pt.seq < engine.nextPieceCount - 1; pt = pipe.peekFirst())
 				pipe.pollFirst();
 			return pt;
 		}
@@ -221,20 +221,22 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		}
 
 		public boolean isDirty(GameEngine engine) {
-			PathTask pt = pipe.peekFirst();
-			if(pt != null && pt.task.isDone()) {
-				try {
-					pt.task.get();
-				} catch(Exception e) {
-					return true;
-				}
-			}
-			FieldAdapter f = new FieldAdapter();
-			org.eviline.core.Field expected = expectedField(engine);
-			if(expected == null)
-				return true;
-			f.copyFrom(expected);
-			return f.update(engine.field);
+			extend(engine);
+			PathTask pt = discardUntil(engine);
+			if(pt == null)
+				return false;
+			org.eviline.core.Field expected1 = pt.field;
+			org.eviline.core.Field expected2 = pt.after;
+			if(expected1 == null || expected2 == null || engine.lockDelayNow > 0)
+				return false;
+			FieldAdapter f1 = new FieldAdapter();
+			f1.copyFrom(expected1);
+			FieldAdapter f2 = new FieldAdapter();
+			f2.copyFrom(expected2);
+			boolean dirty = f1.update(engine.field);// && f2.update(engine.field);
+			if(dirty)
+				System.out.println("dirty field");
+			return dirty;
 		}
 
 		public void shutdown() {
@@ -249,6 +251,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		public PathPipeline pipeline;
 		public int seq;
 		public org.eviline.core.Field field;
+		public org.eviline.core.Field after;
 		public int xystart;
 		public int xydest;
 		public ShapeType[] next;
@@ -271,6 +274,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 					player.tick();
 					Best best = player.getBest();
 					path = createCommandPath(best.graph);
+					after = best.after;
 					xydest = best.shape;
 					return best;
 				}
@@ -344,11 +348,10 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	protected ShapeType[] createGameNext(GameEngine engine, int seq) {
 		if(seq < engine.nextPieceCount || seq >= engine.nextPieceCount + engine.nextPieceArraySize - 2)
 			return null;
-		int size = Math.min(engine.nextPieceArraySize - (seq - engine.nextPieceCount), lookahead + 2);
+		int size = engine.nextPieceArraySize - (seq - engine.nextPieceCount);
 		ShapeType[] nextShapes = new ShapeType[size];
 		for(int i = 0; i < size; i++)
-			nextShapes[i] = XYShapeAdapter.toShapeType(engine.getNextObject(seq + i));
-		System.out.println(Arrays.asList(nextShapes));
+			nextShapes[i] = XYShapeAdapter.toShapeType(engine.getNextObject(seq + i - 1));
 		return nextShapes;
 	}
 
@@ -357,7 +360,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 
 	protected void resetPipeline() {
-		System.out.println("Resetting pipeline");
+//		System.out.println("reset pipeline");
 		pipeline.shutdown();
 		pipeline = new PathPipeline();
 		lastxy = -1;
