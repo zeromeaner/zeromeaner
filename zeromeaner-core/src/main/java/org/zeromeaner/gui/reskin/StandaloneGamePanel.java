@@ -54,8 +54,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Deque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
@@ -248,7 +250,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		
 		if(!StandaloneMain.isApplet())
 			addKeyListener(new FullScreenKeyListener(owner));
-		addKeyListener(new GameFrameKeyEvent());
+		addKeyListener(new GamePanelKeyListener());
 
 		MouseListener ml = new MouseAdapter() {
 			@Override
@@ -311,6 +313,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	}
 
 	private void doFrame(boolean render) {
+		setButtonPressedState();
 		if(isNetPlay) {
 			gameUpdateNet();
 			if(render)
@@ -993,7 +996,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 						new JLabel("Press CTRL+ENTER to leave full-screen mode"), 
 						new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
 				content.addKeyListener(this);
-				content.addKeyListener(new GameFrameKeyEvent());
+				content.addKeyListener(new GamePanelKeyListener());
 				owner.setContentPane(content);
 				owner.setExtendedState(JFrame.MAXIMIZED_BOTH);
 				content.requestFocus();
@@ -1037,16 +1040,65 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 		}
 	}
 
+	private Deque<KeyEvent> keyEvents = new ArrayDeque<>();
+	
+	protected void setButtonPressedState() {
+		KeyEvent e;
+		synchronized(keyEvents) { 
+			e = keyEvents.poll();
+		}
+		if(e == null)
+			return;
+		int eid = e.getID();
+		int nextEid = eid;
+		do {
+			eid = nextEid;
+			if(eid == KeyEvent.KEY_PRESSED)
+				setButtonPressedState(e.getKeyCode(), true);
+			if(eid == KeyEvent.KEY_RELEASED)
+				setButtonPressedState(e.getKeyCode(), false);
+			synchronized(keyEvents) {
+				e = keyEvents.poll();
+			}
+			if(e == null)
+				return;
+			nextEid = e.getID();
+		} while(eid == nextEid);
+		if(e != null)
+			synchronized(keyEvents) {
+				keyEvents.offerFirst(e);
+			}
+	}
+	
+	protected void setButtonPressedState(int keyCode, boolean pressed) {
+		if(StandaloneGamePanel.this.isInGame == null)
+			return;
+		boolean[] isInGame = Arrays.copyOf(StandaloneGamePanel.this.isInGame, StandaloneGamePanel.this.isInGame.length);
+		for(int playerID = 0; playerID < StandaloneGameKey.gamekey.length; playerID++) {
+			int[] kmap = isInGame[playerID] ? StandaloneGameKey.gamekey[playerID].keymap : StandaloneGameKey.gamekey[playerID].keymapNav;
+			for(int i = 0; i < StandaloneGameKey.MAX_BUTTON; i++) {
+				if(keyCode == kmap[i]) {
+					if(playerID != 0 && (i == StandaloneGameKey.BUTTON_UP || i == StandaloneGameKey.BUTTON_DOWN))
+						continue;
+//					log.debug("KeyCode:" + keyCode + " pressed:" + pressed + " button:" + i);
+					StandaloneGameKey.gamekey[playerID].setPressState(i, pressed);
+				}
+			}
+		}
+	}
+
+	
 	/**
 	 * Keyboard event Processing
 	 */
-	protected class GameFrameKeyEvent extends KeyAdapter {
+	protected class GamePanelKeyListener extends KeyAdapter {
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_ENTER && e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK)
 				return;
-
-			setButtonPressedState(e.getKeyCode(), true);
+			synchronized(keyEvents) {
+				keyEvents.offerLast(e);
+			}
 		}
 
 		@Override
@@ -1054,24 +1106,10 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			if(e.getKeyCode() == KeyEvent.VK_ENTER && e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK)
 				return;
 
-			setButtonPressedState(e.getKeyCode(), false);
-		}
-
-		protected void setButtonPressedState(int keyCode, boolean pressed) {
-			if(StandaloneGamePanel.this.isInGame == null)
-				return;
-			boolean[] isInGame = Arrays.copyOf(StandaloneGamePanel.this.isInGame, StandaloneGamePanel.this.isInGame.length);
-			for(int playerID = 0; playerID < StandaloneGameKey.gamekey.length; playerID++) {
-				int[] kmap = isInGame[playerID] ? StandaloneGameKey.gamekey[playerID].keymap : StandaloneGameKey.gamekey[playerID].keymapNav;
-				for(int i = 0; i < StandaloneGameKey.MAX_BUTTON; i++) {
-					if(keyCode == kmap[i]) {
-						if(playerID != 0 && (i == StandaloneGameKey.BUTTON_UP || i == StandaloneGameKey.BUTTON_DOWN))
-							continue;
-//						log.debug("KeyCode:" + keyCode + " pressed:" + pressed + " button:" + i);
-						StandaloneGameKey.gamekey[playerID].setPressState(i, pressed);
-					}
-				}
+			synchronized(keyEvents) {
+				keyEvents.offerLast(e);
 			}
 		}
+
 	}
 }
