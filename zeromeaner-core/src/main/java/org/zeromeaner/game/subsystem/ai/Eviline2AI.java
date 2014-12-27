@@ -46,22 +46,22 @@ import org.zeromeaner.util.PropertyConstant.Constant;
 import org.zeromeaner.util.PropertyConstant.ConstantParser;
 
 public class Eviline2AI extends AbstractAI implements Configurable {
-	
+
 	protected static final Constant<Boolean> DROPS_ONLY = new Constant<>(PropertyConstant.BOOLEAN, ".eviline.drops_only", true);
 	protected static final Constant<Integer> LOOKAHEAD = new Constant<>(PropertyConstant.INTEGER, ".eviline.lookahead", 3);
 	protected static final Constant<Integer> PRUNE_TOP = new Constant<>(PropertyConstant.INTEGER, ".eviline.prune_top", 5);
 	protected static final Constant<Integer> CPU_CORES = new Constant<>(PropertyConstant.INTEGER, ".eviline.cpu_cores", 8);
 	protected static final Constant<String> FITNESS = new Constant<String>(PropertyConstant.STRING, ".eviline.fitness", "NextFitness");
-	
+
 	protected static class EvilineAIConfigurator implements Configurable.Configurator {
-		
+
 		private JCheckBox dropsOnly;
 		private JSpinner lookahead;
 		private JSpinner pruneTop;
 		private JSpinner cpuCores;
 		private JComboBox<String> fitness;
 		private JPanel panel;
-		
+
 		public EvilineAIConfigurator() {
 			dropsOnly = new JCheckBox();
 			lookahead = new JSpinner(new SpinnerNumberModel(3, 0, 6, 1));
@@ -80,7 +80,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			panel.add(new JLabel("AI fitness function: "));
 			panel.add(fitness);
 		}
-		
+
 		@Override
 		public JComponent getConfigurationComponent() {
 			return panel;
@@ -103,28 +103,28 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			cpuCores.setValue(CPU_CORES.value(p));
 			fitness.setSelectedItem(FITNESS.value(p));
 		}
-		
+
 	}
-	
+
 	private static EvilineAIConfigurator configurator = new EvilineAIConfigurator();
 
 	protected static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(1, 1, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
-	
+
 	protected class PathPipeline {
 		public ExecutorService exec;
 		public LinkedBlockingDeque<PathTask> pipe = new LinkedBlockingDeque<PathTask>();
-		
+
 		public PathPipeline() {
 			exec = Executors.newSingleThreadExecutor();
 		}
-		
+
 		public void exec(Runnable task) {
 			try {
 				exec.execute(task);
 			} catch(RejectedExecutionException e) {
 			}
 		}
-		
+
 		public boolean extend(final GameEngine gameEngine) {
 			if(pipe.size() == 0) {
 				int xyshape = XYShapeAdapter.toXYShape(gameEngine);
@@ -153,7 +153,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 				});
 				return true;
 			}
-			
+
 			PathTask tail = pipe.peekLast();
 			if(tail == null)
 				return false;
@@ -177,14 +177,14 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			});
 			return true;
 		}
-		
+
 		public PathTask discardUntil(GameEngine engine) {
 			PathTask pt;
 			for(pt = pipe.peekFirst(); pt != null && pt.seq < engine.nextPieceCount; pt = pipe.peekFirst())
 				pipe.pollFirst();
 			return pt;
 		}
-		
+
 		public byte[] currentPath(GameEngine engine) {
 			PathTask pt = discardUntil(engine);
 			if(pt == null) {
@@ -195,7 +195,18 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 				return null;
 			return pt.path;
 		}
-		
+
+		public int desiredXYShape(GameEngine engine) {
+			PathTask pt = discardUntil(engine);
+			if(pt == null) {
+				extend(engine);
+				pt = discardUntil(engine);
+			}
+			if(pt == null || !pt.task.isDone())
+				return -1;
+			return pt.xydest;
+		}
+
 		public org.eviline.core.Field expectedField(GameEngine engine) {
 			extend(engine);
 			PathTask pt = discardUntil(engine);
@@ -203,7 +214,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 				return null;
 			return pt.field;
 		}
-		
+
 		public boolean isDirty(GameEngine engine) {
 			PathTask pt = pipe.peekFirst();
 			if(pt != null && pt.task.isDone()) {
@@ -220,7 +231,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			f.copyFrom(expected);
 			return f.update(engine.field);
 		}
-		
+
 		public void shutdown() {
 			exec.shutdownNow();
 			PathTask pt = pipe.peekLast();
@@ -228,16 +239,17 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 				pt.task.cancel(true);
 		}
 	}
-	
+
 	protected class PathTask {
 		public PathPipeline pipeline;
 		public int seq;
 		public org.eviline.core.Field field;
 		public int xystart;
+		public int xydest;
 		public ShapeType[] next;
 		public FutureTask<Best> task;
 		public byte[] path;
-		
+
 		public PathTask(PathPipeline pipeline, int seq, org.eviline.core.Field field, int xystart, ShapeType[] next) {
 			this.pipeline = pipeline;
 			this.seq = seq;
@@ -254,12 +266,13 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 					player.tick();
 					Best best = player.getBest();
 					path = createCommandPath(best.graph);
+					xydest = best.shape;
 					return best;
 				}
 			});
 		}
-		
-		
+
+
 		public Best get() {
 			try {
 				return task.get();
@@ -267,7 +280,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 				return null;
 			}
 		}
-		
+
 		public PathTask extend(GameEngine gameEngine) {
 			ShapeType[] extnext = createGameNext(gameEngine, seq);
 			if(extnext == null || extnext.length < lookahead + 2)
@@ -283,23 +296,23 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 					Arrays.copyOfRange(extnext, 1, extnext.length));
 		}
 	}
-	
+
 	protected DefaultAIKernel ai;
-	
+
 	protected Command shifting = null;
-	
+
 	protected int lookahead = 3;
-	
+
 	protected PathPipeline pipeline;
-	
-	
+
+
 	protected byte[] createCommandPath(CommandGraph g) {
 		byte[] computingPaths = new byte[XYShapes.SHAPE_MAX];
 		Arrays.fill(computingPaths, (byte) -1);
 		int xyshape = g.getSelectedShape();
-		
+
 		boolean tail = true;
-		
+
 		computingPaths[xyshape] = (byte) Command.HARD_DROP.ordinal();
 		while(xyshape != CommandGraph.NULL_ORIGIN) {
 			int parent = CommandGraph.originOf(g.getVertices(), xyshape);
@@ -319,10 +332,10 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			}
 			xyshape = parent;
 		}
-		
+
 		return computingPaths;
 	}
-	
+
 	protected ShapeType[] createGameNext(GameEngine engine, int seq) {
 		if(seq < engine.nextPieceCount || seq >= engine.nextPieceCount + engine.nextPieceArraySize)
 			return null;
@@ -332,17 +345,17 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			nextShapes[size - i] = XYShapeAdapter.toShapeType(engine.getNextObject(engine.nextPieceCount + engine.nextPieceArraySize - i));
 		return nextShapes;
 	}
-	
+
 	public Eviline2AI() {}
-	
-	
-	
+
+
+
 	protected void resetPipeline() {
 		pipeline.shutdown();
 		pipeline = new PathPipeline();
 		lastxy = -1;
 	}
-	
+
 	@Override
 	public String getName() {
 		return "eviline2";
@@ -351,7 +364,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	@Override
 	public void init(GameEngine engine, int playerID) {
 		CustomProperties opt = Options.player(playerID).ai.BACKING;
-		
+
 		int cores = CPU_CORES.value(opt);
 		if(cores > POOL.getCorePoolSize()) {
 			POOL.setMaximumPoolSize(cores);
@@ -360,14 +373,14 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			POOL.setCorePoolSize(cores);
 			POOL.setMaximumPoolSize(cores);
 		}
-		
+
 		Fitness fitness;
 		try {
 			fitness = Class.forName("org.eviline.core.ai." + FITNESS.value(opt)).asSubclass(Fitness.class).newInstance();
 		} catch(Exception e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		ai = new DefaultAIKernel(POOL, fitness);
 		ai.setDropsOnly(DROPS_ONLY.value(opt));
 		ai.setPruneTop(PRUNE_TOP.value(opt));
@@ -382,125 +395,125 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	}
 
 	protected int lastxy = -1;
-	
+
 	@Override
 	public void setControl(GameEngine engine, int playerID, Controller ctrl) {
 		try {
-		int xyshape = XYShapeAdapter.toXYShape(engine);
-		int input = 0;
-		
-		if(xyshape == -1) {
-			ctrl.setButtonBit(input);
-			return;
-		}
+			int xyshape = XYShapeAdapter.toXYShape(engine);
+			int input = 0;
 
-		if(shifting != null) {
-			EngineAdapter engineAdapter = new EngineAdapter();
-			engineAdapter.update(engine);
-			
-			switch(shifting) {
-			case AUTOSHIFT_LEFT:
-				if(!engineAdapter.getField().intersects(XYShapes.shiftedLeft(xyshape)))
-					input |= Controller.BUTTON_BIT_LEFT;
-				else
-					shifting = null;
-				break;
-			case AUTOSHIFT_RIGHT:
-				if(!engineAdapter.getField().intersects(XYShapes.shiftedRight(xyshape)))
-					input |= Controller.BUTTON_BIT_RIGHT;
-				else
-					shifting = null;
-				break;
-			case SOFT_DROP:
-				if(!engineAdapter.getField().intersects(XYShapes.shiftedDown(xyshape)))
-					input |= Controller.BUTTON_BIT_DOWN;
-				else
-					shifting = null;
-				break;
-			}
-			if(shifting != null) {
+			if(xyshape == -1) {
 				ctrl.setButtonBit(input);
 				return;
 			}
-		}
-		
-		byte[] paths = pipeline.currentPath(engine);
-		
-		if(paths == null) {
-			if(pipeline.isDirty(engine)) {
+
+			if(shifting != null) {
+				EngineAdapter engineAdapter = new EngineAdapter();
+				engineAdapter.update(engine);
+
+				switch(shifting) {
+				case AUTOSHIFT_LEFT:
+					if(!engineAdapter.getField().intersects(XYShapes.shiftedLeft(xyshape)))
+						input |= Controller.BUTTON_BIT_LEFT;
+					else
+						shifting = null;
+					break;
+				case AUTOSHIFT_RIGHT:
+					if(!engineAdapter.getField().intersects(XYShapes.shiftedRight(xyshape)))
+						input |= Controller.BUTTON_BIT_RIGHT;
+					else
+						shifting = null;
+					break;
+				case SOFT_DROP:
+					if(!engineAdapter.getField().intersects(XYShapes.shiftedDown(xyshape)))
+						input |= Controller.BUTTON_BIT_DOWN;
+					else
+						shifting = null;
+					break;
+				}
+				if(shifting != null) {
+					ctrl.setButtonBit(input);
+					return;
+				}
+			}
+
+			byte[] paths = pipeline.currentPath(engine);
+
+			if(paths == null) {
+				if(pipeline.isDirty(engine)) {
+					resetPipeline();
+					pipeline.extend(engine);
+				}
+				ctrl.setButtonBit(input);
+				return;
+			}
+
+			Command c = Command.fromOrdinal(paths[xyshape]);
+			if(c == null || pipeline.isDirty(engine)) {
+				ctrl.setButtonBit(input);
 				resetPipeline();
 				pipeline.extend(engine);
-			}
-			ctrl.setButtonBit(input);
-			return;
-		}
-		
-		Command c = Command.fromOrdinal(paths[xyshape]);
-		if(c == null || pipeline.isDirty(engine)) {
-			ctrl.setButtonBit(input);
-			resetPipeline();
-			pipeline.extend(engine);
-			return;
-		} else if(xyshape != lastxy && lastxy >= 0)
-			paths[lastxy] = -1;
-		lastxy = xyshape;
-		
-		switch(c) {
-		case AUTOSHIFT_LEFT:
-			if(ctrl.isPress(Controller.BUTTON_LEFT))
-				break;
-			shifting = Command.AUTOSHIFT_LEFT;
-			input |= Controller.BUTTON_BIT_LEFT;
-			break;
-		case SHIFT_LEFT:
-			if(!ctrl.isPress(Controller.BUTTON_LEFT))
+				return;
+			} else if(xyshape != lastxy && lastxy >= 0)
+				paths[lastxy] = -1;
+			lastxy = xyshape;
+
+			switch(c) {
+			case AUTOSHIFT_LEFT:
+				if(ctrl.isPress(Controller.BUTTON_LEFT))
+					break;
+				shifting = Command.AUTOSHIFT_LEFT;
 				input |= Controller.BUTTON_BIT_LEFT;
-			break;
-		case AUTOSHIFT_RIGHT:
-			if(ctrl.isPress(Controller.BUTTON_RIGHT))
 				break;
-			shifting = Command.AUTOSHIFT_RIGHT;
-			input |= Controller.BUTTON_BIT_RIGHT;
-			break;
-		case SHIFT_RIGHT:
-			if(!ctrl.isPress(Controller.BUTTON_RIGHT))
+			case SHIFT_LEFT:
+				if(!ctrl.isPress(Controller.BUTTON_LEFT))
+					input |= Controller.BUTTON_BIT_LEFT;
+				break;
+			case AUTOSHIFT_RIGHT:
+				if(ctrl.isPress(Controller.BUTTON_RIGHT))
+					break;
+				shifting = Command.AUTOSHIFT_RIGHT;
 				input |= Controller.BUTTON_BIT_RIGHT;
-			break;
-		case ROTATE_LEFT:
-			if(engine.isRotateButtonDefaultRight()) {
-				if(!ctrl.isPress(Controller.BUTTON_B))
-					input |= Controller.BUTTON_BIT_B;
-			} else {
-				if(!ctrl.isPress(Controller.BUTTON_A))
-					input |= Controller.BUTTON_BIT_A;
-			}
-			break;
-		case ROTATE_RIGHT:
-			if(engine.isRotateButtonDefaultRight()) {
-				if(!ctrl.isPress(Controller.BUTTON_A))
-					input |= Controller.BUTTON_BIT_A;
-			} else {
-				if(!ctrl.isPress(Controller.BUTTON_B))
-					input |= Controller.BUTTON_BIT_B;
-			}
-			break;
-		case SOFT_DROP:
-			if(ctrl.isPress(Controller.BUTTON_DOWN))
 				break;
-			shifting = Command.SOFT_DROP;
-			input |= Controller.BUTTON_BIT_DOWN;
-			break;
-		case SHIFT_DOWN:
-			if(!ctrl.isPress(Controller.BUTTON_DOWN))
+			case SHIFT_RIGHT:
+				if(!ctrl.isPress(Controller.BUTTON_RIGHT))
+					input |= Controller.BUTTON_BIT_RIGHT;
+				break;
+			case ROTATE_LEFT:
+				if(engine.isRotateButtonDefaultRight()) {
+					if(!ctrl.isPress(Controller.BUTTON_B))
+						input |= Controller.BUTTON_BIT_B;
+				} else {
+					if(!ctrl.isPress(Controller.BUTTON_A))
+						input |= Controller.BUTTON_BIT_A;
+				}
+				break;
+			case ROTATE_RIGHT:
+				if(engine.isRotateButtonDefaultRight()) {
+					if(!ctrl.isPress(Controller.BUTTON_A))
+						input |= Controller.BUTTON_BIT_A;
+				} else {
+					if(!ctrl.isPress(Controller.BUTTON_B))
+						input |= Controller.BUTTON_BIT_B;
+				}
+				break;
+			case SOFT_DROP:
+				if(ctrl.isPress(Controller.BUTTON_DOWN))
+					break;
+				shifting = Command.SOFT_DROP;
 				input |= Controller.BUTTON_BIT_DOWN;
-			break;
-		case HARD_DROP:
-			if(!ctrl.isPress(Controller.BUTTON_UP))
-				input |= Controller.BUTTON_BIT_UP;
-			break;
-		}
-		
-		ctrl.setButtonBit(input);
+				break;
+			case SHIFT_DOWN:
+				if(!ctrl.isPress(Controller.BUTTON_DOWN))
+					input |= Controller.BUTTON_BIT_DOWN;
+				break;
+			case HARD_DROP:
+				if(!ctrl.isPress(Controller.BUTTON_UP))
+					input |= Controller.BUTTON_BIT_UP;
+				break;
+			}
+
+			ctrl.setButtonBit(input);
 		} catch(RuntimeException re) {
 			re.printStackTrace();
 			throw re;
@@ -527,7 +540,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	@Override
 	public void newPiece(GameEngine engine, int playerID) {
 		try {
-		pipeline.extend(engine);
+			pipeline.extend(engine);
 		} catch(RuntimeException e) {
 			e.printStackTrace();
 			throw e;
@@ -537,8 +550,33 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 	@Override
 	public void renderHint(GameEngine engine, int playerID) {
-		// TODO Auto-generated method stub
+		int xyshape = XYShapeAdapter.toXYShape(engine);
 
+		if(xyshape == -1) {
+			thinkComplete = false;
+			engine.aiHintPiece = null;
+			engine.aiHintReady = false;
+			return;
+		}
+
+		int xydest = pipeline.desiredXYShape(engine);
+
+		if(xydest == -1 || pipeline.isDirty(engine)) {
+			resetPipeline();
+			pipeline.extend(engine);
+			thinkComplete = false;
+			engine.aiHintPiece = null;
+			engine.aiHintReady = false;
+			return;
+		}
+
+		engine.aiHintPiece = XYShapeAdapter.fromXYShape(xydest);
+		bestX = XYShapes.xFromInt(xydest);
+		bestY = XYShapes.yFromInt(xydest);
+		bestHold = false;
+		bestRt = XYShapes.shapeFromInt(xydest).direction().ordinal();
+		engine.aiHintReady = true;
+		thinkComplete = true;
 	}
 
 	@Override

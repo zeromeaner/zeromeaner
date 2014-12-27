@@ -91,5 +91,13 @@ public abstract class XYShapeAdapter {
 		return XYShapes.toXYShape(engine.nowPieceX, engine.nowPieceY, shape);
 	}
 	
+	public static Piece fromXYShape(int xyshape) {
+		if(xyshape == -1)
+			return null;
+		
+		ShapeType type = XYShapes.shapeFromInt(xyshape).type();
+		return new Piece(fromShapeType(type));
+	}
+	
 	private XYShapeAdapter() {}
 }
