@@ -41,10 +41,8 @@ public class CornerPileLayout implements LayoutManager2 {
 	public static final Comparator<Component> TEXT_ORDER = new Comparator<Component>() {
 		@Override
 		public int compare(Component o1, Component o2) {
-			String t1 = ((AbstractButton) o1).getText();
-			String t2 = ((AbstractButton) o2).getText();
-			t1 = t1.replaceAll("<.*?>", "");
-			t2 = t2.replaceAll("<.*?>", "");
+			String t1 = o1.getName();
+			String t2 = o2.getName();
 			int c = String.CASE_INSENSITIVE_ORDER.compare(t1, t2);
 			return c;
 		}
@@ -113,14 +111,14 @@ public class CornerPileLayout implements LayoutManager2 {
 				}
 			} else {
 				r.x = buf.getWidth() - 1 - r.width;
-				r.y = 50;
+				r.y = buf.getHeight() - 1;
 				for(int i = 0; i < buf.getWidth() * buf.getHeight(); i++) {
 					if(isAvailable(r))
 						break;
-					r.y+=STEP;
-					if(r.y >= buf.getHeight()) {
+					r.y-=STEP;
+					if(r.y < 50 + (buf.getWidth() - r.x - r.width)) {
 						r.x -= STEP;
-						r.y = 50 + (buf.getWidth() - r.x - r.width);
+						r.y = buf.getHeight() - 1;
 					}
 				}
 			}

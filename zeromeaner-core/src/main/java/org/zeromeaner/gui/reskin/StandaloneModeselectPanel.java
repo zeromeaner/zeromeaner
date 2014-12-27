@@ -29,6 +29,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
@@ -127,6 +128,18 @@ public class StandaloneModeselectPanel extends JPanel {
 
 		ButtonGroup g = new ButtonGroup();
 		buttonsPanel = new JPanel(new CornerPileLayout());
+		
+		JLabel l;
+		l = new JLabel("MODES");
+		l.setFont(l.getFont().deriveFont(24f));
+		l.setName("");
+		buttonsPanel.add(l, CornerPileLayout.NORTH_WEST);
+		
+		l = new JLabel("RULES");
+		l.setFont(l.getFont().deriveFont(24f));
+		l.setName("");
+		buttonsPanel.add(l, CornerPileLayout.SOUTH_EAST);
+		
 		for(GameMode mode : ModeList.getModes()) {
 			if(mode.isNetplayMode())
 				continue;
@@ -177,6 +190,7 @@ public class StandaloneModeselectPanel extends JPanel {
 //			super("<html>" + m.getName().replaceAll("-+", "<br>"));
 			super(formatButtonText(m.getName()));
 			this.mode = m;
+			setName(m.getName());
 
 			MetalLookAndFeel laf = (MetalLookAndFeel) UIManager.getLookAndFeel();
 			Font f = laf.getControlTextFont();
@@ -227,7 +241,8 @@ public class StandaloneModeselectPanel extends JPanel {
 		public RuleButton(RuleOptions r) {
 			this.rule = r;
 			this.custom = r.resourceName.contains("/Custom_");
-
+			setName(rule.strRuleName);
+			
 			MetalLookAndFeel laf = (MetalLookAndFeel) UIManager.getLookAndFeel();
 			Font f = laf.getControlTextFont();
 			f = f.deriveFont(Font.PLAIN);
