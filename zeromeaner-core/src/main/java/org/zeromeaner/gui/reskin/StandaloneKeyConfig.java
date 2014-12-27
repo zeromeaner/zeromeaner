@@ -41,6 +41,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -164,6 +165,7 @@ public class StandaloneKeyConfig extends JPanel implements ActionListener {
 			JPanel psKeyTemp = new JPanel();
 			pKeySetting.add(psKeyTemp);
 			psKeyTemp.setLayout(new BorderLayout());
+			psKeyTemp.setBorder(BorderFactory.createRaisedBevelBorder());
 
 			psKeyTemp.add(new JLabel(lz.s("KeyConfig_LabelKey" + i)), BorderLayout.WEST);
 
@@ -185,6 +187,7 @@ public class StandaloneKeyConfig extends JPanel implements ActionListener {
 			JPanel psKeyTemp = new JPanel();
 			pKeySettingNav.add(psKeyTemp);
 			psKeyTemp.setLayout(new BorderLayout());
+			psKeyTemp.setBorder(BorderFactory.createRaisedBevelBorder());
 
 			psKeyTemp.add(new JLabel(lz.s("KeyConfig_LabelKey" + i)), BorderLayout.WEST);
 
