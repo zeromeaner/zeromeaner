@@ -29,17 +29,19 @@ public class Eviline2Randomizer extends Randomizer {
 	public static final int DEFAULT_LOOKAHEAD = 3;
 	public static final int DEFAULT_BAG_N = 4;
 	
-	protected static final ExecutorService EXEC = Executors.newFixedThreadPool(
-			Math.max(2, Runtime.getRuntime().availableProcessors()-1),
-			new ThreadFactory() {
-				private ThreadFactory f = Executors.defaultThreadFactory();
-				@Override
-				public Thread newThread(Runnable r) {
-					Thread t = f.newThread(r);
-					t.setName(t.getName() + ": " + Eviline2Randomizer.class.getSimpleName());
-					return t;
-				}
-			});
+	protected static final ExecutorService EXEC =
+			Executors.newCachedThreadPool();
+//			Executors.newFixedThreadPool(
+//			Math.max(2, Runtime.getRuntime().availableProcessors()-1),
+//			new ThreadFactory() {
+//				private ThreadFactory f = Executors.defaultThreadFactory();
+//				@Override
+//				public Thread newThread(Runnable r) {
+//					Thread t = f.newThread(r);
+//					t.setName(t.getName() + ": " + Eviline2Randomizer.class.getSimpleName());
+//					return t;
+//				}
+//			});
 	protected static final SubtaskExecutor SUBTASKS = new SubtaskExecutor(EXEC, 0);
 	
 	protected static final BestAdjuster ADJUSTER = new BestAdjuster() {
@@ -82,7 +84,7 @@ public class Eviline2Randomizer extends Randomizer {
 	@Override
 	public void init() {
 		evilEngine = new EngineAdapter();
-		ai = new DefaultAIKernel(SUBTASKS, new DefaultFitness());
+		ai = new DefaultAIKernel(EXEC, new DefaultFitness());
 		ai.setAdjuster(ADJUSTER);
 		shapes = new EvilBag7NShapeSource(DEFAULT_BAG_N, DEFAULT_LOOKAHEAD);
 		shapes.setAi(ai);

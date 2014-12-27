@@ -60,7 +60,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		private JCheckBox dropsOnly;
 		private JSpinner lookahead;
 		private JSpinner pruneTop;
-		private JSpinner cpuCores;
+//		private JSpinner cpuCores;
 		private JComboBox<String> fitness;
 		private JPanel panel;
 
@@ -68,15 +68,15 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			dropsOnly = new JCheckBox();
 			lookahead = new JSpinner(new SpinnerNumberModel(3, 0, 6, 1));
 			pruneTop = new JSpinner(new SpinnerNumberModel(5, 1, 20, 1));
-			cpuCores = new JSpinner(new SpinnerNumberModel(8, 1, 16, 1));
+//			cpuCores = new JSpinner(new SpinnerNumberModel(8, 1, 64, 1));
 			fitness = new JComboBox<>(new String[] {"DefaultFitness", "NextFitness", "ScoreFitness"});
 			panel = new JPanel(new GridLayout(0, 2));
 			panel.add(new JLabel("Maximum Lookahead: "));
 			panel.add(lookahead);
 			panel.add(new JLabel("Lookahead Choices: "));
 			panel.add(pruneTop);
-			panel.add(new JLabel("Number of AI CPU cores: "));
-			panel.add(cpuCores);
+//			panel.add(new JLabel("Number of AI CPU cores: "));
+//			panel.add(cpuCores);
 			panel.add(new JLabel("Only use drops (don't shift down)"));
 			panel.add(dropsOnly);
 			panel.add(new JLabel("AI fitness function: "));
@@ -93,7 +93,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			LOOKAHEAD.set(p, (Integer) lookahead.getValue());
 			PRUNE_TOP.set(p, (Integer) pruneTop.getValue());
 			DROPS_ONLY.set(p, dropsOnly.isSelected());
-			CPU_CORES.set(p, (Integer) cpuCores.getValue());
+//			CPU_CORES.set(p, (Integer) cpuCores.getValue());
 			FITNESS.set(p, (String) fitness.getSelectedItem());
 		}
 
@@ -102,7 +102,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			lookahead.setValue(LOOKAHEAD.value(p));
 			pruneTop.setValue(PRUNE_TOP.value(p));
 			dropsOnly.setSelected(DROPS_ONLY.value(p));
-			cpuCores.setValue(CPU_CORES.value(p));
+//			cpuCores.setValue(CPU_CORES.value(p));
 			fitness.setSelectedItem(FITNESS.value(p));
 		}
 
@@ -110,11 +110,13 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 	private static EvilineAIConfigurator configurator = new EvilineAIConfigurator();
 
-	protected static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(
-			1, 1, 
-			10, TimeUnit.SECONDS, 
-			new SynchronousQueue<Runnable>(),
-			new ThreadPoolExecutor.DiscardPolicy());
+	protected static final ExecutorService POOL =
+			Executors.newCachedThreadPool();
+//			new ThreadPoolExecutor(
+//			1, 1, 
+//			10, TimeUnit.SECONDS, 
+//			new SynchronousQueue<Runnable>(),
+//			new ThreadPoolExecutor.DiscardPolicy());
 
 	protected class PathPipeline {
 		public ExecutorService exec;
@@ -163,7 +165,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			PathTask tail = pipe.peekLast();
 			if(tail == null)
 				return false;
-			if(tail.seq >= gameEngine.nextPieceCount + gameEngine.nextPieceArraySize - lookahead || !tail.task.isDone())
+			if(tail.seq >= gameEngine.nextPieceCount + pipeLength || !tail.task.isDone())
 				return false;
 			final PathTask pt = tail.extend(gameEngine);
 			if(pt == null)
@@ -255,7 +257,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		public int xystart;
 		public int xydest;
 		public ShapeType[] next;
-		public FutureTask<Best> task;
+		public FutureTask<Boolean> task;
 		public byte[] path;
 
 		public PathTask(PathPipeline pipeline, int seq, org.eviline.core.Field field, int xystart, ShapeType[] next) {
@@ -264,9 +266,9 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			this.field = field;
 			this.xystart = xystart;
 			this.next = next;
-			task = new FutureTask<>(new Callable<Best>() {
+			task = new FutureTask<>(new Callable<Boolean>() {
 				@Override
-				public Best call() throws Exception {
+				public Boolean call() throws Exception {
 					Engine engine = new Engine(PathTask.this.field, new Configuration(null, 0));
 					engine.setNext(PathTask.this.next);
 					engine.setShape(PathTask.this.xystart);
@@ -276,13 +278,13 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 					path = createCommandPath(best.graph);
 					after = best.after;
 					xydest = best.shape;
-					return best;
+					return true;
 				}
 			});
 		}
 
 
-		public Best get() {
+		public Boolean get() {
 			try {
 				return task.get();
 			} catch(Exception e) {
@@ -293,14 +295,18 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		public PathTask extend(GameEngine gameEngine) {
 			ShapeType[] extnext = Arrays.copyOfRange(next, 1, next.length);
 			if(extnext == null || extnext.length < lookahead + 2)
+				extnext = createGameNext(gameEngine, seq + 2);
+			if(extnext == null || extnext.length < lookahead + 2)
 				return null;
-			Best best = get();
-			if(best == null)
+			Boolean best = get();
+			if(best == null) {
+				resetPipeline();
 				return null;
+			}
 			return new PathTask(
 					pipeline,
 					seq+1,
-					best.after,
+					after,
 					XYShapes.toXYShape(extnext[0].startX(), extnext[0].startY(), extnext[0].start()),
 					Arrays.copyOfRange(extnext, 1, extnext.length));
 		}
@@ -314,6 +320,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 	protected PathPipeline pipeline;
 
+	protected int pipeLength = 0;
 
 	protected byte[] createCommandPath(CommandGraph g) {
 		byte[] computingPaths = new byte[XYShapes.SHAPE_MAX];
@@ -348,7 +355,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	protected ShapeType[] createGameNext(GameEngine engine, int seq) {
 		if(seq < engine.nextPieceCount || seq >= engine.nextPieceCount + engine.nextPieceArraySize - lookahead - 1)
 			return null;
-		int size = Math.min(engine.nextPieceArraySize - (seq - engine.nextPieceCount), lookahead + 3);
+		int size = Math.min(engine.nextPieceArraySize - (seq - engine.nextPieceCount), lookahead + pipeLength + 2);
 		ShapeType[] nextShapes = new ShapeType[size];
 		for(int i = 0; i < size; i++)
 			nextShapes[i] = XYShapeAdapter.toShapeType(engine.getNextObject(seq + i - 1));
@@ -375,14 +382,14 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	public void init(GameEngine engine, int playerID) {
 		CustomProperties opt = Options.player(playerID).ai.BACKING;
 
-		int cores = CPU_CORES.value(opt);
-		if(cores > POOL.getCorePoolSize()) {
-			POOL.setMaximumPoolSize(cores);
-			POOL.setCorePoolSize(cores);
-		} else if(cores < POOL.getCorePoolSize()) {
-			POOL.setCorePoolSize(cores);
-			POOL.setMaximumPoolSize(cores);
-		}
+//		int cores = CPU_CORES.value(opt);
+//		if(cores > POOL.getCorePoolSize()) {
+//			POOL.setMaximumPoolSize(cores);
+//			POOL.setCorePoolSize(cores);
+//		} else if(cores < POOL.getCorePoolSize()) {
+//			POOL.setCorePoolSize(cores);
+//			POOL.setMaximumPoolSize(cores);
+//		}
 
 		Fitness fitness;
 		try {
@@ -391,9 +398,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			throw new RuntimeException(e);
 		}
 
-		SubtaskExecutor sexec = new SubtaskExecutor(POOL, 0);
-		
-		ai = new DefaultAIKernel(sexec, fitness);
+		ai = new DefaultAIKernel(POOL, fitness);
 		ai.setDropsOnly(DROPS_ONLY.value(opt));
 		ai.setPruneTop(PRUNE_TOP.value(opt));
 		pipeline = new PathPipeline();
