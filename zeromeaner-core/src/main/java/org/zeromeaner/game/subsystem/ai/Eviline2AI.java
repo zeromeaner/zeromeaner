@@ -109,7 +109,11 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 	private static EvilineAIConfigurator configurator = new EvilineAIConfigurator();
 
-	protected static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(1, 1, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+	protected static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(
+			1, 1, 
+			10, TimeUnit.SECONDS, 
+			new LinkedBlockingQueue<Runnable>(),
+			new ThreadPoolExecutor.DiscardPolicy());
 
 	protected class PathPipeline {
 		public ExecutorService exec;
