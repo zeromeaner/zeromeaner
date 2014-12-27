@@ -162,7 +162,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			PathTask tail = pipe.peekLast();
 			if(tail == null)
 				return false;
-			if(tail.seq >= gameEngine.nextPieceCount + gameEngine.nextPieceArraySize - lookahead - 3 || !tail.task.isDone())
+			if(tail.seq >= gameEngine.nextPieceCount + gameEngine.nextPieceArraySize - lookahead || !tail.task.isDone())
 				return false;
 			final PathTask pt = tail.extend(gameEngine);
 			if(pt == null)
@@ -288,7 +288,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 		public PathTask extend(GameEngine gameEngine) {
 			ShapeType[] extnext = createGameNext(gameEngine, seq);
-			if(extnext == null || extnext.length < lookahead + 2)
+			if(extnext == null || extnext.length < lookahead + 1)
 				return null;
 			Best best = get();
 			if(best == null)
@@ -342,12 +342,13 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	}
 
 	protected ShapeType[] createGameNext(GameEngine engine, int seq) {
-		if(seq < engine.nextPieceCount || seq >= engine.nextPieceCount + engine.nextPieceArraySize)
+		if(seq < engine.nextPieceCount || seq >= engine.nextPieceCount + engine.nextPieceArraySize - 2)
 			return null;
-		int size = engine.nextPieceArraySize - (seq - engine.nextPieceCount);
+		int size = Math.min(engine.nextPieceArraySize - (seq - engine.nextPieceCount), lookahead + 2);
 		ShapeType[] nextShapes = new ShapeType[size];
-		for(int i = 1; i <= size; i++)
-			nextShapes[size - i] = XYShapeAdapter.toShapeType(engine.getNextObject(engine.nextPieceCount + engine.nextPieceArraySize - i));
+		for(int i = 0; i < size; i++)
+			nextShapes[i] = XYShapeAdapter.toShapeType(engine.getNextObject(seq + i));
+		System.out.println(Arrays.asList(nextShapes));
 		return nextShapes;
 	}
 
@@ -356,6 +357,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 
 	protected void resetPipeline() {
+		System.out.println("Resetting pipeline");
 		pipeline.shutdown();
 		pipeline = new PathPipeline();
 		lastxy = -1;
