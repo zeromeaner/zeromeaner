@@ -60,7 +60,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		private JCheckBox dropsOnly;
 		private JSpinner lookahead;
 		private JSpinner pruneTop;
-//		private JSpinner cpuCores;
+		private JSpinner cpuCores;
 		private JComboBox<String> fitness;
 		private JPanel panel;
 
@@ -68,7 +68,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			dropsOnly = new JCheckBox();
 			lookahead = new JSpinner(new SpinnerNumberModel(3, 0, 6, 1));
 			pruneTop = new JSpinner(new SpinnerNumberModel(5, 1, 20, 1));
-//			cpuCores = new JSpinner(new SpinnerNumberModel(8, 1, 64, 1));
+			cpuCores = new JSpinner(new SpinnerNumberModel(8, 1, 128, 1));
 			fitness = new JComboBox<>(new String[] {"DefaultFitness", "NextFitness", "ScoreFitness"});
 			panel = new JPanel(new GridLayout(0, 2));
 			panel.add(new JLabel("Maximum Lookahead: "));
@@ -93,7 +93,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			LOOKAHEAD.set(p, (Integer) lookahead.getValue());
 			PRUNE_TOP.set(p, (Integer) pruneTop.getValue());
 			DROPS_ONLY.set(p, dropsOnly.isSelected());
-//			CPU_CORES.set(p, (Integer) cpuCores.getValue());
+			CPU_CORES.set(p, (Integer) cpuCores.getValue());
 			FITNESS.set(p, (String) fitness.getSelectedItem());
 		}
 
@@ -102,7 +102,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			lookahead.setValue(LOOKAHEAD.value(p));
 			pruneTop.setValue(PRUNE_TOP.value(p));
 			dropsOnly.setSelected(DROPS_ONLY.value(p));
-//			cpuCores.setValue(CPU_CORES.value(p));
+			cpuCores.setValue(CPU_CORES.value(p));
 			fitness.setSelectedItem(FITNESS.value(p));
 		}
 
@@ -110,7 +110,10 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 	private static EvilineAIConfigurator configurator = new EvilineAIConfigurator();
 
-	protected static final ExecutorService POOL =
+	protected static final 
+//	ThreadPoolExecutor
+	ExecutorService
+	POOL =
 			Executors.newCachedThreadPool();
 //			new ThreadPoolExecutor(
 //			1, 1, 
@@ -236,8 +239,8 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			FieldAdapter f1 = new FieldAdapter();
 			f1.copyFrom(expected1);
 			boolean dirty = f1.update(engine.field);// && f2.update(engine.field);
-			if(dirty)
-				System.out.println("dirty field");
+//			if(dirty)
+//				System.out.println("dirty field");
 			return dirty;
 		}
 
@@ -320,7 +323,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 	protected PathPipeline pipeline;
 
-	protected int pipeLength = 1;
+	protected int pipeLength = 0;
 
 	protected byte[] createCommandPath(CommandGraph g) {
 		byte[] computingPaths = new byte[XYShapes.SHAPE_MAX];
@@ -367,7 +370,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 
 	protected void resetPipeline() {
-		System.out.println("reset pipeline");
+//		System.out.println("reset pipeline");
 		pipeline.shutdown();
 		pipeline = new PathPipeline();
 		lastxy = -1;
