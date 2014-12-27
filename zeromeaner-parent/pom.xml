@@ -15,7 +15,9 @@
 
 		<module>../zeromeaner</module>
 		<module>../zeromeaner-plugin-video-recording</module>
+<!--
 		<module>../zeromeaner-applet</module>
+-->
 	</modules>
 
 	<build>
