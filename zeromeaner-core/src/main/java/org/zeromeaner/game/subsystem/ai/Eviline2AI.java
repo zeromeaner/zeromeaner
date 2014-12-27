@@ -561,7 +561,10 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 		int xydest = pipeline.desiredXYShape(engine);
 
-		if(xydest == -1 || pipeline.isDirty(engine)) {
+		if(xydest == -1)
+			return;
+		
+		if(pipeline.isDirty(engine)) {
 			resetPipeline();
 			pipeline.extend(engine);
 			thinkComplete = false;
