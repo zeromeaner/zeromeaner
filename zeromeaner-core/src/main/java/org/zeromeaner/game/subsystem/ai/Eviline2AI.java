@@ -351,7 +351,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		int size = engine.nextPieceArraySize - (seq - engine.nextPieceCount);
 		ShapeType[] nextShapes = new ShapeType[size];
 		for(int i = 0; i < size; i++)
-			nextShapes[i] = XYShapeAdapter.toShapeType(engine.getNextObject(seq + i - 1));
+			nextShapes[i] = XYShapeAdapter.toShapeType(engine.getNextObject(seq + i));
 		return nextShapes;
 	}
 
