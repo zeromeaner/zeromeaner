@@ -144,11 +144,12 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 				FieldAdapter f = new FieldAdapter();
 				f.update(gameEngine.field);
 				final PathTask pt = new PathTask(
+						gameEngine,
 						this,
 						gameEngine.nextPieceCount - 1,
 						f,
-						XYShapeAdapter.toXYShape(gameEngine),
-						createGameNext(gameEngine, gameEngine.nextPieceCount));
+						xyshape,
+						createGameNext(gameEngine, gameEngine.nextPieceCount + 1));
 				pipe.offerLast(pt);
 				exec(new Runnable() {
 					@Override
@@ -263,7 +264,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		public FutureTask<Boolean> task;
 		public byte[] path;
 
-		public PathTask(PathPipeline pipeline, int seq, org.eviline.core.Field field, int xystart, ShapeType[] next) {
+		public PathTask(final GameEngine gameEngine, final PathPipeline pipeline, int seq, org.eviline.core.Field field, int xystart, ShapeType[] next) {
 			this.pipeline = pipeline;
 			this.seq = seq;
 			this.field = field;
@@ -281,6 +282,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 					path = createCommandPath(best.graph);
 					after = best.after;
 					xydest = best.shape;
+					pipeline.extend(gameEngine);
 					return true;
 				}
 			});
@@ -303,10 +305,11 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 				return null;
 			Boolean best = get();
 			if(best == null) {
-				resetPipeline();
+				resetPipeline(gameEngine);
 				return null;
 			}
 			return new PathTask(
+					gameEngine,
 					pipeline,
 					seq+1,
 					after,
@@ -323,7 +326,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 	protected PathPipeline pipeline;
 
-	protected int pipeLength = 0;
+	protected int pipeLength = 1;
 
 	protected byte[] createCommandPath(CommandGraph g) {
 		byte[] computingPaths = new byte[XYShapes.SHAPE_MAX];
@@ -369,10 +372,11 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 
 
-	protected void resetPipeline() {
-//		System.out.println("reset pipeline");
+	protected void resetPipeline(GameEngine engine) {
+		System.out.println("reset pipeline");
 		pipeline.shutdown();
 		pipeline = new PathPipeline();
+		pipeline.extend(engine);
 		lastxy = -1;
 	}
 
@@ -461,8 +465,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 			if(paths == null) {
 				if(pipeline.isDirty(engine)) {
-					resetPipeline();
-					pipeline.extend(engine);
+					resetPipeline(engine);
 				}
 				ctrl.setButtonBit(input);
 				return;
@@ -471,8 +474,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			Command c = Command.fromOrdinal(paths[xyshape]);
 			if(c == null || pipeline.isDirty(engine)) {
 				ctrl.setButtonBit(input);
-				resetPipeline();
-				pipeline.extend(engine);
+				resetPipeline(engine);
 				return;
 			} else if(xyshape != lastxy && lastxy >= 0)
 				paths[lastxy] = -1;
@@ -585,8 +587,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			return;
 		
 		if(pipeline.isDirty(engine)) {
-			resetPipeline();
-			pipeline.extend(engine);
+			resetPipeline(engine);
 			thinkComplete = false;
 			engine.aiHintPiece = null;
 			engine.aiHintReady = false;
