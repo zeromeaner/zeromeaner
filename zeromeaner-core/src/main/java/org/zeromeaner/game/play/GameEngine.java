@@ -2233,7 +2233,8 @@ public class GameEngine {
 				initialHoldFlag = false;
 				holdDisable = true;
 			}
-			playSE("piece" + getNextObject(nextPieceCount).id);
+			if(!ruleopt.onDemandRandomizer)
+				playSE("piece" + getNextObject(nextPieceCount).id);
 
 			if(nowPieceObject.offsetApplied == false)
 				nowPieceObject.applyOffsetArray(ruleopt.pieceOffsetX[nowPieceObject.id], ruleopt.pieceOffsetY[nowPieceObject.id]);
