@@ -1000,6 +1000,32 @@ public class GameEngine {
 		if(nextPieceArrayObject == null) return null;
 		if(c == nextPieceCount - 1)
 			return nowPieceObject;
+		if(ruleopt.onDemandRandomizer) {
+			Piece p = new Piece(randomizer.next());
+			p.direction = ruleopt.pieceDefaultDirection[p.id];
+			if(p.direction >= Piece.DIRECTION_COUNT) {
+				p.direction = random.nextInt(Piece.DIRECTION_COUNT);
+			}
+			p.connectBlocks = this.connectBlocks;
+			p.setColor(ruleopt.pieceColor[p.id]);
+			p.setSkin(getSkin());
+			p.updateConnectData();
+			p.setAttribute(Block.BLOCK_ATTRIBUTE_VISIBLE, true);
+			p.setAttribute(Block.BLOCK_ATTRIBUTE_BONE, bone);
+			
+			if (randomBlockColor)
+			{
+				int size = p.getMaxBlock();
+				int[] colors = new int[size];
+				for (int j = 0; j < size; j++)
+					colors[j] = blockColors[random.nextInt(numColors)];
+				p.setColor(colors);
+				p.updateConnectData();
+			}
+			
+			return p;
+		}
+			
 		int o = c - nextPieceCount;
 		if(nextPieceCount / nextPieceArraySize == c / nextPieceArraySize) {
 			return nextPieceArrayObject[c % nextPieceArraySize];
@@ -1035,6 +1061,8 @@ public class GameEngine {
 
 	public void incrementNextPieceCount() {
 		nextPieceCount++;
+		if(ruleopt.onDemandRandomizer)
+			return;
 		if((nextPieceCount % nextPieceArraySize) == 0) {
 			for(int i = 1; i <= nextPieceArraySize; i++)
 				getNextObject(nextPieceCount + i);
@@ -2143,6 +2171,7 @@ public class GameEngine {
 		if(statc[0] == 0) {
 			if((statc[1] == 0) && (initialHoldFlag == false)) {
 				// Normal appearance
+				nowPieceObject = null;
 				nowPieceObject = getNextObjectCopy(nextPieceCount);
 				incrementNextPieceCount();
 				if(nextPieceCount < 0) nextPieceCount = 0;
