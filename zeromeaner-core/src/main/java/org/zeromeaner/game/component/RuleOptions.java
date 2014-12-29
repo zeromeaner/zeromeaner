@@ -51,6 +51,8 @@ public class RuleOptions implements Serializable {
 
 	public String resourceName;
 	
+	public boolean onDemandRandomizer;
+	
 	/** Of this ruleName */
 	public String strRuleName;
 
@@ -455,6 +457,7 @@ public class RuleOptions implements Serializable {
 	 * @param r Copy sourceOfRuleParam
 	 */
 	public void copy(RuleOptions r) {
+		onDemandRandomizer = r.onDemandRandomizer;
 		strRuleName = r.strRuleName;
 		strWallkick = r.strWallkick;
 		strRandomizer = r.strRandomizer;
@@ -707,6 +710,7 @@ public class RuleOptions implements Serializable {
 	 */
 	public void writeProperty(CustomProperties p, int id) {
 		p = p.subProperties(id + ".ruleopt.");
+		p.setProperty("onDemandRandomizer", onDemandRandomizer);
 		p.setProperty("strRuleName", strRuleName);
 		p.setProperty("strWallkick", strWallkick);
 		p.setProperty("strRandomizer", strRandomizer);
@@ -828,6 +832,7 @@ public class RuleOptions implements Serializable {
 	 */
 	public void readProperty(CustomProperties p, int id) {
 		p = p.subProperties(id + ".ruleopt.");
+		onDemandRandomizer = p.getProperty("onDemandRandomizer", onDemandRandomizer);
 		strRuleName = p.getProperty("strRuleName", strRuleName);
 		strWallkick = p.getProperty("strWallkick", strWallkick);
 		strRandomizer = p.getProperty("strRandomizer", strRandomizer);
