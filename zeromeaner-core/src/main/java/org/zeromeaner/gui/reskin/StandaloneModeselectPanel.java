@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -140,16 +141,27 @@ public class StandaloneModeselectPanel extends JPanel {
 		l.setName("");
 		buttonsPanel.add(l, CornerPileLayout.SOUTH_EAST);
 		
-		for(GameMode mode : ModeList.getModes()) {
-			if(mode.isNetplayMode())
-				continue;
-			ModeButton b = new ModeButton(mode);
-			buttonsPanel.add(
-					b,
-					CornerPileLayout.NORTH_WEST);
-			g.add(b);
-			this.modeButtons.add(b);
+		for(Map.Entry<String, List<String>> e : new LstResourceMap("config/list/modefolder.lst").entrySet()) {
+			JPanel p = new JPanel(new GridLayout(0, 1));
+			p.add(new JLabel(e.getKey()));
+			p.setName(e.getKey());
+			
+			for(GameMode mode : ModeList.getModes()) {
+				if(mode.isNetplayMode())
+					continue;
+				if(!e.getValue().contains(mode.getName()))
+					continue;
+				ModeButton b = new ModeButton(mode);
+				p.add(
+						b,
+						CornerPileLayout.NORTH_WEST);
+				g.add(b);
+				this.modeButtons.add(b);
+			}
+			
+			buttonsPanel.add(p, CornerPileLayout.NORTH_WEST);
 		}
+		
 		
 		ruleButtonGroup = new ButtonGroup();
 		RuleList rules = RuleList.getRules();
