@@ -73,6 +73,7 @@ public class Eviline2Randomizer extends Randomizer {
 	protected EvilBag7NShapeSource shapes;
 	
 	protected int count;
+	protected int current;
 	
 	public Eviline2Randomizer() {
 	}
@@ -97,11 +98,14 @@ public class Eviline2Randomizer extends Randomizer {
 		engine.nextPieceArraySize = 1;
 		engine.nextPieceArrayID = new int[engine.nextPieceArraySize];
 		engine.nextPieceArrayObject = new Piece[engine.nextPieceArraySize];
-		count = 0;
+		count = engine.nextPieceCount - 1;
 	}
 
 	@Override
 	public int next() {
+		if(count == engine.nextPieceCount) {
+			shapes.getRawBag().add(XYShapeAdapter.toShapeType(new Piece(current)));
+		}
 		engine.nextPieceArraySize = 1;
 		evilEngine.update(engine);
 		if(evilEngine.getShape() != -1) {
@@ -110,8 +114,9 @@ public class Eviline2Randomizer extends Randomizer {
 			evilEngine.getField().clearLines();
 		}
 		ShapeType worst = shapes.next(evilEngine);
-		int id = XYShapeAdapter.fromShapeType(worst);
-		return id;
+		current = XYShapeAdapter.fromShapeType(worst);
+		count = engine.nextPieceCount;
+		return current;
 	}
 
 }
