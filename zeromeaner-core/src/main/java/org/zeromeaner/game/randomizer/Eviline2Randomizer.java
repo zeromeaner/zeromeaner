@@ -84,7 +84,12 @@ public class Eviline2Randomizer extends Randomizer {
 	
 	@Override
 	public void init() {
-		evilEngine = new EngineAdapter();
+		evilEngine = new EngineAdapter() {
+			@Override
+			protected void updateNext(GameEngine nullpo) {
+				next = ShapeType.NONE;
+			}
+		};
 		ai = new DefaultAIKernel(EXEC, new DefaultFitness());
 		ai.setAdjuster(ADJUSTER);
 		shapes = new EvilBag7NShapeSource(DEFAULT_BAG_N, DEFAULT_LOOKAHEAD);
@@ -95,7 +100,7 @@ public class Eviline2Randomizer extends Randomizer {
 	@Override
 	public void setEngine(GameEngine e) {
 		engine = e;
-		engine.nextPieceArraySize = 1;
+		engine.nextPieceArraySize = 2;
 		engine.nextPieceArrayID = new int[engine.nextPieceArraySize];
 		engine.nextPieceArrayObject = new Piece[engine.nextPieceArraySize];
 		count = engine.nextPieceCount - 1;
@@ -106,15 +111,20 @@ public class Eviline2Randomizer extends Randomizer {
 		if(count == engine.nextPieceCount) {
 			shapes.getRawBag().add(XYShapeAdapter.toShapeType(new Piece(current)));
 		}
-		engine.nextPieceArraySize = 1;
-		evilEngine.update(engine);
-		if(evilEngine.getShape() != -1) {
-			DefaultAIKernel.Best best = ai.bestPlacement(evilEngine.getField(), evilEngine.getField(), evilEngine.getShape(), ShapeType.NONE, 1, 1);
-			evilEngine.getField().blit(best.shape, 0);
-			evilEngine.getField().clearLines();
+		if(engine.nextPieceCount == 0) {
+			current = new int[] {Piece.PIECE_I, Piece.PIECE_J, Piece.PIECE_L, Piece.PIECE_T}[r.nextInt(4)];
+			shapes.getRawBag().remove(XYShapeAdapter.toShapeType(new Piece(current)));
+		} else {
+			engine.nextPieceArraySize = 2;
+			evilEngine.update(engine);
+			if(evilEngine.getShape() != -1) {
+				DefaultAIKernel.Best best = ai.bestPlacement(evilEngine.getField(), evilEngine.getField(), evilEngine.getShape(), ShapeType.NONE, 1, 1);
+				evilEngine.getField().blit(best.shape, 0);
+				evilEngine.getField().clearLines();
+			}
+			ShapeType worst = shapes.next(evilEngine);
+			current = XYShapeAdapter.fromShapeType(worst);
 		}
-		ShapeType worst = shapes.next(evilEngine);
-		current = XYShapeAdapter.fromShapeType(worst);
 		count = engine.nextPieceCount;
 		return current;
 	}
