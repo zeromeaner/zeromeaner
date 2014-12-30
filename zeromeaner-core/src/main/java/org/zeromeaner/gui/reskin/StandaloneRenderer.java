@@ -36,7 +36,13 @@ import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Field;
@@ -88,6 +94,8 @@ public class StandaloneRenderer extends EventRenderer {
 
 	/** Line clear effect speed */
 	protected int lineeffectspeed;
+	
+	protected Deque<Integer> levelFade = new ArrayDeque<>(Arrays.asList(1));
 
 	public static Color getMeterColorAsColor(int meterColor) {
 		switch(meterColor) {
@@ -1345,7 +1353,20 @@ public class StandaloneRenderer extends EventRenderer {
 				if(engine.getOwner().backgroundStatus.fadesw) bg = engine.getOwner().backgroundStatus.fadebg;
 
 				if((StandaloneResourceHolder.imgPlayBG != null) && (bg >= 0) && (bg < StandaloneResourceHolder.BACKGROUND_MAX)) {
-					graphics.drawImage(StandaloneResourceHolder.imgPlayBG[bg], 0, 0, null);
+					levelFade.offer(bg);
+					while(levelFade.size() > 60)
+						levelFade.poll();
+					int[] lf = new int[StandaloneResourceHolder.BACKGROUND_MAX];
+					for(int l : levelFade) {
+						lf[l]++;
+					}
+					for(int i = 0; i < lf.length; i++) {
+						if(lf[i] == 0)
+							continue;
+						Graphics2D g = (Graphics2D) graphics.create();
+						g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, lf[i] / (float) levelFade.size()));
+						g.drawImage(StandaloneResourceHolder.imgPlayBG[i], 0, 0, null);
+					}
 				}
 			}
 		}
