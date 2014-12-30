@@ -95,7 +95,7 @@ public class StandaloneRenderer extends EventRenderer {
 	/** Line clear effect speed */
 	protected int lineeffectspeed;
 	
-	protected Deque<Integer> levelFade = new ArrayDeque<>(Arrays.asList(1));
+	protected Deque<Integer> levelFade = new ArrayDeque<>();
 
 	public static Color getMeterColorAsColor(int meterColor) {
 		switch(meterColor) {
