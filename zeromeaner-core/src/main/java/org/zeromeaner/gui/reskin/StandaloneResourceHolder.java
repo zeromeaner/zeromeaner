@@ -75,7 +75,7 @@ public class StandaloneResourceHolder {
 	public static Image imgFrame;
 
 	/** Field background */
-	public static Image imgFieldbg, imgFieldbg2, imgFieldbg2Small, imgFieldbg2Big;
+	public static BufferedImage imgFieldbg, imgFieldbg2, imgFieldbg2Small, imgFieldbg2Big;
 
 	/** Block spatter animation during line clears */
 	public static Image[][] imgBreak;

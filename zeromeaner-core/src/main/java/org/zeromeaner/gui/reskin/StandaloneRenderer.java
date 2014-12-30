@@ -1137,7 +1137,9 @@ public class StandaloneRenderer extends EventRenderer {
 
 		// NEXT area background
 		if(showbg && darknextarea) {
-			graphics.setColor(Color.black);
+			Color c = new Color(StandaloneResourceHolder.imgFieldbg.getRGB(0, 0));
+			c = new Color(c.getRed(), c.getGreen(), c.getBlue(), StandaloneResourceHolder.imgFieldbg.getAlphaRaster().getSample(0, 0, 0));
+			graphics.setColor(c);
 
 			if(getNextDisplayType() == 2) {
 				int x2 = x + 8 + (fldWidth * fldBlkSize) + meterWidth;
