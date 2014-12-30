@@ -34,6 +34,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -143,7 +144,8 @@ public class StandaloneModeselectPanel extends JPanel {
 		
 		for(Map.Entry<String, List<String>> e : new LstResourceMap("config/list/modefolder.lst").entrySet()) {
 			JPanel p = new JPanel(new GridLayout(0, 1));
-			p.add(new JLabel(e.getKey()));
+			p.add(l = new JLabel(e.getKey()));
+			l.setHorizontalAlignment(SwingConstants.CENTER);
 			p.setName(e.getKey());
 			
 			for(GameMode mode : ModeList.getModes()) {
@@ -181,8 +183,10 @@ public class StandaloneModeselectPanel extends JPanel {
 		
 		for(ModeButton mb : this.modeButtons) {
 //			if(mb.mode.getName().equals(StandaloneMain.propConfig.getProperty("name.mode")))
-			if(mb.mode.getName().equals(Options.general().MODE_NAME.value()))
+			if(mb.mode.getName().equals(Options.general().MODE_NAME.value())) {
 				mb.doClick();
+				break;
+			}
 
 		}
 
@@ -206,7 +210,7 @@ public class StandaloneModeselectPanel extends JPanel {
 
 			MetalLookAndFeel laf = (MetalLookAndFeel) UIManager.getLookAndFeel();
 			Font f = laf.getControlTextFont();
-			f = f.deriveFont(Font.PLAIN);
+			f = f.deriveFont(Font.PLAIN).deriveFont(f.getSize() * 0.85f);
 			setFont(f);
 
 			setMargin(new Insets(2, 2, 2, 2));
@@ -257,7 +261,7 @@ public class StandaloneModeselectPanel extends JPanel {
 			
 			MetalLookAndFeel laf = (MetalLookAndFeel) UIManager.getLookAndFeel();
 			Font f = laf.getControlTextFont();
-			f = f.deriveFont(Font.PLAIN);
+			f = f.deriveFont(Font.PLAIN).deriveFont(f.getSize() * 0.85f);
 			setFont(f);
 
 			setMargin(new Insets(2, 2, 2, 2));

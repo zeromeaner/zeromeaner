@@ -104,7 +104,7 @@ public class CornerPileLayout implements LayoutManager2 {
 					if(isAvailable(r))
 						break;
 					r.y += STEP;
-					if(r.y >= buf.getHeight() - r.x - 50) {
+					if(r.y >= buf.getHeight() - r.x) {
 						r.x += STEP;
 						r.y = 0;
 					}
