@@ -31,20 +31,23 @@ public class Version {
 	}
 	
 	private List<Integer> digits = new ArrayList<Integer>();
+	private String free;
 	private boolean snapshot;
 	private String classifier;
 	
 	public Version(String version) {
-		version = version.replace("${version_suffix}", "");
-		version = version.replace("ZER-", "");
 		String[] va = version.split("[\\.\\-]");
 		for(String d : va) {
 			if(d.equals("SNAPSHOT"))
 				snapshot = true;
 			else if(d.matches("[0-9]+"))
 				digits.add(Integer.parseInt(d));
-			else
+			else if(snapshot || digits.size() > 0)
 				classifier = d;
+			else if(free == null)
+				free = d;
+			else
+				free += "-" + d;
 		}
 	}
 
@@ -57,6 +60,8 @@ public class Version {
 			sb.append(d);
 			sep = ".";
 		}
+		if(free != null)
+			sb.append(free);
 		if(snapshot)
 			sb.append("-SNAPSHOT");
 		if(classifier != null && !classifier.isEmpty())
@@ -93,5 +98,9 @@ public class Version {
 
 	public String getClassifier() {
 		return classifier;
+	}
+	
+	public String getFree() {
+		return free;
 	}
 }
