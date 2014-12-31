@@ -12,9 +12,9 @@
 		<module>../zeromeaner-server</module>
 		<module>../zeromeaner-netstats</module>
 		<module>../zeromeaner-laf</module>
-
-		<module>../zeromeaner</module>
+		<module>../zeromeaner-standalone</module>
 		<module>../zeromeaner-plugin-video-recording</module>
+		<module>../zeromeaner</module>
 <!--
 		<module>../zeromeaner-applet</module>
 -->
