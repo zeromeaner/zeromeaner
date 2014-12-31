@@ -390,10 +390,10 @@ public class StandaloneFrame extends JFrame {
 		b = new JToggleButton(new ToolbarAction("toolbar.open"));
 		add(t, g, b);
 		
-		b = new JButton(new ToolbarAction(CARD_FEEDBACK));
+		b = new JToggleButton(new ToolbarAction(CARD_FEEDBACK));
 		add(t, g, b);
 		
-		b = new JButton(new ToolbarAction("toolbar.close") {
+		b = new JToggleButton(new ToolbarAction("toolbar.close") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				StandaloneMain.saveConfig();
