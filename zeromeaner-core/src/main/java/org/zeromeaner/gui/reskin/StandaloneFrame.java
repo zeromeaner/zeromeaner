@@ -47,9 +47,11 @@ import javax.swing.filechooser.FileSystemView;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.zeromeaner.game.component.ReplayData;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.randomizer.Randomizer;
+import org.zeromeaner.game.randomizer.ReplayDataRandomizer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.GameMode;
@@ -541,7 +543,15 @@ public class StandaloneFrame extends JFrame {
 
 			// NEXTOrder generation algorithm
 			if((ruleopt.strRandomizer != null) && (ruleopt.strRandomizer.length() > 0)) {
-				Randomizer randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer, gameManager.engine[i]);
+				Randomizer randomizerObject;
+				if(!gameManager.replayMode)
+					randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer, gameManager.engine[i]);
+				else {
+					ReplayData rd = new ReplayData();
+					rd.readProperty(gameManager.replayProp, i);
+					randomizerObject = new ReplayDataRandomizer(rd);
+					randomizerObject.setEngine(gameManager.engine[i]);
+				}
 				gameManager.engine[i].randomizer = randomizerObject;
 			}
 

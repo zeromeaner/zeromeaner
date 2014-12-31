@@ -48,6 +48,8 @@ public class ReplayData implements Serializable {
 
 	/** Button input dataOf default The length of the */
 	public static final int DEFAULT_ARRAYLIST_SIZE = 60 * 60 * 10;
+	
+	public static final String PIECE_SPAWN = "piece.spawn";
 
 	/** Button input data */
 	public ArrayList<Integer> inputDataArray;
