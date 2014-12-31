@@ -37,11 +37,8 @@ public class JarJarClassloader extends ClassLoader {
 
 	protected void scanJarJar() throws IOException {
 		URL selfURL = JarJarClassloader.class.getProtectionDomain().getCodeSource().getLocation();
-		File selfJar = new File(
-				selfURL.toString()
-				.replaceAll("!.*", "")
-				.replaceAll("file:", ""));
-		ZipInputStream zin = new ZipInputStream(new FileInputStream(selfJar));
+		selfURL = new URL(selfURL.toString().replaceAll("!.*", ""));
+		ZipInputStream zin = new ZipInputStream(selfURL.openStream());
 		try {
 			for(ZipEntry e = zin.getNextEntry(); e != null; e = zin.getNextEntry()) {
 				if(e.isDirectory())
