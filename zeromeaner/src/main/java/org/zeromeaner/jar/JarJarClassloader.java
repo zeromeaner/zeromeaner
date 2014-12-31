@@ -109,20 +109,18 @@ public class JarJarClassloader extends ClassLoader {
 	}
 
 	protected URL jarjarURL(String path, URL innerJar) throws IOException {
-		return new URL(innerJar, innerJar.toString() + "!" + path, new JarJarURLStreamHandler(path, innerJar));
+		return new URL(null, "jarjar:" + innerJar.toString() + "!" + path, new JarJarURLStreamHandler());
 	}
 
 	protected class JarJarURLStreamHandler extends URLStreamHandler {
-		protected String path;
-		protected URL innerJar;
-		
-		public JarJarURLStreamHandler(String path, URL innerJar) {
-			this.path = path;
-			this.innerJar = innerJar;
+		public JarJarURLStreamHandler() {
 		}
 		
 		@Override
 		protected URLConnection openConnection(URL u) throws IOException {
+			int idx = u.toString().lastIndexOf("!");
+			String path = u.toString().substring(idx + 1);
+			URL innerJar = new URL(u.toString().substring(0, idx).replaceAll("^jarjar:", ""));
 			return new JarJarURLConnection(u, path, innerJar);
 		}
 	}
