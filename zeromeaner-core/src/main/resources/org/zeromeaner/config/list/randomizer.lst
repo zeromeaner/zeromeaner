@@ -17,4 +17,3 @@ org.zeromeaner.game.randomizer.QuadraticDistWeightRandomizer
 org.zeromeaner.game.randomizer.ExpDistWeightRandomizer
 org.zeromeaner.game.randomizer.FixedSequenceRandomizer
 org.zeromeaner.game.randomizer.Eviline2Randomizer
-

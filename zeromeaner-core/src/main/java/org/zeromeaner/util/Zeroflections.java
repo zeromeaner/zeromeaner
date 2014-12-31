@@ -101,8 +101,10 @@ public class Zeroflections {
 		return ret;
 	}
 	
-	public static Set<Class<? extends Randomizer>> getRandomizers() {
-		return classes.getSubTypesOf(Randomizer.class);
+	public static List<Class<? extends Randomizer>> getRandomizers() {
+		List<Class<? extends Randomizer>> ret = new ArrayList<>();
+		Mappings.classForName(Randomizer.class).map(list("randomizer.lst")).into(ret);
+		return ret;
 	}
 	
 	public static Set<Class<? extends Wallkick>> getWallkicks() {
