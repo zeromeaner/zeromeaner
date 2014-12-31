@@ -31,10 +31,13 @@ package org.zeromeaner.gui.reskin;
 import static org.zeromeaner.gui.reskin.Localizations.lz;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -44,6 +47,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -87,7 +91,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	protected JTextField txtfldMaxFPS;
 
 	/** Sound effectsVolume of */
-	protected JTextField txtfldSEVolume;
+	protected JSlider volume;
 
 	/** Line clear effect speed */
 	protected JTextField txtfldLineClearEffectSpeed;
@@ -181,6 +185,16 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		pBasicTab.setLayout(new GridLayout(0, 1));
 		tabPane.addTab(lz.s("GeneralConfig_TabName_Basic"), pBasicTab);
 
+		// ** Advanced Tab
+		JPanel pAdvancedTab = new JPanel();
+		pAdvancedTab.setLayout(new GridLayout(0, 1));
+		tabPane.addTab(lz.s("GeneralConfig_TabName_Advanced"), pAdvancedTab);
+
+		// ** Pro Tab
+		JPanel pProTab = new JPanel();
+		pProTab.setLayout(new GridLayout(0, 1));
+		tabPane.addTab(lz.s("GeneralConfig_TabName_Pro"), pProTab);
+
 		davEnabled = new JCheckBox(lz.s("GeneralConfig_DavEnabled"));
 		davEnabled.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(davEnabled);
@@ -193,20 +207,26 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		JLabel lSEVolume = new JLabel(lz.s("GeneralConfig_SEVolume"));
 		pSEVolume.add(lSEVolume);
 
-		txtfldSEVolume = new JTextField(5);
-		pSEVolume.add(txtfldSEVolume);
+		volume = new JSlider(0, 100);
+		Dictionary<Integer, Component> volumeLabels = new Hashtable<>();
+		volumeLabels.put(0, new JLabel("Off"));
+		volumeLabels.put(50, new JLabel("50%"));
+		volumeLabels.put(100, new JLabel("100%"));
+		volume.setLabelTable(volumeLabels);
+		volume.setPaintLabels(true);
+		pSEVolume.add(volume);
 
 		chkboxShowBackground = new JCheckBox(lz.s("GeneralConfig_ShowBackground"));
 		chkboxShowBackground.setHorizontalAlignment(SwingConstants.CENTER);
-		pBasicTab.add(chkboxShowBackground);
+		pAdvancedTab.add(chkboxShowBackground);
 
 		chkboxShowMeter = new JCheckBox(lz.s("GeneralConfig_ShowMeter"));
 		chkboxShowMeter.setHorizontalAlignment(SwingConstants.CENTER);
-		pBasicTab.add(chkboxShowMeter);
+		pAdvancedTab.add(chkboxShowMeter);
 
 		chkboxShowFieldBlockGraphics = new JCheckBox(lz.s("GeneralConfig_ShowFieldBlockGraphics"));
 		chkboxShowFieldBlockGraphics.setHorizontalAlignment(SwingConstants.CENTER);
-		pBasicTab.add(chkboxShowFieldBlockGraphics);
+		pAdvancedTab.add(chkboxShowFieldBlockGraphics);
 
 		chkboxSimpleBlock = new JCheckBox(lz.s("GeneralConfig_SimpleBlock"));
 		chkboxSimpleBlock.setHorizontalAlignment(SwingConstants.CENTER);
@@ -214,11 +234,11 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 
 		chkboxSE = new JCheckBox(lz.s("GeneralConfig_SE"));
 		chkboxSE.setHorizontalAlignment(SwingConstants.CENTER);
-		pBasicTab.add(chkboxSE);
+		pAdvancedTab.add(chkboxSE);
 
 		chkboxNextShadow = new JCheckBox(lz.s("GeneralConfig_NextShadow"));
 		chkboxNextShadow.setHorizontalAlignment(SwingConstants.CENTER);
-		pBasicTab.add(chkboxNextShadow);
+		pProTab.add(chkboxNextShadow);
 
 		chkboxOutlineGhost = new JCheckBox(lz.s("GeneralConfig_OutlineGhost"));
 		chkboxOutlineGhost.setHorizontalAlignment(SwingConstants.CENTER);
@@ -226,29 +246,24 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 
 		chkboxSideNext = new JCheckBox(lz.s("GeneralConfig_SideNext"));
 		chkboxSideNext.setHorizontalAlignment(SwingConstants.CENTER);
-		pBasicTab.add(chkboxSideNext);
+		pAdvancedTab.add(chkboxSideNext);
 
 		chkboxBigSideNext = new JCheckBox(lz.s("GeneralConfig_BigSideNext"));
 		chkboxBigSideNext.setHorizontalAlignment(SwingConstants.CENTER);
-		pBasicTab.add(chkboxBigSideNext);
+		pProTab.add(chkboxBigSideNext);
 
 		chkboxDarkNextArea = new JCheckBox(lz.s("GeneralConfig_DarkNextArea"));
 		chkboxDarkNextArea.setHorizontalAlignment(SwingConstants.CENTER);
-		pBasicTab.add(chkboxDarkNextArea);
+		pProTab.add(chkboxDarkNextArea);
 
 		chkboxShowFieldBGGrid = new JCheckBox(lz.s("GeneralConfig_ShowFieldBGGrid"));
 		chkboxShowFieldBGGrid.setHorizontalAlignment(SwingConstants.CENTER);
-		pBasicTab.add(chkboxShowFieldBGGrid);
+		pProTab.add(chkboxShowFieldBGGrid);
 
 		chkboxShowInput = new JCheckBox(lz.s("GeneralConfig_ShowInput"));
 		chkboxShowInput.setHorizontalAlignment(SwingConstants.CENTER);
-		pBasicTab.add(chkboxShowInput);
+//		pBasicTab.add(chkboxShowInput);
 		
-		// ** Advanced Tab
-		JPanel pAdvancedTab = new JPanel();
-		pAdvancedTab.setLayout(new GridLayout(0, 1));
-		tabPane.addTab(lz.s("GeneralConfig_TabName_Advanced"), pAdvancedTab);
-
 		// ---------- Screen size ----------
 		JPanel pScreenSize = new JPanel();
 		pScreenSize.setAlignmentX(CENTER_ALIGNMENT);
@@ -268,7 +283,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		// ---------- MaximumFPS ----------
 		JPanel pMaxFPS = new JPanel();
 		pMaxFPS.setAlignmentX(CENTER_ALIGNMENT);
-		pAdvancedTab.add(pMaxFPS);
+		pProTab.add(pMaxFPS);
 
 		JLabel lMaxFPS = new JLabel(lz.s("GeneralConfig_MaxFPS"));
 		pMaxFPS.add(lMaxFPS);
@@ -279,7 +294,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		// ---------- Line clear effect speed ----------
 		JPanel pLineClearEffectSpeed = new JPanel();
 		pLineClearEffectSpeed.setAlignmentX(CENTER_ALIGNMENT);
-		pAdvancedTab.add(pLineClearEffectSpeed);
+		pProTab.add(pLineClearEffectSpeed);
 
 		JLabel lLineClearEffectSpeed = new JLabel(lz.s("GeneralConfig_LineClearEffectSpeed"));
 		pLineClearEffectSpeed.add(lLineClearEffectSpeed);
@@ -290,19 +305,19 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		// ---------- Checkboxes ----------
 		chkboxShowFPS = new JCheckBox(lz.s("GeneralConfig_ShowFPS"));
 		chkboxShowFPS.setHorizontalAlignment(SwingConstants.CENTER);
-		pAdvancedTab.add(chkboxShowFPS);
+		pProTab.add(chkboxShowFPS);
 
 		chkboxEnableFrameStep = new JCheckBox(lz.s("GeneralConfig_EnableFrameStep"));
 		chkboxEnableFrameStep.setHorizontalAlignment(SwingConstants.CENTER);
-		pAdvancedTab.add(chkboxEnableFrameStep);
+//		pAdvancedTab.add(chkboxEnableFrameStep);
 
 		chkboxSyncDisplay = new JCheckBox(lz.s("GeneralConfig_SyncDisplay"));
 		chkboxSyncDisplay.setHorizontalAlignment(SwingConstants.CENTER);
-		pAdvancedTab.add(chkboxSyncDisplay);
+		pProTab.add(chkboxSyncDisplay);
 		
 		chkboxSyncRender = new JCheckBox(lz.s("GeneralConfig_SyncRender"));
 		chkboxSyncRender.setHorizontalAlignment(SwingConstants.CENTER);
-		pAdvancedTab.add(chkboxSyncRender);
+		pProTab.add(chkboxSyncRender);
 		
 
 		chkboxShowLineClearEffect = new JCheckBox(lz.s("GeneralConfig_ShowLineClearEffect"));
@@ -311,7 +326,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 
 		increaseEQPriority = new JCheckBox(lz.s("GeneralConfig_IncreasedEQPriority"));
 		increaseEQPriority.setHorizontalAlignment(SwingConstants.CENTER);
-		pAdvancedTab.add(increaseEQPriority);
+		pProTab.add(increaseEQPriority);
 		
 		hooks.dispatcher().createTabs(tabPane);
 		hooks.dispatcher().loadConfiguration();
@@ -355,7 +370,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		davEnabled.setSelected(Options.isDavEnabled());
 		
 		txtfldMaxFPS.setText("" + opt.MAX_FPS.value());
-		txtfldSEVolume.setText("" + opt.SE_VOLUME.value());
+//		txtfldSEVolume.setText("" + opt.SE_VOLUME.value());
+		volume.setValue((int)(100 * opt.SE_VOLUME.value()));
 		txtfldLineClearEffectSpeed.setText("" + opt.LINE_EFFECT_SPEED.value());
 		chkboxShowFPS.setSelected(opt.SHOW_FPS.value());
 		chkboxShowBackground.setSelected(opt.SHOW_BG.value());
@@ -402,7 +418,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			int maxfps = SwingUtils.getIntTextField(60, txtfldMaxFPS);
 			opt.MAX_FPS.set(maxfps);
 
-			double sevolume = SwingUtils.getDoubleTextField(1.0d, txtfldSEVolume);
+//			double sevolume = SwingUtils.getDoubleTextField(1.0d, txtfldSEVolume);
+			double sevolume = volume.getValue() / 100.;
 			opt.SE_VOLUME.set(sevolume);
 
 			int lineeffectspeed = SwingUtils.getIntTextField(0, txtfldLineClearEffectSpeed) - 1;
