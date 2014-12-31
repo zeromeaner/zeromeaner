@@ -64,21 +64,21 @@ public class Zeroflections {
 //			if(!ret.contains(c))
 //				ret.add(c);
 //		}
-		Comparator<Class<? extends AbstractAI>> nameOrder = new Comparator<Class<? extends AbstractAI>>() {
-			@Override
-			public int compare(Class<? extends AbstractAI> o1, Class<? extends AbstractAI> o2) {
-				AbstractAI a1;
-				AbstractAI a2;
-				try {
-					a1 = o1.newInstance();
-					a2 = o2.newInstance();
-				} catch(Exception e) {
-					throw new RuntimeException(e);
-				}
-				return String.CASE_INSENSITIVE_ORDER.compare(a1.getName(), a2.getName());
-			}
-		}; 
-		Collections.sort(ret, nameOrder);
+//		Comparator<Class<? extends AbstractAI>> nameOrder = new Comparator<Class<? extends AbstractAI>>() {
+//			@Override
+//			public int compare(Class<? extends AbstractAI> o1, Class<? extends AbstractAI> o2) {
+//				AbstractAI a1;
+//				AbstractAI a2;
+//				try {
+//					a1 = o1.newInstance();
+//					a2 = o2.newInstance();
+//				} catch(Exception e) {
+//					throw new RuntimeException(e);
+//				}
+//				return String.CASE_INSENSITIVE_ORDER.compare(a1.getName(), a2.getName());
+//			}
+//		}; 
+//		Collections.sort(ret, nameOrder);
 		return ret;
 	}
 	
