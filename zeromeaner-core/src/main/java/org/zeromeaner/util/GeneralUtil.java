@@ -86,8 +86,8 @@ public class GeneralUtil {
 	 * @return Replay's filename
 	 */
 	public static String getReplayFilename() {
-		DateFormat dfm = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-		String filename = dfm.format(new Date()) + ".repz";
+		DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+		String filename = Session.getUser() + " " + dfm.format(new Date()) + ".zrep";
 		return filename;
 	}
 

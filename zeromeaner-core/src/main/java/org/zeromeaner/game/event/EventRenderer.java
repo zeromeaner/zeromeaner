@@ -1238,10 +1238,10 @@ public class EventRenderer {
 		String filename = foldername + "/" + prop.getProperty("replay.file");
 		try {
 			OutputStream out = new ResourceOutputStream(filename);
-			if(filename.endsWith(".repz"))
+			if(filename.endsWith(".zrep"))
 				out = new GZIPOutputStream(out);
 			prop.store(out, "zeromeaner Replay");
-			if(filename.endsWith(".repz"))
+			if(filename.endsWith(".zrep"))
 				((GZIPOutputStream) out).finish();
 			out.close();
 			log.info("Saved replay file: " + filename);

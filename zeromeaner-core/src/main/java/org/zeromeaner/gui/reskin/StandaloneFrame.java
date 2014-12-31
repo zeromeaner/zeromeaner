@@ -43,6 +43,7 @@ import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileSystemView;
 
 import org.apache.commons.io.IOUtils;
@@ -277,6 +278,18 @@ public class StandaloneFrame extends JFrame {
 		content.add(gc, CARD_GENERAL);
 
 		final JFileChooser fc = FileSystemViews.get().fileChooser("replay/");
+		
+		fc.setFileFilter(new FileFilter() {
+			@Override
+			public String getDescription() {
+				return "Zeromeaner Replay Files";
+			}
+			
+			@Override
+			public boolean accept(File f) {
+				return f.isDirectory() || f.getName().endsWith(".zrep");
+			}
+		});
 		
 		fc.addActionListener(new ActionListener() {
 			@Override
