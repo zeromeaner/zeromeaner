@@ -105,25 +105,25 @@ public class StandaloneMain {
 			System.setProperty("user.dir", System.getProperty("user.home") + File.separator + ".zeromeaner");
 			new File(System.getProperty("user.dir")).mkdirs();
 
-			if(args.length == 0 || !"--no-inject".equals(args[0])) {
-				File plugins = new File(System.getProperty("user.dir"), "plugins");
-				plugins.mkdirs();
-
-				File disabled = new File(plugins, "disabled-plugins");
-				disabled.mkdirs();
-
-				if(StandaloneMain.class.getClassLoader() instanceof URLClassLoader) {
-					Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-					addURL.setAccessible(true);
-					for(File p : plugins.listFiles()) {
-						if(p.equals(disabled))
-							continue;
-						System.out.println("Injecting plugin " + p);
-						addURL.invoke(StandaloneMain.class.getClassLoader(), p.toURI().toURL());
-					}
-					addURL.invoke(StandaloneMain.class.getClassLoader(), new File(System.getProperty("user.dir")).toURI().toURL());
-				}
-			}
+//			if(args.length == 0 || !"--no-inject".equals(args[0])) {
+//				File plugins = new File(System.getProperty("user.dir"), "plugins");
+//				plugins.mkdirs();
+//
+//				File disabled = new File(plugins, "disabled-plugins");
+//				disabled.mkdirs();
+//
+//				try {
+//					Method addURL = StandaloneMain.class.getClassLoader().getClass().getDeclaredMethod("addURL", URL.class);
+//					addURL.setAccessible(true);
+//					for(File p : plugins.listFiles()) {
+//						if(p.equals(disabled))
+//							continue;
+//						System.out.println("Injecting plugin " + p);
+////						addURL.invoke(StandaloneMain.class.getClassLoader(), p.toURI().toURL());
+//					}
+//				} catch(NoSuchMethodException e) {
+//				}
+//			}
 
 			Session.setUser(System.getProperty("user.name"));
 

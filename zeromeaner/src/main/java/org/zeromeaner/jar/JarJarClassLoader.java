@@ -34,6 +34,10 @@ public class JarJarClassLoader extends ClassLoader {
 
 		scanJarJar();
 	}
+	
+	public void addURL(URL url) throws IOException {
+		scanInnerJar(url);
+	}
 
 	protected void scanJarJar() throws IOException {
 		URL selfURL = JarJarClassLoader.class.getProtectionDomain().getCodeSource().getLocation();
