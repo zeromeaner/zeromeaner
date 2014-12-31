@@ -2,6 +2,5 @@ org.zeromeaner.game.subsystem.ai.BasicAI
 org.zeromeaner.game.subsystem.ai.TSpinAI
 org.zeromeaner.game.subsystem.ai.PoochyBot
 org.zeromeaner.game.subsystem.ai.PoochyBotDefensive
-org.zeromeaner.game.subsystem.ai.RanksAI
 org.zeromeaner.game.subsystem.ai.Nohoho
 org.zeromeaner.game.subsystem.ai.ComboRaceBot
