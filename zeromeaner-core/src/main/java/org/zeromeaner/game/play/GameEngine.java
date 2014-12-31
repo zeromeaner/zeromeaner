@@ -1001,7 +1001,7 @@ public class GameEngine {
 		if(c == nextPieceCount - 1)
 			return nowPieceObject;
 		if(ruleopt.onDemandRandomizer) {
-			Piece p = new Piece(randomizer.next());
+			Piece p = new Piece(randomizer.next(c));
 			p.direction = ruleopt.pieceDefaultDirection[p.id];
 			if(p.direction >= Piece.DIRECTION_COUNT) {
 				p.direction = random.nextInt(Piece.DIRECTION_COUNT);
@@ -1026,37 +1026,7 @@ public class GameEngine {
 			return p;
 		}
 			
-		int o = c - nextPieceCount;
-		if(nextPieceCount / nextPieceArraySize == c / nextPieceArraySize) {
-			return nextPieceArrayObject[c % nextPieceArraySize];
-		}
-		o = c - (nextPieceArraySize * (nextPieceCount / nextPieceArraySize));
-		while(upcomingNextPieces.size() <= o) {
-			Piece p = new Piece(randomizer.next());
-			p.direction = ruleopt.pieceDefaultDirection[p.id];
-			if(p.direction >= Piece.DIRECTION_COUNT) {
-				p.direction = random.nextInt(Piece.DIRECTION_COUNT);
-			}
-			p.connectBlocks = this.connectBlocks;
-			p.setColor(ruleopt.pieceColor[p.id]);
-			p.setSkin(getSkin());
-			p.updateConnectData();
-			p.setAttribute(Block.BLOCK_ATTRIBUTE_VISIBLE, true);
-			p.setAttribute(Block.BLOCK_ATTRIBUTE_BONE, bone);
-			
-			if (randomBlockColor)
-			{
-				int size = p.getMaxBlock();
-				int[] colors = new int[size];
-				for (int j = 0; j < size; j++)
-					colors[j] = blockColors[random.nextInt(numColors)];
-				p.setColor(colors);
-				p.updateConnectData();
-			}
-			
-			upcomingNextPieces.add(p);
-		}
-		return upcomingNextPieces.get(o);
+		return nextPieceArrayObject[c % nextPieceArraySize];
 	}
 
 	public void incrementNextPieceCount() {
@@ -1081,6 +1051,8 @@ public class GameEngine {
 		Piece p = getNextObject(c);
 		Piece r = null;
 		if(p != null) r = new Piece(p);
+		if(c == nextPieceCount && r != null)
+			replayData.setAdditionalData(ReplayData.PIECE_SPAWN, r.id, replayTimer);
 		return r;
 	}
 
@@ -2060,7 +2032,7 @@ public class GameEngine {
 				}
 				nextPieceArrayID = new int[nextPieceArraySize];
 				for (int i = 0; i < nextPieceArraySize; i++) {
-					nextPieceArrayID[i] = randomizer.next();
+					nextPieceArrayID[i] = randomizer.next(i);
 				}
 			}
 			// NEXTCreate an object of Peace

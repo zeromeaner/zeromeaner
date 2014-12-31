@@ -22,7 +22,11 @@ public abstract class Randomizer {
 	
 	public void init() {}
 
-	public abstract int next();
+	public int next(int count) {
+		return next();
+	}
+	
+	protected abstract int next();
 
 	public void setState(boolean[] pieceEnable, long seed) {
 		setPieceEnable(pieceEnable);
