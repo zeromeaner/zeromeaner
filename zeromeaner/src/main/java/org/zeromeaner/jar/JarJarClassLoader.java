@@ -22,12 +22,12 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class JarJarClassloader extends ClassLoader {
+public class JarJarClassLoader extends ClassLoader {
 
 	protected Map<String, List<URL>> jarContents;
 	protected Map<String, byte[]> innerContents;
 
-	public JarJarClassloader(ClassLoader parent) throws IOException {
+	public JarJarClassLoader(ClassLoader parent) throws IOException {
 		super(parent);
 		jarContents = new TreeMap<>();
 		innerContents = new TreeMap<>();
@@ -36,7 +36,7 @@ public class JarJarClassloader extends ClassLoader {
 	}
 
 	protected void scanJarJar() throws IOException {
-		URL selfURL = JarJarClassloader.class.getProtectionDomain().getCodeSource().getLocation();
+		URL selfURL = JarJarClassLoader.class.getProtectionDomain().getCodeSource().getLocation();
 		selfURL = new URL(selfURL.toString().replaceAll("!.*", ""));
 		ZipInputStream zin = new ZipInputStream(selfURL.openStream());
 		try {
@@ -44,7 +44,7 @@ public class JarJarClassloader extends ClassLoader {
 				if(e.isDirectory())
 					continue;
 				if(e.getName().endsWith(".jar"))
-					scanInnerJar(JarJarClassloader.class.getClassLoader().getResource(e.getName()));
+					scanInnerJar(JarJarClassLoader.class.getClassLoader().getResource(e.getName()));
 			}
 		} finally {
 			zin.close();

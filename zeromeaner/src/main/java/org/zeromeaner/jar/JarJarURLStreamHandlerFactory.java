@@ -4,9 +4,9 @@ import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
 public class JarJarURLStreamHandlerFactory implements URLStreamHandlerFactory {
-	protected JarJarClassloader cl;
+	protected JarJarClassLoader cl;
 	
-	public JarJarURLStreamHandlerFactory(JarJarClassloader cl) {
+	public JarJarURLStreamHandlerFactory(JarJarClassLoader cl) {
 		this.cl = cl;
 	}
 	
