@@ -33,7 +33,6 @@ public class Version {
 	private List<Integer> digits = new ArrayList<Integer>();
 	private String free;
 	private boolean snapshot;
-	private String classifier;
 	
 	public Version(String version) {
 		String[] va = version.split("[\\.\\-]");
@@ -42,8 +41,6 @@ public class Version {
 				snapshot = true;
 			else if(d.matches("[0-9]+"))
 				digits.add(Integer.parseInt(d));
-			else if(snapshot || digits.size() > 0)
-				classifier = d;
 			else if(free == null)
 				free = d;
 			else
@@ -61,11 +58,9 @@ public class Version {
 			sep = ".";
 		}
 		if(free != null)
-			sb.append(free);
+			sb.append("-" + free);
 		if(snapshot)
 			sb.append("-SNAPSHOT");
-		if(classifier != null && !classifier.isEmpty())
-			sb.append("-" + classifier);
 		return sb.toString();
 	}
 
@@ -96,10 +91,6 @@ public class Version {
 		return snapshot;
 	}
 
-	public String getClassifier() {
-		return classifier;
-	}
-	
 	public String getFree() {
 		return free;
 	}
