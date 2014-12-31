@@ -58,12 +58,12 @@ public class Zeroflections {
 	public static List<Class<? extends AbstractAI>> getAIs() {
 		List<Class<? extends AbstractAI>> ret = new ArrayList<Class<? extends AbstractAI>>();
 		Mappings.classForName(AbstractAI.class).map(list("ai.lst")).into(ret);
-		for(Class<? extends AbstractAI> c : classes.getSubTypesOf(AbstractAI.class)) {
-			if(Modifier.isAbstract(c.getModifiers()))
-				continue;
-			if(!ret.contains(c))
-				ret.add(c);
-		}
+//		for(Class<? extends AbstractAI> c : classes.getSubTypesOf(AbstractAI.class)) {
+//			if(Modifier.isAbstract(c.getModifiers()))
+//				continue;
+//			if(!ret.contains(c))
+//				ret.add(c);
+//		}
 		Comparator<Class<? extends AbstractAI>> nameOrder = new Comparator<Class<? extends AbstractAI>>() {
 			@Override
 			public int compare(Class<? extends AbstractAI> o1, Class<? extends AbstractAI> o2) {

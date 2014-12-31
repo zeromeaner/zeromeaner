@@ -1,3 +1,4 @@
+org.zeromeaner.game.subsystem.ai.Eviline2AI
 org.zeromeaner.game.subsystem.ai.BasicAI
 org.zeromeaner.game.subsystem.ai.TSpinAI
 org.zeromeaner.game.subsystem.ai.PoochyBot
