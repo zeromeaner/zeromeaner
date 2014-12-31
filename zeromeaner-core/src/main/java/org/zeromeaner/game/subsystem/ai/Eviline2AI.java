@@ -192,7 +192,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 		public PathTask discardUntil(GameEngine engine) {
 			PathTask pt;
-			for(pt = pipe.peekFirst(); pt != null && pt.seq < engine.nextPieceCount - 1; pt = pipe.peekFirst())
+			for(pt = pipe.peekFirst(); pt != null && pt.seq < engine.nextPieceCount - 2; pt = pipe.peekFirst())
 				pipe.pollFirst();
 			return pt;
 		}
@@ -281,7 +281,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 					Best best = player.getBest();
 					path = createCommandPath(best.graph);
 					after = best.after;
-					xydest = best.shape;
+					xydest = player.getDest();
 					pipeline.extend(gameEngine);
 					return true;
 				}
@@ -598,7 +598,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		bestX = XYShapes.xFromInt(xydest);
 		bestY = XYShapes.yFromInt(xydest);
 		bestHold = false;
-		bestRt = XYShapes.shapeFromInt(xydest).direction().ordinal();
+		bestRt = XYShapes.shapeIdFromInt(xydest) & 0x3;
 		engine.aiHintReady = true;
 		thinkComplete = true;
 	}

@@ -88,7 +88,10 @@ public abstract class XYShapeAdapter {
 		if(shape == null)
 			return -1;
 		
-		return XYShapes.toXYShape(engine.nowPieceX, engine.nowPieceY, shape);
+		return XYShapes.toXYShape(
+				engine.nowPieceX - (p.offsetApplied ? p.dataOffsetX[p.direction] : 0), 
+				engine.nowPieceY - (p.offsetApplied ? p.dataOffsetY[p.direction] : 0), 
+				shape);
 	}
 	
 	public static Piece fromXYShape(int xyshape) {
@@ -96,7 +99,9 @@ public abstract class XYShapeAdapter {
 			return null;
 		
 		ShapeType type = XYShapes.shapeFromInt(xyshape).type();
-		return new Piece(fromShapeType(type));
+		Piece p = new Piece(fromShapeType(type));
+		p.direction = XYShapes.shapeIdFromInt(xyshape) & 0x3;
+		return p;
 	}
 	
 	private XYShapeAdapter() {}
