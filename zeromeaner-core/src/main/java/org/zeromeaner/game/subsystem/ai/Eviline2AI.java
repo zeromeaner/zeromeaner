@@ -192,7 +192,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 		public PathTask discardUntil(GameEngine engine) {
 			PathTask pt;
-			for(pt = pipe.peekFirst(); pt != null && pt.seq < engine.nextPieceCount - 2; pt = pipe.peekFirst())
+			for(pt = pipe.peekFirst(); pt != null && pt.seq < engine.nextPieceCount - 1; pt = pipe.peekFirst())
 				pipe.pollFirst();
 			return pt;
 		}
@@ -235,11 +235,14 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			if(pt == null)
 				return false;
 			org.eviline.core.Field expected1 = pt.field;
-			if(expected1 == null)
+			org.eviline.core.Field expected2 = pt.after;
+			if(expected1 == null || expected2 == null)
 				return false;
 			FieldAdapter f1 = new FieldAdapter();
 			f1.copyFrom(expected1);
-			boolean dirty = f1.update(engine.field);// && f2.update(engine.field);
+			FieldAdapter f2 = new FieldAdapter();
+			f2.copyFrom(expected2);
+			boolean dirty = f1.update(engine.field) && f2.update(engine.field);
 //			if(dirty)
 //				System.out.println("dirty field");
 			return dirty;
@@ -293,11 +296,14 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			try {
 				return task.get();
 			} catch(Exception e) {
+				e.printStackTrace();
 				return null;
 			}
 		}
 
 		public PathTask extend(GameEngine gameEngine) {
+			if(pipeline.pipe.size() >= pipeLength)
+				return null;
 			ShapeType[] extnext = Arrays.copyOfRange(next, 1, next.length);
 			if(extnext == null || extnext.length < lookahead + 2)
 				extnext = createGameNext(gameEngine, seq + 2);
