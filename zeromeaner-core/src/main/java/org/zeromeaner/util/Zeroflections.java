@@ -33,11 +33,15 @@ import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 public class Zeroflections {
 	private static final Pattern ALL = Pattern.compile(".*");
 	private static final Pattern RULE = Pattern.compile("(org/zeromeaner/)?config/rule/.*\\.rul");
-	private static Reflections classes = Reflections.collect();
-	static {
-		ServiceHookDispatcher<ZeroflectionsHook> hooks = new ServiceHookDispatcher<>(ZeroflectionsHook.class);
-		hooks.dispatcher().reflect(classes);
-		
+	private static Reflections classes;
+	
+	public static Reflections getClasses() {
+		if(classes == null) {
+			classes = Reflections.collect();
+			ServiceHookDispatcher<ZeroflectionsHook> hooks = new ServiceHookDispatcher<>(ZeroflectionsHook.class);
+			hooks.dispatcher().reflect(classes);
+		}
+		return classes;
 	}
 	
 	private static List<String> list(String listName) {
@@ -50,7 +54,7 @@ public class Zeroflections {
 	
 	public static Set<String> getResources(Pattern fullPattern) {
 		TreeSet<String> ret = new TreeSet<>();
-		for(CharSequence s : Predicates.patternFind(fullPattern).filter(classes.getResources(ALL)))
+		for(CharSequence s : Predicates.patternFind(fullPattern).filter(getClasses().getResources(ALL)))
 			ret.add(s.toString());
 		return ret;
 	}
@@ -90,7 +94,7 @@ public class Zeroflections {
 		
 		Predicator<Class<? extends GameMode>> p = ModeType.forbid(ModeType.HIDDEN);
 		
-		for(Class<? extends GameMode> c :  p.filter(classes.getSubTypesOf(GameMode.class))) {
+		for(Class<? extends GameMode> c :  p.filter(getClasses().getSubTypesOf(GameMode.class))) {
 			if(Modifier.isAbstract(c.getModifiers()))
 				continue;
 			ret.add(c);
@@ -108,7 +112,7 @@ public class Zeroflections {
 	}
 	
 	public static Set<Class<? extends Wallkick>> getWallkicks() {
-		return classes.getSubTypesOf(Wallkick.class);
+		return getClasses().getSubTypesOf(Wallkick.class);
 	}
 
 	public static Set<String> getRules() {
