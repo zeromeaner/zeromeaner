@@ -1372,7 +1372,7 @@ public class StandaloneRenderer extends EventRenderer {
 		}
 
 		// NEXTSuch as
-		if(!engine.getOwner().menuOnly && engine.isVisible) {
+		if(engine.getOwner() != null && !engine.getOwner().menuOnly && engine.isVisible) {
 			int offsetX = getFieldDisplayPositionX(engine, playerID);
 			int offsetY = getFieldDisplayPositionY(engine, playerID);
 
