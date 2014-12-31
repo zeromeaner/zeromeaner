@@ -1387,7 +1387,7 @@ public class StandaloneRenderer extends EventRenderer {
 		}
 		
 		drawDirectFont(engine, playerID, 640 - 20 * 10, 480 - 20, "ZEROMEANER", COLOR_DARKBLUE, 1.25f);
-		String v = Version.getBuildVersion().toString();
+		String v = Version.getBuildVersion().toString().toUpperCase();
 		drawDirectFont(engine, playerID, 640 - 12 * v.length(), 480 - 20 - 12 - 4, v, COLOR_WHITE, 0.75f);
 	}
 
