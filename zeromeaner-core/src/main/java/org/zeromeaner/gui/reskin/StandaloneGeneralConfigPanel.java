@@ -36,9 +36,11 @@ import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -353,6 +355,21 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		buttonCancel.addActionListener(this);
 		buttonCancel.setActionCommand("GeneralConfig_Cancel");
 		pButtons.add(buttonCancel);
+		
+		JButton buttonRestart = new JButton(new AbstractAction(lz.s("GeneralConfig_Restart")) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				StandaloneMain.saveConfig();
+				URL jar = StandaloneGeneralConfigPanel.class.getClassLoader().getClass().getProtectionDomain().getCodeSource().getLocation();
+				String path = jar.getPath().replaceAll("!.*", "");
+				try {
+					Runtime.getRuntime().exec(new String[]{"java", "-jar", path});
+				} catch(Exception ex) {
+				}
+				System.exit(0);
+			}
+		});
+		pButtons.add(buttonRestart);
 	}
 
 	/**
