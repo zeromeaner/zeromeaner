@@ -65,6 +65,7 @@ import org.zeromeaner.util.Localization;
 import org.zeromeaner.util.ModeList;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.Session;
+import org.zeromeaner.util.URLs;
 import org.zeromeaner.util.Options.AIOptions;
 import org.zeromeaner.util.Options.TuningOptions;
 import org.zeromeaner.util.Version;
@@ -295,46 +296,7 @@ public class StandaloneFrame extends JFrame {
 		});
 		content.add(fc, CARD_OPEN);
 		
-		JPanel feedback = new JPanel(new GridBagLayout());
-		String header = "zeromeaner\n"
-				+ "version: " + Version.getBuildVersion() + "\n"
-				+ "revision: " + Version.getBuildRevision() + "\n\n";
-		JTextArea fbta;
-		try {
-			fbta = new JTextArea(
-					header + 
-					IOUtils.toString(StandaloneFrame.class.getResource("feedback.txt"), "UTF-8"));
-		} catch (IOException e1) {
-			throw new RuntimeException(e1);
-		}
-		fbta.setEditable(false);
-		fbta.setLineWrap(true);
-		fbta.setWrapStyleWord(true);
-		fbta.setMargin(new Insets(25,25,25,25));
-		JScrollPane fbs = new JScrollPane(fbta);
-		
-		JButton submitFeedback = new JButton(new AbstractAction("Submit Feedback Online") {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					URL url = new URL("http://jira.robindps.com/secure/CreateIssue!default.jspa?selectedProjectId=10000");
-					if(Desktop.isDesktopSupported())
-						Desktop.getDesktop().browse(url.toURI());
-					else
-						Runtime.getRuntime().exec("xdg-open " + url);
-				} catch (Exception e1) {
-					throw new RuntimeException(e1);
-				}
-			}
-		});
-		feedback.add(
-				submitFeedback, 
-				new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(25,25,0,25), 0, 0));
-		feedback.add(
-				fbs, 
-				new GridBagConstraints(0, 1, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(25,25,25,25), 0, 0));
-		content.add(feedback, CARD_FEEDBACK);
+		content.add(new StandaloneFeedbackPanel(), CARD_FEEDBACK);
 	}
 	
 	private void playCardSelected() {

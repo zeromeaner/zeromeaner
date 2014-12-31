@@ -12,6 +12,8 @@ import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import org.zeromeaner.util.URLs;
+
 public class StandaloneLicensePanel extends JPanel {
 	private JEditorPane editor;
 	
@@ -28,14 +30,7 @@ public class StandaloneLicensePanel extends JPanel {
 				@Override
 				public void hyperlinkUpdate(HyperlinkEvent e) {
 					if(HyperlinkEvent.EventType.ACTIVATED.equals(e.getEventType())) {
-						try {
-							if(Desktop.isDesktopSupported())
-								Desktop.getDesktop().browse(e.getURL().toURI());
-							else
-								Runtime.getRuntime().exec("xdg-open " + e.getURL());
-						} catch (Exception e1) {
-							throw new RuntimeException(e1);
-						}
+						URLs.open(e.getURL());
 					}
 				}
 			});
