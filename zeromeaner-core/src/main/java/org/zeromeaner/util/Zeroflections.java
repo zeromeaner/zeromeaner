@@ -23,6 +23,7 @@ import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.Scanner;
 import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ConfigurationBuilder;
 import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.mode.GameMode;
@@ -37,7 +38,8 @@ public class Zeroflections {
 	
 	public static Reflections getClasses() {
 		if(classes == null) {
-			classes = Reflections.collect();
+			classes = new Reflections("org.zeromeaner");
+			classes.collect(Zeroflections.class.getClassLoader().getResourceAsStream("META-INF/reflections/zeromeaner-core-reflections.xml"));
 			ServiceHookDispatcher<ZeroflectionsHook> hooks = new ServiceHookDispatcher<>(ZeroflectionsHook.class);
 			hooks.dispatcher().reflect(classes);
 		}
