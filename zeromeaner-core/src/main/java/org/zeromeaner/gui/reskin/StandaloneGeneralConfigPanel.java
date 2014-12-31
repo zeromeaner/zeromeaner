@@ -153,6 +153,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	
 	protected JCheckBox davEnabled;
 	
+	protected JCheckBox hideUnpopular;
+	
 	/**
 	 * Constructor
 	 * @param owner Parent window
@@ -328,6 +330,10 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		increaseEQPriority.setHorizontalAlignment(SwingConstants.CENTER);
 		pProTab.add(increaseEQPriority);
 		
+		hideUnpopular = new JCheckBox(lz.s("GeneralConfig_HideUnpopular"));
+		hideUnpopular.setHorizontalAlignment(SwingConstants.CENTER);
+		pProTab.add(hideUnpopular);
+		
 		hooks.dispatcher().createTabs(tabPane);
 		hooks.dispatcher().loadConfiguration();
 		
@@ -391,6 +397,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxSyncDisplay.setSelected(opt.SYNC_DISPLAY.value());
 		chkboxShowLineClearEffect.setSelected(opt.SHOW_LINE_EFFECT.value());
 		increaseEQPriority.setSelected(opt.INCREASE_EQ_PRIORITY.value());
+		hideUnpopular.setSelected(opt.HIDE_UNPOPULAR.value());
 		
 		hooks.dispatcher().loadConfiguration();
 	}
@@ -454,6 +461,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			}
 			
 			opt.INCREASE_EQ_PRIORITY.set(increaseEQPriority.isSelected());
+			opt.HIDE_UNPOPULAR.set(hideUnpopular.isSelected());
 			
 			hooks.dispatcher().saveConfiguration();
 		}

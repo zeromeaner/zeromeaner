@@ -143,6 +143,10 @@ public class StandaloneModeselectPanel extends JPanel {
 		buttonsPanel.add(l, CornerPileLayout.SOUTH_EAST);
 		
 		for(Map.Entry<String, List<String>> e : new LstResourceMap("config/list/modefolder.lst").entrySet()) {
+			if(Options.standalone().HIDE_UNPOPULAR.value()) {
+				if(!"POPULAR MODES".equals(e.getKey()))
+					continue;
+			}
 			JPanel p = new JPanel(new GridLayout(0, 1));
 			p.add(l = new JLabel(e.getKey()));
 			l.setHorizontalAlignment(SwingConstants.CENTER);
@@ -225,21 +229,32 @@ public class StandaloneModeselectPanel extends JPanel {
 //					StandaloneMain.propConfig.setProperty("name.mode", mode.getName());
 					Options.general().MODE_NAME.set(mode.getName());
 //					String ruleResource = StandaloneMain.propConfig.getProperty("mode." + mode.getName() + ".rule");
-					String ruleResource = Options.mode(mode.getName()).RULE_RSOURCE.value();
-					if(ruleResource != null) {
-						for(RuleButton rb : ruleButtons) {
-							ModeButton mb = (ModeButton) e.getSource();
-							if(recommended.get(mb.mode.getName()).contains(rb.rule.resourceName))
-								rb.setBackground(new Color(222,255,222));
-							else if(!rb.custom)
-								rb.setBackground(new Color(222, 233, 233));
-							else
-								rb.setBackground(new Color(244, 233, 222));
-							if(ruleResource.equals(rb.rule.resourceName)) {
-								rb.doClick();
-							}
+					for(RuleButton rb : ruleButtons) {
+						ModeButton mb = currentMode;
+						boolean rec = recommended.get(mb.mode.getName()).contains(rb.rule.resourceName);
+						if(Options.standalone().HIDE_UNPOPULAR.value()) {
+							buttonsPanel.remove(rb);
+							if(rec)
+								buttonsPanel.add(rb, CornerPileLayout.SOUTH_EAST);
 						}
 					}
+					String ruleResource = Options.mode(mode.getName()).RULE_RSOURCE.value();
+					for(RuleButton rb : ruleButtons) {
+						ModeButton mb = currentMode;
+						if(recommended.get(mb.mode.getName()).contains(rb.rule.resourceName))
+							rb.setBackground(new Color(222,255,222));
+						else if(!rb.custom)
+							rb.setBackground(new Color(222, 233, 233));
+						else
+							rb.setBackground(new Color(244, 233, 222));
+						if(rb.rule.resourceName.equals(ruleResource)) {
+							rb.doClick();
+						}
+						rb.revalidate();
+						rb.repaint();
+					}
+					buttonsPanel.revalidate();
+					buttonsPanel.repaint();
 				}
 			});
 		}
@@ -248,11 +263,6 @@ public class StandaloneModeselectPanel extends JPanel {
 	private class RuleButton extends JToggleButton {
 		private RuleOptions rule;
 		private boolean custom;
-		
-		@Override
-		public boolean isBorderPainted() {
-			return custom || super.isBorderPainted();
-		}
 		
 		public RuleButton(RuleOptions r) {
 			this.rule = r;
