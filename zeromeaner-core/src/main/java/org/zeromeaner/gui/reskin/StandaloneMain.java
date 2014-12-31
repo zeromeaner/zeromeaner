@@ -127,6 +127,7 @@ public class StandaloneMain {
 			Session.setUser(System.getProperty("user.name"));
 
 			try {
+				PropertyConfigurator.configure(StandaloneMain.class.getClassLoader().getResource("org/zeromeaner/config/etc/log_nothing.cfg"));
 				PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));
 			} catch(IOException ioe) {
 				ioe.printStackTrace();
