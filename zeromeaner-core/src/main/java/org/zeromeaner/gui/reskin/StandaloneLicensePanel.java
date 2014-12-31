@@ -2,6 +2,7 @@ package org.zeromeaner.gui.reskin;
 
 import java.awt.BorderLayout;
 import java.awt.Desktop;
+import java.awt.Insets;
 import java.io.IOException;
 import java.net.URL;
 
@@ -22,6 +23,7 @@ public class StandaloneLicensePanel extends JPanel {
 			editor.setEditable(false);
 			editor.setContentType("text/html");
 			editor.setPage(about);
+			editor.setMargin(new Insets(0,0,0,0));
 			editor.addHyperlinkListener(new HyperlinkListener() {
 				@Override
 				public void hyperlinkUpdate(HyperlinkEvent e) {
