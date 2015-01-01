@@ -59,14 +59,12 @@ public class VideoRecordingHook implements Hook {
 				}
 				Map.Entry<Long, BufferedImage> e = frames.firstEntry();
 				if(videoWriter != null) {
-					if(e.getKey() > nextFramePicos / 1000 && lastFrame != null)
-						e = lastFrame;
-					else
-						frames.remove(e.getKey());
-					videoWriter.encodeVideo(streamIdx, e.getValue(), nextFramePicos / 1000, TimeUnit.NANOSECONDS);
-					videoWriter.flush();
-					nextFramePicos += frameStepPicos;
-					lastFrame = e;
+					frames.remove(e.getKey());
+					if(e.getKey() > (nextFramePicos - frameStepPicos) / 1000) {
+						videoWriter.encodeVideo(streamIdx, e.getValue(), nextFramePicos / 1000, TimeUnit.NANOSECONDS);
+						nextFramePicos += frameStepPicos;
+						lastFrame = e;
+					}
 				}
 				encodePool.execute(this);
 			}
