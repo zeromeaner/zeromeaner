@@ -365,12 +365,13 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 				StandaloneMain.saveConfig();
 				URL jar = StandaloneGeneralConfigPanel.class.getClassLoader().getClass().getProtectionDomain().getCodeSource().getLocation();
 				String path = jar.getPath().replaceAll("!.*", "");
-				boolean windows = System.getProperty("os.name").toUpperCase().contains("win");
-				if(!windows)
+				boolean linux = System.getProperty("os.name").toUpperCase().contains("linux");
+				if(linux)
 					path = "\"" + path + "\"";
 				try {
 					Runtime.getRuntime().exec(new String[]{"java", "-jar", path});
 				} catch(Exception ex) {
+					ex.printStackTrace();
 				}
 				System.exit(0);
 			}
