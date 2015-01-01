@@ -4,12 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
-public class LstResourceMap extends TreeMap<String, List<String>> {
+public class LstResourceMap extends LinkedHashMap<String, List<String>> {
 	private static final Logger log = Logger.getLogger(LstResourceMap.class);
 	
 	private String resource;
