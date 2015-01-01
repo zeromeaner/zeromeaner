@@ -365,6 +365,9 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 				StandaloneMain.saveConfig();
 				URL jar = StandaloneGeneralConfigPanel.class.getClassLoader().getClass().getProtectionDomain().getCodeSource().getLocation();
 				String path = jar.getPath().replaceAll("!.*", "");
+				boolean windows = System.getProperty("os.name").toUpperCase().contains("win");
+				if(!windows)
+					path = "\"" + path + "\"";
 				try {
 					Runtime.getRuntime().exec(new String[]{"java", "-jar", path});
 				} catch(Exception ex) {
@@ -373,6 +376,14 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			}
 		});
 		pButtons.add(buttonRestart);
+		buttonRestart.setEnabled(false);
+		try {
+			URL jar = StandaloneGeneralConfigPanel.class.getClassLoader().getClass().getProtectionDomain().getCodeSource().getLocation();
+			String path = jar.getPath().replaceAll("!.*", "");
+			if(path.endsWith(".jar"))
+				buttonRestart.setEnabled(true);
+		} catch(NullPointerException e) {
+		}
 	}
 
 	/**
