@@ -32,6 +32,7 @@ import static org.zeromeaner.gui.reskin.Localizations.lz;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -148,7 +149,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	/** Show field BG grid */
 	protected JCheckBox chkboxShowInput;
 
-	protected JTextField userId = new JTextField();
+	protected JTextField userId = new JTextField("", 40);
 	
 	
 	protected JCheckBox increaseEQPriority;
@@ -175,10 +176,10 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	protected void initUI() {
 		setLayout(new BorderLayout(10, 10));
 
-		JPanel login = new JPanel(new BorderLayout());
-		login.add(new JLabel("www.zeromeaner.org user ID:"), BorderLayout.WEST);
-		login.add(userId, BorderLayout.CENTER);
-		this.add(login, BorderLayout.NORTH);
+		JPanel login = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		login.add(new JLabel(lz.s("GeneralConfig_OnlineID")));
+		login.add(userId);
+//		this.add(login, BorderLayout.NORTH);
 		
 		// * Tab pane
 		JTabbedPane tabPane = new JTabbedPane();
@@ -202,6 +203,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		davEnabled = new JCheckBox(lz.s("GeneralConfig_DavEnabled"));
 		davEnabled.setHorizontalAlignment(SwingConstants.CENTER);
 		pBasicTab.add(davEnabled);
+		
+		pBasicTab.add(login);
 		
 		// ---------- Sound effectsVolume of ----------
 		JPanel pSEVolume = new JPanel();
