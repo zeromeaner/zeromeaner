@@ -44,7 +44,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>org.zeromeaner.Main</mainClass>
+							<mainClass>org.zeromeaner.zeromeaner</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
