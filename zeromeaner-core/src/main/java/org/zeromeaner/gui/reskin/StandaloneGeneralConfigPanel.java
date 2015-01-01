@@ -48,6 +48,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
@@ -362,31 +363,12 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		JButton buttonRestart = new JButton(new AbstractAction(lz.s("GeneralConfig_Restart")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				StandaloneMain.saveConfig();
-				URL jar = StandaloneGeneralConfigPanel.class.getClassLoader().getClass().getProtectionDomain().getCodeSource().getLocation();
-				String path = jar.getPath().replaceAll("!.*", "");
-				boolean linux = System.getProperty("os.name").toUpperCase().contains("linux");
-				if(linux)
-					path = "\"" + path + "\"";
-				try {
-					Runtime.getRuntime().exec(new String[]{"java", "-jar", path});
-				} catch(Exception ex) {
-					ex.printStackTrace();
-				}
-				System.exit(0);
+				StandaloneMain.restart();
 			}
 		});
 		pButtons.add(buttonRestart);
-		buttonRestart.setEnabled(false);
-		try {
-			URL jar = StandaloneGeneralConfigPanel.class.getClassLoader().getClass().getProtectionDomain().getCodeSource().getLocation();
-			String path = jar.getPath().replaceAll("!.*", "");
-			if(path.endsWith(".jar"))
-				buttonRestart.setEnabled(true);
-		} catch(NullPointerException e) {
-		}
 	}
-
+	
 	/**
 	 * Current SettingsGUIBe reflected in the
 	 */
@@ -439,11 +421,14 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	 */
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand() == "GeneralConfig_OK") {
+			boolean restart = false;
+			
 			// OK
 			
 			PropertyStore.get().put("userId", userId.getText());
 			Session.setUser(userId.getText());
 			
+			restart |= (davEnabled.isSelected() != Options.isDavEnabled());
 			Options.setDavEnabled(davEnabled.isSelected());
 			
 			StandaloneOptions opt = Options.standalone();
@@ -470,7 +455,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			opt.SHOW_METER.set(chkboxShowMeter.isSelected());
 			opt.SHOW_FIELD_BLOCK_GRAPHICS.set(chkboxShowFieldBlockGraphics.isSelected());
 			opt.SIMPLE_BLOCK.set(chkboxSimpleBlock.isSelected());
-			opt.SE_ENABLED.set(chkboxSE.isSelected());
+			restart |= opt.SE_ENABLED.set(chkboxSE.isSelected());
 			opt.ENABLE_FRAME_STEP.set(chkboxEnableFrameStep.isSelected());
 			opt.NEXT_SHADOW.set(chkboxNextShadow.isSelected());
 			opt.OUTLINE_GHOST.set(chkboxOutlineGhost.isSelected());
@@ -493,9 +478,15 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			}
 			
 			opt.INCREASE_EQ_PRIORITY.set(increaseEQPriority.isSelected());
-			opt.HIDE_UNPOPULAR.set(hideUnpopular.isSelected());
+			restart |= opt.HIDE_UNPOPULAR.set(hideUnpopular.isSelected());
 			
 			hooks.dispatcher().saveConfiguration();
+			
+			if(restart) {
+				int c = JOptionPane.showConfirmDialog(this, "Restart required for changes to take effect.  Restart now?", "Restart Now?", JOptionPane.YES_NO_OPTION);
+				if(c == JOptionPane.YES_OPTION)
+					StandaloneMain.restart();
+			}
 		}
 		else if(e.getActionCommand() == "GeneralConfig_Cancel") {
 			// Cancel

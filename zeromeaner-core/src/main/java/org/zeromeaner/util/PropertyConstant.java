@@ -258,18 +258,20 @@ public final class PropertyConstant {
 			return parser.parse(backing.getProperty(key), defaultValue);
 		}
 		
-		public void set(T value) {
-			set(null, value);
+		public boolean set(T value) {
+			return set(null, value);
 		}
 		
-		public void set(CustomProperties backing, T value) {
+		public boolean set(CustomProperties backing, T value) {
 			if(backing == null)
 				backing = this.backing;
 			String pval = parser.render(value);
+			String old = backing.getProperty(key);
 			if(pval != null)
 				backing.setProperty(key, pval);
 			else
 				backing.removeProperty(key);
+			return old == null ? pval != null : !old.equals(pval);
 		}
 	}
 

@@ -47,6 +47,21 @@ public class StandaloneMain {
 			ex.printStackTrace();
 		}
 	}
+	
+	public static void restart() {
+		StandaloneMain.saveConfig();
+		URL jar = StandaloneGeneralConfigPanel.class.getClassLoader().getClass().getProtectionDomain().getCodeSource().getLocation();
+		String path = jar.getPath().replaceAll("!.*", "");
+		boolean linux = System.getProperty("os.name").toUpperCase().contains("linux");
+		if(linux)
+			path = "\"" + path + "\"";
+		try {
+			Runtime.getRuntime().exec(new String[]{"java", "-jar", path});
+			System.exit(0);
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 
 	public static void loadGlobalConfig() {
 		try {
