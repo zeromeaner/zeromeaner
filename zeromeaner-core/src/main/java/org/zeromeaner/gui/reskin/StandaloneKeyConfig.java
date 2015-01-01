@@ -173,6 +173,7 @@ public class StandaloneKeyConfig extends JPanel implements ActionListener {
 			txtfldGameKeys[i].addKeyListener(keyEventListener);
 			txtfldGameKeys[i].addMouseListener(mouseEventListener);
 			txtfldGameKeys[i].setFocusTraversalKeysEnabled(false);
+			txtfldGameKeys[i].setHorizontalAlignment(JTextField.CENTER);
 			psKeyTemp.add(txtfldGameKeys[i], BorderLayout.EAST);
 		}
 
@@ -195,6 +196,7 @@ public class StandaloneKeyConfig extends JPanel implements ActionListener {
 			txtfldGameKeysNav[i].addKeyListener(keyEventListener);
 			txtfldGameKeysNav[i].addMouseListener(mouseEventListener);
 			txtfldGameKeysNav[i].setFocusTraversalKeysEnabled(false);
+			txtfldGameKeysNav[i].setHorizontalAlignment(JTextField.CENTER);
 			psKeyTemp.add(txtfldGameKeysNav[i], BorderLayout.EAST);
 		}
 
