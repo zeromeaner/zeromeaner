@@ -5,10 +5,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
@@ -25,8 +28,6 @@ import com.xuggle.xuggler.IRational;
 public class VideoRecordingHook implements Hook {
 	private static final Logger log = Logger.getLogger(VideoRecordingHook.class);
 
-	private ReentrantLock lock = new ReentrantLock();
-	
 	private IMediaWriter videoWriter;
 	
 	private File videoFile;
@@ -39,37 +40,36 @@ public class VideoRecordingHook implements Hook {
 	
 	private int videoFPS;
 
-	private BufferedImage videoBuffer;
-	
 	private int streamIdx;
 	
 	private ExecutorService encodePool = Executors.newSingleThreadExecutor();
 	
+	private Deque<BufferedImage> frames = new ArrayDeque<>();
+	
 	private Runnable encodeTask = new Runnable() {
 		@Override
 		public void run() {
-			lock.lock();
-			try {
-				if(videoWriter == null)
+			synchronized(frames) {
+				if(frames.size() == 0) {
+					frames.notify();
 					return;
-				if(System.nanoTime() - videoStart > nextFramePicos / 1000) {
-					videoWriter.encodeVideo(streamIdx, videoBuffer, nextFramePicos / 1000, TimeUnit.NANOSECONDS);
-					nextFramePicos += frameStepPicos;
 				}
-				if(System.nanoTime() - videoStart > nextFramePicos / 1000)
-					encodePool.execute(this);
-			} finally {
-				lock.unlock();
+				BufferedImage frame = frames.poll();
+				if(videoWriter != null) {
+					if(System.nanoTime() - videoStart > nextFramePicos / 1000) {
+						videoWriter.encodeVideo(streamIdx, frame, nextFramePicos / 1000, TimeUnit.NANOSECONDS);
+						nextFramePicos += frameStepPicos;
+					}
+				}
+				encodePool.execute(this);
 			}
 		}
 	};
 	
 	@Override
 	public void gameStarted(StandaloneGamePanel thiz) {
-		lock.lock();
-		try {
+		synchronized(frames) {
 			if(VideoRecordingOptions.get().ENABLED.value()) {
-				videoBuffer = new BufferedImage(thiz.gameBuffer.getWidth(), thiz.gameBuffer.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 				videoFPS = VideoRecordingOptions.get().FPS.value();
 				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss");
 				try {
@@ -78,7 +78,7 @@ public class VideoRecordingHook implements Hook {
 							"video/" + Session.getUser() + " " + df.format(System.currentTimeMillis()) + ".mpg");
 					videoFile.getParentFile().mkdirs();
 					videoWriter = ToolFactory.makeWriter(videoFile.getCanonicalPath());
-					streamIdx = videoWriter.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO, IRational.make(videoFPS), videoBuffer.getWidth(), videoBuffer.getHeight());
+					streamIdx = videoWriter.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO, IRational.make(videoFPS), thiz.gameBuffer.getWidth(), thiz.gameBuffer.getHeight());
 					videoStart = System.nanoTime();
 					frameStepPicos = 1000000000000L / videoFPS;
 					nextFramePicos = 0;
@@ -89,36 +89,40 @@ public class VideoRecordingHook implements Hook {
 				}
 			} else
 				videoWriter = null;
-		} finally {
-			lock.unlock();
 		}
 	}
 
 	@Override
 	public void frameSynced(StandaloneGamePanel thiz) {
-		lock.lock();
-		try {
-			if(videoWriter != null)
-				videoBuffer.getGraphics().drawImage(thiz.gameBuffer, 0, 0, null);
-		} finally {
-			lock.unlock();
+		synchronized(frames) {
+			if(videoWriter != null) {
+				BufferedImage frame = new BufferedImage(thiz.gameBuffer.getWidth(), thiz.gameBuffer.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+				frame.getGraphics().drawImage(thiz.gameBuffer, 0, 0, null);
+				frames.offer(frame);
+				encodePool.execute(encodeTask);
+			}
 		}
-		encodePool.execute(encodeTask);
 	}
 
 	@Override
 	public void gameStopped(StandaloneGamePanel thiz) {
-		lock.lock();
-		try {
+		synchronized(frames) {
 			if(videoWriter != null) {
+				log.info("Waiting for final video encode tasks to complete");
+				while(frames.size() > 0) {
+					try {
+						frames.wait();
+					} catch (InterruptedException e) {
+						throw new RuntimeException(e);
+					}
+				}
+				
 				IMediaWriter vw = videoWriter;
 				videoWriter = null;
 				vw.flush();
 				vw.close();
 				log.info("Finished recording video to " + videoFile);
 			}
-		} finally {
-			lock.unlock();
 		}
 	}
 
