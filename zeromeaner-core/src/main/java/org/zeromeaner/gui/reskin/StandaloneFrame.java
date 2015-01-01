@@ -106,7 +106,7 @@ public class StandaloneFrame extends JFrame {
 	public static final String CARD_FEEDBACK = "toolbar.feedback";
 	public static final String CARD_CLOSE = "toolbar.close";
 	
-	private JToolBar toolbar;
+	public JToolBar toolbar;
 	private CardLayout contentCards;
 	private String currentCard;
 	private String nextCard;

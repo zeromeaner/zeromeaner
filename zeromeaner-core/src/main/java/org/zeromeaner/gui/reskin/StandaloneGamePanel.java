@@ -135,7 +135,7 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	private FrameRateCounter dps = new FrameRateCounter();
 	
 	/** Parent window */
-	protected StandaloneFrame owner = null;
+	public StandaloneFrame owner = null;
 
 	/** The size of the border and title bar */
 	protected Insets insets = null;

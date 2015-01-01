@@ -1,6 +1,8 @@
 package org.zeromeaner.plugin.videorecording;
 
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +18,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+
 import org.apache.log4j.Logger;
 import org.zeromeaner.gui.reskin.StandaloneGamePanel;
 import org.zeromeaner.gui.reskin.StandaloneGamePanel.Hook;
@@ -29,6 +34,12 @@ import com.xuggle.xuggler.IRational;
 
 public class VideoRecordingHook implements Hook {
 	private static final Logger log = Logger.getLogger(VideoRecordingHook.class);
+	
+	private static VideoRecordingHook instance;
+	
+	public static VideoRecordingHook get() {
+		return instance;
+	}
 
 	private IMediaWriter videoWriter;
 	
@@ -45,6 +56,8 @@ public class VideoRecordingHook implements Hook {
 	private int streamIdx;
 	
 	private ExecutorService encodePool = Executors.newSingleThreadExecutor();
+	
+	private JButton start;
 	
 	private Map.Entry<Long, BufferedImage> lastFrame;
 	private TreeMap<Long, BufferedImage> frames = new TreeMap<>();
@@ -71,30 +84,50 @@ public class VideoRecordingHook implements Hook {
 		}
 	};
 	
+	public VideoRecordingHook() {
+		instance = this;
+	}
+	
 	@Override
-	public void gameStarted(StandaloneGamePanel thiz) {
-		synchronized(frames) {
-			if(VideoRecordingOptions.get().ENABLED.value()) {
-				videoFPS = VideoRecordingOptions.get().FPS.value();
-				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss");
-				try {
-					videoFile = new File(
-							System.getProperty("user.dir"), 
-							"video/" + Session.getUser() + " " + df.format(System.currentTimeMillis()) + ".mpg");
-					videoFile.getParentFile().mkdirs();
-					videoWriter = ToolFactory.makeWriter(videoFile.getCanonicalPath());
-					streamIdx = videoWriter.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO, IRational.make(videoFPS), thiz.gameBuffer.getWidth(), thiz.gameBuffer.getHeight());
-					videoStart = System.nanoTime();
-					frameStepPicos = 1000000000000L / videoFPS;
-					nextFramePicos = 0;
-					log.info("Recording video to " + videoFile);
-				} catch (IOException e) {
-					e.printStackTrace();
-					videoWriter = null;
+	public void gameStarted(final StandaloneGamePanel thiz) {
+		if(start != null)
+			thiz.owner.toolbar.remove(start);
+		
+		start = new JButton("Start Recording");
+		
+		start.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				synchronized(frames) {
+					if(VideoRecordingOptions.get().ENABLED.value()) {
+						videoFPS = VideoRecordingOptions.get().FPS.value();
+						SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss");
+						try {
+							videoFile = new File(
+									System.getProperty("user.dir"), 
+									"video/" + Session.getUser() + " " + df.format(System.currentTimeMillis()) + ".mpg");
+							videoFile.getParentFile().mkdirs();
+							videoWriter = ToolFactory.makeWriter(videoFile.getCanonicalPath());
+							streamIdx = videoWriter.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO, IRational.make(videoFPS), thiz.gameBuffer.getWidth(), thiz.gameBuffer.getHeight());
+							videoStart = System.nanoTime();
+							frameStepPicos = 1000000000000L / videoFPS;
+							nextFramePicos = 0;
+							log.info("Recording video to " + videoFile);
+						} catch (IOException ex) {
+							ex.printStackTrace();
+							videoWriter = null;
+						}
+					} else
+						videoWriter = null;
 				}
-			} else
-				videoWriter = null;
-		}
+				thiz.owner.toolbar.remove(start);
+				thiz.owner.toolbar.revalidate();
+				thiz.owner.toolbar.repaint();
+			}
+		});
+		
+		if(VideoRecordingOptions.get().ENABLED.value())
+			thiz.owner.toolbar.add(start);
 	}
 
 	@Override
@@ -129,6 +162,9 @@ public class VideoRecordingHook implements Hook {
 				log.info("Finished recording video to " + videoFile);
 			}
 		}
+		thiz.owner.toolbar.remove(start);
+		thiz.owner.toolbar.revalidate();
+		thiz.owner.toolbar.repaint();
 	}
 
 }
