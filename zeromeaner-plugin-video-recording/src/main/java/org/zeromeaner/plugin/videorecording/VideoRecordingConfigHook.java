@@ -12,13 +12,13 @@ import javax.swing.SwingConstants;
 import org.zeromeaner.gui.reskin.StandaloneGeneralConfigPanel.Hook;
 import org.zeromeaner.util.Localization;
 
-public class StandaloneGeneralConfigPanelHook implements Hook {
+public class VideoRecordingConfigHook implements Hook {
 
 	private static final Localization l = Localization.lz();
 	
 	protected JCheckBox enable = new JCheckBox(l.s("enable"));
 	
-	public StandaloneGeneralConfigPanelHook() {
+	public VideoRecordingConfigHook() {
 		enable.setHorizontalAlignment(SwingConstants.CENTER);
 	}
 

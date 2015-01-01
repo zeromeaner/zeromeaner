@@ -22,8 +22,8 @@ import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IRational;
 
-public class StandaloneGamePanelHook implements Hook {
-	private static final Logger log = Logger.getLogger(StandaloneGamePanelHook.class);
+public class VideoRecordingHook implements Hook {
+	private static final Logger log = Logger.getLogger(VideoRecordingHook.class);
 
 	private ReentrantLock lock = new ReentrantLock();
 	
@@ -66,27 +66,32 @@ public class StandaloneGamePanelHook implements Hook {
 	
 	@Override
 	public void gameStarted(StandaloneGamePanel thiz) {
-		if(VideoRecordingOptions.get().ENABLED.value()) {
-			videoBuffer = new BufferedImage(thiz.gameBuffer.getWidth(), thiz.gameBuffer.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-			videoFPS = VideoRecordingOptions.get().FPS.value();
-			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss");
-			try {
-				videoFile = new File(
-						System.getProperty("user.dir"), 
-						"video/" + Session.getUser() + " " + df.format(System.currentTimeMillis()) + ".mpg");
-				videoFile.getParentFile().mkdirs();
-				videoWriter = ToolFactory.makeWriter(videoFile.getCanonicalPath());
-				streamIdx = videoWriter.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO, IRational.make(videoFPS), videoBuffer.getWidth(), videoBuffer.getHeight());
-				videoStart = System.nanoTime();
-				frameStepPicos = 1000000000000L / videoFPS;
-				nextFramePicos = 0;
-				log.info("Recording video to " + videoFile);
-			} catch (IOException e) {
-				e.printStackTrace();
+		lock.lock();
+		try {
+			if(VideoRecordingOptions.get().ENABLED.value()) {
+				videoBuffer = new BufferedImage(thiz.gameBuffer.getWidth(), thiz.gameBuffer.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+				videoFPS = VideoRecordingOptions.get().FPS.value();
+				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss");
+				try {
+					videoFile = new File(
+							System.getProperty("user.dir"), 
+							"video/" + Session.getUser() + " " + df.format(System.currentTimeMillis()) + ".mpg");
+					videoFile.getParentFile().mkdirs();
+					videoWriter = ToolFactory.makeWriter(videoFile.getCanonicalPath());
+					streamIdx = videoWriter.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO, IRational.make(videoFPS), videoBuffer.getWidth(), videoBuffer.getHeight());
+					videoStart = System.nanoTime();
+					frameStepPicos = 1000000000000L / videoFPS;
+					nextFramePicos = 0;
+					log.info("Recording video to " + videoFile);
+				} catch (IOException e) {
+					e.printStackTrace();
+					videoWriter = null;
+				}
+			} else
 				videoWriter = null;
-			}
-		} else
-			videoWriter = null;
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
@@ -106,9 +111,10 @@ public class StandaloneGamePanelHook implements Hook {
 		lock.lock();
 		try {
 			if(videoWriter != null) {
-				videoWriter.flush();
-				videoWriter.close();
+				IMediaWriter vw = videoWriter;
 				videoWriter = null;
+				vw.flush();
+				vw.close();
 				log.info("Finished recording video to " + videoFile);
 			}
 		} finally {
