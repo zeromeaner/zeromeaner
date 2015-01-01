@@ -57,6 +57,7 @@
 						<configuration>
 							<outputDirectory>${project.build.directory}</outputDirectory>
 							<includeArtifactIds>zeromeaner-plugin-video-recording</includeArtifactIds>
+							<stripVersion>true</stripVersion>
 						</configuration>
 					</execution>
 				</executions>
