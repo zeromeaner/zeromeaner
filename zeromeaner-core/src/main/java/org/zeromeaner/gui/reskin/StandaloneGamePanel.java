@@ -299,21 +299,26 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			running.notifyAll();
 		}
 		
-		
-		imageBufferLabel.setText("No Active Game.  Click to start.");
-		imageBufferLabel.setIcon(null);
-		imageBufferLabel.setBorder(null);
+		try {
+			shutdownWait();
+		} catch(InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 		
 		if(restart) {
 			owner.startNewGame();
 			displayWindow();
+		} else {
+			imageBufferLabel.setText("No Active Game.  Click to start.");
+			imageBufferLabel.setIcon(null);
+			imageBufferLabel.setBorder(null);
 		}
 	}
 	
 	public void shutdownWait() throws InterruptedException {
-		synchronized(running) {
-			while(running.get())
-				running.wait();
+		synchronized(active) {
+			while(active.get())
+				active.wait();
 		}
 	}
 
@@ -343,10 +348,15 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	
 	private long lastFrameNanos;
 	
+	private AtomicBoolean active = new AtomicBoolean(false);
+	
 	/**
 	 * Processing of the thread
 	 */
 	public void run() {
+		synchronized(active) {
+			active.set(true);
+		}
 		boolean sleepFlag;
 		long beforeTime, afterTime, timeDiff, sleepTime, sleepTimeInMillis;
 		long overSleepTime = 0L;
@@ -443,6 +453,11 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 			owner.gameManager.shutdown();
 
 		log.debug("Game thread end");
+
+		synchronized(active) {
+			active.set(false);
+			active.notifyAll();
+		}
 	}
 
 	/**
