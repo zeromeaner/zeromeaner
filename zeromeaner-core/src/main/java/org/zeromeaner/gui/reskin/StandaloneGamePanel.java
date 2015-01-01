@@ -43,11 +43,15 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.SecondaryLoop;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -79,6 +83,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
@@ -999,29 +1004,39 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 				content.addKeyListener(this);
 				content.addKeyListener(new GamePanelKeyListener());
 				owner.setContentPane(content);
-				owner.setExtendedState(JFrame.MAXIMIZED_BOTH);
-				content.requestFocus();
-				EventQueue.invokeLater(new Runnable() {
-					private Dimension last = null;
+				owner.addWindowStateListener(new WindowStateListener() {
 					@Override
-					public void run() {
-						Dimension d = owner.getSize();
-						if(d.equals(last))
-							return;
-						last = d;
-						d = new Dimension(d.width - 48, d.height - 48);
-						Dimension id;
-						if(d.width * 3 / 4 > d.height) {
-							id = new Dimension(d.height * 4 / 3, d.height);
-						} else {
-							id = new Dimension(d.width, d.width * 3 / 4);
-						}
-						imageBuffer = new BufferedImage((int) id.getWidth(), (int) id.getHeight(), BufferedImage.TYPE_INT_ARGB);
-						imageBufferLabel.setIcon(new ImageIcon(imageBuffer));
-						imageBufferLabel.revalidate();
-						EventQueue.invokeLater(this);
+					public void windowStateChanged(WindowEvent e) {
+						final Timer t = new Timer(500, null);
+						t.addActionListener(new ActionListener() {
+							private Dimension last = null;
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								Dimension d = owner.getSize();
+								if(d.equals(last)) {
+									t.stop();
+									return;
+								}
+								last = d;
+								d = new Dimension(d.width - 48, d.height - 48);
+								Dimension id;
+								if(d.width * 3 / 4 > d.height) {
+									id = new Dimension(d.height * 4 / 3, d.height);
+								} else {
+									id = new Dimension(d.width, d.width * 3 / 4);
+								}
+								imageBuffer = new BufferedImage((int) id.getWidth(), (int) id.getHeight(), BufferedImage.TYPE_INT_ARGB);
+								imageBufferLabel.setIcon(new ImageIcon(imageBuffer));
+								imageBufferLabel.revalidate();
+							}
+						});
+						t.start();
 					}
 				});
+				owner.setExtendedState(JFrame.MAXIMIZED_BOTH);
+				content.requestFocus();
+				
+				
 				fullscreen = true;
 			} else {
 				owner.getContentPane().remove(imageBufferLabel);
