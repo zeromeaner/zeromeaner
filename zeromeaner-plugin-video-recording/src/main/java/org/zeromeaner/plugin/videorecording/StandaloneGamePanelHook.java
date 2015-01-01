@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.zeromeaner.gui.reskin.StandaloneGamePanel;
 import org.zeromeaner.gui.reskin.StandaloneGamePanel.Hook;
 import org.zeromeaner.util.Options;
+import org.zeromeaner.util.Session;
 
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
@@ -70,7 +71,9 @@ public class StandaloneGamePanelHook implements Hook {
 			videoFPS = VideoRecordingOptions.get().FPS.value();
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss");
 			try {
-				videoFile = new File(System.getProperty("user.dir"), "video/" + df.format(System.currentTimeMillis()) + ".mpg");
+				videoFile = new File(
+						System.getProperty("user.dir"), 
+						"video/" + Session.getUser() + " " + df.format(System.currentTimeMillis()) + ".mpg");
 				videoFile.getParentFile().mkdirs();
 				videoWriter = ToolFactory.makeWriter(videoFile.getCanonicalPath());
 				streamIdx = videoWriter.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO, IRational.make(videoFPS), videoBuffer.getWidth(), videoBuffer.getHeight());
