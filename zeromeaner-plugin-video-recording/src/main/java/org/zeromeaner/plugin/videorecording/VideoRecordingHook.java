@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,7 +46,8 @@ public class VideoRecordingHook implements Hook {
 	
 	private ExecutorService encodePool = Executors.newSingleThreadExecutor();
 	
-	private Deque<BufferedImage> frames = new ArrayDeque<>();
+	private Map.Entry<Long, BufferedImage> lastFrame;
+	private TreeMap<Long, BufferedImage> frames = new TreeMap<>();
 	
 	private Runnable encodeTask = new Runnable() {
 		@Override
@@ -54,12 +57,16 @@ public class VideoRecordingHook implements Hook {
 					frames.notify();
 					return;
 				}
-				BufferedImage frame = frames.poll();
+				Map.Entry<Long, BufferedImage> e = frames.firstEntry();
 				if(videoWriter != null) {
-					if(System.nanoTime() - videoStart > nextFramePicos / 1000) {
-						videoWriter.encodeVideo(streamIdx, frame, nextFramePicos / 1000, TimeUnit.NANOSECONDS);
-						nextFramePicos += frameStepPicos;
-					}
+					if(e.getKey() > nextFramePicos / 1000 && lastFrame != null)
+						e = lastFrame;
+					else
+						frames.remove(e.getKey());
+					videoWriter.encodeVideo(streamIdx, e.getValue(), nextFramePicos / 1000, TimeUnit.NANOSECONDS);
+					videoWriter.flush();
+					nextFramePicos += frameStepPicos;
+					lastFrame = e;
 				}
 				encodePool.execute(this);
 			}
@@ -98,7 +105,7 @@ public class VideoRecordingHook implements Hook {
 			if(videoWriter != null) {
 				BufferedImage frame = new BufferedImage(thiz.gameBuffer.getWidth(), thiz.gameBuffer.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 				frame.getGraphics().drawImage(thiz.gameBuffer, 0, 0, null);
-				frames.offer(frame);
+				frames.put(System.nanoTime() - videoStart, frame);
 				encodePool.execute(encodeTask);
 			}
 		}
