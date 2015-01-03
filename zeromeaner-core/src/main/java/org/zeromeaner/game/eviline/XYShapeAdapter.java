@@ -89,8 +89,8 @@ public abstract class XYShapeAdapter {
 			return -1;
 		
 		return XYShapes.toXYShape(
-				engine.nowPieceX - (p.offsetApplied ? p.dataOffsetX[p.direction] : 0), 
-				engine.nowPieceY - (p.offsetApplied ? p.dataOffsetY[p.direction] : 0), 
+				engine.nowPieceX, 
+				engine.nowPieceY, 
 				shape);
 	}
 	

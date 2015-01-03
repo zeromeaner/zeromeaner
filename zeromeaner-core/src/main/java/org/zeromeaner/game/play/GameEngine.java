@@ -157,7 +157,7 @@ public class GameEngine {
 	};;
 
 	/** GameManager: Owner of this GameEngine */
-	private GameManager owner;
+	public GameManager owner;
 	
 	public EngineEventManager eventManager = new EngineEventManager(this);
 
@@ -728,6 +728,8 @@ public class GameEngine {
 			randSeed = tempRand.nextLong();
 			log.debug("Player + " + playerID + "Random seed :" + Long.toString(randSeed, 16));
 			random = new Random(randSeed);
+			
+			eventManager.addEngineListener(new FinesseCounter());
 		} else {
 //			versionMajor = owner.replayProp.getProperty("version.core.major", 0);
 //			versionMinor = owner.replayProp.getProperty("version.core.minor", 0);
