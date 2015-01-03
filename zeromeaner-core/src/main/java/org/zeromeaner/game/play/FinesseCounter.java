@@ -100,6 +100,6 @@ public class FinesseCounter extends EngineAdapter {
 	
 	@Override
 	public void engineRenderLast(EngineEvent e) {
-		e.getSource().owner.receiver.drawDirectFont(e.getSource(), e.getPlayerId(), 0, 0, "FINESSE: " + finesse + " (" + finesseDelta + ")");
+		e.getSource().owner.receiver.drawDirectFont(e.getSource(), e.getPlayerId(), 1, 1, "FINESSE: " + finesse + " (" + finesseDelta + ")");
 	}
 }
