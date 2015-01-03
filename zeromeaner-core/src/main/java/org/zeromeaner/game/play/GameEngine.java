@@ -54,6 +54,7 @@ import org.zeromeaner.game.randomizer.Randomizer;
 import org.zeromeaner.game.subsystem.ai.AbstractAI;
 import org.zeromeaner.game.subsystem.wallkick.Wallkick;
 import org.zeromeaner.util.GeneralUtil;
+import org.zeromeaner.util.Options;
 import org.zeromeaner.util.Version;
 
 
@@ -729,7 +730,8 @@ public class GameEngine {
 			log.debug("Player + " + playerID + "Random seed :" + Long.toString(randSeed, 16));
 			random = new Random(randSeed);
 			
-			eventManager.addEngineListener(new FinesseCounter());
+			if(playerID == 0 && ai == null && Options.standalone().SHOW_FINESSE.value())
+				eventManager.addEngineListener(new FinesseCounter());
 		} else {
 //			versionMajor = owner.replayProp.getProperty("version.core.major", 0);
 //			versionMinor = owner.replayProp.getProperty("version.core.minor", 0);
