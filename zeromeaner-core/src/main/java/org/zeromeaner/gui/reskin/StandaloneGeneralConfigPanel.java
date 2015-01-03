@@ -159,6 +159,8 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 	
 	protected JCheckBox hideUnpopular;
 	
+	protected JCheckBox showFinesse;
+	
 	/**
 	 * Constructor
 	 * @param owner Parent window
@@ -340,6 +342,10 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		hideUnpopular.setHorizontalAlignment(SwingConstants.CENTER);
 		pProTab.add(hideUnpopular);
 		
+		showFinesse = new JCheckBox(lz.s("GeneralConfig_ShowFinesse"));
+		showFinesse.setHorizontalAlignment(SwingConstants.CENTER);
+		pAdvancedTab.add(showFinesse);
+		
 		hooks.dispatcher().createTabs(tabPane);
 		hooks.dispatcher().loadConfiguration();
 		
@@ -412,6 +418,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 		chkboxShowLineClearEffect.setSelected(opt.SHOW_LINE_EFFECT.value());
 		increaseEQPriority.setSelected(opt.INCREASE_EQ_PRIORITY.value());
 		hideUnpopular.setSelected(opt.HIDE_UNPOPULAR.value());
+		showFinesse.setSelected(opt.SHOW_FINESSE.value());
 		
 		hooks.dispatcher().loadConfiguration();
 	}
@@ -467,6 +474,7 @@ public class StandaloneGeneralConfigPanel extends JPanel implements ActionListen
 			opt.SYNC_RENDER.set(chkboxSyncRender.isSelected());
 			opt.SYNC_DISPLAY.set(chkboxSyncDisplay.isSelected());
 			opt.SHOW_LINE_EFFECT.set(chkboxShowLineClearEffect.isSelected());
+			opt.SHOW_FINESSE.set(showFinesse.isSelected());
 
 			StandaloneMain.saveConfig();
 			StandaloneResourceHolder.soundManager.setVolume(sevolume);

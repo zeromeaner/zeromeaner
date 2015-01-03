@@ -156,6 +156,7 @@ public class Options {
 		public final Constant<Boolean> SHOW_INPUT;
 		public final Constant<Boolean> INCREASE_EQ_PRIORITY;
 		public final Constant<Boolean> HIDE_UNPOPULAR;
+		public final Constant<Boolean> SHOW_FINESSE;
 		
 		private StandaloneOptions() {
 			CustomProperties p = GUI_PROPERTIES.subProperties(".options.");
@@ -186,6 +187,7 @@ public class Options {
 			SHOW_INPUT = p.create(BOOLEAN, "showInput", false);
 			INCREASE_EQ_PRIORITY = p.create(BOOLEAN, "event_queue.priority.increase", true);
 			HIDE_UNPOPULAR = p.create(BOOLEAN, "hide_unpopular", true);
+			SHOW_FINESSE = p.create(BOOLEAN, "showFinesse", false);
 		}
 	}
 	
