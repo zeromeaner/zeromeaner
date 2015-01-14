@@ -38,7 +38,7 @@ public class StandaloneFeedbackPanel extends JPanel {
 		fbta.setEditable(false);
 		fbta.setLineWrap(true);
 		fbta.setWrapStyleWord(true);
-		fbta.setMargin(new Insets(25,25,25,25));
+		fbta.setMargin(new Insets(5,5,5,5));
 		JScrollPane fbs = new JScrollPane(fbta);
 		
 		JButton submitFeedback = new JButton(new AbstractAction("Submit Feedback Online") {
