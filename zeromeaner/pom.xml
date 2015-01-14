@@ -30,7 +30,6 @@
 	</profiles>
 
 	<build>
-		<finalName>zeromeaner</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
