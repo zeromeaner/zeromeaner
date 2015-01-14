@@ -51,7 +51,7 @@ public class ZeroMetalTheme extends DefaultMetalTheme {
 	
 	@Override
 	protected ColorUIResource getWhite() {
-		return new ColorUIResource(Color.BLACK);
+		return new ColorUIResource(Color.GRAY);
 	}
 	
 	@Override

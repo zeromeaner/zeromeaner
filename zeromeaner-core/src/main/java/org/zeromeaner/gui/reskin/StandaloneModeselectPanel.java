@@ -67,7 +67,7 @@ public class StandaloneModeselectPanel extends JPanel {
 		for(String line : lines) {
 			sb.append(sep);
 			if(first)
-				line = "<b style=\"color:#000000;\">" + line.charAt(0) + "</b>" + line.substring(1);
+				line = "<b>" + line.charAt(0) + "</b>" + line.substring(1);
 			sb.append(line);
 			sep = "<br>";
 			first = false;
@@ -77,6 +77,11 @@ public class StandaloneModeselectPanel extends JPanel {
 	
 	private static final String SELECT_CARD = "select";
 	private static final String EDIT_CARD = "edit";
+	
+	private static final Color MODE_BUTTON_COLOR = new Color(0x88, 0x22, 0x00);
+	private static final Color RULE_BUTTON_COLOR = new Color(0x00, 0x22, 0x88);
+	private static final Color REC_RULE_BUTTON_COLOR = new Color(0x00, 0x88, 0x22);
+	private static final Color CUSTOM_RULE_BUTTON_COLOR = new Color(0x88, 0x00, 0x88);
 	
 	private LstResourceMap recommended = new LstResourceMap("config/list/recommended_rules.lst");
 	
@@ -219,7 +224,7 @@ public class StandaloneModeselectPanel extends JPanel {
 
 			setMargin(new Insets(2, 2, 2, 2));
 			
-			setBackground(new Color(233, 222, 222));
+			setBackground(MODE_BUTTON_COLOR);
 			setOpaque(true);
 			
 			addActionListener(new ActionListener() {
@@ -234,7 +239,7 @@ public class StandaloneModeselectPanel extends JPanel {
 						boolean rec = recommended.get(mb.mode.getName()).contains(rb.rule.resourceName);
 						if(Options.standalone().HIDE_UNPOPULAR.value()) {
 							buttonsPanel.remove(rb);
-							if(rec)
+							if(rec || rb.custom)
 								buttonsPanel.add(rb, CornerPileLayout.SOUTH_EAST);
 						}
 					}
@@ -242,16 +247,14 @@ public class StandaloneModeselectPanel extends JPanel {
 					for(RuleButton rb : ruleButtons) {
 						ModeButton mb = currentMode;
 						if(recommended.get(mb.mode.getName()).contains(rb.rule.resourceName))
-							rb.setBackground(new Color(222,255,222));
+							rb.setBackground(REC_RULE_BUTTON_COLOR);
 						else if(!rb.custom)
-							rb.setBackground(new Color(222, 233, 233));
+							rb.setBackground(RULE_BUTTON_COLOR);
 						else
-							rb.setBackground(new Color(244, 233, 222));
+							rb.setBackground(CUSTOM_RULE_BUTTON_COLOR);
 						if(rb.rule.resourceName.equals(ruleResource)) {
 							rb.doClick();
 						}
-						rb.revalidate();
-						rb.repaint();
 					}
 					buttonsPanel.revalidate();
 					buttonsPanel.repaint();
@@ -276,9 +279,9 @@ public class StandaloneModeselectPanel extends JPanel {
 
 			setMargin(new Insets(2, 2, 2, 2));
 			if(!custom)
-				setBackground(new Color(222, 233, 233));
+				setBackground(RULE_BUTTON_COLOR);
 			else
-				setBackground(new Color(244, 233, 222));
+				setBackground(CUSTOM_RULE_BUTTON_COLOR);
 			setOpaque(true);
 			
 			

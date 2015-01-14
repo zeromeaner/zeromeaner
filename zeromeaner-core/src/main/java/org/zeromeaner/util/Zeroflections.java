@@ -38,9 +38,15 @@ public class Zeroflections {
 	
 	public static Reflections getClasses() {
 		if(classes == null) {
-			classes = new Reflections("org.zeromeaner");
-			classes.collect(Zeroflections.class.getClassLoader().getResourceAsStream("META-INF/reflections/zeromeaner-core-reflections.xml"));
+			ConfigurationBuilder config = ConfigurationBuilder.build("");
+			
+			Scanner s;
+			config.getScanners().add(s = new ResourcesScanner());
+			config.getScanners().add(new SubTypesScanner());
+			
 			ServiceHookDispatcher<ZeroflectionsHook> hooks = new ServiceHookDispatcher<>(ZeroflectionsHook.class);
+			hooks.dispatcher().configure(config);
+			classes = new Reflections(config);
 			hooks.dispatcher().reflect(classes);
 		}
 		return classes;
