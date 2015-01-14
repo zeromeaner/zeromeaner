@@ -149,9 +149,12 @@ public class WaveEngine {
 	}
 	private void setVolume(SampleBufferClippish clip, double volume) {
 		try {
-			FloatControl ctrl = (FloatControl)clip.getLine().getControl(FloatControl.Type.MASTER_GAIN);
-			ctrl.setValue((float)Math.log10(volume) * 20);
-		} catch (Exception e) {}
+			FloatControl ctrl = (FloatControl)clip.getLine().getControl(FloatControl.Type.VOLUME);
+			float range = ctrl.getMaximum() - ctrl.getMinimum();
+			ctrl.setValue(ctrl.getMinimum() + (float) volume * range);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
