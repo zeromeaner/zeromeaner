@@ -84,7 +84,7 @@
 		</repository>
 		<snapshotRepository>
 			<id>robin-kirkman-snapshots</id>
-			<url>http://nexus.robinvps.com:7777/nexus/content/repositories/snapshots/</url>
+			<url>http://nexus.robindps.com:7777/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 
