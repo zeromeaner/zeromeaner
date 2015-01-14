@@ -47,6 +47,7 @@ public class Zeroflections {
 			ServiceHookDispatcher<ZeroflectionsHook> hooks = new ServiceHookDispatcher<>(ZeroflectionsHook.class);
 			hooks.dispatcher().configure(config);
 			classes = new Reflections(config);
+			classes.collect(Zeroflections.class.getClassLoader().getResourceAsStream("META-INF/reflections/zeromeaner-core-reflections.xml"));
 			hooks.dispatcher().reflect(classes);
 		}
 		return classes;
