@@ -1,5 +1,6 @@
 package org.zeromeaner.plugin.videorecording;
 
+import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -58,9 +59,13 @@ public class VideoRecordingHook implements Hook {
 	private ExecutorService encodePool = Executors.newSingleThreadExecutor();
 	
 	private JButton start;
+	private JButton stop;
 	
 	private Map.Entry<Long, BufferedImage> lastFrame;
 	private TreeMap<Long, BufferedImage> frames = new TreeMap<>();
+	
+	private StandaloneGamePanel panel;
+	private int panelIdx;
 	
 	private Runnable encodeTask = new Runnable() {
 		@Override
@@ -86,14 +91,8 @@ public class VideoRecordingHook implements Hook {
 	
 	public VideoRecordingHook() {
 		instance = this;
-	}
-	
-	@Override
-	public void gameStarted(final StandaloneGamePanel thiz) {
-		if(start != null)
-			thiz.owner.toolbar.remove(start);
-		
 		start = new JButton("Start Recording");
+		stop = new JButton("Stop Recording");
 		
 		start.addActionListener(new ActionListener() {
 			@Override
@@ -108,7 +107,7 @@ public class VideoRecordingHook implements Hook {
 									"video/" + Session.getUser() + " " + df.format(System.currentTimeMillis()) + ".mpg");
 							videoFile.getParentFile().mkdirs();
 							videoWriter = ToolFactory.makeWriter(videoFile.getCanonicalPath());
-							streamIdx = videoWriter.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO, IRational.make(videoFPS), thiz.gameBuffer.getWidth(), thiz.gameBuffer.getHeight());
+							streamIdx = videoWriter.addVideoStream(0, 0, ICodec.ID.CODEC_ID_MPEG2VIDEO, IRational.make(videoFPS), panel.gameBuffer.getWidth(), panel.gameBuffer.getHeight());
 							videoStart = System.nanoTime();
 							frameStepPicos = 1000000000000L / videoFPS;
 							nextFramePicos = 0;
@@ -120,14 +119,55 @@ public class VideoRecordingHook implements Hook {
 					} else
 						videoWriter = null;
 				}
-				thiz.owner.toolbar.remove(start);
-				thiz.owner.toolbar.revalidate();
-				thiz.owner.toolbar.repaint();
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						panel.owner.toolbar.remove(panelIdx);
+						panelIdx = panel.owner.toolbar.getComponentCount();
+						panel.owner.toolbar.add(stop);
+						panel.owner.toolbar.revalidate();
+						panel.owner.toolbar.repaint();
+					}
+				});
 			}
 		});
 		
-		if(VideoRecordingOptions.get().ENABLED.value())
-			thiz.owner.toolbar.add(start);
+		stop.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				gameStopped(panel);
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						panelIdx = panel.owner.toolbar.getComponentCount();
+						panel.owner.toolbar.add(start);
+						panel.owner.toolbar.revalidate();
+						panel.owner.toolbar.repaint();
+					}
+				});
+			}
+		});
+		
+		panelIdx = -1;
+	}
+	
+	@Override
+	public void gameStarted(final StandaloneGamePanel thiz) {
+		panel = thiz;
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				if(panelIdx >= 0)
+					panel.owner.toolbar.remove(panelIdx);
+				if(VideoRecordingOptions.get().ENABLED.value()) {
+					panelIdx = panel.owner.toolbar.getComponentCount();
+					panel.owner.toolbar.add(start);
+				} else
+					panelIdx = -1;
+				panel.owner.toolbar.revalidate();
+				panel.owner.toolbar.repaint();
+			}
+		});
 	}
 
 	@Override
@@ -162,9 +202,17 @@ public class VideoRecordingHook implements Hook {
 				log.info("Finished recording video to " + videoFile);
 			}
 		}
-		thiz.owner.toolbar.remove(start);
-		thiz.owner.toolbar.revalidate();
-		thiz.owner.toolbar.repaint();
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				if(panelIdx >= 0) {
+					panel.owner.toolbar.remove(panelIdx);
+					panel.owner.toolbar.revalidate();
+					panel.owner.toolbar.repaint();
+					panelIdx = -1;
+				}
+			}
+		});
 	}
 
 }
