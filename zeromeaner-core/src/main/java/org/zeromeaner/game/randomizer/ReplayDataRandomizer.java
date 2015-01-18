@@ -3,8 +3,12 @@ package org.zeromeaner.game.randomizer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
+import org.zeromeaner.game.component.Block;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.ReplayData;
 import org.zeromeaner.game.play.GameEngine;
@@ -12,30 +16,48 @@ import org.zeromeaner.game.play.GameEngine;
 public class ReplayDataRandomizer extends Randomizer {
 
 	
-	protected List<Integer> ids;
+	protected TreeMap<Integer, Integer> ids;
 	protected GameEngine engine;
 	
 	public ReplayDataRandomizer(ReplayData rd) {
-		ids = new ArrayList<>();
-		for(int frame = 0; frame < rd.max(); frame++) {
-			Integer id = rd.getAdditionalData(ReplayData.PIECE_SPAWN, frame);
+		ids = new TreeMap<>();
+		for(int c = 0; c < rd.max(); c++) {
+			Integer id = rd.getAdditionalData(ReplayData.PIECE_SPAWN, c);
 			if(id != null)
-				ids.add(id);
+				ids.put(c, id);
+		}
+	}
+	
+	protected void initEngine() {
+		engine.nextPieceArraySize = ids.lastKey() + 1;
+		engine.nextPieceArrayID = new int[engine.nextPieceArraySize];
+		engine.nextPieceArrayObject = new Piece[engine.nextPieceArraySize];
+		for(Map.Entry<Integer, Integer> c : ids.entrySet()) {
+			engine.nextPieceArrayID[c.getKey()] = c.getValue();
+		}
+		for(int i = 0; i < engine.nextPieceArrayObject.length; i++) {
+			engine.nextPieceArrayObject[i] = new Piece(engine.nextPieceArrayID[i]);
+			engine.nextPieceArrayObject[i].direction = engine.ruleopt.pieceDefaultDirection[engine.nextPieceArrayObject[i].id];
+			if(engine.nextPieceArrayObject[i].direction >= Piece.DIRECTION_COUNT) {
+				engine.nextPieceArrayObject[i].direction = engine.random.nextInt(Piece.DIRECTION_COUNT);
+			}
+			engine.nextPieceArrayObject[i].connectBlocks = engine.connectBlocks;
+			engine.nextPieceArrayObject[i].setColor(engine.ruleopt.pieceColor[engine.nextPieceArrayObject[i].id]);
+			engine.nextPieceArrayObject[i].setSkin(engine.getSkin());
+			engine.nextPieceArrayObject[i].updateConnectData();
+			engine.nextPieceArrayObject[i].setAttribute(Block.BLOCK_ATTRIBUTE_VISIBLE, true);
+			engine.nextPieceArrayObject[i].setAttribute(Block.BLOCK_ATTRIBUTE_BONE, engine.bone);
 		}
 	}
 	
 	@Override
 	public void setEngine(GameEngine e) {
 		engine = e;
-		engine.nextPieceArraySize = ids.size();
-		engine.nextPieceArrayID = new int[engine.nextPieceArraySize];
-		engine.nextPieceArrayObject = new Piece[engine.nextPieceArraySize];
+		initEngine();
 	}
 	
 	public void init() {
-		engine.nextPieceArraySize = ids.size();
-		engine.nextPieceArrayID = new int[engine.nextPieceArraySize];
-		engine.nextPieceArrayObject = new Piece[engine.nextPieceArraySize];
+		initEngine();
 	}
 
 	@Override

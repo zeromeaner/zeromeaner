@@ -49,6 +49,7 @@ import javax.swing.filechooser.FileSystemView;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.component.ReplayData;
+import org.zeromeaner.game.component.ReplayData2;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.play.GameManager;
 import org.zeromeaner.game.randomizer.Randomizer;
@@ -484,7 +485,7 @@ public class StandaloneFrame extends JFrame {
 
 			try {
 				InputStream stream = new ResourceInputStream(replayPath);
-				if(replayPath.endsWith(".repz"))
+				if(replayPath.endsWith(".zrep"))
 					stream = new GZIPInputStream(stream);
 				prop.load(stream);
 				stream.close();
@@ -538,7 +539,7 @@ public class StandaloneFrame extends JFrame {
 			RuleOptions ruleopt = null;
 			String rulename = strRulePath;
 			if(gameManager.replayMode) {
-				rulename = gameManager.replayProp.getProperty(i + ".ruleopt.strRuleName");
+				rulename = gameManager.replayProp.getProperty("name.rule");
 				ruleopt = RuleList.getRules().getNamed(rulename);
 				ruleopt.readProperty(gameManager.replayProp, i);
 			}
@@ -568,7 +569,7 @@ public class StandaloneFrame extends JFrame {
 				if(!gameManager.replayMode)
 					randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer, gameManager.engine[i]);
 				else {
-					ReplayData rd = new ReplayData();
+					ReplayData rd = new ReplayData2();
 					rd.readProperty(gameManager.replayProp, i);
 					randomizerObject = new ReplayDataRandomizer(rd);
 					randomizerObject.setEngine(gameManager.engine[i]);

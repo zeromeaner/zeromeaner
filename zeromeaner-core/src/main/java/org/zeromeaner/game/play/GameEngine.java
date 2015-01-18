@@ -41,6 +41,7 @@ import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.game.component.Piece;
 import org.zeromeaner.game.component.ReplayData;
+import org.zeromeaner.game.component.ReplayData2;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.component.SpeedParam;
 import org.zeromeaner.game.component.Statistics;
@@ -720,7 +721,7 @@ public class GameEngine {
 		statistics = new Statistics();
 		speed = new SpeedParam();
 		gcount = 0;
-		replayData = new ReplayData();
+		replayData = new ReplayData2();
 
 		if(owner.replayMode == false) {
 			version = GameManager.VERSION;
@@ -1055,8 +1056,8 @@ public class GameEngine {
 		Piece p = getNextObject(c);
 		Piece r = null;
 		if(p != null) r = new Piece(p);
-		if(c == nextPieceCount && r != null)
-			replayData.setAdditionalData(ReplayData.PIECE_SPAWN, r.id, replayTimer);
+		if(r != null)
+			replayData.setAdditionalData(ReplayData.PIECE_SPAWN, r.id, c);
 		return r;
 	}
 

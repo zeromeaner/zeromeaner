@@ -70,7 +70,8 @@ public class NavigableProperties {
 	public Set<String> stringPropertyNames() {
 		Set<String> propertyNames = new TreeSet<String>();
 		for(String key : backing.keySet()) {
-			propertyNames.add(key.substring(prefix.length()));
+			if(key.startsWith(prefix))
+				propertyNames.add(key.substring(prefix.length()));
 		}
 		return propertyNames;
 	}
