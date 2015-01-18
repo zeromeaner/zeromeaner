@@ -52,6 +52,7 @@ import java.util.concurrent.TimeUnit;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Control;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineEvent.Type;
@@ -153,7 +154,16 @@ public class WaveEngine {
 			float range = ctrl.getMaximum() - ctrl.getMinimum();
 			ctrl.setValue(ctrl.getMinimum() + (float) volume * range);
 		} catch (Exception e) {
-			e.printStackTrace();
+			try {
+				FloatControl ctrl = (FloatControl) clip.getLine().getControl(FloatControl.Type.MASTER_GAIN);
+				float range = ctrl.getMaximum() - ctrl.getMinimum();
+				ctrl.setValue(ctrl.getMinimum() + (float) volume * range);
+			} catch(Exception e2) {
+				e2.printStackTrace();
+				System.out.println("Supported controls:");
+				for(Control c : clip.getLine().getControls())
+					System.out.println(c);
+			}
 		}
 	}
 

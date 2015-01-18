@@ -35,7 +35,7 @@ public class SampleBufferClippish extends Thread {
 	public SampleBufferClippish(AudioFormat format, SourceDataLine line) {
 		this.format = format;
 		this.line = line;
-		sbuf = new byte[1024];
+		sbuf = new byte[line.getBufferSize()];
 	}
 	
 	@Override
@@ -49,7 +49,7 @@ public class SampleBufferClippish extends Thread {
 						sample = null;
 					}
 				}
-				Arrays.fill(sbuf, (byte) 0x80);
+				Arrays.fill(sbuf, (byte) 0x00);
 				int count;
 				if(sample != null) {
 					if(sample.getBytes().position() == 0) {
