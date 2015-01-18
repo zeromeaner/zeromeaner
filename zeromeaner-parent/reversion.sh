@@ -7,7 +7,7 @@ master)
 	VSFX=""
 	;;
 */[A-Z]*-[0-9]*-*)
-	VSFX=$(echo -n $BRANCH | perl -p -e 's/^.*([A-Z]+-[0-9]+)-.*$/-$1/')
+	VSFX=$(echo -n $BRANCH | perl -p -e 's/^.*?([A-Z]+-[0-9]+)-.*$/-$1/')
 	;;
 *)
 	VSFX=$(echo -n "-${BRANCH}" | perl -p -e 's/\W/-/g')
