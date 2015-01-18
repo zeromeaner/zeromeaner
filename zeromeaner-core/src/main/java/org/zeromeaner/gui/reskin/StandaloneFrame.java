@@ -430,11 +430,19 @@ public class StandaloneFrame extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if(CARD_PLAY.equals(currentCard) && gamePanel.isInGame[0]) {
-				nextCard = cardName;
-				contentCards.show(content, CARD_PLAY_END);
-				currentCard = CARD_PLAY_END;
-				return;
+			if(CARD_PLAY.equals(currentCard)) {
+				if(gamePanel.isInGame[0]) {
+					nextCard = cardName;
+					contentCards.show(content, CARD_PLAY_END);
+					currentCard = CARD_PLAY_END;
+					return;
+				} else {
+					gamePanel.shutdown();
+					try {
+						gamePanel.shutdownWait();
+					} catch (InterruptedException e1) {
+					}
+				}
 			}
 			if(CARD_NETPLAY.equals(currentCard) && netLobby.getClient() != null) {
 				nextCard = cardName;
