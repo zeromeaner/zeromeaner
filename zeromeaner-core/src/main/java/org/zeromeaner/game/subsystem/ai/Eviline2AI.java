@@ -327,8 +327,8 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 					seq+1,
 					after,
 					XYShapes.toXYShape(
-							en.startX() + gameEngine.ruleopt.pieceOffsetX[en.ordinal()][0], 
-							en.startY() + gameEngine.ruleopt.pieceOffsetY[en.ordinal()][0], 
+							en.startX(), 
+							en.startY(), 
 							extnext[0].start()),
 					Arrays.copyOfRange(extnext, 1, extnext.length));
 		}
