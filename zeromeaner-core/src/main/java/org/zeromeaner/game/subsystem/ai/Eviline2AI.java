@@ -484,6 +484,9 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			} else if(xyshape != lastxy && lastxy >= 0)
 				paths[lastxy] = -1;
 			lastxy = xyshape;
+			
+			if(pipeline.desiredXYShape(engine) == xyshape)
+				c = Command.HARD_DROP;
 
 			switch(c) {
 			case AUTOSHIFT_LEFT:
