@@ -391,7 +391,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 
 	protected void resetPipeline(GameEngine engine) {
-		System.out.println("resetting pipeline");
+//		System.out.println("resetting pipeline");
 		
 		pipeline.shutdown();
 		pipeline = new PathPipeline();
