@@ -42,7 +42,7 @@ public class Eviline2Randomizer extends Randomizer {
 //					return t;
 //				}
 //			});
-	protected static final SubtaskExecutor SUBTASKS = new SubtaskExecutor(EXEC, 0);
+	protected static final SubtaskExecutor SUBTASKS = new SubtaskExecutor(EXEC);
 	
 	protected static final BestAdjuster ADJUSTER = new BestAdjuster() {
 		@Override
