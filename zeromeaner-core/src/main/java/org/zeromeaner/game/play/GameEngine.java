@@ -1036,15 +1036,15 @@ public class GameEngine {
 
 	public void incrementNextPieceCount() {
 		nextPieceCount++;
-		if(ruleopt.onDemandRandomizer)
-			return;
-		if((nextPieceCount % nextPieceArraySize) == 0) {
-			for(int i = 1; i <= nextPieceArraySize; i++)
-				getNextObject(nextPieceCount + i);
-			for(int i = 0; i < nextPieceArraySize; i++) {
-				nextPieceArrayObject[i] = upcomingNextPieces.remove(0);
-			}
-		}
+//		if(ruleopt.onDemandRandomizer)
+//			return;
+//		if((nextPieceCount % nextPieceArraySize) == 0) {
+//			for(int i = 1; i <= nextPieceArraySize; i++)
+//				getNextObject(nextPieceCount + i);
+//			for(int i = 0; i < nextPieceArraySize; i++) {
+//				nextPieceArrayObject[i] = upcomingNextPieces.remove(0);
+//			}
+//		}
 	}
 	
 	/**

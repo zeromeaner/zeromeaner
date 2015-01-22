@@ -143,7 +143,7 @@ public class StandaloneMain {
 			Session.setUser(System.getProperty("user.name"));
 
 			try {
-				PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_applet.cfg"));
+				PropertyConfigurator.configure(new ResourceInputStream("config/etc/log_gui.cfg"));
 			} catch(IOException ioe) {
 				ioe.printStackTrace();
 			}

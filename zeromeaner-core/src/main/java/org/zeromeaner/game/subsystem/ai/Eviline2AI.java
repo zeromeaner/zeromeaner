@@ -35,6 +35,8 @@ import org.eviline.core.ai.DefaultAIKernel.Best;
 import org.eviline.core.ai.Fitness;
 import org.eviline.core.ai.NextFitness;
 import org.eviline.core.conc.SubtaskExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zeromeaner.game.component.Controller;
 import org.zeromeaner.game.eviline.EngineAdapter;
 import org.zeromeaner.game.eviline.FieldAdapter;
@@ -48,6 +50,7 @@ import org.zeromeaner.util.PropertyConstant.Constant;
 import org.zeromeaner.util.PropertyConstant.ConstantParser;
 
 public class Eviline2AI extends AbstractAI implements Configurable {
+	private static final Logger log = LoggerFactory.getLogger(Eviline2AI.class);
 
 	protected static final Constant<Boolean> DROPS_ONLY = new Constant<>(PropertyConstant.BOOLEAN, ".eviline.drops_only", true);
 	protected static final Constant<Integer> LOOKAHEAD = new Constant<>(PropertyConstant.INTEGER, ".eviline.lookahead", 3);
@@ -128,23 +131,19 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			new SynchronousQueue<Runnable>(),
 			new ThreadPoolExecutor.DiscardPolicy());
 
+	protected static final ExecutorService pipelineExecutor = Executors.newSingleThreadExecutor();
+	
 	protected class PathPipeline {
-		public ExecutorService exec;
 		public LinkedBlockingDeque<PathTask> pipe = new LinkedBlockingDeque<PathTask>();
 
 		public PathPipeline() {
-			exec = Executors.newSingleThreadExecutor();
-		}
-
-		public void exec(Runnable task) {
-			try {
-				exec.execute(task);
-			} catch(RejectedExecutionException e) {
-			}
+			log.trace("Created new pipeline " + this);
 		}
 
 		public synchronized boolean extend(final GameEngine gameEngine) {
+			discardUntil(gameEngine);
 			if(pipe.size() == 0) {
+				log.trace("Extending empty pipeline");
 				int xyshape = XYShapeAdapter.toXYShape(gameEngine);
 				if(xyshape == -1)
 					return false;
@@ -158,11 +157,11 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 						xyshape,
 						createGameNext(gameEngine, gameEngine.nextPieceCount));
 				pipe.offerLast(pt);
-				exec(new Runnable() {
+				pipelineExecutor.execute(new Runnable() {
 					@Override
 					public void run() {
 						pt.task.run();
-						exec(new Runnable() {
+						pipelineExecutor.execute(new Runnable() {
 							@Override
 							public void run() {
 								extend(gameEngine);
@@ -176,17 +175,18 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			PathTask tail = pipe.peekLast();
 			if(tail == null)
 				return false;
-			if(tail.seq >= gameEngine.nextPieceCount + pipeLength || !tail.task.isDone())
+			if(pipe.size() >= pipeLength || !tail.task.isDone())
 				return false;
 			final PathTask pt = tail.extend(gameEngine);
+			log.trace("Extended pipeline to " + pt.seq);
 			if(pt == null)
 				return false;
 			pipe.offerLast(pt);
-			exec(new Runnable() {
+			pipelineExecutor.execute(new Runnable() {
 				@Override
 				public void run() {
 					pt.task.run();
-					exec(new Runnable() {
+					pipelineExecutor.execute(new Runnable() {
 						@Override
 						public void run() {
 							extend(gameEngine);
@@ -252,11 +252,13 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			boolean dirty = f1.update(engine.field) && f2.update(engine.field);
 //			if(dirty)
 //				System.out.println("dirty field");
+			if(dirty)
+				log.trace("dirty field");
 			return dirty;
 		}
 
 		public synchronized void shutdown() {
-			exec.shutdownNow();
+			log.trace("shutting down pipeline " + this);
 			PathTask pt = pipe.peekLast();
 			if(pt != null)
 				pt.task.cancel(true);
@@ -317,7 +319,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			ShapeType[] extnext = createGameNext(gameEngine, seq);
 			Boolean best = get();
 			if(best == null) {
-				resetPipeline(gameEngine);
+				flushPipeline(gameEngine);
 				return null;
 			}
 			ShapeType en = extnext[0];
@@ -390,8 +392,9 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 
 
-	protected void resetPipeline(GameEngine engine) {
+	protected void flushPipeline(GameEngine engine) {
 //		System.out.println("resetting pipeline");
+		log.trace("flushing pipeline");
 		
 		pipeline.shutdown();
 		pipeline = new PathPipeline();
@@ -409,6 +412,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 	@Override
 	public void init(GameEngine engine, int playerID) {
+		log.info("Initializing Eviline2 AI");
 		CustomProperties opt = Options.player(playerID).ai.BACKING;
 
 		int threads = MAX_THREADS.value(opt);
@@ -433,6 +437,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 	@Override
 	public void shutdown(GameEngine engine, int playerID) {
+		log.info("Shutting down Eviline2 AI");
 		if(pipeline != null)
 			pipeline.shutdown();
 	}
@@ -449,6 +454,8 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 				ctrl.setButtonBit(input);
 				return;
 			}
+			
+			pipeline.extend(engine);
 
 			if(shifting != null) {
 				EngineAdapter engineAdapter = new EngineAdapter();
@@ -484,7 +491,8 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 			if(paths == null) {
 				if(pipeline.isDirty(engine)) {
-					resetPipeline(engine);
+					log.trace("dirty pipeline, needs flushing");
+					flushPipeline(engine);
 				}
 				ctrl.setButtonBit(input);
 				return;
@@ -492,8 +500,9 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 			Command c = Command.fromOrdinal(paths[xyshape]);
 			if(c == null && lastxy != xyshape && lastxy >= 0|| pipeline.isDirty(engine)) {
+				log.trace("dirty pipeline, needs flushing");
 				ctrl.setButtonBit(input);
-				resetPipeline(engine);
+				flushPipeline(engine);
 				return;
 			} else if(xyshape != lastxy && lastxy >= 0)
 				paths[lastxy] = -1;
@@ -611,7 +620,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			return;
 		
 		if(pipeline.isDirty(engine)) {
-			resetPipeline(engine);
+			flushPipeline(engine);
 			thinkComplete = false;
 			engine.aiHintPiece = null;
 			engine.aiHintReady = false;
