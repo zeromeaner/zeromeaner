@@ -52,7 +52,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	protected static final Constant<Boolean> DROPS_ONLY = new Constant<>(PropertyConstant.BOOLEAN, ".eviline.drops_only", true);
 	protected static final Constant<Integer> LOOKAHEAD = new Constant<>(PropertyConstant.INTEGER, ".eviline.lookahead", 3);
 	protected static final Constant<Integer> PRUNE_TOP = new Constant<>(PropertyConstant.INTEGER, ".eviline.prune_top", 5);
-	protected static final Constant<Integer> CPU_CORES = new Constant<>(PropertyConstant.INTEGER, ".eviline.cpu_cores", 8);
+	protected static final Constant<Integer> MAX_THREADS = new Constant<>(PropertyConstant.INTEGER, ".eviline.max_threads", 64);
 	protected static final Constant<String> FITNESS = new Constant<String>(PropertyConstant.STRING, ".eviline.fitness", "NextFitness");
 
 	protected static class EvilineAIConfigurator implements Configurable.Configurator {
@@ -60,7 +60,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		private JCheckBox dropsOnly;
 		private JSpinner lookahead;
 		private JSpinner pruneTop;
-		private JSpinner cpuCores;
+		private JSpinner maxThreads;
 		private JComboBox<String> fitness;
 		private JPanel panel;
 
@@ -68,15 +68,15 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			dropsOnly = new JCheckBox();
 			lookahead = new JSpinner(new SpinnerNumberModel(3, 0, 6, 1));
 			pruneTop = new JSpinner(new SpinnerNumberModel(5, 1, 20, 1));
-			cpuCores = new JSpinner(new SpinnerNumberModel(8, 1, 128, 1));
+			maxThreads = new JSpinner(new SpinnerNumberModel(8, 1, 128, 1));
 			fitness = new JComboBox<>(new String[] {"DefaultFitness", "NextFitness", "ScoreFitness"});
 			panel = new JPanel(new GridLayout(0, 2));
 			panel.add(new JLabel("Maximum Lookahead: "));
 			panel.add(lookahead);
 			panel.add(new JLabel("Lookahead Choices: "));
 			panel.add(pruneTop);
-//			panel.add(new JLabel("Number of AI CPU cores: "));
-//			panel.add(cpuCores);
+			panel.add(new JLabel("Max number of AI threads: "));
+			panel.add(maxThreads);
 			panel.add(new JLabel("Only use drops (don't shift down)"));
 			panel.add(dropsOnly);
 			panel.add(new JLabel("AI fitness function: "));
@@ -93,7 +93,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			LOOKAHEAD.set(p, (Integer) lookahead.getValue());
 			PRUNE_TOP.set(p, (Integer) pruneTop.getValue());
 			DROPS_ONLY.set(p, dropsOnly.isSelected());
-			CPU_CORES.set(p, (Integer) cpuCores.getValue());
+			MAX_THREADS.set(p, (Integer) maxThreads.getValue());
 			FITNESS.set(p, (String) fitness.getSelectedItem());
 		}
 
@@ -102,7 +102,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			lookahead.setValue(LOOKAHEAD.value(p));
 			pruneTop.setValue(PRUNE_TOP.value(p));
 			dropsOnly.setSelected(DROPS_ONLY.value(p));
-			cpuCores.setValue(CPU_CORES.value(p));
+			maxThreads.setValue(MAX_THREADS.value(p));
 			fitness.setSelectedItem(FITNESS.value(p));
 		}
 
@@ -111,15 +111,15 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	private static EvilineAIConfigurator configurator = new EvilineAIConfigurator();
 
 	protected static final 
-//	ThreadPoolExecutor
-	ExecutorService
+	ThreadPoolExecutor
+//	ExecutorService
 	POOL =
-			Executors.newCachedThreadPool();
-//			new ThreadPoolExecutor(
-//			1, 1, 
-//			10, TimeUnit.SECONDS, 
-//			new SynchronousQueue<Runnable>(),
-//			new ThreadPoolExecutor.DiscardPolicy());
+//			Executors.newCachedThreadPool();
+			new ThreadPoolExecutor(
+			1, 1, 
+			10, TimeUnit.SECONDS, 
+			new SynchronousQueue<Runnable>(),
+			new ThreadPoolExecutor.DiscardPolicy());
 
 	protected class PathPipeline {
 		public ExecutorService exec;
@@ -395,14 +395,8 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	public void init(GameEngine engine, int playerID) {
 		CustomProperties opt = Options.player(playerID).ai.BACKING;
 
-//		int cores = CPU_CORES.value(opt);
-//		if(cores > POOL.getCorePoolSize()) {
-//			POOL.setMaximumPoolSize(cores);
-//			POOL.setCorePoolSize(cores);
-//		} else if(cores < POOL.getCorePoolSize()) {
-//			POOL.setCorePoolSize(cores);
-//			POOL.setMaximumPoolSize(cores);
-//		}
+		int threads = MAX_THREADS.value(opt);
+		POOL.setMaximumPoolSize(threads);
 
 		Fitness fitness;
 		try {
