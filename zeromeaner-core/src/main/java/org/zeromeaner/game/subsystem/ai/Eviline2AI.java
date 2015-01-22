@@ -324,6 +324,8 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		}
 	}
 
+	protected SubtaskExecutor subtasks;
+	
 	protected DefaultAIKernel ai;
 
 	protected Command shifting = null;
@@ -379,11 +381,13 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 
 	protected void resetPipeline(GameEngine engine) {
-		System.out.println("reset pipeline");
 		pipeline.shutdown();
 		pipeline = new PathPipeline();
 		pipeline.extend(engine);
 		lastxy = -1;
+		
+		subtasks.shutdownNow();
+		ai.setExec(subtasks = new SubtaskExecutor(POOL));
 	}
 
 	@Override
@@ -405,7 +409,8 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			throw new RuntimeException(e);
 		}
 
-		ai = new DefaultAIKernel(POOL, fitness);
+		subtasks = new SubtaskExecutor(POOL);
+		ai = new DefaultAIKernel(subtasks, fitness);
 		ai.setDropsOnly(DROPS_ONLY.value(opt));
 		ai.setPruneTop(PRUNE_TOP.value(opt));
 		pipeline = new PathPipeline();
