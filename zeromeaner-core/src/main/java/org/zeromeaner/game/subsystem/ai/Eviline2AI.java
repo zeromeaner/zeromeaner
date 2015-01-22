@@ -379,7 +379,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	protected ShapeType[] createGameNext(GameEngine engine, int seq) {
 //		if(seq < engine.nextPieceCount - 1 || seq >= engine.nextPieceCount + engine.nextPieceArraySize - lookahead - 1)
 //			return null;
-		int size = Math.min(engine.nextPieceArraySize - seq, lookahead + pipeLength + 2);
+		int size = Math.min(engine.nextPieceArraySize - (seq % engine.nextPieceArraySize), lookahead + pipeLength + 2);
 		ShapeType[] nextShapes = new ShapeType[size];
 		for(int i = 0; i < size; i++)
 			nextShapes[i] = XYShapeAdapter.toShapeType(engine.getNextObject(seq + i));
