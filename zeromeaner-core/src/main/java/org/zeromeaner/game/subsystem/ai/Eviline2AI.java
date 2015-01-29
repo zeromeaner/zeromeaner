@@ -501,7 +501,8 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			Command c = Command.fromOrdinal(paths[xyshape]);
 			if(c == null && lastxy != xyshape && lastxy >= 0|| pipeline.isDirty(engine)) {
 				log.trace("dirty pipeline, needs flushing");
-				ctrl.setButtonBit(input);
+				if(c == null)
+					ctrl.setButtonBit(Controller.BUTTON_BIT_UP);
 				flushPipeline(engine);
 				return;
 			} else if(xyshape != lastxy && lastxy >= 0)
