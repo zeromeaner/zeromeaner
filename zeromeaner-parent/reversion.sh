@@ -1,6 +1,6 @@
 PATH=~/bin:$PATH
 
-BRANCH=$(git symbolic-ref HEAD | xargs echo -n)
+BRANCH=$(git symbolic-ref HEAD | xargs echo -n | perl -p -e 's/refs\/heads\//')
 
 case $BRANCH in
 master)
