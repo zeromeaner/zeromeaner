@@ -96,6 +96,8 @@ public class StandaloneRenderer extends EventRenderer {
 	protected int lineeffectspeed;
 	
 	protected Deque<Integer> levelFade = new ArrayDeque<>();
+	
+	protected boolean nextOnField;
 
 	public static Color getMeterColorAsColor(int meterColor) {
 		switch(meterColor) {
@@ -191,6 +193,7 @@ public class StandaloneRenderer extends EventRenderer {
 		outlineghost = opt.OUTLINE_GHOST.value();
 		sidenext = opt.SIDE_NEXT.value();
 		bigsidenext = opt.BIG_SIDE_NEXT.value();
+		nextOnField = opt.NEXT_ON_FIELD.value();
 	}
 
 	/*
@@ -433,8 +436,8 @@ public class StandaloneRenderer extends EventRenderer {
 
 		Composite backupComposite = graphics.getComposite();
 
-		if((alpha >= 0f) && (alpha < 1f) && (!showbg)) {
-			AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+		if((alpha >= 0f) && (alpha <= 1f) /*&& (!showbg)*/) {
+			AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, alpha);
 			graphics.setComposite(composite);
 		}
 
@@ -494,11 +497,11 @@ public class StandaloneRenderer extends EventRenderer {
 
 		graphics.setComposite(backupComposite);
 
-		if( (darkness != 0) || ((alpha >= 0f) && (alpha < 1f) && (showbg)) ) {
+		if( (darkness != 0) && ((alpha >= 0f) && (alpha < 1f) /*&& (showbg)*/) ) {
 			Color backupColor = graphics.getColor();
 
 			Color filterColor;
-			if((alpha >= 0f) && (alpha < 1f) && (showbg)) {
+			if((alpha >= 0f) && (alpha < 1f) /*&& (showbg)*/) {
 				filterColor = new Color(0f, 0f, 0f, alpha);
 			} else if(darkness > 0) {
 				filterColor = new Color(0f, 0f, 0f, darkness);
@@ -604,6 +607,21 @@ public class StandaloneRenderer extends EventRenderer {
 
 			drawBlock(x2, y2, blkTemp, scale);
 		}
+	}
+
+	protected void drawPieceOutline(int x, int y, Piece piece, float scale, float alpha) {
+		boolean old = simpleblock;
+		simpleblock = true;
+		for(int i = 0; i < piece.getMaxBlock(); i++) {
+			int x2 = x + (int)(piece.dataX[piece.direction][i] * 16 * scale);
+			int y2 = y + (int)(piece.dataY[piece.direction][i] * 16 * scale);
+
+			Block blkTemp = new Block(piece.block[i]);
+			blkTemp.alpha = alpha;
+
+			drawBlock(x2, y2, blkTemp, scale);
+		}
+		simpleblock = old;
 	}
 
 	/**
@@ -1379,6 +1397,27 @@ public class StandaloneRenderer extends EventRenderer {
 			if(engine.displaysize != -1) {
 				drawNext(offsetX, offsetY, engine);
 				drawFrame(offsetX, offsetY + 48, engine, engine.displaysize);
+				
+				if(nextOnField && engine.ruleopt.nextDisplay >= 1 && engine.gameActive) {
+					Piece p = engine.getNextObject(engine.nextPieceCount);
+					if(p != null) {
+						float engineScale = engine.displaysize == -1 ? 0.5f : engine.displaysize == 1 ? 2f : 1f;
+						float pieceScale = engineScale * 2;
+						
+						int engineWidth = (int)(engineScale * 16 * engine.field.getWidth());
+						int pieceWidth = (int)(pieceScale * 16 * p.getWidth());
+						
+						int offsetXN = (int)(16 * engineScale);
+						int offsetYN = (int)(16 * pieceScale * (1 + p.getMaximumBlockY()));
+						
+						offsetYN -= (int)(16 * engineScale * engine.field.getHighestBlockY());
+						
+						offsetYN = Math.min(0, offsetYN);
+						
+						drawPieceOutline(offsetX + 4 + engineWidth / 2 - pieceWidth / 2 - offsetXN, offsetY + 52 - offsetYN, p, pieceScale, 0.25f);
+					}
+				}
+				
 				drawField(offsetX + 4, offsetY + 52, engine, engine.displaysize);
 			} else {
 				drawFrame(offsetX, offsetY, engine, -1);
