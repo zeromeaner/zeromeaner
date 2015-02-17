@@ -1,6 +1,6 @@
 PATH=~/bin:$PATH
 
-BRANCH=$(git symbolic-ref --short HEAD | xargs echo -n)
+BRANCH=$(git symbolic-ref HEAD | xargs echo -n)
 
 case $BRANCH in
 master)
