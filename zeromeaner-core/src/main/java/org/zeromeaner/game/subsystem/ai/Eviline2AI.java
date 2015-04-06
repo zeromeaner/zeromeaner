@@ -311,14 +311,15 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			tail = false;
 			if(parent >= 0 && parent < XYShapes.SHAPE_MAX)
 				computingPaths[parent] = (byte) c.ordinal();
-//			if(c == Command.SOFT_DROP || c == Command.HARD_DROP) {
-//				xyshape = XYShapes.shiftedUp(xyshape);
-//				while(xyshape != parent) {
-//					if(xyshape >= 0 && xyshape < XYShapes.SHAPE_MAX)
-//						computingPaths[xyshape] = (byte) c.ordinal();
-//					xyshape = XYShapes.shiftedUp(xyshape);
-//				}
-//			}
+			// propagate upwards, needed in cases of high gravity
+			if(c == Command.SOFT_DROP || c == Command.HARD_DROP) {
+				xyshape = XYShapes.shiftedUp(xyshape);
+				while(xyshape != parent) {
+					if(xyshape >= 0 && xyshape < XYShapes.SHAPE_MAX)
+						computingPaths[xyshape] = (byte) c.ordinal();
+					xyshape = XYShapes.shiftedUp(xyshape);
+				}
+			}
 			xyshape = parent;
 		}
 
