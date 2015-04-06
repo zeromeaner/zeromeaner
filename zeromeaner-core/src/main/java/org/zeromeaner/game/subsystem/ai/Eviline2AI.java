@@ -131,18 +131,20 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 	private static EvilineAIConfigurator configurator = new EvilineAIConfigurator();
 
-	protected static final 
-	ThreadPoolExecutor
-//	ExecutorService
-	POOL =
-//			Executors.newCachedThreadPool();
-			new ThreadPoolExecutor(
-			1, 1, 
-			10, TimeUnit.SECONDS, 
-			new SynchronousQueue<Runnable>(),
-			new ThreadPoolExecutor.DiscardPolicy());
-
+//	protected static final 
+//	ThreadPoolExecutor
+////	ExecutorService
+//	POOL =
+////			Executors.newCachedThreadPool();
+//			new ThreadPoolExecutor(
+//			1, 1, 
+//			10, TimeUnit.SECONDS, 
+//			new SynchronousQueue<Runnable>(),
+//			new ThreadPoolExecutor.DiscardPolicy());
+	
 	protected static final ExecutorService pipelineExecutor = Executors.newSingleThreadExecutor();
+
+	protected ExecutorService pool;
 	
 	protected class PathPipeline {
 		protected PathTask task;
@@ -358,7 +360,10 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		CustomProperties opt = Options.player(playerID).ai.BACKING;
 
 		int threads = MAX_THREADS.value(opt);
-		POOL.setMaximumPoolSize(threads);
+//		POOL.setMaximumPoolSize(threads);
+		if(pool != null)
+			pool.shutdown();
+		pool = Executors.newFixedThreadPool(threads);
 
 		Fitness fitness;
 		try {
@@ -369,7 +374,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 		pipeLength = PIPELINE_LENGTH.value(opt);
 		
-		subtasks = new ActiveCompletor(POOL);
+		subtasks = new ActiveCompletor(pool);
 		ai = new DefaultAIKernel(subtasks, fitness);
 		ai.setDropsOnly(DROPS_ONLY.value(opt));
 		ai.setPruneTop(PRUNE_TOP.value(opt));
