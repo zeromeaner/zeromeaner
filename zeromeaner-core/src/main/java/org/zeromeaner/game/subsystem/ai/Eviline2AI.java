@@ -27,6 +27,7 @@ import javax.swing.SpinnerNumberModel;
 import org.eviline.core.Command;
 import org.eviline.core.Configuration;
 import org.eviline.core.Engine;
+import org.eviline.core.Field;
 import org.eviline.core.ShapeType;
 import org.eviline.core.XYShapes;
 import org.eviline.core.ai.AIPlayer;
@@ -66,9 +67,9 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	protected static final Constant<Boolean> DROPS_ONLY = new Constant<>(PropertyConstant.BOOLEAN, ".eviline.drops_only", true);
 	protected static final Constant<Integer> LOOKAHEAD = new Constant<>(PropertyConstant.INTEGER, ".eviline.lookahead", 3);
 	protected static final Constant<Integer> PRUNE_TOP = new Constant<>(PropertyConstant.INTEGER, ".eviline.prune_top", 5);
-	protected static final Constant<Integer> MAX_THREADS = new Constant<>(PropertyConstant.INTEGER, ".eviline.max_threads", 64);
+	protected static final Constant<Integer> MAX_THREADS = new Constant<>(PropertyConstant.INTEGER, ".eviline.max_threads", Runtime.getRuntime().availableProcessors());
+	protected static final Constant<Boolean> TWENTY_G = new Constant<>(PropertyConstant.BOOLEAN, ".eviline.20g", false);
 	protected static final Constant<String> FITNESS = new Constant<String>(PropertyConstant.STRING, ".eviline.fitness", "NextFitness");
-	protected static final Constant<Integer> PIPELINE_LENGTH = new Constant<>(PropertyConstant.INTEGER, ".eviline.pipeline_length", 3);
 	
 	protected static class EvilineAIConfigurator implements Configurable.Configurator {
 
@@ -76,7 +77,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		private JSpinner lookahead;
 		private JSpinner pruneTop;
 		private JSpinner maxThreads;
-		private JSpinner pipelineLength;
+		private JCheckBox twentyG;
 		private JComboBox<String> fitness;
 		private JPanel panel;
 
@@ -85,7 +86,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			lookahead = new JSpinner(new SpinnerNumberModel(3, 0, 6, 1));
 			pruneTop = new JSpinner(new SpinnerNumberModel(5, 1, 20, 1));
 			maxThreads = new JSpinner(new SpinnerNumberModel(8, 1, 128, 1));
-			pipelineLength = new JSpinner(new SpinnerNumberModel(3, 0, 6, 1));
+			twentyG = new JCheckBox();
 			fitness = new JComboBox<>(new String[] {"DefaultFitness", "NextFitness", "ScoreFitness"});
 			panel = new JPanel(new GridLayout(0, 2));
 			panel.add(new JLabel("Maximum Lookahead: "));
@@ -96,8 +97,8 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			panel.add(maxThreads);
 			panel.add(new JLabel("Only use drops: "));
 			panel.add(dropsOnly);
-			panel.add(new JLabel("Pipeline length: "));
-			panel.add(pipelineLength);
+			panel.add(new JLabel("20G Mode: "));
+			panel.add(twentyG);
 			panel.add(new JLabel("Fitness function: "));
 			panel.add(fitness);
 		}
@@ -114,7 +115,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			DROPS_ONLY.set(p, dropsOnly.isSelected());
 			MAX_THREADS.set(p, (Integer) maxThreads.getValue());
 			FITNESS.set(p, (String) fitness.getSelectedItem());
-			PIPELINE_LENGTH.set(p, (Integer) pipelineLength.getValue());
+			TWENTY_G.set(p, twentyG.isSelected());
 		}
 
 		@Override
@@ -124,7 +125,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			dropsOnly.setSelected(DROPS_ONLY.value(p));
 			maxThreads.setValue(MAX_THREADS.value(p));
 			fitness.setSelectedItem(FITNESS.value(p));
-			pipelineLength.setValue(PIPELINE_LENGTH.value(p));
+			twentyG.setSelected(TWENTY_G.value(p));
 		}
 
 	}
@@ -161,6 +162,11 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 					return;
 				FieldAdapter f = new FieldAdapter();
 				f.update(gameEngine.field);
+				if(twentyG) {
+					while(!f.intersects(xyshape))
+						xyshape = XYShapes.shiftedDown(xyshape);
+					xyshape = XYShapes.shiftedUp(xyshape);
+				}
 				task = new PathTask(
 						gameEngine,
 						this,
@@ -293,8 +299,8 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 	protected PathPipeline pipeline;
 
-	protected int pipeLength = 1;
-
+	protected boolean twentyG;
+	
 	protected byte[] createCommandPath(CommandGraph g) {
 		byte[] computingPaths = new byte[XYShapes.SHAPE_MAX];
 		Arrays.fill(computingPaths, (byte) -1);
@@ -312,7 +318,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			if(parent >= 0 && parent < XYShapes.SHAPE_MAX)
 				computingPaths[parent] = (byte) c.ordinal();
 			// propagate upwards, needed in cases of high gravity
-			if(c == Command.SOFT_DROP || c == Command.HARD_DROP) {
+			if((c == Command.SOFT_DROP || c == Command.HARD_DROP) && parent != CommandGraph.NULL_ORIGIN) {
 				xyshape = XYShapes.shiftedUp(xyshape);
 				while(xyshape != parent) {
 					if(xyshape >= 0 && xyshape < XYShapes.SHAPE_MAX)
@@ -320,16 +326,22 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 					xyshape = XYShapes.shiftedUp(xyshape);
 				}
 			}
+			if(parent == CommandGraph.NULL_ORIGIN && twentyG) {
+				xyshape = XYShapes.shiftedUp(xyshape);
+				while((xyshape & XYShapes.MASK_Y) != 0) {
+					computingPaths[xyshape] = (byte) Command.SOFT_DROP.ordinal();
+					xyshape = XYShapes.shiftedUp(xyshape);
+				}
+				computingPaths[xyshape] = (byte) Command.SOFT_DROP.ordinal();
+			}
 			xyshape = parent;
 		}
-
+		
 		return computingPaths;
 	}
 
 	protected ShapeType[] createGameNext(GameEngine engine, int seq) {
-//		if(seq < engine.nextPieceCount - 1 || seq >= engine.nextPieceCount + engine.nextPieceArraySize - lookahead - 1)
-//			return null;
-		int size = Math.min(engine.nextPieceArraySize - (seq % engine.nextPieceArraySize), lookahead + pipeLength + 2);
+		int size = lookahead + 2;
 		ShapeType[] nextShapes = new ShapeType[size];
 		for(int i = 0; i < size; i++)
 			nextShapes[i] = XYShapeAdapter.toShapeType(engine.getNextObject(seq + i));
@@ -373,14 +385,24 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			throw new RuntimeException(e);
 		}
 
-		pipeLength = PIPELINE_LENGTH.value(opt);
-		
 		subtasks = new ActiveCompletor(pool);
-		ai = new DefaultAIKernel(subtasks, fitness);
+		ai = new DefaultAIKernel(subtasks, fitness) {
+			@Override
+			protected int starter(Field field, ShapeType type) {
+				int shape = super.starter(field, type);
+				if(twentyG) {
+					while(!field.intersects(shape))
+						shape = XYShapes.shiftedDown(shape);
+					shape = XYShapes.shiftedUp(shape);
+				}
+				return shape;
+			}
+		};
 		ai.setDropsOnly(DROPS_ONLY.value(opt));
 		ai.setPruneTop(PRUNE_TOP.value(opt));
 		pipeline = new PathPipeline();
 		lookahead = LOOKAHEAD.value(opt);
+		twentyG = TWENTY_G.value(opt);
 	}
 
 	@Override
