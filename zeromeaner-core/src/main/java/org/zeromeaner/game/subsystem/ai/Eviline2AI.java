@@ -397,6 +397,32 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 				}
 				return shape;
 			}
+			
+			@Override
+			protected CommandGraph graph(Field field, int start, boolean dropsOnly) {
+				if(!twentyG)
+					return super.graph(field, start, dropsOnly);
+				return new CommandGraph(field, start, dropsOnly) {
+					protected void searchRoot(int shape, Field f) {
+						setVertex(shape, NULL_ORIGIN, NULL_COMMAND, 0);
+						search(shape, f);
+						while(pendingHead != pendingTail) {
+							shape = pending.get()[pendingHead++];
+							enqueued.get()[shape & XYShapes.MASK_TYPE_POS] = false;
+							pendingHead %= XYShapes.SIZE_TYPE_POS;
+							search(shape, f);
+						}
+					}
+
+					@Override
+					protected void maybeUpdate(int shape, int origin, Command command, int pathLength, Field f) {
+						while(!f.intersects(shape))
+							shape = XYShapes.shiftedDown(shape);
+						shape = XYShapes.shiftedUp(shape);
+						super.maybeUpdate(shape, origin, command, pathLength, f);
+					}
+				};
+			}
 		};
 		ai.setDropsOnly(DROPS_ONLY.value(opt));
 		ai.setPruneTop(PRUNE_TOP.value(opt));
