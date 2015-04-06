@@ -10,6 +10,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -34,7 +35,7 @@ import org.eviline.core.ai.DefaultAIKernel;
 import org.eviline.core.ai.DefaultAIKernel.Best;
 import org.eviline.core.ai.Fitness;
 import org.eviline.core.ai.NextFitness;
-import org.eviline.core.conc.SubtaskExecutor;
+import org.eviline.core.conc.ActiveCompletor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromeaner.game.component.Controller;
@@ -51,6 +52,16 @@ import org.zeromeaner.util.PropertyConstant.ConstantParser;
 
 public class Eviline2AI extends AbstractAI implements Configurable {
 	private static final Logger log = LoggerFactory.getLogger(Eviline2AI.class);
+	private static final ScheduledExecutorService gc = Executors.newSingleThreadScheduledExecutor();
+	static {
+		Runnable gcTask = new Runnable() {
+			@Override
+			public void run() {
+				System.gc();
+			}
+		};
+		gc.scheduleWithFixedDelay(gcTask, 250, 250, TimeUnit.MILLISECONDS);
+	}
 
 	protected static final Constant<Boolean> DROPS_ONLY = new Constant<>(PropertyConstant.BOOLEAN, ".eviline.drops_only", true);
 	protected static final Constant<Integer> LOOKAHEAD = new Constant<>(PropertyConstant.INTEGER, ".eviline.lookahead", 3);
@@ -134,74 +145,35 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	protected static final ExecutorService pipelineExecutor = Executors.newSingleThreadExecutor();
 	
 	protected class PathPipeline {
-		public LinkedBlockingDeque<PathTask> pipe = new LinkedBlockingDeque<PathTask>();
-
+		protected PathTask task;
+		
 		public PathPipeline() {
 			log.trace("Created new pipeline " + this);
 		}
 
-		public synchronized boolean extend(final GameEngine gameEngine) {
-			discardUntil(gameEngine);
-			if(pipe.size() == 0) {
-				log.trace("Extending empty pipeline");
+		public synchronized void extend(final GameEngine gameEngine) {
+			PathTask pt = discardUntil(gameEngine);
+			if(pt == null) {
 				int xyshape = XYShapeAdapter.toXYShape(gameEngine);
 				if(xyshape == -1)
-					return false;
+					return;
 				FieldAdapter f = new FieldAdapter();
 				f.update(gameEngine.field);
-				final PathTask pt = new PathTask(
+				task = new PathTask(
 						gameEngine,
 						this,
 						gameEngine.nextPieceCount - 1,
 						f,
 						xyshape,
 						createGameNext(gameEngine, gameEngine.nextPieceCount));
-				pipe.offerLast(pt);
-				pipelineExecutor.execute(new Runnable() {
-					@Override
-					public void run() {
-						pt.task.run();
-						pipelineExecutor.execute(new Runnable() {
-							@Override
-							public void run() {
-								extend(gameEngine);
-							}
-						});
-					}
-				});
-				return true;
+				pipelineExecutor.execute(task.task);
 			}
-
-			PathTask tail = pipe.peekLast();
-			if(tail == null)
-				return false;
-			if(pipe.size() >= pipeLength || !tail.task.isDone())
-				return false;
-			final PathTask pt = tail.extend(gameEngine);
-			log.trace("Extended pipeline to " + pt.seq);
-			if(pt == null)
-				return false;
-			pipe.offerLast(pt);
-			pipelineExecutor.execute(new Runnable() {
-				@Override
-				public void run() {
-					pt.task.run();
-					pipelineExecutor.execute(new Runnable() {
-						@Override
-						public void run() {
-							extend(gameEngine);
-						}
-					});
-				}
-			});
-			return true;
 		}
 
 		public synchronized PathTask discardUntil(GameEngine engine) {
-			PathTask pt;
-			for(pt = pipe.peekFirst(); pt != null && pt.seq < engine.nextPieceCount - 1; pt = pipe.peekFirst())
-				pipe.pollFirst();
-			return pt;
+			if(task != null && task.seq < engine.nextPieceCount - 1)
+				task = null;
+			return task;
 		}
 
 		public synchronized byte[] currentPath(GameEngine engine) {
@@ -235,21 +207,21 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		}
 
 		public synchronized boolean isDirty(GameEngine engine) {
-			if(engine.lockDelayNow > 0)
-				return false;
+//			if(engine.lockDelayNow > 0)
+//				return false;
 			extend(engine);
 			PathTask pt = discardUntil(engine);
 			if(pt == null)
 				return false;
 			org.eviline.core.Field expected1 = pt.field;
-			org.eviline.core.Field expected2 = pt.after;
-			if(expected1 == null || expected2 == null)
+//			org.eviline.core.Field expected2 = pt.after;
+			if(expected1 == null)// || expected2 == null)
 				return false;
 			FieldAdapter f1 = new FieldAdapter();
 			f1.copyFrom(expected1);
-			FieldAdapter f2 = new FieldAdapter();
-			f2.copyFrom(expected2);
-			boolean dirty = f1.update(engine.field) && f2.update(engine.field);
+//			FieldAdapter f2 = new FieldAdapter();
+//			f2.copyFrom(expected2);
+			boolean dirty = f1.update(engine.field);// && f2.update(engine.field);
 //			if(dirty)
 //				System.out.println("dirty field");
 			if(dirty)
@@ -259,7 +231,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 		public synchronized void shutdown() {
 			log.trace("shutting down pipeline " + this);
-			PathTask pt = pipe.peekLast();
+			PathTask pt = task;
 			if(pt != null)
 				pt.task.cancel(true);
 		}
@@ -294,7 +266,6 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 					path = createCommandPath(best.graph);
 					after = best.after;
 					xydest = player.getDest();
-					pipeline.extend(gameEngine);
 					return true;
 				}
 			});
@@ -308,35 +279,9 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 				return null;
 			}
 		}
-
-		public PathTask extend(GameEngine gameEngine) {
-			for(PathTask existing : pipeline.pipe) {
-				if(existing.seq == gameEngine.nextPieceCount - 1)
-					return existing;
-			}
-			if(pipeline.pipe.size() >= pipeLength)
-				return null;
-			ShapeType[] extnext = createGameNext(gameEngine, seq);
-			Boolean best = get();
-			if(best == null) {
-				flushPipeline(gameEngine);
-				return null;
-			}
-			ShapeType en = extnext[0];
-			return new PathTask(
-					gameEngine,
-					pipeline,
-					seq+1,
-					after,
-					XYShapes.toXYShape(
-							en.startX() + gameEngine.ruleopt.pieceOffsetX[en.ordinal()][0], 
-							en.startY() + gameEngine.ruleopt.pieceOffsetY[en.ordinal()][0], 
-							extnext[0].start()),
-					Arrays.copyOfRange(extnext, 1, extnext.length));
-		}
 	}
 
-	protected SubtaskExecutor subtasks;
+	protected ActiveCompletor subtasks;
 	
 	protected DefaultAIKernel ai;
 
@@ -364,14 +309,14 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			tail = false;
 			if(parent >= 0 && parent < XYShapes.SHAPE_MAX)
 				computingPaths[parent] = (byte) c.ordinal();
-			if(c == Command.SOFT_DROP || c == Command.HARD_DROP) {
-				xyshape = XYShapes.shiftedUp(xyshape);
-				while(xyshape != parent) {
-					if(xyshape >= 0 && xyshape < XYShapes.SHAPE_MAX)
-						computingPaths[xyshape] = (byte) c.ordinal();
-					xyshape = XYShapes.shiftedUp(xyshape);
-				}
-			}
+//			if(c == Command.SOFT_DROP || c == Command.HARD_DROP) {
+//				xyshape = XYShapes.shiftedUp(xyshape);
+//				while(xyshape != parent) {
+//					if(xyshape >= 0 && xyshape < XYShapes.SHAPE_MAX)
+//						computingPaths[xyshape] = (byte) c.ordinal();
+//					xyshape = XYShapes.shiftedUp(xyshape);
+//				}
+//			}
 			xyshape = parent;
 		}
 
@@ -399,10 +344,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		pipeline.shutdown();
 		pipeline = new PathPipeline();
 		pipeline.extend(engine);
-		lastxy = -1;
-		
-		subtasks.shutdownNow();
-		ai.setExec(subtasks = new SubtaskExecutor(POOL));
+//		lastxy = -1;
 	}
 
 	@Override
@@ -427,7 +369,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 		pipeLength = PIPELINE_LENGTH.value(opt);
 		
-		subtasks = new SubtaskExecutor(POOL);
+		subtasks = new ActiveCompletor(POOL);
 		ai = new DefaultAIKernel(subtasks, fitness);
 		ai.setDropsOnly(DROPS_ONLY.value(opt));
 		ai.setPruneTop(PRUNE_TOP.value(opt));
@@ -489,24 +431,27 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 
 			byte[] paths = pipeline.currentPath(engine);
 
+			if(pipeline.isDirty(engine)) {
+				log.trace("dirty pipeline, needs flushing");
+				flushPipeline(engine);
+				ctrl.setButtonBit(input);
+				return;
+			}
+
 			if(paths == null) {
-				if(pipeline.isDirty(engine)) {
-					log.trace("dirty pipeline, needs flushing");
-					flushPipeline(engine);
-				}
 				ctrl.setButtonBit(input);
 				return;
 			}
 
 			Command c = Command.fromOrdinal(paths[xyshape]);
-			if(c == null && lastxy != xyshape && lastxy >= 0|| pipeline.isDirty(engine)) {
+
+			if(c == null) {
 				log.trace("dirty pipeline, needs flushing");
-				if(c == null)
-					ctrl.setButtonBit(Controller.BUTTON_BIT_UP);
 				flushPipeline(engine);
+				ctrl.setButtonBit(input);
 				return;
-			} else if(xyshape != lastxy && lastxy >= 0)
-				paths[lastxy] = -1;
+			}
+			
 			lastxy = xyshape;
 			
 			if(pipeline.desiredXYShape(engine) == xyshape)
