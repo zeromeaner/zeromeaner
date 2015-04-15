@@ -88,7 +88,7 @@ public class Angeline2Randomizer extends Randomizer {
 		evilEngine = new EngineAdapter() {
 			@Override
 			protected void updateNext(GameEngine nullpo) {
-				next = ShapeType.NONE;
+				setNext(ShapeType.NONE);
 			}
 		};
 		ai = new DefaultAIKernel(EXEC, new DefaultFitness());

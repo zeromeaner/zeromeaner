@@ -17,8 +17,9 @@ public class EngineAdapter extends Engine {
 	}
 	
 	protected void updateNext(GameEngine nullpo) {
-		next = new ShapeType[nullpo.nextPieceArraySize - 1];
+		ShapeType[] next = new ShapeType[nullpo.nextPieceArraySize - 1];
 		for(int i = 0; i < next.length; i++)
 			next[i] = XYShapeAdapter.toShapeType(nullpo.getNextObject(nullpo.nextPieceCount + i));
+		setNext(next);
 	}
 }

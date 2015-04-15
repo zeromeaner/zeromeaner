@@ -149,6 +149,9 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	
 	protected class PathPipeline {
 		protected PathTask task;
+		protected boolean holdable;
+		protected ShapeType held;
+		protected int holdWait;
 		
 		public PathPipeline() {
 			log.trace("Created new pipeline " + this);
@@ -160,6 +163,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 				int xyshape = XYShapeAdapter.toXYShape(gameEngine);
 				if(xyshape == -1)
 					return;
+				holdable = gameEngine.isHoldOK() && --holdWait < 0;
 				FieldAdapter f = new FieldAdapter();
 				f.update(gameEngine.field);
 				if(twentyG) {
@@ -193,6 +197,17 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			if(pt == null || !pt.task.isDone())
 				return null;
 			return pt.path;
+		}
+		
+		public synchronized Boolean currentHold(GameEngine engine) {
+			PathTask pt = discardUntil(engine);
+			if(pt == null) {
+				extend(engine);
+				pt = discardUntil(engine);
+			}
+			if(pt == null || !pt.task.isDone())
+				return null;
+			return pt.hold;
 		}
 
 		public synchronized int desiredXYShape(GameEngine engine) {
@@ -255,6 +270,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		public ShapeType[] next;
 		public FutureTask<Boolean> task;
 		public byte[] path;
+		public boolean hold;
 
 		public PathTask(final GameEngine gameEngine, final PathPipeline pipeline, int seq, org.eviline.core.Field field, int xystart, ShapeType[] next) {
 			this.pipeline = pipeline;
@@ -262,18 +278,30 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			this.field = field;
 			this.xystart = xystart;
 			this.next = next;
+			final boolean holdable = pipeline.holdable;
+			final ShapeType held = pipeline.held;
 			task = new FutureTask<>(new Callable<Boolean>() {
 				@Override
 				public Boolean call() throws Exception {
 					Engine engine = new Engine(PathTask.this.field, new Configuration(null, 0));
 					engine.setNext(PathTask.this.next);
 					engine.setShape(PathTask.this.xystart);
+					engine.setHold(held);
+					if(holdable) {
+						engine.setHoldable(true);
+						engine.setHoldEnabled(true);
+					}
 					AIPlayer player = new AIPlayer(ai, engine, lookahead);
-					player.tick();
-					Best best = player.getBest();
-					path = createCommandPath(best.graph);
-					after = best.after;
-					xydest = player.getDest();
+					Command c = player.tick();
+					if(c == Command.HOLD) {
+						hold = true;
+						xydest = -1;
+					} else {
+						Best best = player.getBest();
+						path = createCommandPath(best.graph);
+						xydest = player.getDest();
+					}
+					after = player.getAfter();
 					return true;
 				}
 			});
@@ -451,8 +479,6 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 				return;
 			}
 			
-			pipeline.extend(engine);
-
 			if(shifting != null) {
 				EngineAdapter engineAdapter = new EngineAdapter();
 				engineAdapter.update(engine);
@@ -492,6 +518,24 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 				return;
 			}
 
+			Boolean hold = pipeline.currentHold(engine);
+			if(hold != null) {
+				if(hold) {
+					if(!engine.isHoldOK()) {
+						log.warn("Supposed to hold when not OK");
+						flushPipeline(engine);
+					} else {
+						pipeline.holdWait = 0;
+						input = Controller.BUTTON_BIT_D;
+					}
+					ctrl.setButtonBit(input);
+					if(engine.holdPieceObject != null) {
+						pipeline.task = null;
+					}
+					return;
+				}
+			}
+			
 			if(paths == null) {
 				ctrl.setButtonBit(input);
 				return;
@@ -595,6 +639,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	@Override
 	public void newPiece(GameEngine engine, int playerID) {
 		try {
+			pipeline.held = XYShapeAdapter.toShapeType(engine.holdPieceObject);
 			pipeline.extend(engine);
 		} catch(RuntimeException e) {
 			e.printStackTrace();
