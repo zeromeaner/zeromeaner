@@ -87,7 +87,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			pruneTop = new JSpinner(new SpinnerNumberModel(5, 1, 20, 1));
 			maxThreads = new JSpinner(new SpinnerNumberModel(8, 1, 128, 1));
 			twentyG = new JCheckBox();
-			fitness = new JComboBox<>(new String[] {"DefaultFitness", "NextFitness", "ScoreFitness", "TwentyGFitness"});
+			fitness = new JComboBox<>(new String[] {"DefaultFitness", "NextFitness", "ScoreFitness", "TwentyGFitness", "DigFitness"});
 			panel = new JPanel(new GridLayout(0, 2));
 			panel.add(new JLabel("Maximum Lookahead: "));
 			panel.add(lookahead);
