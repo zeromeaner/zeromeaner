@@ -70,6 +70,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	protected static final Constant<Integer> MAX_THREADS = new Constant<>(PropertyConstant.INTEGER, ".eviline.max_threads", Runtime.getRuntime().availableProcessors());
 	protected static final Constant<Boolean> TWENTY_G = new Constant<>(PropertyConstant.BOOLEAN, ".eviline.20g", false);
 	protected static final Constant<String> FITNESS = new Constant<String>(PropertyConstant.STRING, ".eviline.fitness", "NextFitness");
+	protected static final Constant<Boolean> USE_HOLD = new Constant<>(PropertyConstant.BOOLEAN, ".eviline.hold", false);
 	
 	protected static class EvilineAIConfigurator implements Configurable.Configurator {
 
@@ -78,6 +79,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 		private JSpinner pruneTop;
 		private JSpinner maxThreads;
 		private JCheckBox twentyG;
+		private JCheckBox useHold;
 		private JComboBox<String> fitness;
 		private JPanel panel;
 
@@ -87,6 +89,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			pruneTop = new JSpinner(new SpinnerNumberModel(5, 1, 20, 1));
 			maxThreads = new JSpinner(new SpinnerNumberModel(8, 1, 128, 1));
 			twentyG = new JCheckBox();
+			useHold = new JCheckBox();
 			fitness = new JComboBox<>(new String[] {"DefaultFitness", "NextFitness", "ScoreFitness", "TwentyGFitness", "DigFitness"});
 			panel = new JPanel(new GridLayout(0, 2));
 			panel.add(new JLabel("Maximum Lookahead: "));
@@ -99,6 +102,8 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			panel.add(dropsOnly);
 			panel.add(new JLabel("20G Mode: "));
 			panel.add(twentyG);
+			panel.add(new JLabel("Use hold: "));
+			panel.add(useHold);
 			panel.add(new JLabel("Fitness function: "));
 			panel.add(fitness);
 		}
@@ -116,6 +121,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			MAX_THREADS.set(p, (Integer) maxThreads.getValue());
 			FITNESS.set(p, (String) fitness.getSelectedItem());
 			TWENTY_G.set(p, twentyG.isSelected());
+			USE_HOLD.set(p, useHold.isSelected());
 		}
 
 		@Override
@@ -126,6 +132,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			maxThreads.setValue(MAX_THREADS.value(p));
 			fitness.setSelectedItem(FITNESS.value(p));
 			twentyG.setSelected(TWENTY_G.value(p));
+			useHold.setSelected(USE_HOLD.value(p));
 		}
 
 	}
@@ -163,7 +170,7 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 				int xyshape = XYShapeAdapter.toXYShape(gameEngine);
 				if(xyshape == -1)
 					return;
-				holdable = gameEngine.isHoldOK() && --holdWait < 0;
+				holdable = useHold && gameEngine.isHoldOK() && --holdWait < 0;
 				FieldAdapter f = new FieldAdapter();
 				f.update(gameEngine.field);
 				if(twentyG) {
@@ -324,6 +331,8 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 	protected Command shifting = null;
 
 	protected int lookahead = 3;
+	
+	protected boolean useHold;
 
 	protected PathPipeline pipeline;
 
@@ -406,6 +415,8 @@ public class Eviline2AI extends AbstractAI implements Configurable {
 			pool.shutdown();
 		pool = Executors.newFixedThreadPool(threads);
 
+		useHold = USE_HOLD.value(opt);
+		
 		Fitness fitness;
 		try {
 			fitness = Class.forName("org.eviline.core.ai." + FITNESS.value(opt)).asSubclass(Fitness.class).newInstance();
