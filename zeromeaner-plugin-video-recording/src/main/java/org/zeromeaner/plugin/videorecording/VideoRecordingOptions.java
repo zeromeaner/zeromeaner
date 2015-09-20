@@ -14,11 +14,13 @@ public class VideoRecordingOptions {
 	
 	public final Constant<Boolean> ENABLED;
 	public final Constant<Integer> FPS;
+	public final Constant<Boolean> AUTORECORD;
 	
 	private VideoRecordingOptions() {
 		CustomProperties p = Options.GUI_PROPERTIES.subProperties(".videorecording.");
 		ENABLED = p.create(PropertyConstant.BOOLEAN, "enabled", false);
 		FPS = p.create(PropertyConstant.INTEGER, "fps", 30);
+		AUTORECORD = p.create(PropertyConstant.BOOLEAN, "autorecrod", false);
 	}
 
 }

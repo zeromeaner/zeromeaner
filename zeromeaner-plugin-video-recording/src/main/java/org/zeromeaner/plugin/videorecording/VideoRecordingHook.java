@@ -164,6 +164,13 @@ public class VideoRecordingHook implements Hook {
 					panel.owner.toolbar.add(start);
 				} else
 					panelIdx = -1;
+				EventQueue.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						if(VideoRecordingOptions.get().AUTORECORD.value())
+							start.doClick();
+					}
+				});
 				panel.owner.toolbar.revalidate();
 				panel.owner.toolbar.repaint();
 			}

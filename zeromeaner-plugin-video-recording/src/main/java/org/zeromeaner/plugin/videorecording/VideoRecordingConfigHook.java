@@ -19,6 +19,7 @@ public class VideoRecordingConfigHook implements Hook {
 	protected JCheckBox enable = new JCheckBox(l.s("enable"));
 	protected JRadioButton fps30 = new JRadioButton(l.s("fps_30"));
 	protected JRadioButton fps60 = new JRadioButton(l.s("fps_60"));
+	protected JCheckBox autorecord = new JCheckBox(l.s("autorecord"));
 	
 	public VideoRecordingConfigHook() {
 		ButtonGroup g = new ButtonGroup();
@@ -36,6 +37,7 @@ public class VideoRecordingConfigHook implements Hook {
 		panel.add(enable);
 		panel.add(fps30);
 		panel.add(fps60);
+		panel.add(autorecord);
 		tabs.addTab(l.s("recording_tab_name"), panel);
 	}
 
@@ -43,12 +45,14 @@ public class VideoRecordingConfigHook implements Hook {
 	public void saveConfiguration() {
 		VideoRecordingOptions.get().ENABLED.set(enable.isSelected());
 		VideoRecordingOptions.get().FPS.set(fps30.isSelected() ? 30 : 60);
+		VideoRecordingOptions.get().AUTORECORD.set(autorecord.isSelected());
 	}
 
 	@Override
 	public void loadConfiguration() {
 		enable.setSelected(VideoRecordingOptions.get().ENABLED.value());
 		(VideoRecordingOptions.get().FPS.value() == 30 ? fps30 : fps60).setSelected(true);
+		autorecord.setSelected(VideoRecordingOptions.get().AUTORECORD.value());
 	}
 
 }
