@@ -665,6 +665,8 @@ public class GameEngine {
 
 	public double fieldShift;
 	
+	public long ticks;
+	
 	/**
 	 * Constructor
 	 * @param owner Own the game engineGameOwnerClass
@@ -715,6 +717,8 @@ public class GameEngine {
 	 */
 	public void init() {
 		//log.debug("GameEngine init() playerID:" + playerID);
+		
+		ticks = 0;
 
 		field = null;
 		ctrl = new Controller();
@@ -1745,6 +1749,8 @@ public class GameEngine {
 	 * Game stateUpdates
 	 */
 	public void update() {
+		ticks++;
+		
 		if(gameActive) {
 			// Related processing replay
 			if(!owner.replayMode || owner.replayRerecord) {

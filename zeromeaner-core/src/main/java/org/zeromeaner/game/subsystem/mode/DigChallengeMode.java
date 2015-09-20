@@ -21,6 +21,7 @@ import org.zeromeaner.game.play.GameEngine;
 import org.zeromeaner.knet.KNetEvent;
 import org.zeromeaner.util.CustomProperties;
 import org.zeromeaner.util.GeneralUtil;
+import org.zeromeaner.util.Options;
 
 /**
  * DIG CHALLENGE mode
@@ -570,7 +571,7 @@ public class DigChallengeMode extends AbstractNetMode {
 		} else {
 			owner.bgmStatus.bgm = bgmno;
 		}
-		lastFrameTime = System.nanoTime();
+		lastFrameTime = -1;
 	}
 
 	/*
@@ -694,7 +695,22 @@ public class DigChallengeMode extends AbstractNetMode {
 		// NET: Player name (It may also appear in offline replay)
 		netDrawPlayerName(engine);
 	}
+	
+	@Override
+	public boolean onReady(GameEngine engine, int playerID) {
+		lastFrameTime = -1;
+		return super.onReady(engine, playerID);
+	}
 
+	@Override
+	public boolean onMove(GameEngine engine, int playerID) {
+		if(engine.gameActive && lastFrameTime == -1) {
+			lastFrameTime = TimeUnit.NANOSECONDS.convert(engine.ticks, TimeUnit.SECONDS) / org.zeromeaner.util.Options.standalone().MAX_FPS.value();
+		}
+
+		return super.onMove(engine, playerID);
+	}
+	
 	/*
 	 * Called after every frame
 	 */
@@ -777,12 +793,14 @@ public class DigChallengeMode extends AbstractNetMode {
 	 * @param engine GameEngine
 	 */
 	private void updateMeter(GameEngine engine) {
+		if(lastFrameTime == -1)
+			return;
 		int limitTime = getGarbageMaxTime(engine.statistics.level);
 		int remainTime = limitTime - garbageTimer;
 		if(remainTime < 0) remainTime = 0;
 		if(fieldShift > 0) {
 			long last = lastFrameTime;
-			long now = System.nanoTime();
+			long now = TimeUnit.NANOSECONDS.convert(engine.ticks, TimeUnit.SECONDS) / org.zeromeaner.util.Options.standalone().MAX_FPS.value();
 			fieldShift -= (growthRate * (now - last)) / TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS);
 			engine.fieldShift = fieldShift;
 			lastFrameTime = now;
