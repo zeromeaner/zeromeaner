@@ -566,14 +566,21 @@ public class StandaloneFrame extends JFrame {
 			// NEXTOrder generation algorithm
 			if((ruleopt.strRandomizer != null) && (ruleopt.strRandomizer.length() > 0)) {
 				Randomizer randomizerObject;
-				if(!gameManager.replayMode)
-					randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer, gameManager.engine[i]);
-				else {
-					ReplayData rd = new ReplayData2();
-					rd.readProperty(gameManager.replayProp, i);
-					randomizerObject = new ReplayDataRandomizer(rd);
-					randomizerObject.setEngine(gameManager.engine[i]);
+				randomizerObject = GeneralUtil.loadRandomizer(ruleopt.strRandomizer, gameManager.engine[i]);
+//				owner.replayProp.setProperty(playerID + ".replay.randSeed", Long.toString(randSeed, 16));
+				
+				if(gameManager.replayMode) {
+					String seed = gameManager.replayProp.getProperty(i + ".replay.randSeed", "0");
+					randomizerObject.reseed(Long.parseLong(seed, 16));
 				}
+				
+//				if(!gameManager.replayMode)
+//				else {
+//					ReplayData rd = new ReplayData2();
+//					rd.readProperty(gameManager.replayProp, i);
+//					randomizerObject = new ReplayDataRandomizer(rd);
+//					randomizerObject.setEngine(gameManager.engine[i]);
+//				}
 				gameManager.engine[i].randomizer = randomizerObject;
 			}
 
