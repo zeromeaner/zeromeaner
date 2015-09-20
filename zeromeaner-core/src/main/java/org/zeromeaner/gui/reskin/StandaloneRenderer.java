@@ -944,7 +944,7 @@ public class StandaloneRenderer extends EventRenderer {
 								  blk.darkness, blk.alpha, scale, blk.attribute);
 					} else if (showfieldblockgraphics && engine.getOwner().replayMode && engine.getOwner().replayShowInvisible) {
 						drawBlockForceVisible(x2, y2, blk, scale);
-					} else if(showfieldblockgraphics && blk.getAttribute(Block.BLOCK_ATTRIBUTE_VISIBLE)) {
+					} else if(showfieldblockgraphics && blk.getAttribute(Block.BLOCK_ATTRIBUTE_VISIBLE) || blk.getAttribute(Block.BLOCK_ATTRIBUTE_GARBAGE)) {
 						drawBlock(x2, y2, blk, scale);
 					} else if( ((width > 10) && (height > 20)) || (!showfieldbggrid) ) {
 						int sx = (((i % 2 == 0) && (j % 2 == 0)) || ((i % 2 != 0) && (j % 2 != 0))) ? 0 : 16;
