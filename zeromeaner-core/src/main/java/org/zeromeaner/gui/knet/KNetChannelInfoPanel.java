@@ -125,7 +125,7 @@ public class KNetChannelInfoPanel extends JPanel {
 					ruleResources = Arrays.asList("config/rule/StandardZero.rul", "config/rule/Standard.rul");
 				}
 				for(String r : ruleResources)
-					ruleModel.addElement(RuleList.FROM_RESOURCE.apply(r));
+					ruleModel.addElement(RuleList.FROM_RESOURCE.apply(r).strRuleName);
 			}
 		});
 		int i = model.getIndexOf("NET-VS-BATTLE");
