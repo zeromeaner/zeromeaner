@@ -1,6 +1,8 @@
 package org.zeromeaner.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Modifier;
@@ -13,12 +15,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import org.funcish.core.fn.Predicator;
-import org.funcish.core.fn.Sequence;
-import org.funcish.core.util.Comparisons;
-import org.funcish.core.util.Mappings;
-import org.funcish.core.util.Predicates;
-import org.funcish.core.util.Sequences;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.Scanner;
@@ -53,71 +49,56 @@ public class Zeroflections {
 		return classes;
 	}
 	
-	private static List<String> list(String listName) {
+	private static List<String> list(String listName) throws IOException {
 		InputStream rsrc = Zeroflections.class.getClassLoader().getResourceAsStream("config/list/" + listName);
 		if(rsrc == null)
 			rsrc = Zeroflections.class.getClassLoader().getResourceAsStream("org/zeromeaner/config/list/" + listName);
-		Sequence<String> lines = Sequences.lines(new InputStreamReader(rsrc));
-		return Sequences.sequencer(String.class, lines).list();
+		List<String> lines = new ArrayList<>();
+		BufferedReader r = new BufferedReader(new InputStreamReader(rsrc));
+		for(String line = r.readLine(); line != null; line = r.readLine())
+			lines.add(line);
+		return lines;
 	}
 	
 	public static Set<String> getResources(Pattern fullPattern) {
 		TreeSet<String> ret = new TreeSet<>();
-		for(CharSequence s : Predicates.patternFind(fullPattern).filter(getClasses().getResources(ALL)))
-			ret.add(s.toString());
+		for(String s : getClasses().getResources(ALL))
+			if(fullPattern.matcher(s).matches())
+				ret.add(s);
 		return ret;
 	}
 	
 	public static List<Class<? extends AbstractAI>> getAIs() {
-		List<Class<? extends AbstractAI>> ret = new ArrayList<Class<? extends AbstractAI>>();
-		Mappings.classForName(AbstractAI.class).map(list("ai.lst")).into(ret);
-//		for(Class<? extends AbstractAI> c : classes.getSubTypesOf(AbstractAI.class)) {
-//			if(Modifier.isAbstract(c.getModifiers()))
-//				continue;
-//			if(!ret.contains(c))
-//				ret.add(c);
-//		}
-//		Comparator<Class<? extends AbstractAI>> nameOrder = new Comparator<Class<? extends AbstractAI>>() {
-//			@Override
-//			public int compare(Class<? extends AbstractAI> o1, Class<? extends AbstractAI> o2) {
-//				AbstractAI a1;
-//				AbstractAI a2;
-//				try {
-//					a1 = o1.newInstance();
-//					a2 = o2.newInstance();
-//				} catch(Exception e) {
-//					throw new RuntimeException(e);
-//				}
-//				return String.CASE_INSENSITIVE_ORDER.compare(a1.getName(), a2.getName());
-//			}
-//		}; 
-//		Collections.sort(ret, nameOrder);
-		return ret;
+		try {
+			List<Class<? extends AbstractAI>> ret = new ArrayList<>();
+			for(String line : list("ai.lst"))
+				ret.add(Class.forName(line).asSubclass(AbstractAI.class));
+			return ret;
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	public static List<Class<? extends GameMode>> getModes() {
-		List<Class<? extends GameMode>> order = new ArrayList<Class<? extends GameMode>>();
-		Mappings.classForName(GameMode.class).map(list("mode.lst")).into(order);
-		
-		List<Class<? extends GameMode>> ret = new ArrayList<Class<? extends GameMode>>();
-		
-		Predicator<Class<? extends GameMode>> p = ModeType.forbid(ModeType.HIDDEN);
-		
-		for(Class<? extends GameMode> c :  p.filter(getClasses().getSubTypesOf(GameMode.class))) {
-			if(Modifier.isAbstract(c.getModifiers()))
-				continue;
-			ret.add(c);
+		try {
+			List<Class<? extends GameMode>> ret = new ArrayList<>();
+			for(String line : list("mode.lst"))
+				ret.add(Class.forName(line).asSubclass(GameMode.class));
+			return ret;
+		} catch(Exception e) {
+			throw new RuntimeException(e);
 		}
-		
-		Collections.sort(ret, Comparisons.indexOf(order));
-		
-		return ret;
 	}
 	
 	public static List<Class<? extends Randomizer>> getRandomizers() {
-		List<Class<? extends Randomizer>> ret = new ArrayList<>();
-		Mappings.classForName(Randomizer.class).map(list("randomizer.lst")).into(ret);
-		return ret;
+		try {
+			List<Class<? extends Randomizer>> ret = new ArrayList<>();
+			for(String line : list("randomizer.lst"))
+				ret.add(Class.forName(line).asSubclass(Randomizer.class));
+			return ret;
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	public static Set<Class<? extends Wallkick>> getWallkicks() {

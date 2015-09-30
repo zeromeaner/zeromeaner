@@ -28,7 +28,7 @@ import org.zeromeaner.util.io.PropertyStore;
 import com.esotericsoftware.minlog.Log;
 
 public class StandaloneMain {
-	public static ModeList<GameMode> modeManager;
+	public static ModeList modeManager;
 
 	private static boolean applet;
 

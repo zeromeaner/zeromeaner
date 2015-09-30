@@ -1,15 +1,16 @@
 package org.zeromeaner.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-import org.funcish.core.coll.ArrayFunctionalList;
-import org.funcish.core.coll.FunctionalList;
-import org.funcish.core.fn.Mapper;
-import org.funcish.core.impl.AbstractMapper;
 import org.zeromeaner.game.component.RuleOptions;
+import org.zeromeaner.game.subsystem.mode.GameMode;
 
-public class RuleList extends ArrayFunctionalList<RuleOptions> {
+public class RuleList extends ArrayList<RuleOptions> {
 
 	public static RuleList getRules() {
 		RuleList ret = new RuleList();
@@ -34,36 +35,20 @@ public class RuleList extends ArrayFunctionalList<RuleOptions> {
 		}
 	};
 	
-	public static Mapper<RuleOptions, String> RESOURCE_NAME = new AbstractMapper<RuleOptions, String>(RuleOptions.class, String.class) {
-		@Override
-		public String map0(RuleOptions key, Integer index) throws Exception {
-			return key.resourceName.replaceAll("^org/zeromeaner/", "");
-		}
-	};
+	public static Function<RuleOptions, String> RESOURCE_NAME = ((r) -> r.resourceName.replaceAll("^org/zeromeaner/", ""));
 	
-	public static Mapper<String, RuleOptions> FROM_RESOURCE = new AbstractMapper<String, RuleOptions>(String.class, RuleOptions.class) {
-		@Override
-		public RuleOptions map0(String key, Integer index) throws Exception {
-			return GeneralUtil.loadRule(key);
-		}
-	};
+	public static Function<String, RuleOptions> FROM_RESOURCE = ((r) -> GeneralUtil.loadRule(r));
 	
-	public static Mapper<RuleOptions, String> RULE_NAME = new AbstractMapper<RuleOptions, String>(RuleOptions.class, String.class) {
-		@Override
-		public String map0(RuleOptions key, Integer index) throws Exception {
-			return key.strRuleName;
-		}
-	};
+	public static Function<RuleOptions, String> RULE_NAME = ((r) -> r.strRuleName);
 	
 	public RuleList() {
-		super(RuleOptions.class);
 	}
 	
-	public FunctionalList<String> getResourceNames() {
+	public List<String> getResourceNames() {
 		return map(RESOURCE_NAME);
 	}
 	
-	public FunctionalList<String> getNames() {
+	public List<String> getNames() {
 		return map(RULE_NAME);
 	}
 	
@@ -73,5 +58,20 @@ public class RuleList extends ArrayFunctionalList<RuleOptions> {
 	
 	public RuleOptions getNamed(String name) {
 		return get(getNames().indexOf(name));
+	}
+
+	public <E> List<E> map(Function<? super RuleOptions, ? extends E> f) {
+		List<E> ret = new ArrayList<>();
+		for(RuleOptions r : this)
+			ret.add(f.apply(r));
+		return ret;
+	}
+	
+	public RuleList filter(Predicate<? super RuleOptions> p) {
+		RuleList ret = new RuleList();
+		for(RuleOptions r : this)
+			if(p.test(r))
+				ret.add(r);
+		return ret;
 	}
 }

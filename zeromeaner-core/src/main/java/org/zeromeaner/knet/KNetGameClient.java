@@ -20,56 +20,30 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
-import org.funcish.core.fn.Predicate;
-import org.funcish.core.impl.AbstractPredicate;
-import org.funcish.core.util.Predicates;
 import org.mmmq.Topic;
 import org.zeromeaner.game.component.Field;
 import org.zeromeaner.knet.obj.KNetChannelInfo;
 
 public class KNetGameClient extends KNetClient implements KNetListener {
-	private final Predicate<KNetEvent> CHANNEL_LISTING = new AbstractPredicate<KNetEvent>(KNetEvent.class) {
-		@Override
-		public boolean test0(KNetEvent value, Integer index) throws Exception {
-			return value.is(CHANNEL_LIST) && (value.is(CHANNEL_INFO, KNetChannelInfo[].class));
-		}
-	};
+	private volatile KNetChannelInfo currentChannel;
+
+	private final Predicate<KNetEvent> CHANNEL_LISTING = ((value) -> value.is(CHANNEL_LIST) && (value.is(CHANNEL_INFO, KNetChannelInfo[].class)));
 	
-	private final Predicate<KNetEvent> CURRENT_CHANNEL = new AbstractPredicate<KNetEvent>(KNetEvent.class) {
-		@Override
-		public boolean test0(KNetEvent value, Integer index) throws Exception {
-			return currentChannel != null && value.is(CHANNEL_ID, Integer.class) && currentChannel.getId() == value.get(CHANNEL_ID, Integer.class);
-		}
-	};
+	private final Predicate<KNetEvent> CURRENT_CHANNEL = ((value) -> (currentChannel != null && value.is(CHANNEL_ID, Integer.class) && currentChannel.getId() == value.get(CHANNEL_ID, Integer.class)));
 	
-	private final Predicate<KNetEvent> JOIN_CHANNEL = new AbstractPredicate<KNetEvent>(KNetEvent.class) {
-		@Override
-		public boolean test0(KNetEvent value, Integer index) throws Exception {
-			return value.is(CHANNEL_JOIN) && value.is(PAYLOAD);
-		}
-	};
+	private final Predicate<KNetEvent> JOIN_CHANNEL = ((value) -> value.is(CHANNEL_JOIN) && value.is(PAYLOAD));
 	
-	private final Predicate<KNetEvent> LEAVE_CHANNEL = new AbstractPredicate<KNetEvent>(KNetEvent.class) {
-		@Override
-		public boolean test0(KNetEvent value, Integer index) throws Exception {
-			return value.is(CHANNEL_LEAVE) && value.is(PAYLOAD);
-		}
-	};
+	private final Predicate<KNetEvent> LEAVE_CHANNEL = ((value) -> value.is(CHANNEL_LEAVE) && value.is(PAYLOAD)); 
 	
-	private final Predicate<KNetEvent> I_JOINED_OR_LEFT = new AbstractPredicate<KNetEvent>(KNetEvent.class) {
-		@Override
-		public boolean test0(KNetEvent value, Integer index) throws Exception {
-			return getSource().equals(value.get(PAYLOAD)) && isMine(value);
-		}
-	};
+	private final Predicate<KNetEvent> I_JOINED_OR_LEFT = ((value) -> getSource().equals(value.get(PAYLOAD)) && isMine(value));
 	
-	private final Predicate<KNetEvent> I_JOINED_CHANNEL = Predicates.and(JOIN_CHANNEL, I_JOINED_OR_LEFT);
-	private final Predicate<KNetEvent> I_LEFT_CHANNEL = Predicates.and(LEAVE_CHANNEL, I_JOINED_OR_LEFT);
+	private final Predicate<KNetEvent> I_JOINED_CHANNEL = JOIN_CHANNEL.and(I_JOINED_OR_LEFT); 
+	private final Predicate<KNetEvent> I_LEFT_CHANNEL = LEAVE_CHANNEL.and(I_JOINED_OR_LEFT); 
 	
 	private List<Field> maps = new ArrayList<Field>();
 	private Map<Integer, KNetChannelInfo> channels = new HashMap<Integer, KNetChannelInfo>();
-	private volatile KNetChannelInfo currentChannel;
 	
 	public KNetGameClient(String host, int port) {
 		this(KNetGameClient.class.getSimpleName(), host, port);

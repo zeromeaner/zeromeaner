@@ -3,8 +3,8 @@ package org.zeromeaner.knet;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
-import org.funcish.core.fn.Predicate;
 import org.mmmq.Topic;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -68,7 +68,7 @@ public class KNetEvent extends EventObject implements KryoSerializable {
 	}
 	
 	public boolean is(Predicate<KNetEvent> p) {
-		return p.test(this, null);
+		return p.test(this);
 	}
 	
 	public <T> T get(KNetEventArgs arg, Class<T> cls) {

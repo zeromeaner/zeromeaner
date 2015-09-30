@@ -40,7 +40,6 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.sound.WaveEngine;
-import org.zeromeaner.util.MusicList;
 import org.zeromeaner.util.Options;
 
 /**
@@ -146,9 +145,6 @@ public class StandaloneResourceHolder {
 			loadBackgroundImages();
 		}
 
-		// music
-		MusicList.getInstance();
-		
 		// Sound effects
 		soundManager = new WaveEngine();
 		if(Options.standalone().SE_ENABLED.value()) {

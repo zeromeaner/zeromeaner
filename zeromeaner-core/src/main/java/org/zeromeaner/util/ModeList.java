@@ -1,98 +1,81 @@
 package org.zeromeaner.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-import org.funcish.core.coll.ArrayFunctionalList;
-import org.funcish.core.coll.FunctionalList;
-import org.funcish.core.fn.Mapper;
-import org.funcish.core.fn.Predicate;
-import org.funcish.core.fn.Predicator;
-import org.funcish.core.impl.AbstractMapper;
-import org.funcish.core.impl.AbstractPredicator;
-import org.funcish.core.util.Mappings;
-import org.funcish.core.util.Predicates;
 import org.zeromeaner.game.subsystem.mode.AbstractNetMode;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 
 
-public class ModeList<E extends GameMode> extends ArrayFunctionalList<E> {
-	public static ModeList<GameMode> getModes() {
-		ModeList<GameMode> ret = new ModeList<GameMode>(GameMode.class);
-		Mappings.classNewInstance(GameMode.class).map(Zeroflections.getModes()).into(ret);
+public class ModeList extends ArrayList<GameMode> {
+	public static ModeList getModes() {
+		ModeList ret = new ModeList();
+		for(Class<? extends GameMode> c : Zeroflections.getModes())
+			try {
+				ret.add(c.newInstance());
+			} catch (InstantiationException | IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
 		return ret;
 	}
 	
-	public static final Mapper<GameMode, String> MODE_NAME = new AbstractMapper<GameMode, String>(GameMode.class, String.class) {
-		@Override	
-		public String map0(GameMode obj, Integer index) throws Exception {
-			return obj.getName();
-		}
-	};
+	public static final Function<GameMode, String> MODE_NAME = ((m) -> m.getName());
 
-	public static Predicator<GameMode> IS_NETPLAY = new AbstractPredicator<GameMode>(GameMode.class) {
-		@Override
-		public boolean test0(GameMode value, Integer index) throws Exception {
-			return value instanceof AbstractNetMode;
-		}
-	};
+	public static Predicate<GameMode> IS_NETPLAY = ((m) -> m.isNetplayMode());
 	
-	public static Predicator<GameMode> IS_SINGLEPLAY = new AbstractPredicator<GameMode>(GameMode.class) {
-		@Override
-		public boolean test0(GameMode value, Integer index) throws Exception {
-			return !value.isNetplayMode();
-		}
-	};
+	public static Predicate<GameMode> IS_SINGLEPLAY = ((m) -> !m.isNetplayMode());
 	
-	public static Predicator<GameMode> IS_VSMODE = new AbstractPredicator<GameMode>(GameMode.class) {
-		@Override
-		public boolean test0(GameMode value, Integer index) throws Exception {
-			return value.isVSMode();
-		}
-	};
+	public static Predicate<GameMode> IS_VSMODE = ((m) -> m.isVSMode());
 	
-	private ModeList(Class<E> clazz) {
-		super(clazz);
+	public ModeList() {
 	}
 	
-	private ModeList(Class<E> clazz, Collection<? extends E> c) {
-		super(clazz, c);
+	public ModeList(Collection<? extends GameMode> c) {
+		super(c);
 	}
 	
-	public ModeList<E> getIsNetplay(boolean isNetplay) {
-		Predicator<GameMode> p = IS_NETPLAY;
-		if(!isNetplay)
-			p = IS_SINGLEPLAY;
-		return p.filter(this).into(new ModeList(e()));
+	public ModeList getIsNetplay(boolean isNetplay) {
+		return filter((m) -> m.isNetplayMode() == isNetplay);
 	}
 	
-	public ModeList<E> getIsVs(boolean isVs) {
-		Predicator<GameMode> p = IS_VSMODE;
-		if(!isVs)
-			p = Predicates.not(p);
-		return p.filter(this).into(new ModeList(e()));
+	public ModeList getIsVs(boolean isVs) {
+		return filter((m) -> m.isVSMode() == isVs);
 	}
 	
-	public <U extends E> ModeList<U> get(Class<U> u) {
-		ModeList<E> us = Predicates.classIsInstance(u).filter(this).into(new ModeList(e()));
-		return Mappings.classCast(e(), u).map(us).into(new ModeList<U>(u));
+	public ModeList get(Class<? extends GameMode> u) {
+		return filter((m) -> u.isInstance(m));
 	}
 	
 	public int indexOfName(String name) {
 		return names().indexOf(name);
 	}
 	
-	public E get(String name) {
-		if(indexOfName(name) == -1)
+	public GameMode get(String name) {
+		int idx = indexOfName(name);
+		if(idx == -1)
 			return null;
-		return get(indexOfName(name));
+		return get(idx);
 	}
 	
-	public FunctionalList<String> names() {
+	public List<String> names() {
 		return map(MODE_NAME);
 	}
 	
-	@Override
-	public ModeList<E> filter(Predicate<? super E> p) {
-		return super.filter(p).into(new ModeList<E>(e()));
+	public <E> List<E> map(Function<? super GameMode, ? extends E> f) {
+		List<E> ret = new ArrayList<>();
+		for(GameMode m : this)
+			ret.add(f.apply(m));
+		return ret;
+	}
+	
+	public ModeList filter(Predicate<? super GameMode> p) {
+		ModeList ret = new ModeList();
+		for(GameMode m : this)
+			if(p.test(m))
+				ret.add(m);
+		return ret;
 	}
 }

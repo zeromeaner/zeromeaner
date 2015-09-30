@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -33,8 +34,6 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.codec.binary.Base64OutputStream;
-import org.funcish.core.fn.Predicate;
-import org.funcish.core.util.Predicates;
 import org.zeromeaner.game.component.RuleOptions;
 import org.zeromeaner.game.subsystem.mode.GameMode;
 import org.zeromeaner.gui.tool.RuleEditorPanel;
@@ -69,7 +68,7 @@ public class KNetChannelInfoPanel extends JPanel {
 				mode.setModel(model);
 				Predicate<GameMode> vs = ModeList.IS_VSMODE;
 				if(1 == (Integer)KNetChannelInfoPanel.this.maxPlayers.getValue())
-					vs = Predicates.not(vs);
+					vs = vs.negate();
 				for(String modeName : ModeList.getModes().getIsNetplay(true).filter(vs).names()) {
 					model.addElement(modeName);
 				}
@@ -107,7 +106,7 @@ public class KNetChannelInfoPanel extends JPanel {
 		mode.setModel(model);
 		Predicate<GameMode> vs = ModeList.IS_VSMODE;
 		if(1 == (Integer)KNetChannelInfoPanel.this.maxPlayers.getValue())
-			vs = Predicates.not(vs);
+			vs = vs.negate();
 		for(String modeName : ModeList.getModes().getIsNetplay(true).filter(vs).map(ModeList.MODE_NAME)) {
 			model.addElement(modeName);
 		}
@@ -125,10 +124,8 @@ public class KNetChannelInfoPanel extends JPanel {
 				if(ruleResources == null || ruleResources.size() == 0) {
 					ruleResources = Arrays.asList("config/rule/StandardZero.rul", "config/rule/Standard.rul");
 				}
-				RuleList rules = RuleList.FROM_RESOURCE.map(ruleResources).into(new RuleList());
-				for(String ruleName : rules.getNames()) {
-					ruleModel.addElement(ruleName);
-				}
+				for(String r : ruleResources)
+					ruleModel.addElement(RuleList.FROM_RESOURCE.apply(r));
 			}
 		});
 		int i = model.getIndexOf("NET-VS-BATTLE");

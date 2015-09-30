@@ -90,7 +90,6 @@ import javax.swing.event.InternalFrameEvent;
 
 import org.apache.log4j.Logger;
 import org.zeromeaner.game.play.GameManager;
-import org.zeromeaner.util.MusicList;
 import org.zeromeaner.util.Options;
 import org.zeromeaner.util.ServiceHookDispatcher;
 
@@ -289,7 +288,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 	 * End processing
 	 */
 	public void shutdown(boolean restart) {
-		MusicList.getInstance().stop();
 		if(isNetPlay) {
 			// Reload global config (because it can change rules)
 			StandaloneMain.loadGlobalConfig();
@@ -479,8 +477,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 			if(prevInGame != isInGame[i]) {
 				StandaloneGameKey.gamekey[i].clear();
-				if(isInGame[i])
-					MusicList.getInstance().play();
 			}
 		}
 
@@ -670,8 +666,6 @@ public class StandaloneGamePanel extends JPanel implements Runnable {
 
 			if(prevInGame != isInGame[0]) {
 				StandaloneGameKey.gamekey[0].clear();
-				if(isInGame[0])
-					MusicList.getInstance().play();
 			}
 
 			// Update button inputs
