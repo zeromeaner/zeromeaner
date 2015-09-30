@@ -11,183 +11,571 @@ import org.zeromeaner.util.CustomProperties;
 
 public class EngineEventManager implements EngineEventGenerator {
 	private GameEngine source;
-	
+
 	private EventListenerList listeners = new EventListenerList();
-	
+
 	public EngineEventManager(GameEngine source) {
 		this.source = source;
 	}
-	
+
 	@Override
 	public void addEngineListener(EngineListener l) {
 		listeners.add(EngineListener.class, l);
 	}
-	
-	@Override
-	public void addGameMode(GameMode mode) {
-		addEngineListener(new EngineModeAdapter(mode));
-	}
-	
-	@Override
-	public void addReceiver(EventRenderer receiver) {
-		addEngineListener(new EngineRendererAdapter(receiver));
-	}
-	
+
 	@Override
 	public void removeEngineListener(EngineListener l) {
 		listeners.remove(EngineListener.class, l);
 	}
-	
+
 	private EngineEvent newEvent(Type type, Object... args) {
 		return new EngineEvent(source, type, source.getPlayerID(), args);
 	}
-	
-	private boolean fire(Type type, Object... args) {
+
+	public void enginePlayerInit() {
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.PLAYER_INIT);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.enginePlayerInit(e);
+			}
+		}
+	}
+
+	public void engineGameStarted() {
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.PLAYER_INIT);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineGameStarted(e);
+			}
+		}
+	}
+
+	public void engineFrameFirst() {
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.PLAYER_INIT);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineFrameFirst(e);
+			}
+		}
+	}
+
+	public void engineFrameLast() {
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.PLAYER_INIT);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineFrameLast(e);
+			}
+		}
+	}
+
+	public boolean engineSettings() {
 		boolean ret = false;
 		Object[] ll = listeners.getListenerList();
 		EngineEvent e = null;
-		for(int i = ll.length - 2; i >= 0 && !ret; i -= 2) {
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
 			if(ll[i] == EngineListener.class) {
 				if(e == null)
-					e = newEvent(type, args);
+					e = newEvent(Type.SETTINGS);
 				EngineListener el = (EngineListener) ll[i+1];
-				Object rval = e.invoke(el);
-				if(rval instanceof Boolean)
-					ret = (ret || (Boolean) rval);
+				ret |= el.engineSettings(e);
 			}
 		}
 		return ret;
 	}
-	
-	public void enginePlayerInit() {
-		fire(Type.PLAYER_INIT);
-	}
-	public void engineGameStarted() {
-		fire(Type.START_GAME);
-	}
-	public void engineFrameFirst() {
-		fire(Type.FRAME_FIRST);
-	}
-	public void engineFrameLast() {
-		fire(Type.FRAME_LAST);
-	}
-	public boolean engineSettings() {
-		return fire(Type.SETTINGS);
-	}
+
 	public boolean engineReady() {
-		return fire(Type.READY);
+		boolean ret = false;
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.READY);
+				EngineListener el = (EngineListener) ll[i+1];
+				ret |= el.engineReady(e);
+			}
+		}
+		return ret;
 	}
+
 	public boolean engineMove() {
-		return fire(Type.MOVE);
+		boolean ret = false;
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.MOVE);
+				EngineListener el = (EngineListener) ll[i+1];
+				ret |= el.engineMove(e);
+			}
+		}
+		return ret;
 	}
+
 	public boolean engineLockFlash() {
-		return fire(Type.LOCK_FLASH);
+		boolean ret = false;
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.LOCK_FLASH);
+				EngineListener el = (EngineListener) ll[i+1];
+				ret |= el.engineLockFlash(e);
+			}
+		}
+		return ret;
 	}
+
 	public boolean engineLineClear() {
-		return fire(Type.LINE_CLEAR);
+		boolean ret = false;
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.LINE_CLEAR);
+				EngineListener el = (EngineListener) ll[i+1];
+				ret |= el.engineLineClear(e);
+			}
+		}
+		return ret;
 	}
+
 	public boolean engineARE() {
-		return fire(Type.ARE);
+		boolean ret = false;
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.ARE);
+				EngineListener el = (EngineListener) ll[i+1];
+				ret |= el.engineARE(e);
+			}
+		}
+		return ret;
 	}
+
 	public boolean engineEndingStart() {
-		return fire(Type.ENDING_START);
+		boolean ret = false;
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.ENDING_START);
+				EngineListener el = (EngineListener) ll[i+1];
+				ret |= el.engineEndingStart(e);
+			}
+		}
+		return ret;
 	}
+
 	public boolean engineCustom() {
-		return fire(Type.CUSTOM);
+		boolean ret = false;
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.CUSTOM);
+				EngineListener el = (EngineListener) ll[i+1];
+				ret |= el.engineCustom(e);
+			}
+		}
+		return ret;
 	}
+
 	public boolean engineExcellent() {
-		return fire(Type.EXCELLENT);
+		boolean ret = false;
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.EXCELLENT);
+				EngineListener el = (EngineListener) ll[i+1];
+				ret |= el.engineExcellent(e);
+			}
+		}
+		return ret;
 	}
+
 	public boolean engineGameOver() {
-		return fire(Type.GAME_OVER);
+		boolean ret = false;
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.GAME_OVER);
+				EngineListener el = (EngineListener) ll[i+1];
+				ret |= el.engineGameOver(e);
+			}
+		}
+		return ret;
 	}
+
 	public boolean engineResults() {
-		return fire(Type.RESULTS);
+		boolean ret = false;
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RESULTS);
+				EngineListener el = (EngineListener) ll[i+1];
+				ret |= el.engineResults(e);
+			}
+		}
+		return ret;
 	}
+
 	public boolean engineFieldEditor() {
-		return fire(Type.FIELD_EDITOR);
+		boolean ret = false;
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.FIELD_EDITOR);
+				EngineListener el = (EngineListener) ll[i+1];
+				ret |= el.engineFieldEditor(e);
+			}
+		}
+		return ret;
 	}
+
 	public void engineRenderFirst() {
-		fire(Type.RENDER_FIRST);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RENDER_FIRST);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineRenderFirst(e);
+			}
+		}
 	}
+
 	public void engineRenderLast() {
-		fire(Type.RENDER_LAST);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RENDER_LAST);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineRenderLast(e);
+			}
+		}
 	}
+
 	public void engineRenderSettings() {
-		fire(Type.RENDER_SETTINGS);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RENDER_SETTINGS);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineRenderSettings(e);
+			}
+		}
 	}
+
 	public void engineRenderReady() {
-		fire(Type.RENDER_READY);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RENDER_READY);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineRenderReady(e);
+			}
+		}
 	}
+
 	public void engineRenderMove() {
-		fire(Type.RENDER_MOVE);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RENDER_MOVE);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineRenderMove(e);
+			}
+		}
 	}
+
 	public void engineRenderLockFlash() {
-		fire(Type.RENDER_LOCK_FLASH);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RENDER_LOCK_FLASH);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineRenderLockFlash(e);
+			}
+		}
 	}
+
 	public void engineRenderLineClear() {
-		fire(Type.RENDER_LINE_CLEAR);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RENDER_LINE_CLEAR);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineRenderLineClear(e);
+			}
+		}
 	}
+
 	public void engineRenderARE() {
-		fire(Type.RENDER_ARE);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RENDER_ARE);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineRenderARE(e);
+			}
+		}
 	}
+
 	public void engineRenderEndingStart() {
-		fire(Type.RENDER_ENDING_START);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RENDER_ENDING_START);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineRenderEndingStart(e);
+			}
+		}
 	}
+
 	public void engineRenderCustom() {
-		fire(Type.RENDER_CUSTOM);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RENDER_CUSTOM);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineRenderCustom(e);
+			}
+		}
 	}
+
 	public void engineRenderExcellent() {
-		fire(Type.RENDER_EXCELLENT);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RENDER_EXCELLENT);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineRenderExcellent(e);
+			}
+		}
 	}
+
 	public void engineRenderGameOver() {
-		fire(Type.RENDER_GAME_OVER);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RENDER_GAME_OVER);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineRenderGameOver(e);
+			}
+		}
 	}
+
 	public void engineRenderResults() {
-		fire(Type.RENDER_RESULTS);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RENDER_RESULTS);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineRenderResults(e);
+			}
+		}
 	}
+
 	public void engineRenderFieldEditor() {
-		fire(Type.RENDER_FIELD_EDITOR);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RENDER_FIELD_EDITOR);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineRenderFieldEditor(e);
+			}
+		}
 	}
+
 	public void engineRenderInput() {
-		fire(Type.RENDER_INPUT);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.RENDER_INPUT);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineRenderInput(e);
+			}
+		}
 	}
+
 	public void engineBlockBreak(int x, int y, Block block) {
-		fire(Type.BLOCK_BREAK,
-				Args.BLOCK_X, x,
-				Args.BLOCK_Y, y,
-				Args.BLOCK, block
-				);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.BLOCK_BREAK, Args.BLOCK_X, x, Args.BLOCK_Y, y, Args.BLOCK, block);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineBlockBreak(e);
+			}
+		}
 	}
+
 	public void engineCalcScore(int lines) {
-		fire(Type.CALC_SCORE,
-				Args.LINES, lines);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.CALC_SCORE, Args.LINES, lines);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineCalcScore(e);
+			}
+		}
 	}
+
 	public void engineAfterSoftDropFall(int fall) {
-		fire(Type.AFTER_SOFT_DROP_FALL,
-				Args.FALL, fall);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.AFTER_SOFT_DROP_FALL, Args.FALL, fall);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineAfterSoftDropFall(e);
+			}
+		}
 	}
+
 	public void engineAfterHardDropFall(int fall) {
-		fire(Type.AFTER_HARD_DROP_FALL,
-				Args.FALL, fall);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.AFTER_HARD_DROP_FALL, Args.FALL, fall);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineAfterHardDropFall(e);
+			}
+		}
 	}
+
 	public void engineFieldEditorExit() {
-		fire(Type.FIELD_EDITOR_EXIT);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.FIELD_EDITOR_EXIT);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineFieldEditorExit(e);
+			}
+		}
 	}
+
 	public void enginePieceLocked(int lines) {
-		fire(Type.PIECE_LOCKED,
-				Args.LINES, lines);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.PIECE_LOCKED, Args.LINES, lines);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.enginePieceLocked(e);
+			}
+		}
 	}
+
 	public boolean engineLineClearEnd() {
-		return fire(Type.LINE_CLEAR_END);
+		boolean ret = false;
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.LINE_CLEAR_END);
+				EngineListener el = (EngineListener) ll[i+1];
+				ret |= el.engineLineClearEnd(e);
+			}
+		}
+		return ret;
 	}
+
 	public void engineSaveReplay(CustomProperties props) {
-		fire(Type.SAVE_REPLAY,
-				Args.PROPERTIES, props);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.SAVE_REPLAY, Args.PROPERTIES, props);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineSaveReplay(e);
+			}
+		}
 	}
+
 	public void engineLoadReplay(CustomProperties props) {
-		fire(Type.LOAD_REPLAY,
-				Args.PROPERTIES, props);
+		Object[] ll = listeners.getListenerList();
+		EngineEvent e = null;
+		for(int i = ll.length - 2; i >= 0; i -= 2) {
+			if(ll[i] == EngineListener.class) {
+				if(e == null)
+					e = newEvent(Type.LOAD_REPLAY, Args.PROPERTIES, props);
+				EngineListener el = (EngineListener) ll[i+1];
+				el.engineLoadReplay(e);
+			}
+		}
 	}
 
 }
